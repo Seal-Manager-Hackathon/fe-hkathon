@@ -76,7 +76,7 @@ export default function RegisterPage() {
         <p className="mb-6 text-center text-[14px] text-gray-500">Join SEAL Hackathon and start building</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4" autoComplete="off">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-[14px] font-semibold text-[#1f2f3a]">First name</label>
               <div className="relative">

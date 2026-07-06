@@ -66,20 +66,20 @@ export default function HackathonEdit() {
   }
 
   return (
-    <div className="px-8 py-8">
+    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <BackButton fallback={`/admin/hackathons/${id}`} label="Back to Hackathon" />
 
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-[#1f2f3a]">Edit Hackathon</h1>
+        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Edit Hackathon</h1>
         <p className="mt-1 text-[15px] text-gray-500">Update hackathon information and settings.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="space-y-5">
           <FormField label="Hackathon Name" required>
             <input type="text" value={form.name} onChange={(e) => updateField('name', e.target.value)} placeholder="e.g. SEAL Hackathon 2027 - Spring" className="field-input" />
           </FormField>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="Season" required>
               <input type="text" value={form.season} onChange={(e) => updateField('season', e.target.value)} placeholder="e.g. Spring 2027" className="field-input" />
             </FormField>

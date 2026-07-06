@@ -4,7 +4,7 @@ import { statusBadge, visibilityBadge } from '../../../data/mockAdminData'
 
 export default function OverviewTab({ hackathon }) {
   return (
-    <div className="grid grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       <div className="rounded-xl border border-[#e8ecf0] bg-white p-6">
         <h3 className="mb-5 flex items-center gap-2 text-[15px] font-bold text-[#1f2f3a]">
           <Layers className="h-4 w-4 text-[#064f5d]" />
@@ -61,7 +61,7 @@ export default function OverviewTab({ hackathon }) {
 
         <div className="mt-6 rounded-lg bg-[#f4f6f8] p-4">
           <h4 className="mb-3 text-[12px] font-bold uppercase tracking-wider text-gray-400">Quick Stats</h4>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             <StatBox icon={<Users className="h-4 w-4" />} label="Teams" value={hackathon.teams} />
             <StatBox icon={<Calendar className="h-4 w-4" />} label="Season" value={hackathon.season} />
             <StatBox icon={<DollarSign className="h-4 w-4" />} label="Prize" value={hackathon.prize} />
@@ -86,10 +86,10 @@ function InfoRow({ label, value, valueClass, icon }) {
 
 function StatBox({ icon, label, value }) {
   return (
-    <div className="flex flex-col items-center rounded-lg bg-white p-3 shadow-sm">
+    <div className="flex flex-col items-center rounded-lg bg-white p-2 shadow-sm sm:p-3">
       <span className="mb-1 text-[#064f5d]">{icon}</span>
-      <span className="text-[18px] font-bold text-[#1f2f3a]">{value}</span>
-      <span className="text-[11px] text-gray-400">{label}</span>
+      <span className="text-[15px] font-bold text-[#1f2f3a] sm:text-[18px]">{value}</span>
+      <span className="text-[10px] text-gray-400 sm:text-[11px]">{label}</span>
     </div>
   )
 }

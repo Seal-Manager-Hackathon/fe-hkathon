@@ -3,7 +3,7 @@ import RankingCard from '../RankingCard'
 
 export default function TeamRanking({ teams }) {
   return (
-    <div className="w-[320px] shrink-0">
+    <div className="w-full shrink-0 lg:w-[320px]">
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-[22px] font-bold text-[#1f2f3a]">Team Ranking</h2>
         <button className="inline-flex cursor-pointer items-center gap-1 text-[14px] font-semibold text-[#064f5d] hover:underline">

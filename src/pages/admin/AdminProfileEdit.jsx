@@ -79,11 +79,11 @@ export default function AdminProfileEdit() {
   }
 
   return (
-    <div className="px-8 py-8">
+    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <BackButton fallback="/admin/profile" label="Back to Profile" />
 
       <div className="mb-6">
-        <h1 className="text-[28px] font-bold text-[#1f2f3a]">Edit Profile</h1>
+        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Edit Profile</h1>
         <p className="mt-1 text-[15px] text-gray-500">Update your personal information and security settings.</p>
       </div>
 
@@ -114,7 +114,7 @@ export default function AdminProfileEdit() {
 
       {activeTab === 'profile' && (
         <>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <CardPanel title="Personal Information">
               <div className="px-5 pt-2 pb-5 space-y-4">
                 <TextInput

@@ -1,8 +1,9 @@
 import { useLocation } from 'react-router-dom'
 import SidebarNavItem from './SidebarNavItem'
+import { X } from 'lucide-react'
 import { useMemo } from 'react'
 
-export default function Sidebar({ navItems }) {
+export default function Sidebar({ navItems, open, onClose }) {
   const { pathname } = useLocation()
 
   const activeKey = useMemo(() => {
@@ -13,25 +14,49 @@ export default function Sidebar({ navItems }) {
   }, [pathname, navItems])
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[248px] flex-col bg-[#064f5d]">
-      <div className="flex items-center gap-2.5 px-5 py-5">
-        <div className="flex h-9 items-center justify-center rounded-md bg-white px-2.5 text-sm font-extrabold text-[#064f5d]">
-          SEAL
+    <>
+      {/* Mobile overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed left-0 top-0 z-40 flex h-screen w-[248px] flex-col bg-[#064f5d] transition-transform duration-200 lg:translate-x-0 ${
+          open ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex items-center gap-2.5 px-5 py-5">
+          <div className="flex h-9 items-center justify-center rounded-md bg-white px-2.5 text-sm font-extrabold text-[#064f5d]">
+            SEAL
+          </div>
+          <span className="text-lg font-bold text-white">Hackathon</span>
+          {/* Close button — mobile only */}
+          <button
+            onClick={onClose}
+            className="ml-auto cursor-pointer rounded-lg p-1.5 text-white/70 hover:bg-white/10 hover:text-white lg:hidden"
+            aria-label="Close menu"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
-        <span className="text-lg font-bold text-white">Hackathon</span>
-      </div>
 
-      <nav className="flex flex-col gap-1 px-3 pt-2" role="navigation">
-        {navItems.map((item) => (
-          <SidebarNavItem
-            key={item.key}
-            item={item}
-            activeKey={activeKey}
-          />
-        ))}
-      </nav>
+        <nav className="flex flex-col gap-1 px-3 pt-2" role="navigation">
+          {navItems.map((item) => (
+            <SidebarNavItem
+              key={item.key}
+              item={item}
+              activeKey={activeKey}
+              onClick={onClose}
+            />
+          ))}
+        </nav>
 
-      <div className="flex-1" />
-    </aside>
+        <div className="flex-1" />
+      </aside>
+    </>
   )
 }

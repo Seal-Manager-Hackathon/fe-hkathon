@@ -27,9 +27,9 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="px-8 py-8">
+    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-[#1f2f3a]">Dashboard</h1>
+        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Dashboard</h1>
         <p className="mt-1 text-[15px] text-gray-500">Welcome back, Admin. Here's what's happening.</p>
       </div>
 
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
         {statSections.map((section) => (
           <div key={section.title}>
             <SectionTitle>{section.title}</SectionTitle>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {section.items.map((item) => (
                 <StatCard
                   key={item.label}
@@ -54,12 +54,12 @@ export default function AdminDashboard() {
 
       <SectionTitle>Recent Activity</SectionTitle>
 
-      <div className="mb-8 grid grid-cols-3 gap-5">
+      <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
         <CardPanel title="Recent Hackathons" viewAllTo="/admin/hackathons">
           {recentHackathons.map((h) => (
             <div key={h.name} className="flex items-center justify-between border-b border-[#f5f5f5] px-5 py-3 last:border-0 gap-3">
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{h.name}</p>
                   <Badge label={h.status} className={statusBadge[h.status]} />
                 </div>
@@ -75,7 +75,7 @@ export default function AdminDashboard() {
             <div key={u.email} className="flex items-center justify-between border-b border-[#f5f5f5] px-5 py-3 last:border-0 gap-3">
               <Avatar name={u.name} />
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{u.name}</p>
                   <Badge label={u.role} className={roleBadge[u.role]} />
                 </div>

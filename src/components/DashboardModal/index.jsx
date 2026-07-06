@@ -35,7 +35,7 @@ export default function DashboardModal({ modal, onClose }) {
         {/* Body — Hackathon */}
         {type === 'hackathon' && (
           <div className="rounded-xl bg-[#f4f6f8] p-5">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               <DetailField label="Season"><p className="text-[14px] font-semibold text-[#1f2f3a]">{data.season}</p></DetailField>
               <DetailField label="Date"><p className="text-[14px] font-semibold text-[#1f2f3a]">{data.date}</p></DetailField>
               <DetailField label="Prize Pool"><p className="text-[15px] font-bold text-[#064f5d]">{data.prize}</p></DetailField>
@@ -54,7 +54,7 @@ export default function DashboardModal({ modal, onClose }) {
                 <p className="text-[13px] text-gray-500">{data.email}</p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <DetailField className="bg-[#f4f6f8]" label="Role"><p className="text-[14px] font-semibold text-[#1f2f3a]">{data.role}</p></DetailField>
               <DetailField className="bg-[#f4f6f8]" label="Status">
                 <Badge label={data.status} className={modal.badges.userStatus[data.status]} />

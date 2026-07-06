@@ -16,16 +16,16 @@ export default function NotificationDetail() {
   }
 
   return (
-    <div className="px-8 py-8">
+    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <BackButton fallback="/admin/notifications" label="Back to Notifications" />
 
-      <div className="mb-6 flex items-start justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-[28px] font-bold text-[#1f2f3a]">{notification.title}</h1>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{notification.title}</h1>
             <Badge label={notification.status} className={notificationStatusBadge[notification.status]} />
           </div>
-          <div className="mt-2 flex flex-wrap items-center gap-4 text-[13px] text-gray-400">
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] sm:text-[13px] text-gray-400">
             <span className="inline-flex items-center gap-1.5">
               <Megaphone className="h-3.5 w-3.5" /> {notification.type}
             </span>
@@ -39,7 +39,7 @@ export default function NotificationDetail() {
         </div>
         <Link
           to={`/admin/notifications/${id}/edit`}
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a]"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto"
         >
           <Edit className="h-4 w-4" />
           Edit Notification

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Bell } from 'lucide-react'
+import { Bell, Menu } from 'lucide-react'
 import NotificationModal from '../NotificationModal'
 import UserMenu from '../UserMenu'
 import { useAuth } from '../../context/AuthContext'
@@ -22,7 +22,7 @@ const userMenu = [
   { icon: 'LogOut', label: 'Sign out', to: null },
 ]
 
-export default function Header({ viewAllTo = '/notifications' }) {
+export default function Header({ viewAllTo = '/notifications', showSidebarToggle, onToggleSidebar }) {
   const { user, logout } = useAuth()
   const [open, setOpen] = useState(false)
   const [notifications, setNotifications] = useState(mockNotifications)
@@ -48,8 +48,23 @@ export default function Header({ viewAllTo = '/notifications' }) {
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-end gap-4 border-b border-[#e8ecf0] bg-white px-6">
-        <div ref={ref} className="relative">
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-2 border-b border-[#e8ecf0] bg-white px-3 sm:px-4 lg:px-6">
+        {/* Left: sidebar hamburger */}
+        <div className="flex items-center gap-2">
+          {showSidebarToggle && (
+            <button
+              onClick={onToggleSidebar}
+              className="cursor-pointer rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-[#1f2f3a] lg:hidden"
+              aria-label="Toggle menu"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+          )}
+        </div>
+
+        {/* Right: bell + user */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div ref={ref} className="relative">
           <button
             onClick={() => setOpen(!open)}
             className="relative cursor-pointer rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#1f2f3a]"
@@ -63,7 +78,7 @@ export default function Header({ viewAllTo = '/notifications' }) {
           </button>
 
           {open && (
-            <div className="absolute right-0 top-full mt-2 w-[380px] rounded-xl border border-[#e8ecf0] bg-white shadow-lg">
+            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-32px)] max-w-[380px] rounded-xl border border-[#e8ecf0] bg-white shadow-lg">
               <div className="flex items-center justify-between border-b border-[#f0f0f0] px-5 py-3.5">
                 <h3 className="text-[14px] font-bold text-[#1f2f3a]">Notifications</h3>
                 {unreadCount > 0 && (
@@ -110,6 +125,7 @@ export default function Header({ viewAllTo = '/notifications' }) {
         </div>
 
         <UserMenu user={resolvedUser} menuItems={resolvedMenu} onLogout={logout} />
+        </div>
       </header>
 
       <NotificationModal notification={selected} onClose={() => setSelected(null)} />

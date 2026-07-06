@@ -53,11 +53,11 @@ export default function NotificationsCreate() {
   }
 
   return (
-    <div className="px-8 py-8">
+    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <BackButton fallback="/admin/notifications" label="Back to Notifications" />
 
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-[#1f2f3a]">Create Notification</h1>
+        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Create Notification</h1>
         <p className="mt-1 text-[15px] text-gray-500">Send a new notification to users across the platform.</p>
       </div>
 
@@ -68,7 +68,7 @@ export default function NotificationsCreate() {
         <FormField label="Message Body" required>
           <textarea value={form.body} onChange={(e) => updateField('body', e.target.value)} placeholder="Write the notification message..." rows={5} className="field-input resize-y min-h-[120px]" />
         </FormField>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <FormField label="Type" required>
             <SelectInput options={TYPE_OPTIONS} value={form.type} onChange={(v) => updateField('type', v)} />
           </FormField>

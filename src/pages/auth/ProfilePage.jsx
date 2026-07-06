@@ -18,23 +18,23 @@ export default function ProfilePage() {
     <div className="mx-auto max-w-[720px] px-8 py-8">
       <BackButton fallback="/" label="Back to Home" />
 
-      <div className="mb-6 flex items-start justify-between">
-        <div className="flex items-center gap-5">
-          <Avatar src={user?.avatarUrl} name={displayName} size="h-20 w-20" textSize="text-[28px]" />
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-wrap items-center gap-5">
+          <Avatar src={user?.avatarUrl} name={displayName} size="h-16 w-16 sm:h-20 sm:w-20" textSize="text-[20px] sm:text-[28px]" />
           <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-[28px] font-bold text-[#1f2f3a]">{displayName}</h1>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{displayName}</h1>
               <Badge label={user?.role || 'Student'} className="bg-[#e3f2fd] text-[#1565c0]" />
               {user?.status && (
                 <Badge label={user.status} className="bg-[#e8f5e9] text-[#2e7d32]" />
               )}
             </div>
-            {user?.bio && <p className="mt-2 text-[14px] text-gray-400">{user.bio}</p>}
+            {user?.bio && <p className="mt-1 sm:mt-2 text-[13px] sm:text-[14px] text-gray-400">{user.bio}</p>}
           </div>
         </div>
         <Link
           to="/profile/edit"
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a]"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto"
         >
           <Edit className="h-4 w-4" />
           Edit Profile

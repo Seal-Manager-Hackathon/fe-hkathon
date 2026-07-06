@@ -4,14 +4,14 @@ import { Home, Trophy, Medal, LayoutDashboard, Users, Settings, Bell } from 'luc
 
 const iconMap = { Home, Trophy, Medal, LayoutDashboard, Users, Settings, Bell }
 
-export default function SidebarNavItem({ item, activeKey }) {
+export default function SidebarNavItem({ item, activeKey, onClick }) {
   const navigate = useNavigate()
   const isActive = activeKey === item.key
   const Icon = iconMap[item.icon]
 
   return (
     <button
-      onClick={() => navigate(item.to)}
+      onClick={() => { navigate(item.to); onClick?.() }}
       className={cn(
         'flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-left text-[16px] font-bold transition-colors duration-150',
         isActive

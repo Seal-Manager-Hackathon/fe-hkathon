@@ -92,7 +92,7 @@ export default function ProfileEditPage() {
       <BackButton fallback="/profile" label="Back to Profile" />
 
       <div className="mb-6">
-        <h1 className="text-[28px] font-bold text-[#1f2f3a]">Edit Profile</h1>
+        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Edit Profile</h1>
         <p className="mt-1 text-[15px] text-gray-500">Update your personal information and security settings.</p>
       </div>
 

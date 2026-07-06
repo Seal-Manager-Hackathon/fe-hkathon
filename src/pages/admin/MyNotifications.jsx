@@ -34,16 +34,16 @@ export default function MyNotifications() {
 
   return (
     <>
-      <div className="px-8 py-8">
+      <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
         <BackButton fallback="/admin" label="Back to Dashboard" />
 
-        <div className="mb-6 flex items-start justify-between">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-[28px] font-bold text-[#1f2f3a]">My Notifications</h1>
-            <p className="mt-1 text-[15px] text-gray-500">
+            <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">My Notifications</h1>
+            <p className="mt-1 text-[14px] sm:text-[15px] text-gray-500">
               Stay updated with your personal notifications.
               {unreadCount > 0 && (
-                <span className="ml-2 rounded-full bg-[#ffebee] px-2 py-0.5 text-[13px] font-semibold text-[#c62828]">
+                <span className="ml-2 rounded-full bg-[#ffebee] px-2 py-0.5 text-[12px] sm:text-[13px] font-semibold text-[#c62828]">
                   {unreadCount} unread
                 </span>
               )}
@@ -52,7 +52,7 @@ export default function MyNotifications() {
           {unreadCount > 0 && (
             <button
               onClick={markAllRead}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#d8e0e6] bg-white px-4 py-2.5 text-[14px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#d8e0e6] bg-white px-4 py-2 text-[13px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50 sm:px-4 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto"
             >
               <CheckCheck className="h-4 w-4" />
               Mark all as read

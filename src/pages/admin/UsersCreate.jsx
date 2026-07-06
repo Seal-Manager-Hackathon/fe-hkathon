@@ -45,11 +45,11 @@ export default function UsersCreate() {
   }
 
   return (
-    <div className="px-8 py-8">
+    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <BackButton fallback="/admin/users" label="Back to Users" />
 
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-[#1f2f3a]">Create User</h1>
+        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Create User</h1>
         <p className="mt-1 text-[15px] text-gray-500">Add a new user to the system.</p>
       </div>
 
@@ -60,7 +60,7 @@ export default function UsersCreate() {
         <FormField label="Email" required>
           <input type="email" value={form.email} onChange={(e) => updateField('email', e.target.value)} placeholder="e.g. john@seal.dev" className="field-input" />
         </FormField>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField label="Role" required>
             <SelectInput options={ROLE_OPTIONS} value={form.role} onChange={(v) => updateField('role', v)} />
           </FormField>

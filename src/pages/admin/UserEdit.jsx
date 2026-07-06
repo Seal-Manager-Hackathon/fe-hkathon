@@ -53,15 +53,15 @@ export default function UserEdit() {
   }
 
   return (
-    <div className="px-8 py-8">
+    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <BackButton fallback={`/admin/users/${id}`} label="Back to User" />
 
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-[#1f2f3a]">Edit User</h1>
+        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Edit User</h1>
         <p className="mt-1 text-[15px] text-gray-500">Update user account information and permissions.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="space-y-5">
           <FormField label="Full Name" required>
             <input type="text" value={form.name} onChange={(e) => updateField('name', e.target.value)} placeholder="e.g. John Doe" className="field-input" />

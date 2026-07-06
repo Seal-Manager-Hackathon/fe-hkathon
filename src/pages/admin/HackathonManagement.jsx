@@ -121,18 +121,17 @@ export default function HackathonManagement() {
   ]
 
   return (
-    <div className="px-8 py-8">
-      {/* Page Header */}
-      <div className="mb-6 flex items-start justify-between">
+    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-[28px] font-bold text-[#1f2f3a]">Hackathons</h1>
-          <p className="mt-1 text-[15px] text-gray-500">
+          <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Hackathons</h1>
+          <p className="mt-1 text-[14px] sm:text-[15px] text-gray-500">
             Manage all {filtered.length} hackathon programs.
           </p>
         </div>
         <Link
           to="/admin/hackathons/create"
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a]"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto"
         >
           <Plus className="h-4 w-4" />
           Create Hackathon
@@ -140,9 +139,9 @@ export default function HackathonManagement() {
       </div>
 
       {/* Filter Row */}
-      <div className="mb-6 flex flex-wrap items-end gap-4">
+      <div className="mb-6 flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-4">
         <SearchInput
-          className="w-[300px]"
+          className="w-full sm:w-[300px]"
           placeholder="Search hackathons..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1) }}
@@ -152,21 +151,21 @@ export default function HackathonManagement() {
           options={YEAR_OPTIONS}
           value={yearFilter}
           onChange={(v) => { setYearFilter(v); setPage(1) }}
-          className="w-[160px]"
+          className="w-full sm:w-[160px]"
         />
         <SelectInput
           label="Status"
           options={STATUS_OPTIONS}
           value={statusFilter}
           onChange={(v) => { setStatusFilter(v); setPage(1) }}
-          className="w-[180px]"
+          className="w-full sm:w-[180px]"
         />
         <SelectInput
           label="Visibility"
           options={VISIBILITY_OPTIONS}
           value={visibilityFilter}
           onChange={(v) => { setVisibilityFilter(v); setPage(1) }}
-          className="w-[160px]"
+          className="w-full sm:w-[160px]"
         />
         <button
           onClick={handleReset}
@@ -193,6 +192,7 @@ export default function HackathonManagement() {
             : 'No hackathons yet. Create your first one!'
         }
         keyExtractor={(row) => row.id}
+        minWidth="1000px"
       />
     </div>
   )

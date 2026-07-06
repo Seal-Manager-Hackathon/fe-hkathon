@@ -16,8 +16,8 @@ export default function HomePage() {
     <>
       <HeroSection isAuthenticated={false} />
 
-      <section className="mx-auto w-full max-w-[1100px] px-10 py-10">
-        <div className="flex gap-10">
+      <section className="mx-auto w-full max-w-[1100px] px-4 py-10 sm:px-6 lg:px-10">
+        <div className="flex flex-col gap-10 lg:flex-row">
           <HackathonForYouSection hackathons={mockHackathons} />
           <TeamRanking teams={mockRankingTeams} />
         </div>

@@ -23,6 +23,7 @@ export default function BaseTable({
   loading = false,
   emptyText = 'No data found.',
   keyExtractor,
+  minWidth = '600px',
 }) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
   const isFirstPage = page <= 1
@@ -45,8 +46,8 @@ export default function BaseTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-[#e8ecf0] bg-white">
-      <table className="w-full">
+    <div className="max-w-full overflow-x-auto rounded-xl border border-[#e8ecf0] bg-white">
+      <table className="w-full" style={{ minWidth }}>
         {/* Header */}
         <thead>
           <tr className="border-b border-[#f0f0f0] bg-[#fafbfc]">
@@ -87,28 +88,28 @@ export default function BaseTable({
 
       {/* Pagination */}
       {total > 0 && (
-        <div className="flex items-center justify-between border-t border-[#f0f0f0] px-5 py-3">
-          <p className="text-[13px] text-gray-400">
+        <div className="flex flex-col gap-2 border-t border-[#f0f0f0] px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[12px] text-gray-400 sm:text-[13px]">
             Showing {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} of {total}
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => onPageChange?.(page - 1)}
               disabled={isFirstPage}
-              className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-[#d8e0e6] bg-white px-3 py-1.5 text-[13px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-[#d8e0e6] bg-white px-2.5 py-1.5 text-[12px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 sm:px-3 sm:text-[13px]"
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              <span className="hidden sm:inline">Previous</span>
             </button>
-            <span className="text-[14px] font-semibold text-[#1f2f3a]">
+            <span className="text-[13px] font-semibold text-[#1f2f3a] sm:text-[14px]">
               Page {page} of {totalPages}
             </span>
             <button
               onClick={() => onPageChange?.(page + 1)}
               disabled={isLastPage}
-              className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-[#d8e0e6] bg-white px-3 py-1.5 text-[13px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-[#d8e0e6] bg-white px-2.5 py-1.5 text-[12px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 sm:px-3 sm:text-[13px]"
             >
-              Next
+              <span className="hidden sm:inline">Next</span>
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>

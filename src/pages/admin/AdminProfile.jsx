@@ -21,31 +21,31 @@ const profile = {
 
 export default function AdminProfile() {
   return (
-    <div className="px-8 py-8">
+    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <BackButton fallback="/admin" label="Back to Dashboard" />
 
-      <div className="mb-6 flex items-start justify-between">
-        <div className="flex items-center gap-5">
-          <Avatar name={profile.fullName} size="h-20 w-20" textSize="text-[28px]" />
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-wrap items-center gap-5">
+          <Avatar name={profile.fullName} size="h-16 w-16 sm:h-20 sm:w-20" textSize="text-[20px] sm:text-[28px]" />
           <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-[28px] font-bold text-[#1f2f3a]">{profile.fullName}</h1>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{profile.fullName}</h1>
               <Badge label={profile.role} className="bg-[#f3e5f5] text-[#7b1fa2]" />
               <Badge label={profile.status} className="bg-[#e8f5e9] text-[#2e7d32]" />
             </div>
-            <p className="mt-2 text-[14px] text-gray-400">{profile.bio}</p>
+            <p className="mt-1 sm:mt-2 text-[13px] sm:text-[14px] text-gray-400">{profile.bio}</p>
           </div>
         </div>
         <Link
           to="/admin/profile/edit"
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a]"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto"
         >
           <Edit className="h-4 w-4" />
           Edit Profile
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <CardPanel title="Account Information">
           <div className="divide-y divide-[#f5f5f5]">
             <InfoRow label="Full Name"><p className="text-[14px] font-medium text-[#1f2f3a]">{profile.fullName}</p></InfoRow>

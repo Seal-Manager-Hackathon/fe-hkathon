@@ -58,15 +58,15 @@ export default function NotificationEdit() {
   }
 
   return (
-    <div className="px-8 py-8">
+    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <BackButton fallback={`/admin/notifications/${id}`} label="Back to Notification" />
 
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-[#1f2f3a]">Edit Notification</h1>
+        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Edit Notification</h1>
         <p className="mt-1 text-[15px] text-gray-500">Update notification content and settings.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="space-y-5">
           <FormField label="Title" required>
             <input type="text" value={form.title} onChange={(e) => updateField('title', e.target.value)} placeholder="e.g. New hackathon registration is open" className="field-input" />
