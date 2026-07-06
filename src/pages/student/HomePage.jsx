@@ -14,7 +14,7 @@ import {
 export default function HomePage() {
   return (
     <>
-      <HeroSection isAuthenticated={false} />
+      <HeroSection />
 
       <section className="mx-auto w-full max-w-[1100px] px-4 py-10 sm:px-6 lg:px-10">
         <div className="flex flex-col gap-10 lg:flex-row">
