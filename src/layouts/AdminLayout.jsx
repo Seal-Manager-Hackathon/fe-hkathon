@@ -13,7 +13,7 @@ export default function AdminLayout() {
       />
 
       <div className="ml-[248px] flex min-h-screen flex-1 flex-col">
-        <Header />
+        <Header viewAllTo="/admin/my-notifications" />
         <main className="flex-1">
           <Outlet />
         </main>

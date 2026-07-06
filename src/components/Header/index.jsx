@@ -9,7 +9,7 @@ const mockNotifications = [
   { id: 4, title: 'Your team has been approved', body: 'Your team registration for SEAL Hackathon 2026 has been approved. Good luck!', date: 'Jul 01, 2026', read: true },
 ]
 
-export default function Header() {
+export default function Header({ viewAllTo = '/notifications' }) {
   const [open, setOpen] = useState(false)
   const [notifications, setNotifications] = useState(mockNotifications)
   const [selected, setSelected] = useState(null)
@@ -84,7 +84,7 @@ export default function Header() {
               </div>
 
               <Link
-                to="/notifications"
+                to={viewAllTo}
                 onClick={() => setOpen(false)}
                 className="flex cursor-pointer items-center justify-center border-t border-[#f0f0f0] px-5 py-3 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]/50"
               >
