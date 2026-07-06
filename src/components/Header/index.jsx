@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Bell, Menu } from 'lucide-react'
 import NotificationModal from '../NotificationModal'
@@ -15,11 +15,6 @@ const mockNotifications = [
 const guestMenu = [
   { icon: 'LogIn', label: 'Sign in', to: '/login' },
   { icon: 'UserPlus', label: 'Sign up', to: '/register' },
-]
-
-const userMenu = [
-  { icon: 'User', label: 'Profile', to: '/profile' },
-  { icon: 'LogOut', label: 'Sign out', to: null },
 ]
 
 export default function Header({ viewAllTo = '/notifications', showSidebarToggle, onToggleSidebar }) {
@@ -44,7 +39,14 @@ export default function Header({ viewAllTo = '/notifications', showSidebarToggle
   }
 
   const resolvedUser = user || { name: 'Guest visitor' }
-  const resolvedMenu = user ? userMenu : guestMenu
+  const resolvedMenu = useMemo(() => {
+    if (!user) return guestMenu
+    const profilePath = user.role === 'Admin' ? '/admin/profile' : '/profile'
+    return [
+      { icon: 'User', label: 'Profile', to: profilePath },
+      { icon: 'LogOut', label: 'Sign out', to: null },
+    ]
+  }, [user])
 
   return (
     <>

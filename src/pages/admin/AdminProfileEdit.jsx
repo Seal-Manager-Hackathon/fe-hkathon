@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Save, Lock, User, ShieldAlert, Mail, Phone, MapPin } from 'lucide-react'
+import { Lock, User, ShieldAlert, Mail, Phone, MapPin } from 'lucide-react'
 import { cn } from '../../utils/cn'
+import { useAuth } from '../../context/AuthContext'
 import BackButton from '../../components/BackButton'
 import CardPanel from '../../components/CardPanel'
 import FormField from '../../components/FormField'
@@ -15,14 +16,19 @@ const TABS = [
 ]
 
 export default function AdminProfileEdit() {
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('profile')
 
+  const displayName = user?.firstName
+    ? `${user.firstName} ${user.lastName || ''}`.trim()
+    : user?.name || ''
+
   const [profileForm, setProfileForm] = useState({
-    name: 'Alexandra Grant',
-    email: 'admin@seal.dev',
-    phone: '+1 (415) 555-0192',
-    location: 'San Francisco, CA',
-    bio: 'Platform administrator managing hackathon operations, user accounts, and system-wide notifications.',
+    name: displayName,
+    email: user?.email || '',
+    phone: user?.phone || '',
+    location: user?.location || '',
+    bio: user?.bio || '',
   })
   const [profileSaving, setProfileSaving] = useState(false)
   const [profileSaved, setProfileSaved] = useState(false)
@@ -114,53 +120,46 @@ export default function AdminProfileEdit() {
 
       {activeTab === 'profile' && (
         <>
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <CardPanel title="Personal Information">
-              <div className="px-5 pt-2 pb-5 space-y-4">
-                <TextInput
-                  label="Full Name"
-                  icon={User}
-                  value={profileForm.name}
-                  onChange={(e) => updateProfile('name', e.target.value)}
-                  required
+          <CardPanel title="Personal Information">
+            <div className="px-5 pt-2 pb-5 space-y-4">
+              <TextInput
+                label="Full Name"
+                icon={User}
+                value={profileForm.name}
+                onChange={(e) => updateProfile('name', e.target.value)}
+                required
+              />
+              <TextInput
+                label="Email"
+                icon={Mail}
+                type="email"
+                value={profileForm.email}
+                onChange={(e) => updateProfile('email', e.target.value)}
+                required
+              />
+              <TextInput
+                label="Phone"
+                icon={Phone}
+                value={profileForm.phone}
+                onChange={(e) => updateProfile('phone', e.target.value)}
+              />
+              <TextInput
+                label="Location"
+                icon={MapPin}
+                value={profileForm.location}
+                onChange={(e) => updateProfile('location', e.target.value)}
+              />
+              <FormField label="Bio">
+                <textarea
+                  value={profileForm.bio}
+                  onChange={(e) => updateProfile('bio', e.target.value)}
+                  rows={4}
+                  className="field-input resize-none"
+                  placeholder="A short description about yourself..."
                 />
-                <TextInput
-                  label="Email"
-                  icon={Mail}
-                  type="email"
-                  value={profileForm.email}
-                  onChange={(e) => updateProfile('email', e.target.value)}
-                  required
-                />
-                <TextInput
-                  label="Phone"
-                  icon={Phone}
-                  value={profileForm.phone}
-                  onChange={(e) => updateProfile('phone', e.target.value)}
-                />
-                <TextInput
-                  label="Location"
-                  icon={MapPin}
-                  value={profileForm.location}
-                  onChange={(e) => updateProfile('location', e.target.value)}
-                />
-              </div>
-            </CardPanel>
-
-            <CardPanel title="Bio">
-              <div className="px-5 pt-2 pb-5">
-                <FormField label="About Me">
-                  <textarea
-                    value={profileForm.bio}
-                    onChange={(e) => updateProfile('bio', e.target.value)}
-                    rows={5}
-                    className="field-input resize-none"
-                    placeholder="A short description about yourself..."
-                  />
-                </FormField>
-              </div>
-            </CardPanel>
-          </div>
+              </FormField>
+            </div>
+          </CardPanel>
 
           <AlertMessage type="success">{profileSaved && 'Profile updated successfully!'}</AlertMessage>
 
