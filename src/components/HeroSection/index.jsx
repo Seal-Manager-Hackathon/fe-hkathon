@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react'
+import { LogIn, Trophy, LayoutDashboard } from 'lucide-react'
 
 export default function HeroSection({ isAuthenticated }) {
   return (
@@ -15,17 +15,17 @@ export default function HeroSection({ isAuthenticated }) {
           {isAuthenticated ? (
             <button className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#ffca28] px-6 py-3 text-[15px] font-semibold text-[#064f5d] transition-colors hover:bg-[#f5bf1b]">
               Go to dashboard
-              <ArrowRight className="h-4 w-4" />
+              <LayoutDashboard className="h-4 w-4" />
             </button>
           ) : (
             <button className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#ffca28] px-6 py-3 text-[15px] font-semibold text-[#064f5d] transition-colors hover:bg-[#f5bf1b]">
               Sign in
-              <ArrowRight className="h-4 w-4" />
+              <LogIn className="h-4 w-4" />
             </button>
           )}
           <button className="inline-flex cursor-pointer items-center gap-2 rounded-lg border-2 border-[#064f5d] px-6 py-3 text-[15px] font-semibold text-[#064f5d] transition-colors hover:bg-[#064f5d] hover:text-white">
             Explore active hackathons
-            <ArrowRight className="h-4 w-4" />
+            <Trophy className="h-4 w-4" />
           </button>
         </div>
       </div>
