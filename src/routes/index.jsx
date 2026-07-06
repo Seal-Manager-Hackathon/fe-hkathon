@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
-import StudentLayout from '../layouts/StudentLayout'
 import RouteFallback from '../components/RouteFallback'
+
+const StudentLayout = lazy(() => import('../layouts/StudentLayout'))
 
 const HomePage = lazy(() => import('../pages/student/HomePage'))
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'))
@@ -28,14 +29,14 @@ const AdminProfileEdit = lazy(() => import('../pages/admin/AdminProfileEdit'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 export const routes = [
-  { path: '/', element: <StudentLayout />, children: [
+  { path: '/', element: <Suspense fallback={<RouteFallback full />}><StudentLayout /></Suspense>, children: [
     { index: true, element: <Suspense fallback={<RouteFallback />}><HomePage /></Suspense> },
     { path: 'profile', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><ProfilePage /></Suspense> },
       { path: 'edit', element: <Suspense fallback={<RouteFallback />}><ProfileEditPage /></Suspense> },
     ]},
   ]},
-  { path: '/admin', element: <Suspense fallback={<RouteFallback />}><AdminLayout /></Suspense>, children: [
+  { path: '/admin', element: <Suspense fallback={<RouteFallback full />}><AdminLayout /></Suspense>, children: [
     { index: true, element: <Suspense fallback={<RouteFallback />}><AdminDashboard /></Suspense> },
     { path: 'hackathons', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><HackathonManagement /></Suspense> },
@@ -61,8 +62,8 @@ export const routes = [
       { path: 'edit', element: <Suspense fallback={<RouteFallback />}><AdminProfileEdit /></Suspense> },
     ]},
   ]},
-  { path: '/login', element: <Suspense fallback={<RouteFallback />}><LoginPage /></Suspense> },
-  { path: '/register', element: <Suspense fallback={<RouteFallback />}><RegisterPage /></Suspense> },
-  { path: '/verify-email', element: <Suspense fallback={<RouteFallback />}><VerifyEmailPage /></Suspense> },
-  { path: '*', element: <Suspense fallback={<RouteFallback />}><NotFoundPage /></Suspense> },
+  { path: '/login', element: <Suspense fallback={<RouteFallback full />}><LoginPage /></Suspense> },
+  { path: '/register', element: <Suspense fallback={<RouteFallback full />}><RegisterPage /></Suspense> },
+  { path: '/verify-email', element: <Suspense fallback={<RouteFallback full />}><VerifyEmailPage /></Suspense> },
+  { path: '*', element: <Suspense fallback={<RouteFallback full />}><NotFoundPage /></Suspense> },
 ]
