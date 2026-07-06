@@ -9,7 +9,7 @@ export default function ProfileEditPage() {
   const initialTab = searchParams.get('tab') === 'password' ? 'password' : 'profile'
 
   return (
-    <div className="mx-auto max-w-[720px] px-4 py-6 md:px-6 lg:px-8 lg:py-8">
+    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <BackButton fallback="/profile" label="Back to Profile" />
 
       <div className="mb-6">
