@@ -5,6 +5,7 @@ import Badge from '../../components/Badge'
 import CardPanel from '../../components/CardPanel'
 import BackButton from '../../components/BackButton'
 import InfoRow from '../../components/InfoRow'
+import Avatar from '../../components/Avatar'
 
 const profile = {
   ...mockAdminUser,
@@ -25,9 +26,7 @@ export default function AdminProfile() {
 
       <div className="mb-6 flex items-start justify-between">
         <div className="flex items-center gap-5">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-[#e3f2fd] text-[28px] font-bold text-[#1565c0]">
-            {profile.avatarLetter}
-          </div>
+          <Avatar name={profile.fullName} size="h-20 w-20" textSize="text-[28px]" />
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-[28px] font-bold text-[#1f2f3a]">{profile.fullName}</h1>

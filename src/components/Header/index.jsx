@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Bell } from 'lucide-react'
 import NotificationModal from '../NotificationModal'
 import UserMenu from '../UserMenu'
+import { useAuth } from '../../context/AuthContext'
 
 const mockNotifications = [
   { id: 1, title: 'SEAL Hackathon 2026 - Summer is now open', body: 'Registration is open for all students and teams. New tracks in AI, Blockchain, and Climate Tech are available.', date: 'Jul 06, 2026', read: false },
@@ -11,7 +12,18 @@ const mockNotifications = [
   { id: 4, title: 'Your team has been approved', body: 'Your team registration for SEAL Hackathon 2026 has been approved. Good luck!', date: 'Jul 01, 2026', read: true },
 ]
 
-export default function Header({ viewAllTo = '/notifications', user, menuItems }) {
+const guestMenu = [
+  { icon: 'LogIn', label: 'Sign in', to: '/login' },
+  { icon: 'UserPlus', label: 'Sign up', to: '/register' },
+]
+
+const userMenu = [
+  { icon: 'User', label: 'Profile', to: '/profile' },
+  { icon: 'LogOut', label: 'Sign out', to: null },
+]
+
+export default function Header({ viewAllTo = '/notifications' }) {
+  const { user, logout } = useAuth()
   const [open, setOpen] = useState(false)
   const [notifications, setNotifications] = useState(mockNotifications)
   const [selected, setSelected] = useState(null)
@@ -21,9 +33,7 @@ export default function Header({ viewAllTo = '/notifications', user, menuItems }
 
   useEffect(() => {
     function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) {
-        setOpen(false)
-      }
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
@@ -32,6 +42,9 @@ export default function Header({ viewAllTo = '/notifications', user, menuItems }
   function markAsRead(id) {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
   }
+
+  const resolvedUser = user || { name: 'Guest visitor' }
+  const resolvedMenu = user ? userMenu : guestMenu
 
   return (
     <>
@@ -96,7 +109,7 @@ export default function Header({ viewAllTo = '/notifications', user, menuItems }
           )}
         </div>
 
-        {user && menuItems && <UserMenu user={user} menuItems={menuItems} />}
+        <UserMenu user={resolvedUser} menuItems={resolvedMenu} onLogout={logout} />
       </header>
 
       <NotificationModal notification={selected} onClose={() => setSelected(null)} />

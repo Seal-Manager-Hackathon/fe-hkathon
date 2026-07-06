@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { X } from 'lucide-react'
 import Badge from '../Badge'
 import DetailField from '../DetailField'
+import Avatar from '../Avatar'
 
 export default function DashboardModal({ modal, onClose }) {
   const { type, data } = modal
@@ -47,7 +48,7 @@ export default function DashboardModal({ modal, onClose }) {
         {type === 'user' && (
           <div>
             <div className="mb-4 flex items-center gap-4 rounded-xl bg-[#f4f6f8] p-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#e3f2fd] text-[20px] font-bold text-[#1565c0]">{data.name.charAt(0)}</div>
+              <Avatar src={data.avatar} name={data.name} size="h-14 w-14" textSize="text-[20px]" />
               <div>
                 <p className="text-[15px] font-bold text-[#1f2f3a]">{data.name}</p>
                 <p className="text-[13px] text-gray-500">{data.email}</p>

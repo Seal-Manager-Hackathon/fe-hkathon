@@ -7,6 +7,7 @@ import Badge from '../../components/Badge'
 import SearchInput from '../../components/SearchInput'
 import SelectInput from '../../components/SelectInput'
 import TableActions from '../../components/TableActions'
+import Avatar from '../../components/Avatar'
 
 const PAGE_SIZE = 10
 
@@ -54,9 +55,7 @@ export default function UsersManagement() {
       header: 'User',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#e3f2fd] text-[13px] font-bold text-[#1565c0]">
-            {row.avatar || row.name.charAt(0)}
-          </div>
+          <Avatar src={row.avatar} name={row.name} size="h-9 w-9" textSize="text-[13px]" />
           <div>
             <Link
               to={`/admin/users/${row.id}`}

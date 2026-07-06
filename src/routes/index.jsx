@@ -6,6 +6,8 @@ const HomePage = lazy(() => import('../pages/student/HomePage'))
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'))
 const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'))
 const VerifyEmailPage = lazy(() => import('../pages/auth/VerifyEmailPage'))
+const ProfilePage = lazy(() => import('../pages/auth/ProfilePage'))
+const ProfileEditPage = lazy(() => import('../pages/auth/ProfileEditPage'))
 const AdminLayout = lazy(() => import('../layouts/AdminLayout'))
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'))
 const HackathonManagement = lazy(() => import('../pages/admin/HackathonManagement'))
@@ -28,6 +30,10 @@ const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 export const routes = [
   { path: '/', element: <StudentLayout />, children: [
     { index: true, element: <Suspense fallback={<RouteFallback />}><HomePage /></Suspense> },
+    { path: 'profile', children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><ProfilePage /></Suspense> },
+      { path: 'edit', element: <Suspense fallback={<RouteFallback />}><ProfileEditPage /></Suspense> },
+    ]},
   ]},
   { path: '/admin', element: <Suspense fallback={<RouteFallback />}><AdminLayout /></Suspense>, children: [
     { index: true, element: <Suspense fallback={<RouteFallback />}><AdminDashboard /></Suspense> },

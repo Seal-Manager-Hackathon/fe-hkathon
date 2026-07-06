@@ -90,4 +90,25 @@
   border-color: #064f5d;
 }
 
+/* Input with left icon — use on auth pages login/register */
+.input-icon {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #d8e0e6;
+  background: #fff;
+  padding: 0.625rem 1rem 0.625rem 2.5rem;
+  font-size: 14px;
+  color: #1f2f3a;
+  outline: none;
+  transition: border-color 150ms;
+}
+.input-icon::placeholder { color: #9ca3af; }
+.input-icon:focus { border-color: #064f5d; }
+.input-icon.input-error { border-color: #f87171; }
+
+/* Same as input-icon but with right padding for eye toggle */
+.input-icon-pr {
+  padding-right: 2.5rem;
+}
+
 

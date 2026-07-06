@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
-import { mockAdminNavItems, mockAdminUser, mockAdminMenu } from '../data/mockAdminData'
+import { mockAdminNavItems } from '../data/mockAdminData'
 
 export default function AdminLayout() {
   return (
@@ -9,7 +9,7 @@ export default function AdminLayout() {
       <Sidebar navItems={mockAdminNavItems} />
 
       <div className="ml-[248px] flex min-h-screen flex-1 flex-col">
-        <Header viewAllTo="/admin/my-notifications" user={mockAdminUser} menuItems={mockAdminMenu} />
+        <Header viewAllTo="/admin/my-notifications" />
         <main className="flex-1">
           <Outlet />
         </main>

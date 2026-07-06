@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
-import { mockNavItems, mockGuestUser, mockGuestMenu } from '../data/mockHomeData'
+import { mockNavItems } from '../data/mockHomeData'
 
 export default function StudentLayout() {
   return (
@@ -9,7 +9,7 @@ export default function StudentLayout() {
       <Sidebar navItems={mockNavItems} />
 
       <div className="ml-[248px] flex min-h-screen flex-1 flex-col">
-        <Header user={mockGuestUser} menuItems={mockGuestMenu} />
+        <Header />
         <main className="flex-1">
           <Outlet />
         </main>

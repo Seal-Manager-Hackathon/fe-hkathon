@@ -15,6 +15,7 @@ import CardPanel from '../../components/CardPanel'
 import ViewButton from '../../components/ViewButton'
 import Badge from '../../components/Badge'
 import DashboardModal from '../../components/DashboardModal'
+import Avatar from '../../components/Avatar'
 
 export default function AdminDashboard() {
   const [modal, setModal] = useState(null)
@@ -70,22 +71,19 @@ export default function AdminDashboard() {
         </CardPanel>
 
         <CardPanel title="Recent Users" viewAllTo="/admin/users">
-          {recentUsers.map((u) => {
-            const initial = u.name.charAt(0)
-            return (
-              <div key={u.email} className="flex items-center justify-between border-b border-[#f5f5f5] px-5 py-3 last:border-0 gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#e3f2fd] text-[12px] font-bold text-[#1565c0]">{initial}</div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{u.name}</p>
-                    <Badge label={u.role} className={roleBadge[u.role]} />
-                  </div>
-                  <p className="mt-0.5 truncate text-[12px] text-gray-400">{u.email}</p>
+          {recentUsers.map((u) => (
+            <div key={u.email} className="flex items-center justify-between border-b border-[#f5f5f5] px-5 py-3 last:border-0 gap-3">
+              <Avatar name={u.name} />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{u.name}</p>
+                  <Badge label={u.role} className={roleBadge[u.role]} />
                 </div>
-                <ViewButton onClick={() => openModal('user', u)} />
+                <p className="mt-0.5 truncate text-[12px] text-gray-400">{u.email}</p>
               </div>
-            )
-          })}
+              <ViewButton onClick={() => openModal('user', u)} />
+            </div>
+          ))}
         </CardPanel>
 
         <CardPanel title="System Notifications" viewAllTo="/admin/notifications">

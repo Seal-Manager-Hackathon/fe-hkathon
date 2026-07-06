@@ -6,6 +6,7 @@ import CardPanel from '../../components/CardPanel'
 import BackButton from '../../components/BackButton'
 import NotFoundState from '../../components/NotFoundState'
 import InfoRow from '../../components/InfoRow'
+import Avatar from '../../components/Avatar'
 
 export default function UserDetail() {
   const { id } = useParams()
@@ -21,9 +22,7 @@ export default function UserDetail() {
 
       <div className="mb-6 flex items-start justify-between">
         <div className="flex items-center gap-5">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#e3f2fd] text-[24px] font-bold text-[#1565c0]">
-            {user.avatar || user.name.charAt(0)}
-          </div>
+          <Avatar src={user.avatar} name={user.name} size="h-16 w-16" textSize="text-[24px]" />
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-[28px] font-bold text-[#1f2f3a]">{user.name}</h1>
@@ -52,9 +51,9 @@ export default function UserDetail() {
       <div className="grid grid-cols-2 gap-6">
         <CardPanel title="Account Information">
           <div className="divide-y divide-[#f5f5f5]">
-            <InfoRow label="Full Name"><p className="text-[14px] font-medium text-[#1f2f3a]">{user.name}</p></InfoRow>
+            <InfoRow label="Full Name" icon={UserCheck}><p className="text-[14px] font-medium text-[#1f2f3a]">{user.name}</p></InfoRow>
             <InfoRow label="Email" icon={Mail}><p className="text-[14px] text-[#064f5d]">{user.email}</p></InfoRow>
-            <InfoRow label="User ID"><p className="text-[14px] text-gray-500 font-mono text-[13px]">{user.id}</p></InfoRow>
+            <InfoRow label="User ID" icon={Hash}><p className="text-[14px] text-gray-500 font-mono text-[13px]">{user.id}</p></InfoRow>
             <InfoRow label="Role"><Badge label={user.role} className={roleBadge[user.role]} /></InfoRow>
             <InfoRow label="Status"><Badge label={user.status} className={userStatusBadge[user.status]} /></InfoRow>
           </div>

@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { cn } from '../../utils/cn'
-import { ChevronDown, LogIn, UserPlus, User, Settings, LogOut, Users } from 'lucide-react'
+import { ChevronDown, LogIn, UserPlus, User, Settings, LogOut, Users, Lock } from 'lucide-react'
 
-const iconMap = { LogIn, UserPlus, User, Settings, LogOut, Users }
+const iconMap = { LogIn, UserPlus, User, Settings, LogOut, Users, Lock }
 
-export default function UserMenu({ user, menuItems }) {
+import Avatar from '../Avatar'
+
+export default function UserMenu({ user, menuItems, onLogout }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -19,22 +21,19 @@ export default function UserMenu({ user, menuItems }) {
 
   const isAuthenticated = !!user?.email
 
+  const displayName = user?.firstName
+    ? `${user.firstName} ${user.lastName || ''}`.trim()
+    : user?.name || 'User'
+
   return (
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
         className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 transition-colors hover:bg-gray-100"
       >
-        <div
-          className={cn(
-            'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white',
-            isAuthenticated ? 'bg-[#1f78d1]' : 'bg-[#064f5d]'
-          )}
-        >
-          {user?.avatarLetter || '?'}
-        </div>
+        <Avatar src={user?.avatarUrl} name={displayName} />
         <div className="hidden min-w-0 text-left sm:block">
-          <p className="truncate text-[13px] font-semibold text-[#1f2f3a]">{user?.name}</p>
+          <p className="truncate text-[13px] font-semibold text-[#1f2f3a]">{displayName}</p>
           {isAuthenticated && (
             <p className="truncate text-[11px] text-gray-400">{user.email}</p>
           )}
@@ -62,7 +61,7 @@ export default function UserMenu({ user, menuItems }) {
             return (
               <button
                 key={item.label}
-                onClick={() => setOpen(false)}
+                onClick={() => { setOpen(false); onLogout?.() }}
                 className="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-[14px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50"
               >
                 {Icon && <Icon className="h-4 w-4 text-gray-400" />}
