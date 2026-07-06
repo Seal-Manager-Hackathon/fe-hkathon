@@ -1,12 +1,11 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Edit, RotateCcw } from 'lucide-react'
+import { Plus, Edit, Eye, RotateCcw } from 'lucide-react'
 import { allHackathons, statusBadge, visibilityBadge } from '../../data/mockAdminData'
 import BaseTable from '../../components/BaseTable'
 import Badge from '../../components/Badge'
 import SearchInput from '../../components/SearchInput'
 import SelectInput from '../../components/SelectInput'
-import ViewButton from '../../components/ViewButton'
 import DashboardModal from '../../components/DashboardModal'
 
 const PAGE_SIZE = 10
@@ -66,7 +65,12 @@ export default function HackathonManagement() {
       key: 'name',
       header: 'Name',
       render: (row) => (
-        <p className="text-[14px] font-semibold text-[#1f2f3a]">{row.name}</p>
+        <Link
+          to={`/admin/hackathons/${row.id}`}
+          className="text-[14px] font-semibold text-[#064f5d] hover:underline"
+        >
+          {row.name}
+        </Link>
       ),
     },
     { key: 'year', header: 'Year' },
@@ -113,7 +117,13 @@ export default function HackathonManagement() {
       className: 'text-right',
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
-          <ViewButton onClick={() => setModal(row)} />
+          <Link
+            to={`/admin/hackathons/${row.id}`}
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]"
+          >
+            <Eye className="h-3.5 w-3.5" />
+            View
+          </Link>
           <Link
             to={`/admin/hackathons/${row.id}/edit`}
             className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]"

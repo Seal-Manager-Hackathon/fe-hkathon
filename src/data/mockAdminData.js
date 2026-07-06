@@ -133,6 +133,106 @@ export const allUsers = [
   { id: 'usr-025', name: 'Ben Foster', email: 'ben@iot-lab.com', role: 'Student', status: 'Inactive', submissions: 2, joined: 'Jul 01, 2026', avatar: 'B' },
 ]
 
+export const hackathonRounds = {
+  'cloud-builders-2026': [
+    { id: 'r1', name: 'Qualification Round', startDate: 'Jun 15, 2026', endDate: 'Jun 22, 2026', status: 'Completed', teams: 32 },
+    { id: 'r2', name: 'Semi-Final', startDate: 'Jun 25, 2026', endDate: 'Jul 02, 2026', status: 'Completed', teams: 16 },
+    { id: 'r3', name: 'Final Round', startDate: 'Jul 08, 2026', endDate: 'Jul 10, 2026', status: 'Active', teams: 8 },
+  ],
+  'fintech-rush-2026': [
+    { id: 'r1', name: 'Ideation Phase', startDate: 'May 20, 2026', endDate: 'May 28, 2026', status: 'Completed', teams: 45 },
+    { id: 'r2', name: 'Prototype Round', startDate: 'Jun 01, 2026', endDate: 'Jun 10, 2026', status: 'Completed', teams: 20 },
+    { id: 'r3', name: 'Final Pitch', startDate: 'Jun 15, 2026', endDate: 'Jun 16, 2026', status: 'Upcoming', teams: 12 },
+  ],
+}
+
+export const roundStatusBadge = {
+  Completed: 'bg-[#e8f5e9] text-[#2e7d32]',
+  Active: 'bg-[#e3f2fd] text-[#1565c0]',
+  Upcoming: 'bg-[#fff3e0] text-[#e65100]',
+}
+
+export const hackathonTracks = {
+  'cloud-builders-2026': [
+    {
+      id: 't1', name: 'Cloud Infrastructure', topics: [
+        { id: 'tp1', name: 'Serverless Architecture', teams: 5 },
+        { id: 'tp2', name: 'Kubernetes & Containers', teams: 7 },
+        { id: 'tp3', name: 'Multi-Cloud Strategy', teams: 3 },
+      ],
+    },
+    {
+      id: 't2', name: 'DevOps & Automation', topics: [
+        { id: 'tp4', name: 'CI/CD Pipelines', teams: 6 },
+        { id: 'tp5', name: 'Infrastructure as Code', teams: 4 },
+      ],
+    },
+    {
+      id: 't3', name: 'Cloud Security', topics: [
+        { id: 'tp6', name: 'Zero Trust Architecture', teams: 3 },
+        { id: 'tp7', name: 'Cloud Compliance', teams: 4 },
+      ],
+    },
+  ],
+  'fintech-rush-2026': [
+    {
+      id: 't1', name: 'Payments & Transactions', topics: [
+        { id: 'tp1', name: 'Real-time Payments', teams: 4 },
+        { id: 'tp2', name: 'Cross-border Settlement', teams: 3 },
+      ],
+    },
+    {
+      id: 't2', name: 'Blockchain & DeFi', topics: [
+        { id: 'tp3', name: 'Smart Contracts', teams: 5 },
+        { id: 'tp4', name: 'Tokenization', teams: 3 },
+      ],
+    },
+    {
+      id: 't3', name: 'RegTech', topics: [
+        { id: 'tp5', name: 'KYC/AML Automation', teams: 2 },
+        { id: 'tp6', name: 'Fraud Detection', teams: 3 },
+      ],
+    },
+  ],
+}
+
+export const hackathonTeams = {
+  'cloud-builders-2026': [
+    { id: 'tm1', name: 'Cloud Ninjas', leader: 'Alex Johnson', members: 4, registered: 'Jun 10, 2026', status: 'Confirmed' },
+    { id: 'tm2', name: 'Serverless Heroes', leader: 'Maria Chen', members: 3, registered: 'Jun 11, 2026', status: 'Confirmed' },
+    { id: 'tm3', name: 'K8s Warriors', leader: 'Thomas Nguyen', members: 5, registered: 'Jun 12, 2026', status: 'Pending' },
+    { id: 'tm4', name: 'DevOps Squad', leader: 'Grace Hopper', members: 4, registered: 'Jun 13, 2026', status: 'Confirmed' },
+    { id: 'tm5', name: 'Security Gurus', leader: 'Victor Lu', members: 3, registered: 'Jun 14, 2026', status: 'Rejected' },
+    { id: 'tm6', name: 'Cloud Architects', leader: 'Felix Adams', members: 5, registered: 'Jun 14, 2026', status: 'Confirmed' },
+    { id: 'tm7', name: 'Infra Masters', leader: 'Zoe Carter', members: 4, registered: 'Jun 15, 2026', status: 'Pending' },
+    { id: 'tm8', name: 'Pipeline Pros', leader: 'Rachel Green', members: 3, registered: 'Jun 15, 2026', status: 'Confirmed' },
+    { id: 'tm9', name: 'Container Crew', leader: 'Kevin Tran', members: 4, registered: 'Jun 16, 2026', status: 'Confirmed' },
+    { id: 'tm10', name: 'Cloud Force', leader: 'James Brown', members: 5, registered: 'Jun 16, 2026', status: 'Pending' },
+    { id: 'tm11', name: 'Lambda Legends', leader: 'Anna Martinez', members: 3, registered: 'Jun 17, 2026', status: 'Confirmed' },
+    { id: 'tm12', name: 'S3 Savants', leader: 'Lisa Wang', members: 4, registered: 'Jun 17, 2026', status: 'Rejected' },
+  ],
+  'fintech-rush-2026': [
+    { id: 'tm1', name: 'PayTech Innovators', leader: 'Sarah Wilson', members: 4, registered: 'May 15, 2026', status: 'Confirmed' },
+    { id: 'tm2', name: 'BlockPay', leader: 'David Kim', members: 5, registered: 'May 16, 2026', status: 'Confirmed' },
+    { id: 'tm3', name: 'FinLedger', leader: 'Emily Davis', members: 3, registered: 'May 17, 2026', status: 'Pending' },
+    { id: 'tm4', name: 'CryptoFlow', leader: 'Daniel Park', members: 4, registered: 'May 18, 2026', status: 'Confirmed' },
+    { id: 'tm5', name: 'RegChain', leader: 'Michael Lee', members: 5, registered: 'May 19, 2026', status: 'Rejected' },
+    { id: 'tm6', name: 'SmartTransact', leader: 'Nina Patel', members: 4, registered: 'May 19, 2026', status: 'Confirmed' },
+    { id: 'tm7', name: 'DeFi Masters', leader: 'Oscar White', members: 3, registered: 'May 20, 2026', status: 'Confirmed' },
+    { id: 'tm8', name: 'TokenX', leader: 'Sophie Clark', members: 4, registered: 'May 20, 2026', status: 'Pending' },
+    { id: 'tm9', name: 'PaySync', leader: 'Hannah Black', members: 5, registered: 'May 21, 2026', status: 'Confirmed' },
+    { id: 'tm10', name: 'LedgerLab', leader: 'Robert Taylor', members: 4, registered: 'May 21, 2026', status: 'Confirmed' },
+    { id: 'tm11', name: 'CoinBridge', leader: 'Ben Foster', members: 3, registered: 'May 22, 2026', status: 'Pending' },
+    { id: 'tm12', name: 'FinGuard', leader: 'Ivy Chen', members: 4, registered: 'May 22, 2026', status: 'Confirmed' },
+  ],
+}
+
+export const teamStatusBadge = {
+  Confirmed: 'bg-[#e8f5e9] text-[#2e7d32]',
+  Pending: 'bg-[#fff3e0] text-[#e65100]',
+  Rejected: 'bg-[#fce4ec] text-[#c62828]',
+}
+
 export const visibilityBadge = {
   Public: 'bg-[#e8f5e9] text-[#2e7d32]',
   Private: 'bg-[#fce4ec] text-[#c62828]',
