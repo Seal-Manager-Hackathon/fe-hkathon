@@ -11,6 +11,7 @@ const HackathonManagement = lazy(() => import('../pages/admin/HackathonManagemen
 const HackathonDetail = lazy(() => import('../pages/admin/HackathonDetail'))
 const HackathonCreate = lazy(() => import('../pages/admin/HackathonCreate'))
 const UsersManagement = lazy(() => import('../pages/admin/UsersManagement'))
+const UsersCreate = lazy(() => import('../pages/admin/UsersCreate'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 export const routes = [
@@ -75,11 +76,24 @@ export const routes = [
       },
       {
         path: 'users',
-        element: (
-          <Suspense fallback={<RouteFallback />}>
-            <UsersManagement />
-          </Suspense>
-        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <UsersManagement />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'create',
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <UsersCreate />
+              </Suspense>
+            ),
+          },
+        ],
       },
     ],
   },

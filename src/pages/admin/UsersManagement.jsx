@@ -6,7 +6,6 @@ import BaseTable from '../../components/BaseTable'
 import Badge from '../../components/Badge'
 import SearchInput from '../../components/SearchInput'
 import SelectInput from '../../components/SelectInput'
-import DashboardModal from '../../components/DashboardModal'
 
 const PAGE_SIZE = 10
 
@@ -29,7 +28,6 @@ export default function UsersManagement() {
   const [roleFilter, setRoleFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [page, setPage] = useState(1)
-  const [modal, setModal] = useState(null)
 
   const hasActiveFilters = search || roleFilter || statusFilter
 
@@ -159,18 +157,6 @@ export default function UsersManagement() {
         }
         keyExtractor={(row) => row.id}
       />
-
-      {/* Modal */}
-      {modal && (
-        <DashboardModal
-          modal={{
-            type: 'user',
-            data: modal,
-            badges: { role: roleBadge, userStatus: userStatusBadge },
-          }}
-          onClose={() => setModal(null)}
-        />
-      )}
     </div>
   )
 }

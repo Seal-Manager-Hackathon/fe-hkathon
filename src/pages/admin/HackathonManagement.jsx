@@ -6,7 +6,6 @@ import BaseTable from '../../components/BaseTable'
 import Badge from '../../components/Badge'
 import SearchInput from '../../components/SearchInput'
 import SelectInput from '../../components/SelectInput'
-import DashboardModal from '../../components/DashboardModal'
 
 const PAGE_SIZE = 10
 
@@ -38,7 +37,6 @@ export default function HackathonManagement() {
   const [statusFilter, setStatusFilter] = useState('')
   const [visibilityFilter, setVisibilityFilter] = useState('')
   const [page, setPage] = useState(1)
-  const [modal, setModal] = useState(null)
 
   const hasActiveFilters = search || yearFilter || statusFilter || visibilityFilter
 
@@ -210,18 +208,6 @@ export default function HackathonManagement() {
         }
         keyExtractor={(row) => row.id}
       />
-
-      {/* Modal */}
-      {modal && (
-        <DashboardModal
-          modal={{
-            type: 'hackathon',
-            data: modal,
-            badges: { status: statusBadge },
-          }}
-          onClose={() => setModal(null)}
-        />
-      )}
     </div>
   )
 }

@@ -1,0 +1,84 @@
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { ArrowLeft, Save } from 'lucide-react'
+import SelectInput from '../../components/SelectInput'
+import FormField from '../../components/FormField'
+
+const ROLE_OPTIONS = [
+  { value: '', label: 'Select role...' },
+  { value: 'Student', label: 'Student' },
+  { value: 'Lecturer', label: 'Lecturer' },
+  { value: 'Staff', label: 'Staff' },
+  { value: 'Admin', label: 'Admin' },
+]
+
+const STATUS_OPTIONS = [
+  { value: '', label: 'Select status...' },
+  { value: 'Active', label: 'Active' },
+  { value: 'Inactive', label: 'Inactive' },
+]
+
+export default function UsersCreate() {
+  const navigate = useNavigate()
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    role: '',
+    status: '',
+  })
+  const [saving, setSaving] = useState(false)
+
+  function updateField(field, value) {
+    setForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const canSave = form.name && form.email && form.role && form.status
+
+  function handleSave() {
+    if (!canSave) return
+    setSaving(true)
+    setTimeout(() => {
+      setSaving(false)
+      navigate('/admin/users')
+    }, 600)
+  }
+
+  return (
+    <div className="px-8 py-8">
+      <Link to="/admin/users" className="mb-6 inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
+        <ArrowLeft className="h-4 w-4" />
+        Back to Users
+      </Link>
+
+      <div className="mb-8">
+        <h1 className="text-[28px] font-bold text-[#1f2f3a]">Create User</h1>
+        <p className="mt-1 text-[15px] text-gray-500">Add a new user to the system.</p>
+      </div>
+
+      <div className="w-full max-w-[560px] space-y-5">
+        <FormField label="Full Name" required>
+          <input type="text" value={form.name} onChange={(e) => updateField('name', e.target.value)} placeholder="e.g. John Doe" className="field-input" />
+        </FormField>
+        <FormField label="Email" required>
+          <input type="email" value={form.email} onChange={(e) => updateField('email', e.target.value)} placeholder="e.g. john@seal.dev" className="field-input" />
+        </FormField>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField label="Role" required>
+            <SelectInput options={ROLE_OPTIONS} value={form.role} onChange={(v) => updateField('role', v)} />
+          </FormField>
+          <FormField label="Status" required>
+            <SelectInput options={STATUS_OPTIONS} value={form.status} onChange={(v) => updateField('status', v)} />
+          </FormField>
+        </div>
+      </div>
+
+      <div className="mt-8 flex items-center gap-4 border-t border-[#e8ecf0] pt-6">
+        <button onClick={handleSave} disabled={!canSave || saving} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a] disabled:cursor-not-allowed disabled:opacity-50">
+          <Save className="h-4 w-4" />
+          {saving ? 'Saving...' : 'Create User'}
+        </button>
+        <Link to="/admin/users" className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#d8e0e6] bg-white px-6 py-3 text-[14px] font-semibold text-[#1f2f3a] transition-colors hover:bg-gray-50">Cancel</Link>
+      </div>
+    </div>
+  )
+}
