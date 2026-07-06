@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   statSections,
   recentHackathons,
@@ -9,6 +9,7 @@ import {
   userStatusBadge,
   iconMap,
 } from '../../data/mockAdminData'
+import { getEventsCount } from '../../api/admin'
 import StatCard from '../../components/StatCard'
 import SectionTitle from '../../components/SectionTitle'
 import CardPanel from '../../components/CardPanel'
@@ -19,12 +20,59 @@ import Avatar from '../../components/Avatar'
 
 export default function AdminDashboard() {
   const [modal, setModal] = useState(null)
+  const [counts, setCounts] = useState({
+    totalEvents: null,
+    publishedEvents: null,
+    draftEvents: null,
+    closedEvents: null,
+  })
+
+  useEffect(() => {
+    async function fetchCounts() {
+      try {
+        const [total, published, draft, closed] = await Promise.all([
+          getEventsCount(),
+          getEventsCount('Published'),
+          getEventsCount('Draft'),
+          getEventsCount('Closed'),
+        ])
+        setCounts({
+          totalEvents: total.total,
+          publishedEvents: published.total,
+          draftEvents: draft.total,
+          closedEvents: closed.total,
+        })
+      } catch {
+        // keep mock defaults on error
+      }
+    }
+    fetchCounts()
+  }, [])
 
   const badgeMaps = { status: statusBadge, role: roleBadge, userStatus: userStatusBadge }
 
   function openModal(type, data) {
     setModal({ type, data, badges: badgeMaps })
   }
+
+  // Merge real API counts into statSections
+  const resolvedSections = statSections.map((section) => {
+    if (section.title !== 'Hackathons') return section
+    return {
+      ...section,
+      items: section.items.map((item) => {
+        if (item.label === 'Total Hackathons' && counts.totalEvents != null)
+          return { ...item, value: counts.totalEvents }
+        if (item.label === 'Published Hackathons' && counts.publishedEvents != null)
+          return { ...item, value: counts.publishedEvents }
+        if (item.label === 'Draft Hackathons' && counts.draftEvents != null)
+          return { ...item, value: counts.draftEvents }
+        if (item.label === 'Closed Hackathons' && counts.closedEvents != null)
+          return { ...item, value: counts.closedEvents }
+        return item
+      }),
+    }
+  })
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -34,9 +82,11 @@ export default function AdminDashboard() {
       </div>
 
       <div className="mb-8 flex flex-col gap-8">
-        {statSections.map((section) => (
+        {resolvedSections.map((section) => (
           <div key={section.title}>
-            <SectionTitle>{section.title}</SectionTitle>
+            <SectionTitle viewAllTo={section.title === 'Hackathons' ? '/admin/hackathons' : undefined}>
+              {section.title}
+            </SectionTitle>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {section.items.map((item) => (
                 <StatCard
