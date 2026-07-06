@@ -2,6 +2,8 @@ import { lazy, Suspense } from 'react'
 import StudentLayout from '../layouts/StudentLayout'
 
 const HomePage = lazy(() => import('../pages/HomePage'))
+const LoginPage = lazy(() => import('../pages/LoginPage'))
+const RegisterPage = lazy(() => import('../pages/RegisterPage'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 function RouteFallback() {
@@ -37,6 +39,22 @@ export const routes = [
         ),
       },
     ],
+  },
+  {
+    path: '/login',
+    element: (
+      <Suspense fallback={<RouteFallback />}>
+        <LoginPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/register',
+    element: (
+      <Suspense fallback={<RouteFallback />}>
+        <RegisterPage />
+      </Suspense>
+    ),
   },
   {
     path: '*',
