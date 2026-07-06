@@ -4,6 +4,8 @@ import StudentLayout from '../layouts/StudentLayout'
 const HomePage = lazy(() => import('../pages/HomePage'))
 const LoginPage = lazy(() => import('../pages/LoginPage'))
 const RegisterPage = lazy(() => import('../pages/RegisterPage'))
+const AdminLayout = lazy(() => import('../layouts/AdminLayout'))
+const AdminDashboard = lazy(() => import('../pages/AdminDashboard'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 function RouteFallback() {
@@ -28,15 +30,34 @@ function RouteFallback() {
 
 export const routes = [
   {
+    path: '/',
+    element: <StudentLayout />,
+    children: [
+      {
+        index: true,
+        element: (
+          <Suspense fallback={<RouteFallback />}>
+            <HomePage />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+  {
+    path: '/admin',
     element: (
       <Suspense fallback={<RouteFallback />}>
-        <StudentLayout />
+        <AdminLayout />
       </Suspense>
     ),
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: (
+          <Suspense fallback={<RouteFallback />}>
+            <AdminDashboard />
+          </Suspense>
+        ),
       },
     ],
   },

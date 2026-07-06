@@ -4,12 +4,12 @@ import { cn } from '../../utils/cn'
 import {
   ChevronDown,
   LogIn, UserPlus,
-  User, Settings, LogOut,
+  User, Settings, LogOut, Users,
 } from 'lucide-react'
 
 const iconMap = {
   LogIn, UserPlus,
-  User, Settings, LogOut,
+  User, Settings, LogOut, Users,
 }
 
 export default function SidebarUserCard({ user, menuItems }) {

@@ -24,7 +24,3 @@ export default function NotFoundPage() {
   )
 }
 
-export function NotFoundPageErrorBoundary() {
-  return <NotFoundPage />
-}
-

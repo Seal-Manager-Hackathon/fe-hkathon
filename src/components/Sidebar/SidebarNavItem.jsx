@@ -1,7 +1,7 @@
 import { cn } from '../../utils/cn'
-import { Home, Trophy, Medal } from 'lucide-react'
+import { Home, Trophy, Medal, LayoutDashboard, Users, Settings } from 'lucide-react'
 
-const iconMap = { Home, Trophy, Medal }
+const iconMap = { Home, Trophy, Medal, LayoutDashboard, Users, Settings }
 
 export default function SidebarNavItem({ item, activeKey, onClick }) {
   const isActive = activeKey === item.key

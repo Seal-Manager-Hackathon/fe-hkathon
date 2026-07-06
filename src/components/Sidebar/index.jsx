@@ -2,8 +2,8 @@ import { useState } from 'react'
 import SidebarNavItem from './SidebarNavItem'
 import SidebarUserCard from './SidebarUserCard'
 
-export default function Sidebar({ navItems, user, userMenu }) {
-  const [activeKey, setActiveKey] = useState('home')
+export default function Sidebar({ navItems, user, userMenu, defaultActive = 'home' }) {
+  const [activeKey, setActiveKey] = useState(defaultActive)
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[248px] flex-col bg-[#064f5d]">
