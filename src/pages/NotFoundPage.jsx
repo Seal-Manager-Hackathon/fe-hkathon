@@ -1,6 +1,11 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export default function NotFoundPage() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'Admin'
+  const homePath = isAdmin ? '/admin' : '/'
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#f4f6f8] px-6">
       <div className="text-center">
@@ -14,13 +19,12 @@ export default function NotFoundPage() {
           The page you're looking for doesn't exist or has been moved.
         </p>
         <Link
-          to="/"
+          to={homePath}
           className="mt-8 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-[#05404a]"
         >
-          ← Back to Home
+          ← {isAdmin ? 'Back to Dashboard' : 'Back to Home'}
         </Link>
       </div>
     </div>
   )
 }
-

@@ -35,6 +35,6 @@ export async function verifyEmail({ token }) {
  * @returns {Promise<object>} user object
  */
 export async function getCurrentUser() {
-  const { data } = await api.get('/auth/me')
+  const { data } = await api.get('/user/me')
   return data.data
 }
