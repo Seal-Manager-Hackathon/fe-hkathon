@@ -147,7 +147,7 @@ export default function HackathonManagement() {
           </p>
         </div>
         <Link
-          to="/admin/hackathons/new"
+          to="/admin/hackathons/create"
           className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a]"
         >
           <Plus className="h-4 w-4" />
