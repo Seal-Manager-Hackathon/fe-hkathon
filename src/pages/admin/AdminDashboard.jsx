@@ -8,13 +8,13 @@ import {
   roleBadge,
   userStatusBadge,
   iconMap,
-} from '../data/mockAdminData'
-import StatCard from '../components/StatCard'
-import SectionTitle from '../components/SectionTitle'
-import CardPanel from '../components/CardPanel'
-import ViewButton from '../components/ViewButton'
-import Badge from '../components/Badge'
-import DashboardModal from '../components/DashboardModal'
+} from '../../data/mockAdminData'
+import StatCard from '../../components/StatCard'
+import SectionTitle from '../../components/SectionTitle'
+import CardPanel from '../../components/CardPanel'
+import ViewButton from '../../components/ViewButton'
+import Badge from '../../components/Badge'
+import DashboardModal from '../../components/DashboardModal'
 
 export default function AdminDashboard() {
   const [modal, setModal] = useState(null)

@@ -1,15 +1,15 @@
-import HeroSection from '../components/HeroSection'
-import HackathonForYouSection from '../components/HackathonForYouSection'
-import TeamRanking from '../components/TeamRanking'
-import PopularHackathons from '../components/PopularHackathons'
-import Footer from '../components/Footer'
+import HeroSection from '../../components/HeroSection'
+import HackathonForYouSection from '../../components/HackathonForYouSection'
+import TeamRanking from '../../components/TeamRanking'
+import PopularHackathons from '../../components/PopularHackathons'
+import Footer from '../../components/Footer'
 import {
   mockHackathons,
   mockRankingTeams,
   mockPopularHackathons,
   mockFooterColumns,
   mockFooterBottomLinks,
-} from '../data/mockHomeData'
+} from '../../data/mockHomeData'
 
 export default function HomePage() {
   return (
