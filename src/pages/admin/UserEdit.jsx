@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft, Save } from 'lucide-react'
+import { useParams, useNavigate } from 'react-router-dom'
 import SelectInput from '../../components/SelectInput'
 import FormField from '../../components/FormField'
+import BackButton from '../../components/BackButton'
+import NotFoundState from '../../components/NotFoundState'
+import FormActions from '../../components/FormActions'
 import { allUsers } from '../../data/mockAdminData'
 
 const ROLE_OPTIONS = [
@@ -31,14 +33,7 @@ export default function UserEdit() {
   const [saving, setSaving] = useState(false)
 
   if (!user) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">User not found.</p>
-        <Link to="/admin/users" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
-          ← Back to Users
-        </Link>
-      </div>
-    )
+    return <NotFoundState entity="User" fallbackTo="/admin/users" />
   }
 
   function updateField(field, value) {
@@ -58,13 +53,7 @@ export default function UserEdit() {
 
   return (
     <div className="px-8 py-8">
-      <Link
-        to={`/admin/users/${id}`}
-        className="mb-6 inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to User
-      </Link>
+      <BackButton fallback={`/admin/users/${id}`} label="Back to User" />
 
       <div className="mb-8">
         <h1 className="text-[28px] font-bold text-[#1f2f3a]">Edit User</h1>
@@ -74,22 +63,10 @@ export default function UserEdit() {
       <div className="grid grid-cols-2 gap-8">
         <div className="space-y-5">
           <FormField label="Full Name" required>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => updateField('name', e.target.value)}
-              placeholder="e.g. John Doe"
-              className="field-input"
-            />
+            <input type="text" value={form.name} onChange={(e) => updateField('name', e.target.value)} placeholder="e.g. John Doe" className="field-input" />
           </FormField>
           <FormField label="Email" required>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => updateField('email', e.target.value)}
-              placeholder="e.g. john@seal.dev"
-              className="field-input"
-            />
+            <input type="email" value={form.email} onChange={(e) => updateField('email', e.target.value)} placeholder="e.g. john@seal.dev" className="field-input" />
           </FormField>
         </div>
 
@@ -108,22 +85,7 @@ export default function UserEdit() {
         </div>
       </div>
 
-      <div className="mt-8 flex items-center gap-4 border-t border-[#e8ecf0] pt-6">
-        <button
-          onClick={handleSave}
-          disabled={!canSave || saving}
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <Save className="h-4 w-4" />
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
-        <Link
-          to={`/admin/users/${id}`}
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#d8e0e6] bg-white px-6 py-3 text-[14px] font-semibold text-[#1f2f3a] transition-colors hover:bg-gray-50"
-        >
-          Cancel
-        </Link>
-      </div>
+      <FormActions onSave={handleSave} saving={saving} canSave={canSave} />
     </div>
   )
 }

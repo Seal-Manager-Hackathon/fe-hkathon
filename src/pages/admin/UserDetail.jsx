@@ -1,34 +1,23 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Edit, Calendar, Mail, Hash, UserCheck } from 'lucide-react'
+import { Edit, Calendar, Mail, Hash, UserCheck } from 'lucide-react'
 import { allUsers, roleBadge, userStatusBadge } from '../../data/mockAdminData'
 import Badge from '../../components/Badge'
 import CardPanel from '../../components/CardPanel'
+import BackButton from '../../components/BackButton'
+import NotFoundState from '../../components/NotFoundState'
 
 export default function UserDetail() {
   const { id } = useParams()
   const user = allUsers.find((u) => u.id === id)
 
   if (!user) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">User not found.</p>
-        <Link to="/admin/users" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
-          ← Back to Users
-        </Link>
-      </div>
-    )
+    return <NotFoundState entity="User" fallbackTo="/admin/users" />
   }
 
   return (
     <div className="px-8 py-8">
-      <Link
-        to="/admin/users"
-        className="mb-4 inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Users
-      </Link>
+      <BackButton fallback="/admin/users" label="Back to Users" />
 
       <div className="mb-6 flex items-start justify-between">
         <div className="flex items-center gap-5">

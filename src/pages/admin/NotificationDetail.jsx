@@ -1,34 +1,22 @@
-import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Edit, Calendar, Users, Megaphone } from 'lucide-react'
+import { Edit, Calendar, Users, Megaphone } from 'lucide-react'
 import { allNotifications, notificationTypeBadge, notificationStatusBadge } from '../../data/mockAdminData'
 import Badge from '../../components/Badge'
 import CardPanel from '../../components/CardPanel'
+import BackButton from '../../components/BackButton'
+import NotFoundState from '../../components/NotFoundState'
 
 export default function NotificationDetail() {
   const { id } = useParams()
   const notification = allNotifications.find((n) => n.id === Number(id))
 
   if (!notification) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">Notification not found.</p>
-        <Link to="/admin/notifications" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
-          ← Back to Notifications
-        </Link>
-      </div>
-    )
+    return <NotFoundState entity="Notification" fallbackTo="/admin/notifications" />
   }
 
   return (
     <div className="px-8 py-8">
-      <Link
-        to="/admin/notifications"
-        className="mb-4 inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Notifications
-      </Link>
+      <BackButton fallback="/admin/notifications" label="Back to Notifications" />
 
       <div className="mb-6 flex items-start justify-between">
         <div>

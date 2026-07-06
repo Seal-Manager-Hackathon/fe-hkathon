@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft, Send } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Send } from 'lucide-react'
 import SelectInput from '../../components/SelectInput'
 import FormField from '../../components/FormField'
+import BackButton from '../../components/BackButton'
+import FormActions from '../../components/FormActions'
 
 const TYPE_OPTIONS = [
   { value: '', label: 'Select type...' },
@@ -52,10 +54,7 @@ export default function NotificationsCreate() {
 
   return (
     <div className="px-8 py-8">
-      <Link to="/admin/notifications" className="mb-6 inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
-        <ArrowLeft className="h-4 w-4" />
-        Back to Notifications
-      </Link>
+      <BackButton fallback="/admin/notifications" label="Back to Notifications" />
 
       <div className="mb-8">
         <h1 className="text-[28px] font-bold text-[#1f2f3a]">Create Notification</h1>
@@ -64,25 +63,11 @@ export default function NotificationsCreate() {
 
       <div className="w-full max-w-[640px] space-y-5">
         <FormField label="Title" required>
-          <input
-            type="text"
-            value={form.title}
-            onChange={(e) => updateField('title', e.target.value)}
-            placeholder="e.g. New hackathon registration is open"
-            className="field-input"
-          />
+          <input type="text" value={form.title} onChange={(e) => updateField('title', e.target.value)} placeholder="e.g. New hackathon registration is open" className="field-input" />
         </FormField>
-
         <FormField label="Message Body" required>
-          <textarea
-            value={form.body}
-            onChange={(e) => updateField('body', e.target.value)}
-            placeholder="Write the notification message..."
-            rows={5}
-            className="field-input resize-y min-h-[120px]"
-          />
+          <textarea value={form.body} onChange={(e) => updateField('body', e.target.value)} placeholder="Write the notification message..." rows={5} className="field-input resize-y min-h-[120px]" />
         </FormField>
-
         <div className="grid grid-cols-3 gap-4">
           <FormField label="Type" required>
             <SelectInput options={TYPE_OPTIONS} value={form.type} onChange={(v) => updateField('type', v)} />
@@ -94,7 +79,6 @@ export default function NotificationsCreate() {
             <SelectInput options={STATUS_OPTIONS} value={form.status} onChange={(v) => updateField('status', v)} />
           </FormField>
         </div>
-
         {form.status === 'Sent' && (
           <div className="rounded-lg border border-[#fff3e0] bg-[#fff8e1] px-4 py-3 text-[13px] text-[#e65100]">
             This notification will be sent immediately to {form.audience || 'the selected audience'} upon creation.
@@ -102,19 +86,14 @@ export default function NotificationsCreate() {
         )}
       </div>
 
-      <div className="mt-8 flex items-center gap-4 border-t border-[#e8ecf0] pt-6">
-        <button
-          onClick={handleSave}
-          disabled={!canSave || saving}
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <Send className="h-4 w-4" />
-          {saving ? 'Sending...' : form.status === 'Sent' ? 'Send Notification' : 'Save Notification'}
-        </button>
-        <Link to="/admin/notifications" className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#d8e0e6] bg-white px-6 py-3 text-[14px] font-semibold text-[#1f2f3a] transition-colors hover:bg-gray-50">
-          Cancel
-        </Link>
-      </div>
+      <FormActions
+        onSave={handleSave}
+        saving={saving}
+        canSave={canSave}
+        saveLabel={form.status === 'Sent' ? 'Send Notification' : 'Save Notification'}
+        savingLabel="Sending..."
+        saveIcon={Send}
+      />
     </div>
   )
 }

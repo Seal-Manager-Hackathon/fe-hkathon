@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Edit, Calendar, MapPin, DollarSign, Users } from 'lucide-react'
+import { Edit, Calendar, MapPin, DollarSign, Users } from 'lucide-react'
 import { allHackathons, statusBadge, hackathonRounds, hackathonTracks, hackathonTeams } from '../../data/mockAdminData'
 import Badge from '../../components/Badge'
+import BackButton from '../../components/BackButton'
+import NotFoundState from '../../components/NotFoundState'
 import OverviewTab from './hackathon-detail/OverviewTab'
 import RoundsTab from './hackathon-detail/RoundsTab'
 import TracksTopicsTab from './hackathon-detail/TracksTopicsTab'
@@ -16,14 +18,7 @@ export default function HackathonDetail() {
 
   const hackathon = allHackathons.find((h) => h.id === id)
   if (!hackathon) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">Hackathon not found.</p>
-        <Link to="/admin/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
-          ← Back to Hackathons
-        </Link>
-      </div>
-    )
+    return <NotFoundState entity="Hackathon" fallbackTo="/admin/hackathons" />
   }
 
   const rounds = hackathonRounds[id] || []
@@ -32,13 +27,7 @@ export default function HackathonDetail() {
 
   return (
     <div className="px-8 py-8">
-      <Link
-        to="/admin/hackathons"
-        className="mb-4 inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Hackathons
-      </Link>
+      <BackButton fallback="/admin/hackathons" label="Back to Hackathons" />
 
       <div className="mb-6 flex items-start justify-between">
         <div>

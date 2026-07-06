@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft, Save } from 'lucide-react'
+import { useParams, useNavigate } from 'react-router-dom'
 import SelectInput from '../../components/SelectInput'
 import FormField from '../../components/FormField'
+import BackButton from '../../components/BackButton'
+import NotFoundState from '../../components/NotFoundState'
+import FormActions from '../../components/FormActions'
 import { allNotifications } from '../../data/mockAdminData'
 
 const TYPE_OPTIONS = [
@@ -37,14 +39,7 @@ export default function NotificationEdit() {
   const [saving, setSaving] = useState(false)
 
   if (!notification) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">Notification not found.</p>
-        <Link to="/admin/notifications" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
-          ← Back to Notifications
-        </Link>
-      </div>
-    )
+    return <NotFoundState entity="Notification" fallbackTo="/admin/notifications" />
   }
 
   function updateField(field, value) {
@@ -64,13 +59,7 @@ export default function NotificationEdit() {
 
   return (
     <div className="px-8 py-8">
-      <Link
-        to={`/admin/notifications/${id}`}
-        className="mb-6 inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Notification
-      </Link>
+      <BackButton fallback={`/admin/notifications/${id}`} label="Back to Notification" />
 
       <div className="mb-8">
         <h1 className="text-[28px] font-bold text-[#1f2f3a]">Edit Notification</h1>
@@ -80,22 +69,10 @@ export default function NotificationEdit() {
       <div className="grid grid-cols-2 gap-8">
         <div className="space-y-5">
           <FormField label="Title" required>
-            <input
-              type="text"
-              value={form.title}
-              onChange={(e) => updateField('title', e.target.value)}
-              placeholder="e.g. New hackathon registration is open"
-              className="field-input"
-            />
+            <input type="text" value={form.title} onChange={(e) => updateField('title', e.target.value)} placeholder="e.g. New hackathon registration is open" className="field-input" />
           </FormField>
           <FormField label="Message Body" required>
-            <textarea
-              value={form.body}
-              onChange={(e) => updateField('body', e.target.value)}
-              placeholder="Write the notification message..."
-              rows={10}
-              className="field-input resize-y min-h-[200px]"
-            />
+            <textarea value={form.body} onChange={(e) => updateField('body', e.target.value)} placeholder="Write the notification message..." rows={10} className="field-input resize-y min-h-[200px]" />
           </FormField>
         </div>
 
@@ -112,22 +89,7 @@ export default function NotificationEdit() {
         </div>
       </div>
 
-      <div className="mt-8 flex items-center gap-4 border-t border-[#e8ecf0] pt-6">
-        <button
-          onClick={handleSave}
-          disabled={!canSave || saving}
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <Save className="h-4 w-4" />
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
-        <Link
-          to={`/admin/notifications/${id}`}
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#d8e0e6] bg-white px-6 py-3 text-[14px] font-semibold text-[#1f2f3a] transition-colors hover:bg-gray-50"
-        >
-          Cancel
-        </Link>
-      </div>
+      <FormActions onSave={handleSave} saving={saving} canSave={canSave} />
     </div>
   )
 }

@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft, Save } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import SelectInput from '../../components/SelectInput'
 import FormField from '../../components/FormField'
+import BackButton from '../../components/BackButton'
+import FormActions from '../../components/FormActions'
 
 const ROLE_OPTIONS = [
   { value: '', label: 'Select role...' },
@@ -45,10 +46,7 @@ export default function UsersCreate() {
 
   return (
     <div className="px-8 py-8">
-      <Link to="/admin/users" className="mb-6 inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
-        <ArrowLeft className="h-4 w-4" />
-        Back to Users
-      </Link>
+      <BackButton fallback="/admin/users" label="Back to Users" />
 
       <div className="mb-8">
         <h1 className="text-[28px] font-bold text-[#1f2f3a]">Create User</h1>
@@ -72,13 +70,7 @@ export default function UsersCreate() {
         </div>
       </div>
 
-      <div className="mt-8 flex items-center gap-4 border-t border-[#e8ecf0] pt-6">
-        <button onClick={handleSave} disabled={!canSave || saving} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a] disabled:cursor-not-allowed disabled:opacity-50">
-          <Save className="h-4 w-4" />
-          {saving ? 'Saving...' : 'Create User'}
-        </button>
-        <Link to="/admin/users" className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#d8e0e6] bg-white px-6 py-3 text-[14px] font-semibold text-[#1f2f3a] transition-colors hover:bg-gray-50">Cancel</Link>
-      </div>
+      <FormActions onSave={handleSave} saving={saving} canSave={canSave} saveLabel="Create User" />
     </div>
   )
 }
