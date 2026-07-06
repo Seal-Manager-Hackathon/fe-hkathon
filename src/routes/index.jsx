@@ -20,6 +20,8 @@ const NotificationsCreate = lazy(() => import('../pages/admin/NotificationsCreat
 const NotificationDetail = lazy(() => import('../pages/admin/NotificationDetail'))
 const NotificationEdit = lazy(() => import('../pages/admin/NotificationEdit'))
 const MyNotifications = lazy(() => import('../pages/admin/MyNotifications'))
+const AdminProfile = lazy(() => import('../pages/admin/AdminProfile'))
+const AdminProfileEdit = lazy(() => import('../pages/admin/AdminProfileEdit'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 export const routes = [
@@ -171,6 +173,27 @@ export const routes = [
             <MyNotifications />
           </Suspense>
         ),
+      },
+      {
+        path: 'profile',
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <AdminProfile />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'edit',
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <AdminProfileEdit />
+              </Suspense>
+            ),
+          },
+        ],
       },
     ],
   },

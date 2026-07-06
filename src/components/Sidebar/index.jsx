@@ -7,7 +7,7 @@ export default function Sidebar({ navItems, user, userMenu }) {
   const { pathname } = useLocation()
 
   const activeKey = useMemo(() => {
-    if (pathname === '/admin/my-notifications') return ''
+    if (pathname === '/admin/my-notifications' || pathname.startsWith('/admin/profile')) return ''
     const sorted = [...navItems].sort((a, b) => b.to.length - a.to.length)
     const match = sorted.find((item) => pathname.startsWith(item.to))
     return match?.key || navItems[0]?.key || ''
