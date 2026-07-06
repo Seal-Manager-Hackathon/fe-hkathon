@@ -2,12 +2,14 @@ import {
   Trophy, Users, UserCheck, Shield,
   GraduationCap, Briefcase,
   Layers, CheckCircle, XCircle, Clock,
+  Bell,
 } from 'lucide-react'
 
 export const mockAdminNavItems = [
   { key: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', to: '/admin' },
   { key: 'hackathons', label: 'Hackathons', icon: 'Trophy', to: '/admin/hackathons' },
   { key: 'users', label: 'Users', icon: 'Users', to: '/admin/users' },
+  { key: 'notifications', label: 'Notifications', icon: 'Bell', to: '/admin/notifications' },
 ]
 
 export const mockAdminUser = {
@@ -262,4 +264,33 @@ export const iconMap = {
   Trophy, Users, UserCheck, Shield,
   GraduationCap, Briefcase,
   Layers, CheckCircle, XCircle, Clock,
+  Bell,
+}
+
+// ---------- Notifications ----------
+
+export const allNotifications = [
+  { id: 1, title: 'SEAL Hackathon 2026 - Summer is now open', body: 'We are excited to announce that SEAL Hackathon 2026 - Summer edition is now accepting submissions. All students and teams are encouraged to register before the deadline on August 15, 2026.', type: 'Announcement', audience: 'All Users', sentBy: 'Admin', date: '2026-07-06', status: 'Sent' },
+  { id: 2, title: 'New round added: Final Pitch', body: 'The Final Pitch round has been added to Cloud Builders Cup 2026. Participants must submit their presentation slides by July 20, 2026.', type: 'Update', audience: 'Participants', sentBy: 'Admin', date: '2026-07-05', status: 'Sent' },
+  { id: 3, title: 'System maintenance scheduled', body: 'The platform will undergo scheduled maintenance on July 12, 2026 from 02:00 AM to 06:00 AM UTC. During this time, all services will be temporarily unavailable.', type: 'Alert', audience: 'All Users', sentBy: 'Admin', date: '2026-07-03', status: 'Sent' },
+  { id: 4, title: 'New lecturer accounts created', body: '20 new lecturer accounts have been created for the upcoming semester. Please verify the account list in the Users section.', type: 'Update', audience: 'Staff', sentBy: 'Admin', date: '2026-07-01', status: 'Sent' },
+  { id: 5, title: 'Registration deadline extended', body: 'The registration deadline for Cloud Builders Cup 2026 has been extended to July 18, 2026. Spread the word!', type: 'Announcement', audience: 'All Users', sentBy: 'Admin', date: '2026-06-28', status: 'Sent' },
+  { id: 6, title: 'Judging criteria updated', body: 'The judging criteria for the upcoming FinTech Rush 2026 has been updated. Please review the new rubric in the hackathon details page.', type: 'Update', audience: 'Participants', sentBy: 'Admin', date: '2026-06-25', status: 'Sent' },
+  { id: 7, title: 'Platform upgrade completed', body: 'The platform has been successfully upgraded to version 3.2. New features include improved team management and enhanced dashboard analytics.', type: 'Alert', audience: 'All Users', sentBy: 'Admin', date: '2026-06-20', status: 'Sent' },
+  { id: 8, title: 'Upcoming: AI HackFest 2026 early bird', body: 'Early bird registration for AI HackFest 2026 will open on July 15, 2026. Discounted rates available for the first 50 teams.', type: 'Announcement', audience: 'All Users', sentBy: 'Admin', date: '2026-07-10', status: 'Draft' },
+  { id: 9, title: 'Team formation guidelines', body: 'Please review the updated team formation guidelines. Teams must have a minimum of 2 and a maximum of 5 members. Cross-disciplinary teams are encouraged.', type: 'Update', audience: 'All Users', sentBy: 'Admin', date: '2026-07-08', status: 'Draft' },
+  { id: 10, title: 'Winner announcement: Cyber Security Arena 2025', body: 'Congratulations to Security Gurus for winning Cyber Security Arena 2025! Full results and prize distribution details are now available.', type: 'Announcement', audience: 'All Users', sentBy: 'Admin', date: '2025-12-28', status: 'Sent' },
+  { id: 11, title: 'Holiday schedule notice', body: 'The platform support team will operate on reduced hours during the holiday period from December 24-26, 2025.', type: 'Alert', audience: 'All Users', sentBy: 'Admin', date: '2025-12-20', status: 'Sent' },
+  { id: 12, title: 'New feature: Team chat released', body: 'We are excited to announce the release of team chat! Teams can now communicate directly within the platform. Check it out in your team dashboard.', type: 'Announcement', audience: 'All Users', sentBy: 'Admin', date: '2025-12-01', status: 'Sent' },
+]
+
+export const notificationTypeBadge = {
+  Announcement: 'bg-[#e3f2fd] text-[#1565c0]',
+  Update: 'bg-[#e8f5e9] text-[#2e7d32]',
+  Alert: 'bg-[#fce4ec] text-[#c62828]',
+}
+
+export const notificationStatusBadge = {
+  Sent: 'bg-[#e8f5e9] text-[#2e7d32]',
+  Draft: 'bg-[#f5f5f5] text-[#757575]',
 }
