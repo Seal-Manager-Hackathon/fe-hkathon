@@ -10,7 +10,7 @@
  * @param {object} icon      - lucide icon component
  * @param {string} className - extra classes on input
  */
-export default function TextInput({ label, value, onChange, placeholder, required, error, type = 'text', icon: Icon, className }) {
+export default function TextInput({ label, value, onChange, placeholder, required, error, type = 'text', icon: Icon, className, disabled }) {
   return (
     <div>
       <label className="mb-1.5 block text-[13px] font-semibold text-[#1f2f3a]">
@@ -24,7 +24,8 @@ export default function TextInput({ label, value, onChange, placeholder, require
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`field-input ${Icon ? 'input-icon' : ''} ${error ? 'input-error' : ''} ${className || ''}`}
+          disabled={disabled}
+          className={`field-input ${Icon ? 'input-icon' : ''} ${error ? 'input-error' : ''} ${disabled ? 'cursor-not-allowed bg-gray-50 text-gray-400' : ''} ${className || ''}`}
         />
       </div>
       {error && <p className="mt-1 text-[12px] text-red-500">{error}</p>}
