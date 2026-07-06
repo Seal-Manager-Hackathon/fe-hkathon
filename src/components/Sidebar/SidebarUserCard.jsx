@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { cn } from '../../utils/cn'
 import {
   ChevronDown,
@@ -64,9 +65,24 @@ export default function SidebarUserCard({ user, menuItems }) {
         <div className="absolute bottom-full left-0 right-0 mb-2 overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5">
           {menuItems.map((item) => {
             const Icon = iconMap[item.icon]
+
+            if (item.to) {
+              return (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  onClick={() => setOpen(false)}
+                  className="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-[14px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50"
+                >
+                  {Icon && <Icon className="h-4 w-4 text-gray-400" />}
+                  {item.label}
+                </Link>
+              )
+            }
+
             return (
               <button
-                key={item.action}
+                key={item.label}
                 onClick={() => setOpen(false)}
                 className="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-[14px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50"
               >

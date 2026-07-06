@@ -145,14 +145,14 @@ export const mockFooterBottomLinks = [
 ]
 
 export const mockGuestMenu = [
-  { icon: 'LogIn', label: 'Sign in', action: 'signin' },
-  { icon: 'UserPlus', label: 'Sign up', action: 'signup' },
+  { icon: 'LogIn', label: 'Sign in', to: '/login' },
+  { icon: 'UserPlus', label: 'Sign up', to: '/register' },
 ]
 
 export const mockUserMenu = [
-  { icon: 'User', label: 'Profile', action: 'profile' },
-  { icon: 'Settings', label: 'Settings', action: 'settings' },
-  { icon: 'LogOut', label: 'Sign out', action: 'signout' },
+  { icon: 'User', label: 'Profile', to: '/profile' },
+  { icon: 'Settings', label: 'Settings', to: '/settings' },
+  { icon: 'LogOut', label: 'Sign out', to: null },
 ]
 
 export const mockGuestUser = {

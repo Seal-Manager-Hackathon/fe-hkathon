@@ -28,15 +28,15 @@ function RouteFallback() {
 
 export const routes = [
   {
-    element: <StudentLayout />,
+    element: (
+      <Suspense fallback={<RouteFallback />}>
+        <StudentLayout />
+      </Suspense>
+    ),
     children: [
       {
         index: true,
-        element: (
-          <Suspense fallback={<RouteFallback />}>
-            <HomePage />
-          </Suspense>
-        ),
+        element: <HomePage />,
       },
     ],
   },
