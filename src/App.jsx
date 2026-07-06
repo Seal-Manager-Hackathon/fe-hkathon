@@ -1,14 +1,13 @@
-import { useState } from 'react'
-import './App.css'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { routes } from './routes/index.jsx'
 
-function App() {
-  const [count, setCount] = useState(0)
+// ---------------------------------------------------------------------------
+// One-time router instance created outside the component tree.
+// Prevents re-creation on every render and keeps HMR stable.
+// ---------------------------------------------------------------------------
+const router = createBrowserRouter(routes)
 
-  return (
-    <>
-      <h1>Hello Vite!</h1>
-    </>
-  )
+export default function App() {
+  return <RouterProvider router={router} />
 }
 
-export default App

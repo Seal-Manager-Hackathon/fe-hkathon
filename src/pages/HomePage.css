@@ -1,0 +1,24 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  gap: 16px;
+  padding: 48px 24px;
+}
+
+.home-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 16px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.home-link:hover {
+  background: var(--accent);
+  color: #fff;
+}

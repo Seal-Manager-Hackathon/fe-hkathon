@@ -1,0 +1,11 @@
+.root-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+.root-layout__content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
