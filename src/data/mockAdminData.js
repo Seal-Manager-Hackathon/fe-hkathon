@@ -51,7 +51,6 @@ export const statSections = [
       { label: 'Total Teams', value: 256, icon: 'Users', color: 'bg-[#e3f2fd] text-[#1565c0]' },
       { label: 'Active Teams', value: 198, icon: 'CheckCircle', color: 'bg-[#e8f5e9] text-[#2e7d32]' },
       { label: 'Disabled Teams', value: 38, icon: 'XCircle', color: 'bg-[#f5f5f5] text-[#757575]' },
-      { label: 'Pending Teams', value: 20, icon: 'Clock', color: 'bg-[#fff3e0] text-[#e65100]' },
     ],
   },
 ]

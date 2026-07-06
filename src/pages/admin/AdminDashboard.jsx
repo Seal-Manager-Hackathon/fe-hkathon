@@ -9,7 +9,7 @@ import {
   userStatusBadge,
   iconMap,
 } from '../../data/mockAdminData'
-import { getEventsCount, getUsersCount } from '../../api/admin'
+import { getEventsCount, getUsersCount, getTeamsCount } from '../../api/admin'
 import StatCard from '../../components/StatCard'
 import SectionTitle from '../../components/SectionTitle'
 import CardPanel from '../../components/CardPanel'
@@ -30,12 +30,15 @@ export default function AdminDashboard() {
     lecturerUsers: null,
     staffUsers: null,
     adminUsers: null,
+    totalTeams: null,
+    activeTeams: null,
+    disabledTeams: null,
   })
 
   useEffect(() => {
     async function fetchCounts() {
       try {
-        const [total, published, draft, closed, totalUsers, student, lecturer, staff, admin] = await Promise.all([
+        const [total, published, draft, closed, totalUsers, student, lecturer, staff, admin, totalTeams, active, disabled] = await Promise.all([
           getEventsCount(),
           getEventsCount('Published'),
           getEventsCount('Draft'),
@@ -45,6 +48,9 @@ export default function AdminDashboard() {
           getUsersCount('Lecturer'),
           getUsersCount('Staff'),
           getUsersCount('Admin'),
+          getTeamsCount(),
+          getTeamsCount(false),
+          getTeamsCount(true),
         ])
         setCounts({
           totalEvents: total.total,
@@ -56,6 +62,9 @@ export default function AdminDashboard() {
           lecturerUsers: lecturer.total,
           staffUsers: staff.total,
           adminUsers: admin.total,
+          totalTeams: totalTeams.total,
+          activeTeams: active.total,
+          disabledTeams: disabled.total,
         })
       } catch {
         // keep mock defaults on error
@@ -92,6 +101,16 @@ export default function AdminDashboard() {
           'Lecturer Users': counts.lecturerUsers,
           'Staff Users': counts.staffUsers,
           'Admin Users': counts.adminUsers,
+        }
+        return map[item.label] != null ? { ...item, value: map[item.label] } : item
+      })
+    }
+    if (section.title === 'Teams') {
+      merged.items = section.items.map((item) => {
+        const map = {
+          'Total Teams': counts.totalTeams,
+          'Active Teams': counts.activeTeams,
+          'Disabled Teams': counts.disabledTeams,
         }
         return map[item.label] != null ? { ...item, value: map[item.label] } : item
       })

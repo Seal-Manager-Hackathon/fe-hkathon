@@ -21,3 +21,14 @@ export async function getUsersCount(role) {
   const { data } = await api.get('/admin/users/count', { params })
   return data.data
 }
+
+/**
+ * Count teams by optional IsDisable filter.
+ * @param {boolean} [isDisable] - true=disabled, false=active, omit=all
+ * @returns {Promise<{ total: number }>}
+ */
+export async function getTeamsCount(isDisable) {
+  const params = isDisable !== undefined ? { IsDisable: isDisable } : {}
+  const { data } = await api.get('/admin/teams/count', { params })
+  return data.data
+}
