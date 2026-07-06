@@ -21,18 +21,18 @@ import Avatar from '../../components/Avatar'
 export default function AdminDashboard() {
   const [modal, setModal] = useState(null)
   const [counts, setCounts] = useState({
-    totalEvents: null,
-    publishedEvents: null,
-    draftEvents: null,
-    closedEvents: null,
-    totalUsers: null,
-    studentUsers: null,
-    lecturerUsers: null,
-    staffUsers: null,
-    adminUsers: null,
-    totalTeams: null,
-    activeTeams: null,
-    disabledTeams: null,
+    totalEvents: 0,
+    publishedEvents: 0,
+    draftEvents: 0,
+    closedEvents: 0,
+    totalUsers: 0,
+    studentUsers: 0,
+    lecturerUsers: 0,
+    staffUsers: 0,
+    adminUsers: 0,
+    totalTeams: 0,
+    activeTeams: 0,
+    disabledTeams: 0,
   })
 
   useEffect(() => {
@@ -82,38 +82,32 @@ export default function AdminDashboard() {
   // Merge real API counts into statSections
   const resolvedSections = statSections.map((section) => {
     const merged = { ...section }
-    if (section.title === 'Hackathons') {
-      merged.items = section.items.map((item) => {
-        const map = {
-          'Total Hackathons': counts.totalEvents,
-          'Published Hackathons': counts.publishedEvents,
-          'Draft Hackathons': counts.draftEvents,
-          'Closed Hackathons': counts.closedEvents,
-        }
-        return map[item.label] != null ? { ...item, value: map[item.label] } : item
-      })
+    const mapLabels = {
+      Hackathons: {
+        'Total Hackathons': counts.totalEvents,
+        'Published Hackathons': counts.publishedEvents,
+        'Draft Hackathons': counts.draftEvents,
+        'Closed Hackathons': counts.closedEvents,
+      },
+      Users: {
+        'Total Users': counts.totalUsers,
+        'Student Users': counts.studentUsers,
+        'Lecturer Users': counts.lecturerUsers,
+        'Staff Users': counts.staffUsers,
+        'Admin Users': counts.adminUsers,
+      },
+      Teams: {
+        'Total Teams': counts.totalTeams,
+        'Active Teams': counts.activeTeams,
+        'Disabled Teams': counts.disabledTeams,
+      },
     }
-    if (section.title === 'Users') {
-      merged.items = section.items.map((item) => {
-        const map = {
-          'Total Users': counts.totalUsers,
-          'Student Users': counts.studentUsers,
-          'Lecturer Users': counts.lecturerUsers,
-          'Staff Users': counts.staffUsers,
-          'Admin Users': counts.adminUsers,
-        }
-        return map[item.label] != null ? { ...item, value: map[item.label] } : item
-      })
-    }
-    if (section.title === 'Teams') {
-      merged.items = section.items.map((item) => {
-        const map = {
-          'Total Teams': counts.totalTeams,
-          'Active Teams': counts.activeTeams,
-          'Disabled Teams': counts.disabledTeams,
-        }
-        return map[item.label] != null ? { ...item, value: map[item.label] } : item
-      })
+    const map = mapLabels[section.title]
+    if (map) {
+      merged.items = section.items.map((item) => ({
+        ...item,
+        value: map[item.label] != null ? map[item.label] : item.value,
+      }))
     }
     return merged
   })
