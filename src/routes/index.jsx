@@ -8,6 +8,7 @@ const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'))
 const AdminLayout = lazy(() => import('../layouts/AdminLayout'))
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'))
 const HackathonManagement = lazy(() => import('../pages/admin/HackathonManagement'))
+const UsersManagement = lazy(() => import('../pages/admin/UsersManagement'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 export const routes = [
@@ -46,6 +47,14 @@ export const routes = [
         element: (
           <Suspense fallback={<RouteFallback />}>
             <HackathonManagement />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'users',
+        element: (
+          <Suspense fallback={<RouteFallback />}>
+            <UsersManagement />
           </Suspense>
         ),
       },

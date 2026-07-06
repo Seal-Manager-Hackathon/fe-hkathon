@@ -8,7 +8,6 @@ export const mockAdminNavItems = [
   { key: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', to: '/admin' },
   { key: 'hackathons', label: 'Hackathons', icon: 'Trophy', to: '/admin/hackathons' },
   { key: 'users', label: 'Users', icon: 'Users', to: '/admin/users' },
-  { key: 'settings', label: 'Settings', icon: 'Settings', to: '/admin/settings' },
 ]
 
 export const mockAdminUser = {
@@ -104,6 +103,34 @@ export const allHackathons = [
   { id: 'sustainability-hack-2024', name: 'Sustainability Hack 2024', year: '2024', season: 'Fall 2024', status: 'Closed', visibility: 'Public', date: 'Oct 05, 2024', prize: '$14,000', teams: 8, location: 'Da Nang', description: 'Eco-friendly solutions.' },
   { id: 'medtech-spring-2024', name: 'MedTech Spring 2024', year: '2024', season: 'Spring 2024', status: 'Closed', visibility: 'Public', date: 'Apr 12, 2024', prize: '$19,000', teams: 9, location: 'Hue', description: 'Healthcare innovations.' },
   { id: 'devrel-summit-2026', name: 'DevRel Summit Hack 2026', year: '2026', season: 'Winter 2026', status: 'Draft', visibility: 'Private', date: 'Dec 18, 2026', prize: '$28,000', teams: 0, location: 'Hanoi', description: 'Developer relations tools.' },
+]
+
+export const allUsers = [
+  { id: 'usr-001', name: 'Alex Johnson', email: 'alex@seal.dev', role: 'Student', status: 'Active', submissions: 12, joined: 'Jan 15, 2026', avatar: 'A' },
+  { id: 'usr-002', name: 'Maria Chen', email: 'maria@dev.io', role: 'Student', status: 'Active', submissions: 9, joined: 'Feb 03, 2026', avatar: 'M' },
+  { id: 'usr-003', name: 'David Kim', email: 'david@code.org', role: 'Lecturer', status: 'Active', submissions: 8, joined: 'Mar 12, 2026', avatar: 'D' },
+  { id: 'usr-004', name: 'Sarah Wilson', email: 'sarah@build.dev', role: 'Student', status: 'Inactive', submissions: 7, joined: 'Jan 20, 2026', avatar: 'S' },
+  { id: 'usr-005', name: 'James Brown', email: 'james@hack.io', role: 'Student', status: 'Active', submissions: 15, joined: 'Dec 05, 2025', avatar: 'J' },
+  { id: 'usr-006', name: 'Emily Davis', email: 'emily@devlab.com', role: 'Staff', status: 'Active', submissions: 5, joined: 'May 18, 2026', avatar: 'E' },
+  { id: 'usr-007', name: 'Michael Lee', email: 'michael@univ.edu', role: 'Lecturer', status: 'Active', submissions: 20, joined: 'Sep 10, 2025', avatar: 'M' },
+  { id: 'usr-008', name: 'Lisa Wang', email: 'lisa@startup.co', role: 'Student', status: 'Active', submissions: 6, joined: 'Apr 22, 2026', avatar: 'L' },
+  { id: 'usr-009', name: 'Robert Taylor', email: 'robert@corp.com', role: 'Admin', status: 'Active', submissions: 3, joined: 'Aug 30, 2025', avatar: 'R' },
+  { id: 'usr-010', name: 'Anna Martinez', email: 'anna@edu.vn', role: 'Student', status: 'Inactive', submissions: 4, joined: 'Jun 01, 2026', avatar: 'A' },
+  { id: 'usr-011', name: 'Thomas Nguyen', email: 'thomas@tech.vn', role: 'Student', status: 'Active', submissions: 18, joined: 'Nov 15, 2025', avatar: 'T' },
+  { id: 'usr-012', name: 'Sophie Clark', email: 'sophie@ai-lab.io', role: 'Lecturer', status: 'Active', submissions: 14, joined: 'Oct 08, 2025', avatar: 'S' },
+  { id: 'usr-013', name: 'Daniel Park', email: 'daniel@fpt.vn', role: 'Staff', status: 'Active', submissions: 2, joined: 'Jul 25, 2026', avatar: 'D' },
+  { id: 'usr-014', name: 'Grace Hopper', email: 'grace@binary.dev', role: 'Student', status: 'Active', submissions: 11, joined: 'Mar 30, 2026', avatar: 'G' },
+  { id: 'usr-015', name: 'Kevin Tran', email: 'kevin@codex.com', role: 'Student', status: 'Inactive', submissions: 1, joined: 'Feb 14, 2026', avatar: 'K' },
+  { id: 'usr-016', name: 'Rachel Green', email: 'rachel@fashion.tech', role: 'Student', status: 'Active', submissions: 7, joined: 'Jan 08, 2026', avatar: 'R' },
+  { id: 'usr-017', name: 'Oscar White', email: 'oscar@data.vn', role: 'Lecturer', status: 'Active', submissions: 16, joined: 'Dec 20, 2025', avatar: 'O' },
+  { id: 'usr-018', name: 'Hannah Black', email: 'hannah@secure.net', role: 'Staff', status: 'Inactive', submissions: 0, joined: 'Apr 05, 2026', avatar: 'H' },
+  { id: 'usr-019', name: 'Victor Lu', email: 'victor@cloud.io', role: 'Student', status: 'Active', submissions: 13, joined: 'Mar 18, 2026', avatar: 'V' },
+  { id: 'usr-020', name: 'Nina Patel', email: 'nina@ml-research.org', role: 'Lecturer', status: 'Active', submissions: 22, joined: 'Sep 25, 2025', avatar: 'N' },
+  { id: 'usr-021', name: 'Felix Adams', email: 'felix@gamedev.vn', role: 'Student', status: 'Active', submissions: 8, joined: 'May 10, 2026', avatar: 'F' },
+  { id: 'usr-022', name: 'Zoe Carter', email: 'zoe@blockchain.dev', role: 'Student', status: 'Active', submissions: 10, joined: 'Jun 20, 2026', avatar: 'Z' },
+  { id: 'usr-023', name: 'Admin Master', email: 'admin@seal.dev', role: 'Admin', status: 'Active', submissions: 5, joined: 'Jan 01, 2025', avatar: 'A' },
+  { id: 'usr-024', name: 'Ivy Chen', email: 'ivy@edtech.vn', role: 'Staff', status: 'Active', submissions: 4, joined: 'Aug 12, 2026', avatar: 'I' },
+  { id: 'usr-025', name: 'Ben Foster', email: 'ben@iot-lab.com', role: 'Student', status: 'Inactive', submissions: 2, joined: 'Jul 01, 2026', avatar: 'B' },
 ]
 
 export const visibilityBadge = {
