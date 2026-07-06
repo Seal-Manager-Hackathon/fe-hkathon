@@ -9,7 +9,7 @@ import {
   userStatusBadge,
   iconMap,
 } from '../../data/mockAdminData'
-import { getEventsCount } from '../../api/admin'
+import { getEventsCount, getUsersCount } from '../../api/admin'
 import StatCard from '../../components/StatCard'
 import SectionTitle from '../../components/SectionTitle'
 import CardPanel from '../../components/CardPanel'
@@ -25,22 +25,37 @@ export default function AdminDashboard() {
     publishedEvents: null,
     draftEvents: null,
     closedEvents: null,
+    totalUsers: null,
+    studentUsers: null,
+    lecturerUsers: null,
+    staffUsers: null,
+    adminUsers: null,
   })
 
   useEffect(() => {
     async function fetchCounts() {
       try {
-        const [total, published, draft, closed] = await Promise.all([
+        const [total, published, draft, closed, totalUsers, student, lecturer, staff, admin] = await Promise.all([
           getEventsCount(),
           getEventsCount('Published'),
           getEventsCount('Draft'),
           getEventsCount('Closed'),
+          getUsersCount(),
+          getUsersCount('Student'),
+          getUsersCount('Lecturer'),
+          getUsersCount('Staff'),
+          getUsersCount('Admin'),
         ])
         setCounts({
           totalEvents: total.total,
           publishedEvents: published.total,
           draftEvents: draft.total,
           closedEvents: closed.total,
+          totalUsers: totalUsers.total,
+          studentUsers: student.total,
+          lecturerUsers: lecturer.total,
+          staffUsers: staff.total,
+          adminUsers: admin.total,
         })
       } catch {
         // keep mock defaults on error
@@ -57,21 +72,31 @@ export default function AdminDashboard() {
 
   // Merge real API counts into statSections
   const resolvedSections = statSections.map((section) => {
-    if (section.title !== 'Hackathons') return section
-    return {
-      ...section,
-      items: section.items.map((item) => {
-        if (item.label === 'Total Hackathons' && counts.totalEvents != null)
-          return { ...item, value: counts.totalEvents }
-        if (item.label === 'Published Hackathons' && counts.publishedEvents != null)
-          return { ...item, value: counts.publishedEvents }
-        if (item.label === 'Draft Hackathons' && counts.draftEvents != null)
-          return { ...item, value: counts.draftEvents }
-        if (item.label === 'Closed Hackathons' && counts.closedEvents != null)
-          return { ...item, value: counts.closedEvents }
-        return item
-      }),
+    const merged = { ...section }
+    if (section.title === 'Hackathons') {
+      merged.items = section.items.map((item) => {
+        const map = {
+          'Total Hackathons': counts.totalEvents,
+          'Published Hackathons': counts.publishedEvents,
+          'Draft Hackathons': counts.draftEvents,
+          'Closed Hackathons': counts.closedEvents,
+        }
+        return map[item.label] != null ? { ...item, value: map[item.label] } : item
+      })
     }
+    if (section.title === 'Users') {
+      merged.items = section.items.map((item) => {
+        const map = {
+          'Total Users': counts.totalUsers,
+          'Student Users': counts.studentUsers,
+          'Lecturer Users': counts.lecturerUsers,
+          'Staff Users': counts.staffUsers,
+          'Admin Users': counts.adminUsers,
+        }
+        return map[item.label] != null ? { ...item, value: map[item.label] } : item
+      })
+    }
+    return merged
   })
 
   return (
