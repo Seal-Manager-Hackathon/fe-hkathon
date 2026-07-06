@@ -13,6 +13,8 @@ const HackathonCreate = lazy(() => import('../pages/admin/HackathonCreate'))
 const HackathonEdit = lazy(() => import('../pages/admin/HackathonEdit'))
 const UsersManagement = lazy(() => import('../pages/admin/UsersManagement'))
 const UsersCreate = lazy(() => import('../pages/admin/UsersCreate'))
+const UserDetail = lazy(() => import('../pages/admin/UserDetail'))
+const UserEdit = lazy(() => import('../pages/admin/UserEdit'))
 const NotificationsManagement = lazy(() => import('../pages/admin/NotificationsManagement'))
 const NotificationsCreate = lazy(() => import('../pages/admin/NotificationsCreate'))
 const NotificationDetail = lazy(() => import('../pages/admin/NotificationDetail'))
@@ -103,6 +105,22 @@ export const routes = [
             element: (
               <Suspense fallback={<RouteFallback />}>
                 <UsersCreate />
+              </Suspense>
+            ),
+          },
+          {
+            path: ':id/edit',
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <UserEdit />
+              </Suspense>
+            ),
+          },
+          {
+            path: ':id',
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <UserDetail />
               </Suspense>
             ),
           },

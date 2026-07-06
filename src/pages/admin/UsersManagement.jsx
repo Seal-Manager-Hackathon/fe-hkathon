@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { RotateCcw, UserPlus } from 'lucide-react'
+import { RotateCcw, UserPlus, Eye, Edit } from 'lucide-react'
 import { allUsers, roleBadge, userStatusBadge } from '../../data/mockAdminData'
 import BaseTable from '../../components/BaseTable'
 import Badge from '../../components/Badge'
@@ -57,7 +57,12 @@ export default function UsersManagement() {
             {row.avatar || row.name.charAt(0)}
           </div>
           <div>
-            <p className="text-[14px] font-semibold text-[#1f2f3a]">{row.name}</p>
+            <Link
+              to={`/admin/users/${row.id}`}
+              className="text-[14px] font-semibold text-[#064f5d] hover:underline"
+            >
+              {row.name}
+            </Link>
             <p className="text-[12px] text-gray-400">{row.email}</p>
           </div>
         </div>
@@ -89,6 +94,30 @@ export default function UsersManagement() {
       header: 'Joined',
       render: (row) => (
         <p className="text-[13px] text-gray-500">{row.joined}</p>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      headerClassName: 'text-right',
+      className: 'text-right',
+      render: (row) => (
+        <div className="flex items-center justify-end gap-2">
+          <Link
+            to={`/admin/users/${row.id}`}
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]"
+          >
+            <Eye className="h-3.5 w-3.5" />
+            View
+          </Link>
+          <Link
+            to={`/admin/users/${row.id}/edit`}
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]"
+          >
+            <Edit className="h-3.5 w-3.5" />
+            Edit
+          </Link>
+        </div>
       ),
     },
   ]
