@@ -144,6 +144,17 @@ export const mockFooterBottomLinks = [
   { label: 'Terms of service', href: '#' },
 ]
 
+export const mockGuestMenu = [
+  { icon: 'LogIn', label: 'Sign in', action: 'signin' },
+  { icon: 'UserPlus', label: 'Sign up', action: 'signup' },
+]
+
+export const mockUserMenu = [
+  { icon: 'User', label: 'Profile', action: 'profile' },
+  { icon: 'Settings', label: 'Settings', action: 'settings' },
+  { icon: 'LogOut', label: 'Sign out', action: 'signout' },
+]
+
 export const mockGuestUser = {
   name: 'Guest visitor',
   email: '',

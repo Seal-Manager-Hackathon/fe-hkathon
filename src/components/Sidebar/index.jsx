@@ -1,11 +1,9 @@
 import { useState } from 'react'
-import { mockNavItems, mockGuestUser, mockAuthUser } from '../../data/mockHomeData'
 import SidebarNavItem from './SidebarNavItem'
 import SidebarUserCard from './SidebarUserCard'
 
-export default function Sidebar({ isAuthenticated }) {
+export default function Sidebar({ navItems, user, userMenu }) {
   const [activeKey, setActiveKey] = useState('home')
-  const user = isAuthenticated ? mockAuthUser : mockGuestUser
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[248px] flex-col bg-[#064f5d]">
@@ -17,7 +15,7 @@ export default function Sidebar({ isAuthenticated }) {
       </div>
 
       <nav className="flex flex-col gap-1 px-3 pt-2" role="navigation">
-        {mockNavItems.map((item) => (
+        {navItems.map((item) => (
           <SidebarNavItem
             key={item.key}
             item={item}
@@ -29,7 +27,7 @@ export default function Sidebar({ isAuthenticated }) {
 
       <div className="flex-1" />
 
-      <SidebarUserCard user={user} isAuthenticated={isAuthenticated} />
+      <SidebarUserCard user={user} menuItems={userMenu} />
     </aside>
   )
 }
