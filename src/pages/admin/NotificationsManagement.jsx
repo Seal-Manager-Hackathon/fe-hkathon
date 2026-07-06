@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { BellPlus, RotateCcw } from 'lucide-react'
+import { BellPlus, RotateCcw, Eye, Edit } from 'lucide-react'
 import { allNotifications, notificationTypeBadge, notificationStatusBadge } from '../../data/mockAdminData'
 import BaseTable from '../../components/BaseTable'
 import Badge from '../../components/Badge'
@@ -61,7 +61,12 @@ export default function NotificationsManagement() {
       key: 'title',
       header: 'Title',
       render: (row) => (
-        <p className="max-w-[280px] truncate text-[14px] font-semibold text-[#1f2f3a]">{row.title}</p>
+        <Link
+          to={`/admin/notifications/${row.id}`}
+          className="block max-w-[280px] truncate text-[14px] font-semibold text-[#064f5d] hover:underline"
+        >
+          {row.title}
+        </Link>
       ),
     },
     {
@@ -97,6 +102,30 @@ export default function NotificationsManagement() {
       header: 'Date',
       render: (row) => (
         <p className="text-[13px] text-gray-500">{row.date}</p>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      headerClassName: 'text-right',
+      className: 'text-right',
+      render: (row) => (
+        <div className="flex items-center justify-end gap-2">
+          <Link
+            to={`/admin/notifications/${row.id}`}
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]"
+          >
+            <Eye className="h-3.5 w-3.5" />
+            View
+          </Link>
+          <Link
+            to={`/admin/notifications/${row.id}/edit`}
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]"
+          >
+            <Edit className="h-3.5 w-3.5" />
+            Edit
+          </Link>
+        </div>
       ),
     },
   ]
