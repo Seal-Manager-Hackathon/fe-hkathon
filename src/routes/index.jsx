@@ -1,29 +1,32 @@
 import { lazy, Suspense } from 'react'
-import RootLayout from '../layouts/RootLayout.jsx'
+import StudentLayout from '../layouts/StudentLayout'
 
-// ---------------------------------------------------------------------------
-// Lazy-loaded pages — enables automatic code splitting per route
-// ---------------------------------------------------------------------------
-const HomePage = lazy(() => import('../pages/HomePage.jsx'))
-const NotFoundPage = lazy(() => import('../pages/NotFoundPage.jsx'))
+const HomePage = lazy(() => import('../pages/HomePage'))
+const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
-// ---------------------------------------------------------------------------
-// Route-level fallback — shown while the lazy chunk loads
-// ---------------------------------------------------------------------------
 function RouteFallback() {
   return (
-    <div className="flex grow items-center justify-center p-12">
-      Loading…
+    <div className="flex min-h-screen items-center justify-center bg-[#f4f6f8]">
+      <div className="flex flex-col items-center gap-6">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-10 items-center justify-center rounded-md bg-[#064f5d] px-3 text-base font-extrabold text-white">
+            SEAL
+          </div>
+          <span className="text-xl font-bold text-[#064f5d]">Hackathon</span>
+        </div>
+        <div className="flex gap-2">
+          <div className="h-3 w-3 animate-bounce rounded-full bg-[#ffca28]" style={{ animationDelay: '0ms' }} />
+          <div className="h-3 w-3 animate-bounce rounded-full bg-[#ffca28]" style={{ animationDelay: '150ms' }} />
+          <div className="h-3 w-3 animate-bounce rounded-full bg-[#ffca28]" style={{ animationDelay: '300ms' }} />
+        </div>
+      </div>
     </div>
   )
 }
 
-// ---------------------------------------------------------------------------
-// Route definitions
-// ---------------------------------------------------------------------------
 export const routes = [
   {
-    element: <RootLayout />,
+    element: <StudentLayout />,
     children: [
       {
         index: true,
@@ -33,14 +36,15 @@ export const routes = [
           </Suspense>
         ),
       },
-      {
-        path: '*',
-        element: (
-          <Suspense fallback={<RouteFallback />}>
-            <NotFoundPage />
-          </Suspense>
-        ),
-      },
     ],
   },
+  {
+    path: '*',
+    element: (
+      <Suspense fallback={<RouteFallback />}>
+        <NotFoundPage />
+      </Suspense>
+    ),
+  },
 ]
+
