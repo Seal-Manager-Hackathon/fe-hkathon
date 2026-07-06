@@ -10,6 +10,7 @@ const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'))
 const HackathonManagement = lazy(() => import('../pages/admin/HackathonManagement'))
 const HackathonDetail = lazy(() => import('../pages/admin/HackathonDetail'))
 const HackathonCreate = lazy(() => import('../pages/admin/HackathonCreate'))
+const HackathonEdit = lazy(() => import('../pages/admin/HackathonEdit'))
 const UsersManagement = lazy(() => import('../pages/admin/UsersManagement'))
 const UsersCreate = lazy(() => import('../pages/admin/UsersCreate'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
@@ -57,18 +58,26 @@ export const routes = [
             ),
           },
           {
-            path: ':id',
-            element: (
-              <Suspense fallback={<RouteFallback />}>
-                <HackathonDetail />
-              </Suspense>
-            ),
-          },
-          {
             path: 'create',
             element: (
               <Suspense fallback={<RouteFallback />}>
                 <HackathonCreate />
+              </Suspense>
+            ),
+          },
+          {
+            path: ':id/edit',
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <HackathonEdit />
+              </Suspense>
+            ),
+          },
+          {
+            path: ':id',
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <HackathonDetail />
               </Suspense>
             ),
           },
