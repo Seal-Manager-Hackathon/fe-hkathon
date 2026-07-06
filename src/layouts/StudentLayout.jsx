@@ -6,14 +6,10 @@ import { mockNavItems, mockGuestUser, mockGuestMenu } from '../data/mockHomeData
 export default function StudentLayout() {
   return (
     <div className="flex min-h-screen bg-white">
-      <Sidebar
-        navItems={mockNavItems}
-        user={mockGuestUser}
-        userMenu={mockGuestMenu}
-      />
+      <Sidebar navItems={mockNavItems} />
 
       <div className="ml-[248px] flex min-h-screen flex-1 flex-col">
-        <Header />
+        <Header user={mockGuestUser} menuItems={mockGuestMenu} />
         <main className="flex-1">
           <Outlet />
         </main>

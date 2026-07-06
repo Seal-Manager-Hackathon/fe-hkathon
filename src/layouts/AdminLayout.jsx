@@ -6,14 +6,10 @@ import { mockAdminNavItems, mockAdminUser, mockAdminMenu } from '../data/mockAdm
 export default function AdminLayout() {
   return (
     <div className="flex min-h-screen bg-white">
-      <Sidebar
-        navItems={mockAdminNavItems}
-        user={mockAdminUser}
-        userMenu={mockAdminMenu}
-      />
+      <Sidebar navItems={mockAdminNavItems} />
 
       <div className="ml-[248px] flex min-h-screen flex-1 flex-col">
-        <Header viewAllTo="/admin/my-notifications" />
+        <Header viewAllTo="/admin/my-notifications" user={mockAdminUser} menuItems={mockAdminMenu} />
         <main className="flex-1">
           <Outlet />
         </main>

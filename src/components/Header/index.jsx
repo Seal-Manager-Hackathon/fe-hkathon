@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Bell } from 'lucide-react'
 import NotificationModal from '../NotificationModal'
+import UserMenu from '../UserMenu'
 
 const mockNotifications = [
   { id: 1, title: 'SEAL Hackathon 2026 - Summer is now open', body: 'Registration is open for all students and teams. New tracks in AI, Blockchain, and Climate Tech are available.', date: 'Jul 06, 2026', read: false },
@@ -10,7 +11,7 @@ const mockNotifications = [
   { id: 4, title: 'Your team has been approved', body: 'Your team registration for SEAL Hackathon 2026 has been approved. Good luck!', date: 'Jul 01, 2026', read: true },
 ]
 
-export default function Header({ viewAllTo = '/notifications' }) {
+export default function Header({ viewAllTo = '/notifications', user, menuItems }) {
   const [open, setOpen] = useState(false)
   const [notifications, setNotifications] = useState(mockNotifications)
   const [selected, setSelected] = useState(null)
@@ -34,7 +35,7 @@ export default function Header({ viewAllTo = '/notifications' }) {
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-end border-b border-[#e8ecf0] bg-white px-6">
+      <header className="sticky top-0 z-30 flex h-14 items-center justify-end gap-4 border-b border-[#e8ecf0] bg-white px-6">
         <div ref={ref} className="relative">
           <button
             onClick={() => setOpen(!open)}
@@ -94,6 +95,8 @@ export default function Header({ viewAllTo = '/notifications' }) {
             </div>
           )}
         </div>
+
+        {user && menuItems && <UserMenu user={user} menuItems={menuItems} />}
       </header>
 
       <NotificationModal notification={selected} onClose={() => setSelected(null)} />

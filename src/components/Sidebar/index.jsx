@@ -1,9 +1,8 @@
 import { useLocation } from 'react-router-dom'
 import SidebarNavItem from './SidebarNavItem'
-import SidebarUserCard from './SidebarUserCard'
 import { useMemo } from 'react'
 
-export default function Sidebar({ navItems, user, userMenu }) {
+export default function Sidebar({ navItems }) {
   const { pathname } = useLocation()
 
   const activeKey = useMemo(() => {
@@ -33,8 +32,6 @@ export default function Sidebar({ navItems, user, userMenu }) {
       </nav>
 
       <div className="flex-1" />
-
-      <SidebarUserCard user={user} menuItems={userMenu} />
     </aside>
   )
 }
