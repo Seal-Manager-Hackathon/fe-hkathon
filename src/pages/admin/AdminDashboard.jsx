@@ -9,7 +9,7 @@ import {
   userStatusBadge,
   iconMap,
 } from '../../data/mockAdminData'
-import { getEventsCount, getUsersCount, getTeamsCount } from '../../api/admin'
+import { getEventsCount, getUsersCount, getTeamsCount, getRecentEvents } from '../../api/admin'
 import StatCard from '../../components/StatCard'
 import SectionTitle from '../../components/SectionTitle'
 import CardPanel from '../../components/CardPanel'
@@ -34,6 +34,7 @@ export default function AdminDashboard() {
     activeTeams: 0,
     disabledTeams: 0,
   })
+  const [recentEvents, setRecentEvents] = useState(recentHackathons)
 
   useEffect(() => {
     async function fetchCounts() {
@@ -70,7 +71,28 @@ export default function AdminDashboard() {
         // keep mock defaults on error
       }
     }
+    async function fetchRecent() {
+      try {
+        const result = await getRecentEvents()
+        if (result?.events?.length > 0) {
+          setRecentEvents(
+            result.events.map((e) => ({
+              id: e.id,
+              name: e.name,
+              season: e.startTime ? new Date(e.startTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '',
+              date: e.createdAt ? new Date(e.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+              status: e.status,
+              teams: 0,
+              prize: '',
+            }))
+          )
+        }
+      } catch {
+        // keep mock defaults
+      }
+    }
     fetchCounts()
+    fetchRecent()
   }, [])
 
   const badgeMaps = { status: statusBadge, role: roleBadge, userStatus: userStatusBadge }
@@ -144,7 +166,7 @@ export default function AdminDashboard() {
 
       <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
         <CardPanel title="Recent Hackathons" viewAllTo="/admin/hackathons">
-          {recentHackathons.map((h) => (
+          {recentEvents.map((h) => (
             <div key={h.name} className="flex items-center justify-between border-b border-[#f5f5f5] px-5 py-3 last:border-0 gap-3">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -153,7 +175,7 @@ export default function AdminDashboard() {
                 </div>
                 <p className="mt-0.5 text-[12px] text-gray-400">{h.season} &middot; {h.date}</p>
               </div>
-              <ViewButton onClick={() => openModal('hackathon', h)} />
+              <ViewButton to={`/admin/hackathons/${h.id}`} />
             </div>
           ))}
         </CardPanel>

@@ -32,3 +32,12 @@ export async function getTeamsCount(isDisable) {
   const { data } = await api.get('/admin/teams/count', { params })
   return data.data
 }
+
+/**
+ * Get 5 most recent events.
+ * @returns {Promise<{ events: Array }>}
+ */
+export async function getRecentEvents() {
+  const { data } = await api.get('/admin/events/recent')
+  return data.data
+}
