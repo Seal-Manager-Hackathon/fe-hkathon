@@ -9,7 +9,7 @@ import {
   userStatusBadge,
   iconMap,
 } from '../../data/mockAdminData'
-import { getEventsCount, getUsersCount, getTeamsCount, getRecentEvents } from '../../api/admin'
+import { getEventsCount, getUsersCount, getTeamsCount, getRecentEvents, getRecentUsers } from '../../api/admin'
 import StatCard from '../../components/StatCard'
 import SectionTitle from '../../components/SectionTitle'
 import CardPanel from '../../components/CardPanel'
@@ -34,7 +34,8 @@ export default function AdminDashboard() {
     activeTeams: 0,
     disabledTeams: 0,
   })
-  const [recentEvents, setRecentEvents] = useState(recentHackathons)
+  const [recentEvents, setRecentEvents] = useState([])
+  const [dashboardUsers, setDashboardUsers] = useState([])
 
   useEffect(() => {
     async function fetchCounts() {
@@ -91,8 +92,28 @@ export default function AdminDashboard() {
         // keep mock defaults
       }
     }
+    async function fetchRecentUsers() {
+      try {
+        const result = await getRecentUsers()
+        if (result?.users?.length > 0) {
+          setDashboardUsers(
+            result.users.map((u) => ({
+              id: u.id,
+              name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email,
+              email: u.email,
+              role: u.role,
+              status: 'Active',
+              avatarUrl: u.avatarUrl,
+            }))
+          )
+        }
+      } catch {
+        // keep mock defaults
+      }
+    }
     fetchCounts()
     fetchRecent()
+    fetchRecentUsers()
   }, [])
 
   const badgeMaps = { status: statusBadge, role: roleBadge, userStatus: userStatusBadge }
@@ -181,9 +202,9 @@ export default function AdminDashboard() {
         </CardPanel>
 
         <CardPanel title="Recent Users" viewAllTo="/admin/users">
-          {recentUsers.map((u) => (
+          {dashboardUsers.map((u) => (
             <div key={u.email} className="flex items-center justify-between border-b border-[#f5f5f5] px-5 py-3 last:border-0 gap-3">
-              <Avatar name={u.name} />
+              <Avatar src={u.avatarUrl} name={u.name} />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{u.name}</p>
@@ -191,7 +212,7 @@ export default function AdminDashboard() {
                 </div>
                 <p className="mt-0.5 truncate text-[12px] text-gray-400">{u.email}</p>
               </div>
-              <ViewButton onClick={() => openModal('user', u)} />
+              <ViewButton to={`/admin/users/${u.id}`} />
             </div>
           ))}
         </CardPanel>

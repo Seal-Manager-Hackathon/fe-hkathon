@@ -41,3 +41,12 @@ export async function getRecentEvents() {
   const { data } = await api.get('/admin/events/recent')
   return data.data
 }
+
+/**
+ * Get 5 most recent users.
+ * @returns {Promise<{ users: Array }>}
+ */
+export async function getRecentUsers() {
+  const { data } = await api.get('/admin/users/recent')
+  return data.data
+}
