@@ -146,6 +146,21 @@ export const hackathonRounds = {
     { id: 'r2', name: 'Prototype Round', startDate: 'Jun 01, 2026', endDate: 'Jun 10, 2026', status: 'Completed', teams: 20 },
     { id: 'r3', name: 'Final Pitch', startDate: 'Jun 15, 2026', endDate: 'Jun 16, 2026', status: 'Upcoming', teams: 12 },
   ],
+  'mobile-first-2026': [
+    { id: 'r1', name: 'Design Sprint', startDate: 'Mar 25, 2026', endDate: 'Apr 01, 2026', status: 'Completed', teams: 20 },
+    { id: 'r2', name: 'Development Phase', startDate: 'Apr 03, 2026', endDate: 'Apr 17, 2026', status: 'Completed', teams: 14 },
+    { id: 'r3', name: 'Final Demo', startDate: 'Apr 20, 2026', endDate: 'Apr 22, 2026', status: 'Completed', teams: 7 },
+  ],
+  'iot-smart-city-2026': [
+    { id: 'r1', name: 'Problem Discovery', startDate: 'Apr 10, 2026', endDate: 'Apr 17, 2026', status: 'Completed', teams: 18 },
+    { id: 'r2', name: 'Hackathon Weekend', startDate: 'Apr 20, 2026', endDate: 'Apr 22, 2026', status: 'Active', teams: 12 },
+    { id: 'r3', name: 'Public Demo Day', startDate: 'Apr 30, 2026', endDate: 'May 01, 2026', status: 'Upcoming', teams: 6 },
+  ],
+  'data-thon-2026': [
+    { id: 'r1', name: 'Data Exploration', startDate: 'Jun 30, 2026', endDate: 'Jul 06, 2026', status: 'Completed', teams: 12 },
+    { id: 'r2', name: 'Model Building', startDate: 'Jul 08, 2026', endDate: 'Jul 20, 2026', status: 'Active', teams: 8 },
+    { id: 'r3', name: 'Presentation & Judging', startDate: 'Jul 22, 2026', endDate: 'Jul 24, 2026', status: 'Upcoming', teams: 4 },
+  ],
 }
 
 export const roundStatusBadge = {
@@ -196,6 +211,48 @@ export const hackathonTracks = {
       ],
     },
   ],
+  'mobile-first-2026': [
+    {
+      id: 't1', name: 'iOS Development', topics: [
+        { id: 'tp1', name: 'SwiftUI Modern Apps', teams: 3 },
+        { id: 'tp2', name: 'ARKit Experiences', teams: 2 },
+      ],
+    },
+    {
+      id: 't2', name: 'Android Development', topics: [
+        { id: 'tp3', name: 'Jetpack Compose UI', teams: 4 },
+        { id: 'tp4', name: 'Kotlin Multiplatform', teams: 3 },
+      ],
+    },
+  ],
+  'iot-smart-city-2026': [
+    {
+      id: 't1', name: 'Smart Infrastructure', topics: [
+        { id: 'tp1', name: 'Traffic Management', teams: 4 },
+        { id: 'tp2', name: 'Energy Monitoring', teams: 3 },
+      ],
+    },
+    {
+      id: 't2', name: 'Public Safety', topics: [
+        { id: 'tp3', name: 'Emergency Response', teams: 3 },
+        { id: 'tp4', name: 'Air Quality Sensors', teams: 2 },
+      ],
+    },
+  ],
+  'data-thon-2026': [
+    {
+      id: 't1', name: 'Predictive Analytics', topics: [
+        { id: 'tp1', name: 'Time Series Forecasting', teams: 3 },
+        { id: 'tp2', name: 'Customer Segmentation', teams: 2 },
+      ],
+    },
+    {
+      id: 't2', name: 'NLP & Text Mining', topics: [
+        { id: 'tp3', name: 'Sentiment Analysis', teams: 2 },
+        { id: 'tp4', name: 'Document Classification', teams: 1 },
+      ],
+    },
+  ],
 }
 
 export const hackathonTeams = {
@@ -226,6 +283,29 @@ export const hackathonTeams = {
     { id: 'tm10', name: 'LedgerLab', leader: 'Robert Taylor', members: 4, registered: 'May 21, 2026', status: 'Confirmed' },
     { id: 'tm11', name: 'CoinBridge', leader: 'Ben Foster', members: 3, registered: 'May 22, 2026', status: 'Pending' },
     { id: 'tm12', name: 'FinGuard', leader: 'Ivy Chen', members: 4, registered: 'May 22, 2026', status: 'Confirmed' },
+  ],
+  'mobile-first-2026': [
+    { id: 'tm1', name: 'Swift Squad', leader: 'Lisa Wang', members: 4, registered: 'Mar 20, 2026', status: 'Confirmed' },
+    { id: 'tm2', name: 'FlutterFlow', leader: 'James Brown', members: 3, registered: 'Mar 21, 2026', status: 'Confirmed' },
+    { id: 'tm3', name: 'React Native Crew', leader: 'Anna Martinez', members: 5, registered: 'Mar 22, 2026', status: 'Pending' },
+    { id: 'tm4', name: 'Kotlin Knights', leader: 'Kevin Tran', members: 4, registered: 'Mar 22, 2026', status: 'Confirmed' },
+    { id: 'tm5', name: 'Mobile Mavericks', leader: 'Felix Adams', members: 3, registered: 'Mar 23, 2026', status: 'Confirmed' },
+    { id: 'tm6', name: 'App Architects', leader: 'Rachel Green', members: 4, registered: 'Mar 24, 2026', status: 'Rejected' },
+    { id: 'tm7', name: 'UX Unicorns', leader: 'Nina Patel', members: 3, registered: 'Mar 24, 2026', status: 'Confirmed' },
+  ],
+  'iot-smart-city-2026': [
+    { id: 'tm1', name: 'Sensor Squad', leader: 'Thomas Nguyen', members: 4, registered: 'Apr 08, 2026', status: 'Confirmed' },
+    { id: 'tm2', name: 'Grid Guardians', leader: 'Grace Hopper', members: 3, registered: 'Apr 09, 2026', status: 'Confirmed' },
+    { id: 'tm3', name: 'Traffic Tamers', leader: 'Victor Lu', members: 5, registered: 'Apr 09, 2026', status: 'Pending' },
+    { id: 'tm4', name: 'AirAlert', leader: 'Zoe Carter', members: 3, registered: 'Apr 10, 2026', status: 'Confirmed' },
+    { id: 'tm5', name: 'CityLab', leader: 'Daniel Park', members: 4, registered: 'Apr 10, 2026', status: 'Pending' },
+    { id: 'tm6', name: 'Smart Streets', leader: 'Ben Foster', members: 3, registered: 'Apr 11, 2026', status: 'Confirmed' },
+  ],
+  'data-thon-2026': [
+    { id: 'tm1', name: 'Data Wizards', leader: 'Alex Johnson', members: 3, registered: 'Jun 28, 2026', status: 'Confirmed' },
+    { id: 'tm2', name: 'ML Magicians', leader: 'Sophie Clark', members: 4, registered: 'Jun 29, 2026', status: 'Confirmed' },
+    { id: 'tm3', name: 'Stats Stars', leader: 'Oscar White', members: 3, registered: 'Jun 29, 2026', status: 'Pending' },
+    { id: 'tm4', name: 'NLP Ninjas', leader: 'Michael Lee', members: 2, registered: 'Jun 30, 2026', status: 'Confirmed' },
   ],
 }
 

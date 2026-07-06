@@ -10,7 +10,52 @@ import RoundsTab from './hackathon-detail/RoundsTab'
 import TracksTopicsTab from './hackathon-detail/TracksTopicsTab'
 import TeamsTab from './hackathon-detail/TeamsTab'
 
-const TABS = ['Overview', 'Rounds', 'Tracks & Topics', 'Teams']
+const TABS = ['Overview', 'Rounds', 'Tracks & Topics', 'Registered Teams']
+
+const ROUND_NAMES = ['Qualification Round', 'Semi-Final', 'Final Round']
+const STATUSES = ['Completed', 'Active', 'Upcoming']
+
+const TRACK_TEMPLATES = [
+  { name: 'Core Track', topics: ['Main Challenge', 'Innovation Sprint'] },
+  { name: 'Special Topic', topics: ['Industry Focus', 'Social Impact'] },
+]
+
+function generateRounds(hackathon) {
+  const baseTeams = hackathon.teams || 8
+  return ROUND_NAMES.map((name, i) => ({
+    id: `gen-r${i + 1}`,
+    name,
+    startDate: hackathon.date,
+    endDate: hackathon.date,
+    status: STATUSES[i],
+    teams: i === 0 ? baseTeams * 3 : i === 1 ? Math.round(baseTeams * 1.5) : baseTeams,
+  }))
+}
+
+function generateTracks(hackathon) {
+  return TRACK_TEMPLATES.map((t, ti) => ({
+    id: `gen-t${ti + 1}`,
+    name: t.name,
+    topics: t.topics.map((tp, tpi) => ({
+      id: `gen-tp${ti + 1}-${tpi + 1}`,
+      name: tp,
+      teams: Math.max(1, Math.round((hackathon.teams || 4) / (ti + tpi + 1))),
+    })),
+  }))
+}
+
+function generateTeams(hackathon) {
+  const count = hackathon.teams || 4
+  const leaderNames = ['Alex Johnson', 'Maria Chen', 'David Kim', 'Sarah Wilson', 'James Brown', 'Emily Davis', 'Michael Lee', 'Lisa Wang', 'Thomas Nguyen', 'Anna Martinez', 'Grace Hopper', 'Kevin Tran']
+  return Array.from({ length: count }, (_, i) => ({
+    id: `gen-tm${i + 1}`,
+    name: `Team ${String.fromCharCode(65 + i)}`,
+    leader: leaderNames[i % leaderNames.length],
+    members: Math.max(2, Math.ceil(Math.random() * 4) + 1),
+    registered: hackathon.date,
+    status: i < Math.ceil(count * 0.6) ? 'Confirmed' : i < Math.ceil(count * 0.85) ? 'Pending' : 'Rejected',
+  }))
+}
 
 export default function HackathonDetail() {
   const { id } = useParams()
@@ -21,9 +66,9 @@ export default function HackathonDetail() {
     return <NotFoundState entity="Hackathon" fallbackTo="/admin/hackathons" />
   }
 
-  const rounds = hackathonRounds[id] || []
-  const tracks = hackathonTracks[id] || []
-  const teams = hackathonTeams[id] || []
+  const rounds = hackathonRounds[id] || generateRounds(hackathon)
+  const tracks = hackathonTracks[id] || generateTracks(hackathon)
+  const teams = hackathonTeams[id] || generateTeams(hackathon)
 
   return (
     <div className="px-8 py-8">
@@ -78,7 +123,7 @@ export default function HackathonDetail() {
       {tab === 'Overview' && <OverviewTab hackathon={hackathon} />}
       {tab === 'Rounds' && <RoundsTab rounds={rounds} />}
       {tab === 'Tracks & Topics' && <TracksTopicsTab tracks={tracks} />}
-      {tab === 'Teams' && <TeamsTab teams={teams} />}
+      {tab === 'Registered Teams' && <TeamsTab teams={teams} />}
     </div>
   )
 }
