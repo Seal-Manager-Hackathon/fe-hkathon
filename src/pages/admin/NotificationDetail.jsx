@@ -5,6 +5,7 @@ import Badge from '../../components/Badge'
 import CardPanel from '../../components/CardPanel'
 import BackButton from '../../components/BackButton'
 import NotFoundState from '../../components/NotFoundState'
+import InfoRow from '../../components/InfoRow'
 
 export default function NotificationDetail() {
   const { id } = useParams()
@@ -47,26 +48,11 @@ export default function NotificationDetail() {
 
       <CardPanel title="Details">
         <div className="divide-y divide-[#f5f5f5]">
-          <div className="flex items-start gap-6 px-5 py-4">
-            <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">Type</span>
-            <Badge label={notification.type} className={notificationTypeBadge[notification.type]} />
-          </div>
-          <div className="flex items-start gap-6 px-5 py-4">
-            <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">Status</span>
-            <Badge label={notification.status} className={notificationStatusBadge[notification.status]} />
-          </div>
-          <div className="flex items-start gap-6 px-5 py-4">
-            <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">Audience</span>
-            <p className="text-[14px] text-[#1f2f3a]">{notification.audience}</p>
-          </div>
-          <div className="flex items-start gap-6 px-5 py-4">
-            <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">Sent By</span>
-            <p className="text-[14px] text-[#1f2f3a]">{notification.sentBy}</p>
-          </div>
-          <div className="flex items-start gap-6 px-5 py-4">
-            <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">Date</span>
-            <p className="text-[14px] text-[#1f2f3a]">{notification.date}</p>
-          </div>
+          <InfoRow label="Type"><Badge label={notification.type} className={notificationTypeBadge[notification.type]} /></InfoRow>
+          <InfoRow label="Status"><Badge label={notification.status} className={notificationStatusBadge[notification.status]} /></InfoRow>
+          <InfoRow label="Audience"><p className="text-[14px] text-[#1f2f3a]">{notification.audience}</p></InfoRow>
+          <InfoRow label="Sent By"><p className="text-[14px] text-[#1f2f3a]">{notification.sentBy}</p></InfoRow>
+          <InfoRow label="Date"><p className="text-[14px] text-[#1f2f3a]">{notification.date}</p></InfoRow>
         </div>
       </CardPanel>
 

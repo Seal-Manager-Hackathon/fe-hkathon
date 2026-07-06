@@ -1,11 +1,11 @@
-import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Edit, Calendar, Mail, Hash, UserCheck } from 'lucide-react'
+import { Edit, Mail, Calendar, Hash, UserCheck } from 'lucide-react'
 import { allUsers, roleBadge, userStatusBadge } from '../../data/mockAdminData'
 import Badge from '../../components/Badge'
 import CardPanel from '../../components/CardPanel'
 import BackButton from '../../components/BackButton'
 import NotFoundState from '../../components/NotFoundState'
+import InfoRow from '../../components/InfoRow'
 
 export default function UserDetail() {
   const { id } = useParams()
@@ -52,58 +52,25 @@ export default function UserDetail() {
       <div className="grid grid-cols-2 gap-6">
         <CardPanel title="Account Information">
           <div className="divide-y divide-[#f5f5f5]">
-            <div className="flex items-start gap-6 px-5 py-4">
-              <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">Full Name</span>
-              <p className="text-[14px] font-medium text-[#1f2f3a]">{user.name}</p>
-            </div>
-            <div className="flex items-start gap-6 px-5 py-4">
-              <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">Email</span>
-              <p className="text-[14px] text-[#064f5d]">{user.email}</p>
-            </div>
-            <div className="flex items-start gap-6 px-5 py-4">
-              <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">User ID</span>
-              <p className="text-[14px] text-gray-500 font-mono text-[13px]">{user.id}</p>
-            </div>
-            <div className="flex items-start gap-6 px-5 py-4">
-              <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">Role</span>
-              <Badge label={user.role} className={roleBadge[user.role]} />
-            </div>
-            <div className="flex items-start gap-6 px-5 py-4">
-              <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">Status</span>
-              <Badge label={user.status} className={userStatusBadge[user.status]} />
-            </div>
+            <InfoRow label="Full Name"><p className="text-[14px] font-medium text-[#1f2f3a]">{user.name}</p></InfoRow>
+            <InfoRow label="Email" icon={Mail}><p className="text-[14px] text-[#064f5d]">{user.email}</p></InfoRow>
+            <InfoRow label="User ID"><p className="text-[14px] text-gray-500 font-mono text-[13px]">{user.id}</p></InfoRow>
+            <InfoRow label="Role"><Badge label={user.role} className={roleBadge[user.role]} /></InfoRow>
+            <InfoRow label="Status"><Badge label={user.status} className={userStatusBadge[user.status]} /></InfoRow>
           </div>
         </CardPanel>
 
         <CardPanel title="Activity">
           <div className="divide-y divide-[#f5f5f5]">
-            <div className="flex items-start gap-6 px-5 py-4">
-              <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">
-                <Hash className="inline h-3.5 w-3.5 mr-1" />
-                Submissions
-              </span>
-              <p className="text-[20px] font-bold text-[#064f5d]">{user.submissions}</p>
-            </div>
-            <div className="flex items-start gap-6 px-5 py-4">
-              <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">
-                <Calendar className="inline h-3.5 w-3.5 mr-1" />
-                Joined
-              </span>
-              <p className="text-[14px] text-[#1f2f3a]">{user.joined}</p>
-            </div>
-            <div className="flex items-start gap-6 px-5 py-4">
-              <span className="w-[120px] shrink-0 text-[13px] font-semibold text-gray-400">
-                <UserCheck className="inline h-3.5 w-3.5 mr-1" />
-                Account Status
-              </span>
-              <div>
-                {user.status === 'Active' ? (
-                  <p className="text-[14px] text-[#2e7d32]">This account is active and has full access to the platform.</p>
-                ) : (
-                  <p className="text-[14px] text-[#757575]">This account is currently inactive.</p>
-                )}
-              </div>
-            </div>
+            <InfoRow label="Submissions" icon={Hash}><p className="text-[20px] font-bold text-[#064f5d]">{user.submissions}</p></InfoRow>
+            <InfoRow label="Joined" icon={Calendar}><p className="text-[14px] text-[#1f2f3a]">{user.joined}</p></InfoRow>
+            <InfoRow label="Account Status" icon={UserCheck}>
+              {user.status === 'Active' ? (
+                <p className="text-[14px] text-[#2e7d32]">This account is active and has full access to the platform.</p>
+              ) : (
+                <p className="text-[14px] text-[#757575]">This account is currently inactive.</p>
+              )}
+            </InfoRow>
           </div>
         </CardPanel>
       </div>

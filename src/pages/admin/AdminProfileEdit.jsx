@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { Save, Lock, Eye, EyeOff, User, ShieldAlert } from 'lucide-react'
+import { Save, Lock, User, ShieldAlert } from 'lucide-react'
 import { cn } from '../../utils/cn'
 import BackButton from '../../components/BackButton'
 import CardPanel from '../../components/CardPanel'
 import FormField from '../../components/FormField'
 import FormActions from '../../components/FormActions'
+import PasswordInput from '../../components/PasswordInput'
+import AlertMessage from '../../components/AlertMessage'
 
 const TABS = [
   { key: 'profile', label: 'Profile Info', icon: User },
@@ -29,9 +31,6 @@ export default function AdminProfileEdit() {
     newPassword: '',
     confirmPassword: '',
   })
-  const [showCurrent, setShowCurrent] = useState(false)
-  const [showNew, setShowNew] = useState(false)
-  const [showConfirm, setShowConfirm] = useState(false)
   const [passwordSaving, setPasswordSaving] = useState(false)
   const [passwordError, setPasswordError] = useState('')
   const [passwordSuccess, setPasswordSuccess] = useState(false)
@@ -147,11 +146,7 @@ export default function AdminProfileEdit() {
             </CardPanel>
           </div>
 
-          {profileSaved && (
-            <div className="mt-5 rounded-lg border border-[#e8f5e9] bg-[#e8f5e9] px-4 py-3 text-[14px] font-medium text-[#2e7d32]">
-              Profile updated successfully!
-            </div>
-          )}
+          <AlertMessage type="success">{profileSaved && 'Profile updated successfully!'}</AlertMessage>
 
           <FormActions
             onSave={handleSaveProfile}
@@ -177,47 +172,33 @@ export default function AdminProfileEdit() {
               </div>
 
               <div className="space-y-4 max-w-[480px]">
-                <FormField label="Current Password" required>
-                  <div className="relative">
-                    <input type={showCurrent ? 'text' : 'password'} value={passwordForm.currentPassword} onChange={(e) => updatePassword('currentPassword', e.target.value)} className="field-input pr-10" placeholder="Enter current password" />
-                    <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600">
-                      {showCurrent ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </FormField>
-
-                <FormField label="New Password" required>
-                  <div className="relative">
-                    <input type={showNew ? 'text' : 'password'} value={passwordForm.newPassword} onChange={(e) => updatePassword('newPassword', e.target.value)} className="field-input pr-10" placeholder="Enter new password" />
-                    <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600">
-                      {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </FormField>
-
-                <FormField label="Confirm New Password" required>
-                  <div className="relative">
-                    <input type={showConfirm ? 'text' : 'password'} value={passwordForm.confirmPassword} onChange={(e) => updatePassword('confirmPassword', e.target.value)} className="field-input pr-10" placeholder="Re-enter new password" />
-                    <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600">
-                      {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </FormField>
+                <PasswordInput
+                  label="Current Password"
+                  value={passwordForm.currentPassword}
+                  onChange={(e) => updatePassword('currentPassword', e.target.value)}
+                  placeholder="Enter current password"
+                  required
+                />
+                <PasswordInput
+                  label="New Password"
+                  value={passwordForm.newPassword}
+                  onChange={(e) => updatePassword('newPassword', e.target.value)}
+                  placeholder="Enter new password"
+                  required
+                />
+                <PasswordInput
+                  label="Confirm New Password"
+                  value={passwordForm.confirmPassword}
+                  onChange={(e) => updatePassword('confirmPassword', e.target.value)}
+                  placeholder="Re-enter new password"
+                  required
+                />
               </div>
             </div>
           </CardPanel>
 
-          {passwordError && (
-            <div className="mt-4 rounded-lg border border-[#fce4ec] bg-[#fce4ec] px-4 py-3 text-[14px] font-medium text-[#c62828]">
-              {passwordError}
-            </div>
-          )}
-
-          {passwordSuccess && (
-            <div className="mt-4 rounded-lg border border-[#e8f5e9] bg-[#e8f5e9] px-4 py-3 text-[14px] font-medium text-[#2e7d32]">
-              Password changed successfully!
-            </div>
-          )}
+          <AlertMessage type="error">{passwordError}</AlertMessage>
+          <AlertMessage type="success">{passwordSuccess && 'Password changed successfully!'}</AlertMessage>
 
           <FormActions
             onSave={handleChangePassword}

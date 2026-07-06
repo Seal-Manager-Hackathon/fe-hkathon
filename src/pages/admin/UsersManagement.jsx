@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { RotateCcw, UserPlus, Eye, Edit } from 'lucide-react'
+import { RotateCcw, UserPlus } from 'lucide-react'
 import { allUsers, roleBadge, userStatusBadge } from '../../data/mockAdminData'
 import BaseTable from '../../components/BaseTable'
 import Badge from '../../components/Badge'
 import SearchInput from '../../components/SearchInput'
 import SelectInput from '../../components/SelectInput'
+import TableActions from '../../components/TableActions'
 
 const PAGE_SIZE = 10
 
@@ -102,32 +103,19 @@ export default function UsersManagement() {
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => (
-        <div className="flex items-center justify-end gap-2">
-          <Link
-            to={`/admin/users/${row.id}`}
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]"
-          >
-            <Eye className="h-3.5 w-3.5" />
-            View
-          </Link>
-          <Link
-            to={`/admin/users/${row.id}/edit`}
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]"
-          >
-            <Edit className="h-3.5 w-3.5" />
-            Edit
-          </Link>
-        </div>
+        <TableActions viewTo={`/admin/users/${row.id}`} editTo={`/admin/users/${row.id}/edit`} />
       ),
     },
   ]
 
   return (
     <div className="px-8 py-8">
-      {/* Page Header */}
       <div className="mb-6 flex items-start justify-between">
         <div>
           <h1 className="text-[28px] font-bold text-[#1f2f3a]">Users</h1>
+          <p className="mt-1 text-[15px] text-gray-500">
+            Manage all {filtered.length} user accounts.
+          </p>
         </div>
         <Link
           to="/admin/users/create"
@@ -138,7 +126,6 @@ export default function UsersManagement() {
         </Link>
       </div>
 
-      {/* Filter Row */}
       <div className="mb-6 flex flex-wrap items-end gap-4">
         <SearchInput
           className="w-[300px]"
@@ -170,7 +157,6 @@ export default function UsersManagement() {
         </button>
       </div>
 
-      {/* Table */}
       <BaseTable
         columns={columns}
         data={filtered}
