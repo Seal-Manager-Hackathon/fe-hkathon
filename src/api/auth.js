@@ -21,6 +21,16 @@ export async function register({ email, password, firstName, lastName }) {
 }
 
 /**
+ * Verify email with token from email link.
+ * @param {{ token: string }} payload
+ * @returns {Promise<{ accessToken?: string, refreshToken?: string }>}
+ */
+export async function verifyEmail({ token }) {
+  const { data } = await api.post('/auth/verify-email', { token })
+  return data.data
+}
+
+/**
  * Get the currently authenticated user from the stored token.
  * @returns {Promise<object>} user object
  */

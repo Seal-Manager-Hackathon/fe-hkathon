@@ -26,8 +26,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
-      // Redirect to login if not already there
-      if (window.location.pathname !== '/login') {
+      // Don't auto-redirect from verify-email page — it handles its own errors
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/verify-email') {
         window.location.href = '/login'
       }
     }
