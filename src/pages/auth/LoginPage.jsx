@@ -1,15 +1,31 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { LogIn, Mail, Lock, ArrowLeft } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { LogIn, Mail, Lock, ArrowLeft, Loader2 } from 'lucide-react'
+import { useAuth } from '../../context/AuthContext'
+import { getErrorMessage } from '../../utils/error'
+import { toast } from '../../utils/toast'
 
 export default function LoginPage() {
+  const navigate = useNavigate()
+  const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     if (!email || !password) return
-    // TODO: call API
+    setLoading(true)
+
+    try {
+      await login({ email, password })
+      toast.success('Login successful')
+      navigate('/')
+    } catch (err) {
+      toast.error(getErrorMessage(err))
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -74,11 +90,15 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={!email || !password}
+            disabled={!email || !password || loading}
             className="mt-2 inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#ffca28] px-6 py-3 text-[15px] font-semibold text-[#064f5d] transition-colors hover:bg-[#f5bf1b] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <LogIn className="h-4 w-4" />
-            Sign in
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <LogIn className="h-4 w-4" />
+            )}
+            {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
 
