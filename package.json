@@ -9,10 +9,33 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "last 2 Chrome versions",
+      "last 2 Firefox versions",
+      "last 2 Safari versions",
+      "last 2 Edge versions",
+      "iOS >= 14",
+      "Safari >= 14",
+      "Firefox ESR"
+    ],
+    "development": [
+      "last 1 Chrome version",
+      "last 1 Firefox version",
+      "last 1 Safari version"
+    ]
+  },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.2",
+    "autoprefixer": "^10.5.2",
+    "postcss": "^8.5.16",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "react-router-dom": "^7.18.1"
+    "react-router-dom": "^7.18.1",
+    "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
@@ -29,3 +52,4 @@
     "vite": "^8.1.1"
   }
 }
+

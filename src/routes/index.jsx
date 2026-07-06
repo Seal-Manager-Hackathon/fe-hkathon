@@ -12,7 +12,7 @@ const NotFoundPage = lazy(() => import('../pages/NotFoundPage.jsx'))
 // ---------------------------------------------------------------------------
 function RouteFallback() {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, padding: 48 }}>
+    <div className="flex grow items-center justify-center p-12">
       Loading…
     </div>
   )
