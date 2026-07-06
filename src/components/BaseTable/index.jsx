@@ -1,0 +1,119 @@
+import { useMemo } from 'react'
+import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react'
+
+function SkeletonRow({ cols }) {
+  return (
+    <tr>
+      {Array.from({ length: cols }).map((_, i) => (
+        <td key={i} className="px-5 py-3.5">
+          <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
+        </td>
+      ))}
+    </tr>
+  )
+}
+
+export default function BaseTable({
+  columns = [],
+  data = [],
+  page = 1,
+  pageSize = 10,
+  total = 0,
+  onPageChange,
+  loading = false,
+  emptyText = 'No data found.',
+  keyExtractor,
+}) {
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+  const isFirstPage = page <= 1
+  const isLastPage = page >= totalPages
+
+  const rows = useMemo(() => {
+    const start = (page - 1) * pageSize
+    return data.slice(start, start + pageSize)
+  }, [data, page, pageSize])
+
+  if (!loading && data.length === 0) {
+    return (
+      <div className="overflow-hidden rounded-xl border border-[#e8ecf0] bg-white">
+        <div className="flex flex-col items-center justify-center py-20">
+          <Inbox className="mb-4 h-12 w-12 text-gray-300" />
+          <p className="text-[15px] font-medium text-gray-400">{emptyText}</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-[#e8ecf0] bg-white">
+      <table className="w-full">
+        {/* Header */}
+        <thead>
+          <tr className="border-b border-[#f0f0f0] bg-[#fafbfc]">
+            {columns.map((col) => (
+              <th
+                key={col.key}
+                className={`px-5 py-3.5 text-left text-[12px] font-bold uppercase tracking-wider text-gray-400 ${col.headerClassName || ''}`}
+              >
+                {col.header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+
+        {/* Body */}
+        <tbody>
+          {loading
+            ? Array.from({ length: pageSize }).map((_, i) => (
+                <SkeletonRow key={i} cols={columns.length} />
+              ))
+            : rows.map((row, rowIdx) => (
+                <tr
+                  key={keyExtractor ? keyExtractor(row, rowIdx) : row.id ?? rowIdx}
+                  className="border-b border-[#f5f5f5] transition-colors hover:bg-[#fafbfc] last:border-0"
+                >
+                  {columns.map((col) => (
+                    <td
+                      key={col.key}
+                      className={`px-5 py-3.5 ${col.className || ''}`}
+                    >
+                      {col.render ? col.render(row) : row[col.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+        </tbody>
+      </table>
+
+      {/* Pagination */}
+      {total > 0 && (
+        <div className="flex items-center justify-between border-t border-[#f0f0f0] px-5 py-3">
+          <p className="text-[13px] text-gray-400">
+            Showing {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} of {total}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onPageChange?.(page - 1)}
+              disabled={isFirstPage}
+              className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-[#d8e0e6] bg-white px-3 py-1.5 text-[13px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </button>
+            <span className="text-[14px] font-semibold text-[#1f2f3a]">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => onPageChange?.(page + 1)}
+              disabled={isLastPage}
+              className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-[#d8e0e6] bg-white px-3 py-1.5 text-[13px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

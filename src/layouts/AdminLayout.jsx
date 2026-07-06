@@ -10,7 +10,6 @@ export default function AdminLayout() {
         navItems={mockAdminNavItems}
         user={mockAdminUser}
         userMenu={mockAdminMenu}
-        defaultActive="dashboard"
       />
 
       <div className="ml-[248px] flex min-h-screen flex-1 flex-col">

@@ -5,10 +5,10 @@ import {
 } from 'lucide-react'
 
 export const mockAdminNavItems = [
-  { key: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard' },
-  { key: 'hackathons', label: 'Hackathons', icon: 'Trophy' },
-  { key: 'users', label: 'Users', icon: 'Users' },
-  { key: 'settings', label: 'Settings', icon: 'Settings' },
+  { key: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', to: '/admin' },
+  { key: 'hackathons', label: 'Hackathons', icon: 'Trophy', to: '/admin/hackathons' },
+  { key: 'users', label: 'Users', icon: 'Users', to: '/admin/users' },
+  { key: 'settings', label: 'Settings', icon: 'Settings', to: '/admin/settings' },
 ]
 
 export const mockAdminUser = {
@@ -77,6 +77,40 @@ export const notifications = [
   { id: 3, title: 'System maintenance scheduled', body: 'The platform will undergo scheduled maintenance on July 12, 2026 from 02:00 AM to 06:00 AM UTC.', sentBy: 'Admin', date: '2026-07-03' },
   { id: 4, title: 'New lecturer accounts created', body: '20 new lecturer accounts have been created for the upcoming semester.', sentBy: 'Admin', date: '2026-07-01' },
 ]
+
+export const allHackathons = [
+  { id: 'seal-summer-2026', name: 'SEAL Hackathon 2026 - Summer', year: '2026', season: 'Summer 2026', status: 'Draft', visibility: 'Private', date: 'Jul 06, 2026', prize: '$50,000', teams: 0, location: 'Ho Chi Minh City', description: 'The flagship summer hackathon by SEAL.' },
+  { id: 'cloud-builders-2026', name: 'Cloud Builders Cup 2026', year: '2026', season: 'Spring 2026', status: 'Published', visibility: 'Public', date: 'Jun 15, 2026', prize: '$30,000', teams: 8, location: 'Hanoi', description: 'Build cloud-native solutions.' },
+  { id: 'cyber-arena-2025', name: 'Cyber Security Arena 2025', year: '2025', season: 'Fall 2025', status: 'Closed', visibility: 'Public', date: 'Dec 20, 2025', prize: '$25,000', teams: 7, location: 'Da Nang', description: 'CTF and red-team challenges.' },
+  { id: 'ai-hackfest-2026', name: 'AI HackFest 2026', year: '2026', season: 'Fall 2026', status: 'Upcoming', visibility: 'Public', date: 'Sep 01, 2026', prize: '$40,000', teams: 0, location: 'Ho Chi Minh City', description: 'AI/ML applications.' },
+  { id: 'green-cup-2025', name: 'Green Innovators Cup 2025', year: '2025', season: 'Winter 2025', status: 'Closed', visibility: 'Public', date: 'Nov 10, 2025', prize: '$20,000', teams: 5, location: 'Can Tho', description: 'Sustainable Mekong Delta tech.' },
+  { id: 'fintech-rush-2026', name: 'FinTech Rush 2026', year: '2026', season: 'Spring 2026', status: 'Published', visibility: 'Public', date: 'May 20, 2026', prize: '$35,000', teams: 12, location: 'Ho Chi Minh City', description: 'Reinventing financial services.' },
+  { id: 'web3-builders-2026', name: 'Web3 Builders Hackathon', year: '2026', season: 'Summer 2026', status: 'Draft', visibility: 'Private', date: 'Aug 01, 2026', prize: '$45,000', teams: 0, location: 'Hanoi', description: 'DeFi and smart contracts.' },
+  { id: 'edtech-challenge-2026', name: 'EdTech Challenge 2026', year: '2026', season: 'Winter 2026', status: 'Upcoming', visibility: 'Unlisted', date: 'Dec 01, 2026', prize: '$15,000', teams: 0, location: 'Da Nang', description: 'Transforming education.' },
+  { id: 'health-hack-2025', name: 'HealthTech Hack 2025', year: '2025', season: 'Summer 2025', status: 'Closed', visibility: 'Public', date: 'Jul 15, 2025', prize: '$28,000', teams: 9, location: 'Hue', description: 'Digital health innovations.' },
+  { id: 'iot-smart-city-2026', name: 'IoT Smart City 2026', year: '2026', season: 'Spring 2026', status: 'Published', visibility: 'Public', date: 'Apr 10, 2026', prize: '$22,000', teams: 6, location: 'Ho Chi Minh City', description: 'Connected urban living.' },
+  { id: 'game-jam-2026', name: 'Game Jam Championship 2026', year: '2026', season: 'Fall 2026', status: 'Draft', visibility: 'Unlisted', date: 'Oct 01, 2026', prize: '$12,000', teams: 0, location: 'Hanoi', description: '48-hour game dev.' },
+  { id: 'data-thon-2026', name: 'DataThon Analytics 2026', year: '2026', season: 'Summer 2026', status: 'Published', visibility: 'Public', date: 'Jun 30, 2026', prize: '$18,000', teams: 4, location: 'Da Nang', description: 'Data science competition.' },
+  { id: 'blockchain-battle-2025', name: 'Blockchain Battle 2025', year: '2025', season: 'Fall 2025', status: 'Closed', visibility: 'Public', date: 'Oct 20, 2025', prize: '$33,000', teams: 11, location: 'Ho Chi Minh City', description: 'NFT and DAO solutions.' },
+  { id: 'devops-marathon-2026', name: 'DevOps Marathon 2026', year: '2026', season: 'Winter 2026', status: 'Upcoming', visibility: 'Unlisted', date: 'Nov 15, 2026', prize: '$10,000', teams: 0, location: 'Hanoi', description: 'CI/CD and observability.' },
+  { id: 'mobile-first-2026', name: 'Mobile First 2026', year: '2026', season: 'Spring 2026', status: 'Published', visibility: 'Public', date: 'Mar 25, 2026', prize: '$27,000', teams: 7, location: 'Ho Chi Minh City', description: 'Cross-platform mobile.' },
+  { id: 'quantum-hack-2026', name: 'Quantum Computing Hack 2026', year: '2026', season: 'Summer 2026', status: 'Upcoming', visibility: 'Private', date: 'Sep 15, 2026', prize: '$60,000', teams: 0, location: 'Hanoi', description: 'Quantum algorithms.' },
+  { id: 'vr-innovation-2025', name: 'VR Innovation Challenge 2025', year: '2025', season: 'Spring 2025', status: 'Closed', visibility: 'Public', date: 'Mar 10, 2025', prize: '$18,000', teams: 4, location: 'Ho Chi Minh City', description: 'VR/AR experiences.' },
+  { id: 'clean-energy-2025', name: 'Clean Energy Hack 2025', year: '2025', season: 'Summer 2025', status: 'Closed', visibility: 'Public', date: 'Aug 20, 2025', prize: '$22,000', teams: 6, location: 'Da Nang', description: 'Renewable energy tech.' },
+  { id: 'agri-tech-2026', name: 'AgriTech Challenge 2026', year: '2026', season: 'Fall 2026', status: 'Draft', visibility: 'Unlisted', date: 'Oct 25, 2026', prize: '$16,000', teams: 0, location: 'Can Tho', description: 'Smart farming solutions.' },
+  { id: 'women-in-tech-2026', name: 'Women in Tech Hackathon 2026', year: '2026', season: 'Spring 2026', status: 'Published', visibility: 'Public', date: 'Mar 08, 2026', prize: '$25,000', teams: 10, location: 'Ho Chi Minh City', description: 'Empowering women in tech.' },
+  { id: 'open-source-sprint-2025', name: 'Open Source Sprint 2025', year: '2025', season: 'Winter 2025', status: 'Closed', visibility: 'Public', date: 'Jan 15, 2025', prize: '$8,000', teams: 14, location: 'Hanoi', description: 'Contribute to open source.' },
+  { id: 'robotics-showdown-2026', name: 'Robotics Showdown 2026', year: '2026', season: 'Summer 2026', status: 'Upcoming', visibility: 'Public', date: 'Aug 20, 2026', prize: '$42,000', teams: 0, location: 'Ho Chi Minh City', description: 'Hardware meets software.' },
+  { id: 'sustainability-hack-2024', name: 'Sustainability Hack 2024', year: '2024', season: 'Fall 2024', status: 'Closed', visibility: 'Public', date: 'Oct 05, 2024', prize: '$14,000', teams: 8, location: 'Da Nang', description: 'Eco-friendly solutions.' },
+  { id: 'medtech-spring-2024', name: 'MedTech Spring 2024', year: '2024', season: 'Spring 2024', status: 'Closed', visibility: 'Public', date: 'Apr 12, 2024', prize: '$19,000', teams: 9, location: 'Hue', description: 'Healthcare innovations.' },
+  { id: 'devrel-summit-2026', name: 'DevRel Summit Hack 2026', year: '2026', season: 'Winter 2026', status: 'Draft', visibility: 'Private', date: 'Dec 18, 2026', prize: '$28,000', teams: 0, location: 'Hanoi', description: 'Developer relations tools.' },
+]
+
+export const visibilityBadge = {
+  Public: 'bg-[#e8f5e9] text-[#2e7d32]',
+  Private: 'bg-[#fce4ec] text-[#c62828]',
+  Unlisted: 'bg-[#fff3e0] text-[#e65100]',
+}
 
 export const statusBadge = {
   Published: 'bg-[#e8f5e9] text-[#2e7d32]',

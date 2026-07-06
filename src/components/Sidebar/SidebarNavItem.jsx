@@ -1,15 +1,17 @@
+import { useNavigate } from 'react-router-dom'
 import { cn } from '../../utils/cn'
 import { Home, Trophy, Medal, LayoutDashboard, Users, Settings } from 'lucide-react'
 
 const iconMap = { Home, Trophy, Medal, LayoutDashboard, Users, Settings }
 
-export default function SidebarNavItem({ item, activeKey, onClick }) {
+export default function SidebarNavItem({ item, activeKey }) {
+  const navigate = useNavigate()
   const isActive = activeKey === item.key
   const Icon = iconMap[item.icon]
 
   return (
     <button
-      onClick={() => onClick(item.key)}
+      onClick={() => navigate(item.to)}
       className={cn(
         'flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-left text-[16px] font-bold transition-colors duration-150',
         isActive

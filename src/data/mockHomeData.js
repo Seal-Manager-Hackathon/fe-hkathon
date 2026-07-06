@@ -1,7 +1,7 @@
 export const mockNavItems = [
-  { key: 'home', label: 'Home', icon: 'Home' },
-  { key: 'hackathons', label: 'Hackathons', icon: 'Trophy' },
-  { key: 'leaderboard', label: 'Leaderboard', icon: 'Medal' },
+  { key: 'home', label: 'Home', icon: 'Home', to: '/' },
+  { key: 'hackathons', label: 'Hackathons', icon: 'Trophy', to: '/hackathons' },
+  { key: 'leaderboard', label: 'Leaderboard', icon: 'Medal', to: '/leaderboard' },
 ]
 
 export const mockHackathons = [

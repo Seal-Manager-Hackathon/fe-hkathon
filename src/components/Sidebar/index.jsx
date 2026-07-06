@@ -1,9 +1,17 @@
-import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import SidebarNavItem from './SidebarNavItem'
 import SidebarUserCard from './SidebarUserCard'
+import { useMemo } from 'react'
 
-export default function Sidebar({ navItems, user, userMenu, defaultActive = 'home' }) {
-  const [activeKey, setActiveKey] = useState(defaultActive)
+export default function Sidebar({ navItems, user, userMenu }) {
+  const { pathname } = useLocation()
+
+  const activeKey = useMemo(() => {
+    // Sort by path length descending so /admin/hackathons matches before /admin
+    const sorted = [...navItems].sort((a, b) => b.to.length - a.to.length)
+    const match = sorted.find((item) => pathname.startsWith(item.to))
+    return match?.key || navItems[0]?.key || ''
+  }, [pathname, navItems])
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[248px] flex-col bg-[#064f5d]">
@@ -20,7 +28,6 @@ export default function Sidebar({ navItems, user, userMenu, defaultActive = 'hom
             key={item.key}
             item={item}
             activeKey={activeKey}
-            onClick={setActiveKey}
           />
         ))}
       </nav>
