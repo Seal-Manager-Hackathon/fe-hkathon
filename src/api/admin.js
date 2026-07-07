@@ -423,6 +423,13 @@ export async function restoreTrack(trackId) {
   return data
 }
 
+// ─── Topics ──────────────────────────────────────────────────────────────
+
+export async function getTopics(trackId, params = {}) {
+  const { data } = await api.get(`/admin/tracks/${trackId}/topics`, { params })
+  return data.data
+}
+
 // ─── Team Lock/Unlock ─────────────────────────────────────────────────────────
 
 export async function lockTeam(teamId) {

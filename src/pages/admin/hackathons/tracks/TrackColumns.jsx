@@ -1,10 +1,12 @@
-import { Trash2, RotateCcw, Pencil, Eye, FileText, Users, CircleCheck, Calendar, MoreHorizontal } from 'lucide-react'
+import { Trash2, RotateCcw, Pencil, Eye, FileText, Users, CircleCheck, Calendar, MoreHorizontal, BookOpen } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../../components/Badge'
 import { formatDateTime } from '../../../../utils/format'
 
 const editBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] transition-colors hover:bg-[#bbdefb]'
+const topicBtnClass =
+  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f3e5f5] px-3 py-1.5 text-[13px] font-semibold text-[#7b1fa2] transition-colors hover:bg-[#e1bee7]'
 const dangerBtnClass =
   'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2] w-[92px]'
 const restoreBtnClass =
@@ -25,6 +27,11 @@ export function trackColumns(onDelete, onRestore) {
       className: 'text-right',
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
+          {!row.isDisable && (
+            <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.id}/topics`} className={topicBtnClass}>
+              <BookOpen className="h-3.5 w-3.5" /> Topics
+            </Link>
+          )}
           <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] transition-colors hover:bg-[#e8e8e8]">
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
