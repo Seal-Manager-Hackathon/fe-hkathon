@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { UserPlus } from 'lucide-react'
-import { getUsers } from '../../api/admin'
+import { getUsers, deleteUser, restoreUser } from '../../api/admin'
 import BaseTable from '../../components/BaseTable'
 import FilterBar from '../../components/FilterBar'
 import { usersColumns } from './UsersColumns'
 import { usersFilters } from './UsersFilters'
+import { toast } from '../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -70,6 +71,26 @@ export default function UsersManagement() {
     setPageIndex(1)
   }
 
+  async function handleDelete(user) {
+    try {
+      await deleteUser(user.id)
+      toast.success('User deleted')
+      fetchUsers()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to delete user.')
+    }
+  }
+
+  async function handleRestore(user) {
+    try {
+      await restoreUser(user.id)
+      toast.success('User restored')
+      fetchUsers()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to restore user.')
+    }
+  }
+
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -102,7 +123,7 @@ export default function UsersManagement() {
       )}
 
       <BaseTable
-        columns={usersColumns}
+        columns={usersColumns(handleDelete, handleRestore)}
         data={users}
         page={pageIndex}
         pageSize={PAGE_SIZE}

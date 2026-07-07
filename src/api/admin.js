@@ -288,3 +288,23 @@ export async function createRound(eventId, payload) {
   return data
 }
 
+/**
+ * Soft-delete a user (set IsDisable = true).
+ * @param {string} userId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteUser(userId) {
+  const { data } = await api.post(`/admin/users/${userId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted user (set IsDisable = false).
+ * @param {string} userId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreUser(userId) {
+  const { data } = await api.post(`/admin/users/${userId}/restore`)
+  return data
+}
+
