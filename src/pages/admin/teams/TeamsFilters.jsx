@@ -1,5 +1,5 @@
-import { Search, Edit, Ban, Calendar } from 'lucide-react'
-import { CAN_EDIT_OPTIONS, DISABLE_OPTIONS } from '../../../constants/adminOptions'
+import { Search, Lock, Ban, Calendar } from 'lucide-react'
+import { LOCK_OPTIONS, DISABLE_OPTIONS } from '../../../constants/adminOptions'
 
 /**
  * Filter descriptor array consumed by FilterBar.
@@ -17,9 +17,9 @@ export const teamsFilters = [
   {
     type: 'select',
     key: 'canEdit',
-    label: 'Can Edit',
-    icon: Edit,
-    options: CAN_EDIT_OPTIONS,
+    label: 'Lock',
+    icon: Lock,
+    options: LOCK_OPTIONS,
     className: 'w-full sm:w-[160px]',
   },
   {

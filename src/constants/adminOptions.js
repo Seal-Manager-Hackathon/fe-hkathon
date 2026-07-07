@@ -157,8 +157,8 @@ export const targetTypeBadge = {
 }
 
 /* ─── Team filters ─── */
-export const CAN_EDIT_OPTIONS = [
+export const LOCK_OPTIONS = [
   { value: '', label: 'All' },
-  { value: 'true', label: 'Can Edit' },
-  { value: 'false', label: 'Cannot Edit' },
+  { value: 'false', label: 'Locked' },
+  { value: 'true', label: 'Unlocked' },
 ]

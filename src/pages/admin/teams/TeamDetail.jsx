@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
-  Edit, Calendar, Clock, Users, CheckCircle, XCircle, Crown, User, Shield, CircleCheck, ArrowLeft,
+  Edit, Calendar, Clock, Users, CheckCircle, XCircle, Crown, User, Shield, CircleCheck, ArrowLeft, Lock,
 } from 'lucide-react'
 import { getTeamDetail } from '../../../api/admin'
 import { formatDate } from '../../../utils/format'
@@ -154,11 +154,11 @@ export default function TeamDetail() {
           <InfoRow label="Team Name" icon={Users}>
             <p className="text-[14px] font-medium text-[#1f2f3a]">{team.name}</p>
           </InfoRow>
-          <InfoRow label="Can Edit" icon={team.canEdit ? CheckCircle : XCircle}>
+          <InfoRow label="Lock" icon={Lock}>
             {team.canEdit ? (
-              <Badge label="Yes" className="bg-[#e8f5e9] text-[#2e7d32]" />
+              <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" />
             ) : (
-              <Badge label="No" className="bg-[#fce4ec] text-[#c62828]" />
+              <Badge label="Yes" className="bg-[#ffcdd2] text-[#e65100]" />
             )}
           </InfoRow>
           <InfoRow label="Status" icon={CircleCheck}>

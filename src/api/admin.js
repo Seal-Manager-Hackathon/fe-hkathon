@@ -413,3 +413,15 @@ export async function restoreTrack(trackId) {
   return data
 }
 
+// ─── Team Lock/Unlock ─────────────────────────────────────────────────────────
+
+export async function lockTeam(teamId) {
+  const { data } = await api.post(`/admin/teams/${teamId}/lock`)
+  return data
+}
+
+export async function unlockTeam(teamId) {
+  const { data } = await api.post(`/admin/teams/${teamId}/unlock`)
+  return data
+}
+

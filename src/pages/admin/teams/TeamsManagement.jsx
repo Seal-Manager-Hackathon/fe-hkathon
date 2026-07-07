@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Users, Trash2, RotateCcw, CircleCheck, UserRound, Calendar, Edit, MoreHorizontal } from 'lucide-react'
-import { getTeams, deleteTeam, restoreTeam } from '../../../api/admin'
+import { Users, Trash2, RotateCcw, CircleCheck, UserRound, Calendar, Edit, MoreHorizontal, Lock, LockOpen } from 'lucide-react'
+import { getTeams, deleteTeam, restoreTeam, lockTeam, unlockTeam } from '../../../api/admin'
 import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import Badge from '../../../components/Badge'
@@ -24,7 +24,7 @@ const dangerBtnClass =
 const restoreBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9]'
 
-function teamColumns(onDelete, onRestore) {
+function teamColumns(onDelete, onRestore, onLock, onUnlock) {
   return [
     {
       key: 'name',
@@ -37,18 +37,18 @@ function teamColumns(onDelete, onRestore) {
       ),
     },
     {
-      key: 'canEdit',
-      header: 'Can Edit',
-      headerIcon: Edit,
-      render: (row) => (
-        <Badge label={row.canEdit ? 'Yes' : 'No'} className={row.canEdit ? 'bg-[#e8f5e9] text-[#2e7d32]' : 'bg-[#fce4ec] text-[#c62828]'} />
-      ),
-    },
-    {
       key: 'createdAt',
       header: 'Created',
       headerIcon: Calendar,
       render: (row) => <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>,
+    },
+    {
+      key: 'canEdit',
+      header: 'Lock',
+      headerIcon: Lock,
+      render: (row) => (
+        <Badge label={row.canEdit ? 'No' : 'Yes'} className={row.canEdit ? 'bg-[#e8f5e9] text-[#2e7d32]' : 'bg-[#ffcdd2] text-[#e65100]'} />
+      ),
     },
     {
       key: 'isDisable',
@@ -71,9 +71,20 @@ function teamColumns(onDelete, onRestore) {
             <Users className="h-3.5 w-3.5" /> View
           </Link>
           {!row.isDisable && (
-            <Link to={`/admin/teams/${row.id}/edit`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] hover:bg-[#bbdefb]">
-              <Edit className="h-3.5 w-3.5" /> Edit
-            </Link>
+            <>
+              <Link to={`/admin/teams/${row.id}/edit`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] hover:bg-[#bbdefb]">
+                <Edit className="h-3.5 w-3.5" /> Edit
+              </Link>
+              {row.canEdit ? (
+                <button onClick={() => onLock?.(row)} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] hover:bg-[#ffe0b2]">
+                  <Lock className="h-3.5 w-3.5" /> Lock
+                </button>
+              ) : (
+                <button onClick={() => onUnlock?.(row)} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9]">
+                  <LockOpen className="h-3.5 w-3.5" /> Unlock
+                </button>
+              )}
+            </>
           )}
           {row.isDisable ? (
             <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
@@ -166,6 +177,26 @@ export default function TeamsManagement() {
     }
   }
 
+  async function handleLock(team) {
+    try {
+      await lockTeam(team.id)
+      toast.success('Team locked')
+      fetchTeams()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to lock team.')
+    }
+  }
+
+  async function handleUnlock(team) {
+    try {
+      await unlockTeam(team.id)
+      toast.success('Team unlocked')
+      fetchTeams()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to unlock team.')
+    }
+  }
+
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -195,7 +226,7 @@ export default function TeamsManagement() {
       )}
 
       <BaseTable
-        columns={teamColumns(handleDelete, handleRestore)}
+        columns={teamColumns(handleDelete, handleRestore, handleLock, handleUnlock)}
         data={teams}
         page={pageIndex}
         pageSize={PAGE_SIZE}
