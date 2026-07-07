@@ -28,7 +28,7 @@ export const usersFilters = [
   {
     type: 'select',
     key: 'isDisable',
-    label: 'Status',
+    label: 'Deleted',
     options: DISABLE_OPTIONS,
     className: 'w-full sm:w-[160px]',
   },

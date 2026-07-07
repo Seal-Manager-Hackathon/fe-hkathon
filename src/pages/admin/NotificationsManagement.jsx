@@ -13,6 +13,7 @@ const PAGE_SIZE = 10
 const DEFAULT_VALUES = {
   title: '',
   targetType: '',
+  isDisable: '',
   fromDate: '',
   toDate: '',
 }
@@ -30,9 +31,10 @@ export default function NotificationsManagement() {
 
   const buildParams = useCallback(() => {
     const params = { PageIndex: pageIndex, PageSize: PAGE_SIZE }
-    const { title, targetType, fromDate, toDate } = filters
+    const { title, targetType, isDisable, fromDate, toDate } = filters
     if (title) params.Title = title
     if (targetType) params.TargetType = targetType
+    if (isDisable !== '') params.IsDisable = isDisable === 'true'
     if (fromDate) params.FromDate = new Date(fromDate).toISOString()
     if (toDate) params.ToDate = new Date(toDate).toISOString()
     return params

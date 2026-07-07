@@ -14,6 +14,7 @@ const PAGE_SIZE = 10
 const DEFAULT_VALUES = {
   keyword: '',
   canEdit: '',
+  isDisable: '',
   fromDate: '',
   toDate: '',
 }
@@ -80,9 +81,10 @@ export default function TeamsManagement() {
 
   const buildParams = useCallback(() => {
     const params = { PageIndex: pageIndex, PageSize: PAGE_SIZE }
-    const { keyword, canEdit, fromDate, toDate } = filters
+    const { keyword, canEdit, isDisable, fromDate, toDate } = filters
     if (keyword) params.Keyword = keyword
     if (canEdit !== '') params.CanEdit = canEdit === 'true'
+    if (isDisable !== '') params.IsDisable = isDisable === 'true'
     if (fromDate) params.FromDate = new Date(fromDate).toISOString()
     if (toDate) params.ToDate = new Date(toDate).toISOString()
     return params

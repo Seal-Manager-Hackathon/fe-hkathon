@@ -1,4 +1,4 @@
-import { TARGET_TYPE_OPTIONS_ALL } from '../../constants/adminOptions'
+import { TARGET_TYPE_OPTIONS_ALL, DISABLE_OPTIONS } from '../../constants/adminOptions'
 
 /**
  * Filter descriptor array consumed by FilterBar.
@@ -17,6 +17,13 @@ export const notificationsFilters = [
     label: 'Target',
     options: TARGET_TYPE_OPTIONS_ALL,
     className: 'w-full sm:w-[180px]',
+  },
+  {
+    type: 'select',
+    key: 'isDisable',
+    label: 'Deleted',
+    options: DISABLE_OPTIONS,
+    className: 'w-full sm:w-[160px]',
   },
   {
     type: 'date',

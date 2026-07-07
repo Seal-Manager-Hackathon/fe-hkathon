@@ -14,6 +14,7 @@ const PAGE_SIZE = 10
 const DEFAULT_VALUES = {
   keyword: '',
   status: '',
+  isDisable: '',
   fromDate: '',
   toDate: '',
 }
@@ -90,9 +91,10 @@ export default function HackathonManagement() {
 
   const buildParams = useCallback(() => {
     const params = { PageIndex: pageIndex, PageSize: PAGE_SIZE }
-    const { keyword, status, fromDate, toDate } = filters
+    const { keyword, status, isDisable, fromDate, toDate } = filters
     if (keyword) params.Keyword = keyword
     if (status) params.Status = status
+    if (isDisable !== '') params.IsDisable = isDisable === 'true'
     if (fromDate) params.FromDate = new Date(fromDate).toISOString()
     if (toDate) params.ToDate = new Date(toDate).toISOString()
     return params

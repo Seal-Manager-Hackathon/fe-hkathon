@@ -1,4 +1,4 @@
-import { HACKATHON_STATUS_OPTIONS_ALL as STATUS_OPTIONS } from '../../constants/adminOptions'
+import { HACKATHON_STATUS_OPTIONS_ALL as STATUS_OPTIONS, DISABLE_OPTIONS } from '../../constants/adminOptions'
 
 /**
  * Filter descriptor array consumed by FilterBar.
@@ -17,6 +17,13 @@ export const hackathonFilters = [
     label: 'Status',
     options: STATUS_OPTIONS,
     className: 'w-full sm:w-[180px]',
+  },
+  {
+    type: 'select',
+    key: 'isDisable',
+    label: 'Deleted',
+    options: DISABLE_OPTIONS,
+    className: 'w-full sm:w-[160px]',
   },
   {
     type: 'date',

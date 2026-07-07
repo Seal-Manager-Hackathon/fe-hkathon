@@ -36,8 +36,8 @@ export const VERIFIED_OPTIONS = [
 
 export const DISABLE_OPTIONS = [
   { value: '', label: 'All' },
-  { value: 'true', label: 'Disabled' },
-  { value: 'false', label: 'Active' },
+  { value: 'true', label: 'Yes' },
+  { value: 'false', label: 'No' },
 ]
 
 /* ─── Hackathon ─── */
