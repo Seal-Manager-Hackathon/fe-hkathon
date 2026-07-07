@@ -167,7 +167,7 @@ function RoundsTab({ eventId }) {
   return (
     <div className="rounded-xl border border-[#e8ecf0] bg-white">
       <div className="flex items-center justify-between border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
-        <h3 className="text-[15px] font-bold text-[#1f2f3a]">Rounds ({totalCount})</h3>
+        <h3 className="text-[15px] font-bold text-[#1f2f3a]">Rounds</h3>
         <Link to={`/admin/hackathons/${eventId}/rounds/create`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#064f5d] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#05404a]">
           + Create Round
         </Link>
