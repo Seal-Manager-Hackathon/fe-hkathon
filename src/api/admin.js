@@ -188,6 +188,16 @@ export async function updateTeam(teamId, payload) {
   return data
 }
 
+export async function deleteTeam(teamId) {
+  const { data } = await api.post(`/admin/teams/${teamId}/delete`)
+  return data
+}
+
+export async function restoreTeam(teamId) {
+  const { data } = await api.post(`/admin/teams/${teamId}/restore`)
+  return data
+}
+
 /**
  * Get notification detail by ID.
  * @param {string} notificationId

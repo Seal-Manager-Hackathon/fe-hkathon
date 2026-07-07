@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Users } from 'lucide-react'
-import { getTeams } from '../../../api/admin'
+import { Users, Trash2, RotateCcw } from 'lucide-react'
+import { getTeams, deleteTeam, restoreTeam } from '../../../api/admin'
 import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import Badge from '../../../components/Badge'
-import TableActions from '../../../components/TableActions'
 import { teamsFilters } from './TeamsFilters'
 import { formatDate } from '../../../utils/format'
+import { toast } from '../../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -19,53 +19,69 @@ const DEFAULT_VALUES = {
   toDate: '',
 }
 
-const columns = [
-  {
-    key: 'name',
-    header: 'Team Name',
-    render: (row) => (
-      <Link
-        to={`/admin/teams/${row.id}`}
-        className="text-[14px] font-semibold text-[#064f5d] hover:underline"
-      >
-        {row.name}
-      </Link>
-    ),
-  },
-  {
-    key: 'canEdit',
-    header: 'Can Edit',
-    render: (row) => (
-      <Badge label={row.canEdit ? 'Yes' : 'No'} className={row.canEdit ? 'bg-[#e8f5e9] text-[#2e7d32]' : 'bg-[#fce4ec] text-[#c62828]'} />
-    ),
-  },
-  {
-    key: 'isDisable',
-    header: 'Status',
-    render: (row) => {
-      if (row.isDisable) {
-        return <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" />
-      }
-      return <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
+const dangerBtnClass =
+  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2]'
+const restoreBtnClass =
+  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9]'
+
+function teamColumns(onDelete, onRestore) {
+  return [
+    {
+      key: 'name',
+      header: 'Team Name',
+      render: (row) => (
+        <Link to={`/admin/teams/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">
+          {row.name}
+        </Link>
+      ),
     },
-  },
-  {
-    key: 'createdAt',
-    header: 'Created',
-    render: (row) => (
-      <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>
-    ),
-  },
-  {
-    key: 'actions',
-    header: 'Actions',
-    headerClassName: 'text-right',
-    className: 'text-right',
-    render: (row) => (
-      <TableActions viewTo={`/admin/teams/${row.id}`} editTo={`/admin/teams/${row.id}/edit`} />
-    ),
-  },
-]
+    {
+      key: 'canEdit',
+      header: 'Can Edit',
+      render: (row) => (
+        <Badge label={row.canEdit ? 'Yes' : 'No'} className={row.canEdit ? 'bg-[#e8f5e9] text-[#2e7d32]' : 'bg-[#fce4ec] text-[#c62828]'} />
+      ),
+    },
+    {
+      key: 'isDisable',
+      header: 'Status',
+      render: (row) => {
+        if (row.isDisable) return <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />
+        return <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
+      },
+    },
+    {
+      key: 'createdAt',
+      header: 'Created',
+      render: (row) => <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>,
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      headerClassName: 'text-right',
+      className: 'text-right',
+      render: (row) => (
+        <div className="flex items-center justify-end gap-2">
+          <Link to={`/admin/teams/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] hover:bg-[#e8e8e8]">
+            <Users className="h-3.5 w-3.5" /> View
+          </Link>
+          <Link to={`/admin/teams/${row.id}/edit`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] hover:bg-[#bbdefb]">
+            Edit
+          </Link>
+          {row.isDisable ? (
+            <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
+              <RotateCcw className="h-3.5 w-3.5" /> Restore
+            </button>
+          ) : (
+            <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
+              <Trash2 className="h-3.5 w-3.5" /> Delete
+            </button>
+          )}
+        </div>
+      ),
+    },
+  ]
+}
 
 export default function TeamsManagement() {
   const [filters, setFilters] = useState(DEFAULT_VALUES)
@@ -119,6 +135,18 @@ export default function TeamsManagement() {
     setPageIndex(1)
   }
 
+  function handleDelete(team) {
+    deleteTeam(team.id)
+      .then(() => { toast.success('Team deleted'); fetchTeams() })
+      .catch((err) => toast.error(err?.response?.data?.message || 'Failed to delete team.'))
+  }
+
+  function handleRestore(team) {
+    restoreTeam(team.id)
+      .then(() => { toast.success('Team restored'); fetchTeams() })
+      .catch((err) => toast.error(err?.response?.data?.message || 'Failed to restore team.'))
+  }
+
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -151,7 +179,7 @@ export default function TeamsManagement() {
       )}
 
       <BaseTable
-        columns={columns}
+        columns={teamColumns(handleDelete, handleRestore)}
         data={teams}
         page={pageIndex}
         pageSize={PAGE_SIZE}
