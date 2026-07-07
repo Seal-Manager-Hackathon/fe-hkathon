@@ -23,13 +23,13 @@ const dangerBtnClass =
 const restoreBtnClass =
   'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[92px]'
 
-function topicColumns(onDelete, onRestore) {
+function topicColumns(eventId, trackId, onDelete, onRestore) {
   return [
     {
       key: 'title',
       header: 'Topic Title',
       headerIcon: FileText,
-      render: (row) => <Link to={`/admin/topics/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.title}</Link>,
+      render: (row) => <Link to={`/admin/hackathons/${eventId}/tracks/${trackId}/topics/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.title}</Link>,
     },
     {
       key: 'status',
@@ -51,11 +51,11 @@ function topicColumns(onDelete, onRestore) {
       className: 'text-right',
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
-          <Link to={`/admin/topics/${row.id}`} className={actionBtnClass}>
+          <Link to={`/admin/hackathons/${eventId}/tracks/${trackId}/topics/${row.id}`} className={actionBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
           {!row.isDisable && (
-            <Link to={`/admin/topics/${row.id}/edit`} className={actionBtnClass}>
+            <Link to={`/admin/hackathons/${eventId}/tracks/${trackId}/topics/${row.id}/edit`} className={actionBtnClass}>
               <Edit className="h-3.5 w-3.5" /> Edit
             </Link>
           )}
@@ -144,7 +144,7 @@ export default function TopicsManagement() {
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
 
       <BaseTable
-        columns={topicColumns(() => {}, () => {})}
+        columns={topicColumns(eventId, trackId, () => {}, () => {})}
         data={topics}
         page={pageIndex}
         pageSize={PAGE_SIZE}
