@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Calendar, Clock, Users, Hash, Flag } from 'lucide-react'
+import { Calendar, Clock, Users, Hash, Flag, FileText, Send, CheckCircle } from 'lucide-react'
 import FormField from '../../../../components/FormField'
 import EntityFormPage from '../../../../components/EntityFormPage'
 import { getRoundDetail, getEventDetail, updateRound } from '../../../../api/admin'
@@ -103,26 +103,26 @@ export default function RoundEdit() {
     >
       <div className="grid grid-cols-1 gap-x-10 gap-y-5 lg:grid-cols-[1fr_320px]">
         <div className="space-y-5">
-          <FormField label="Round Name">
+          <FormField label="Round Name" icon={FileText}>
             <input type="text" value={form.name} onChange={(e) => updateField('name', e.target.value)} placeholder="e.g. Qualification Round" className="field-input" />
           </FormField>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="Start Time">
+            <FormField label="Start Time" icon={Calendar}>
               <input type="datetime-local" value={form.startTime} onChange={(e) => updateField('startTime', e.target.value)} className="field-input" />
             </FormField>
-            <FormField label="End Time">
+            <FormField label="End Time" icon={Clock}>
               <input type="datetime-local" value={form.endTime} onChange={(e) => updateField('endTime', e.target.value)} className="field-input" />
             </FormField>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="Submission Start">
+            <FormField label="Submission Start" icon={Send}>
               <input type="datetime-local" value={form.startSubmission} onChange={(e) => updateField('startSubmission', e.target.value)} className="field-input" />
             </FormField>
-            <FormField label="Submission End">
+            <FormField label="Submission End" icon={CheckCircle}>
               <input type="datetime-local" value={form.endSubmission} onChange={(e) => updateField('endSubmission', e.target.value)} className="field-input" />
             </FormField>
           </div>
-          <FormField label="Max Teams">
+          <FormField label="Max Teams" icon={Users}>
             <input type="number" min="1" value={form.limitTeam} onChange={(e) => updateField('limitTeam', e.target.value)} placeholder="e.g. 15" className="field-input" />
           </FormField>
         </div>
