@@ -162,4 +162,14 @@ export async function updateTeam(teamId, payload) {
   return data
 }
 
+/**
+ * Get notification detail by ID.
+ * @param {string} notificationId
+ * @returns {Promise<{ id, userId, teamId, title, status, description, targetType, createdAt, updatedAt }>}
+ */
+export async function getNotificationDetail(notificationId) {
+  const { data } = await api.get(`/admin/notifications/${notificationId}`)
+  return data.data
+}
+
 
