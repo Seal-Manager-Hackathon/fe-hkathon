@@ -50,3 +50,12 @@ export async function getRecentUsers() {
   const { data } = await api.get('/admin/users/recent')
   return data.data
 }
+
+/**
+ * Get 5 most recent notifications.
+ * @returns {Promise<{ notifications: Array }>}
+ */
+export async function getRecentNotifications() {
+  const { data } = await api.get('/admin/notifications/recent')
+  return data.data
+}

@@ -23,7 +23,7 @@ export default function DashboardModal({ modal, onClose }) {
               <span>
                 {type === 'hackathon' && `${data.season} · ${data.date}`}
                 {type === 'user' && data.email}
-                {!type && `Sent by ${modal.sentBy} · ${modal.date}`}
+                {!type && `Created ${data.date || modal.date}`}
               </span>
             </div>
           </div>
@@ -68,7 +68,7 @@ export default function DashboardModal({ modal, onClose }) {
         {/* Body — Notification */}
         {!type && (
           <div className="max-h-[300px] overflow-y-auto rounded-xl bg-[#f4f6f8] p-5">
-            <p className="text-[14px] leading-relaxed text-gray-700 whitespace-pre-wrap">{modal.body}</p>
+            <p className="text-[14px] leading-relaxed text-gray-700 whitespace-pre-wrap">{data.description || modal.body}</p>
           </div>
         )}
 

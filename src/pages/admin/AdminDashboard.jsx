@@ -1,25 +1,20 @@
 import { useState, useEffect } from 'react'
 import {
   statSections,
-  recentHackathons,
-  recentUsers,
   notifications,
   statusBadge,
   roleBadge,
-  userStatusBadge,
   iconMap,
 } from '../../data/mockAdminData'
-import { getEventsCount, getUsersCount, getTeamsCount, getRecentEvents, getRecentUsers } from '../../api/admin'
+import { getEventsCount, getUsersCount, getTeamsCount, getRecentEvents, getRecentUsers, getRecentNotifications } from '../../api/admin'
 import StatCard from '../../components/StatCard'
 import SectionTitle from '../../components/SectionTitle'
 import CardPanel from '../../components/CardPanel'
 import ViewButton from '../../components/ViewButton'
 import Badge from '../../components/Badge'
-import DashboardModal from '../../components/DashboardModal'
 import Avatar from '../../components/Avatar'
 
 export default function AdminDashboard() {
-  const [modal, setModal] = useState(null)
   const [counts, setCounts] = useState({
     totalEvents: 0,
     publishedEvents: 0,
@@ -36,6 +31,7 @@ export default function AdminDashboard() {
   })
   const [recentEvents, setRecentEvents] = useState([])
   const [dashboardUsers, setDashboardUsers] = useState([])
+  const [dashboardNotifications, setDashboardNotifications] = useState([])
 
   useEffect(() => {
     async function fetchCounts() {
@@ -111,16 +107,29 @@ export default function AdminDashboard() {
         // keep mock defaults
       }
     }
+    async function fetchRecentNotifications() {
+      try {
+        const result = await getRecentNotifications()
+        if (result?.notifications?.length > 0) {
+          setDashboardNotifications(
+            result.notifications.map((n) => ({
+              id: n.id,
+              title: n.title,
+              description: n.description,
+              status: n.status,
+              date: n.createdAt ? new Date(n.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+            }))
+          )
+        }
+      } catch {
+        // keep mock defaults
+      }
+    }
     fetchCounts()
     fetchRecent()
     fetchRecentUsers()
+    fetchRecentNotifications()
   }, [])
-
-  const badgeMaps = { status: statusBadge, role: roleBadge, userStatus: userStatusBadge }
-
-  function openModal(type, data) {
-    setModal({ type, data, badges: badgeMaps })
-  }
 
   // Merge real API counts into statSections
   const resolvedSections = statSections.map((section) => {
@@ -218,19 +227,17 @@ export default function AdminDashboard() {
         </CardPanel>
 
         <CardPanel title="System Notifications" viewAllTo="/admin/notifications">
-          {notifications.map((n) => (
+          {dashboardNotifications.map((n) => (
             <div key={n.id} className="flex items-center justify-between border-b border-[#f5f5f5] px-5 py-3.5 last:border-0 gap-3">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[13px] font-semibold text-[#1f2f3a]">{n.title}</p>
                 <p className="mt-0.5 text-[11px] text-gray-400">{n.date}</p>
               </div>
-              <ViewButton onClick={() => openModal(null, n)} />
+              <ViewButton to={`/admin/notifications/${n.id}`} />
             </div>
           ))}
         </CardPanel>
       </div>
-
-      {modal && <DashboardModal modal={modal} onClose={() => setModal(null)} />}
     </div>
   )
 }
