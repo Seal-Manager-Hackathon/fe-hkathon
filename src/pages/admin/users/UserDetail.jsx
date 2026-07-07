@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
   Edit, Mail, Shield, Calendar, Hash, GraduationCap, BadgeCheck,
-  Phone, MapPin, AlertTriangle, Clock,
+  Phone, MapPin, AlertTriangle, Clock, FileText,
 } from 'lucide-react'
 import { getUserDetail } from '../../../api/admin'
 import { roleBadge } from '../../../constants/adminOptions'
@@ -145,35 +145,29 @@ export default function UserDetail() {
             <p className="text-[14px] text-[#064f5d]">{user.email}</p>
           </InfoRow>
 
-          {user.phoneNumber && (
-            <InfoRow label="Phone" icon={Phone}>
-              <p className="text-[14px] text-[#1f2f3a]">{user.phoneNumber}</p>
-            </InfoRow>
-          )}
+          <InfoRow label="Phone" icon={Phone}>
+            <p className="text-[14px] text-[#1f2f3a]">{user.phoneNumber || '—'}</p>
+          </InfoRow>
 
-          {user.college && (
-            <InfoRow label="College" icon={GraduationCap}>
-              <p className="text-[14px] text-[#1f2f3a]">{user.college}</p>
-            </InfoRow>
-          )}
+          <InfoRow label="College" icon={GraduationCap}>
+            <p className="text-[14px] text-[#1f2f3a]">{user.college || '—'}</p>
+          </InfoRow>
 
-          {user.studentId && (
-            <InfoRow label="Student ID" icon={Hash}>
-              <p className="text-[14px] font-mono text-[13px] text-gray-500">{user.studentId}</p>
-            </InfoRow>
-          )}
+          <InfoRow label="Student ID" icon={Hash}>
+            <p className="text-[14px] font-mono text-[13px] text-gray-500">{user.studentId || '—'}</p>
+          </InfoRow>
 
-          {user.dateOfBirth && (
-            <InfoRow label="Date of Birth" icon={Calendar}>
-              <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.dateOfBirth)}</p>
-            </InfoRow>
-          )}
+          <InfoRow label="Date of Birth" icon={Calendar}>
+            <p className="text-[14px] text-[#1f2f3a]">{user.dateOfBirth ? formatDate(user.dateOfBirth) : '—'}</p>
+          </InfoRow>
 
-          {user.address && (
-            <InfoRow label="Address" icon={MapPin}>
-              <p className="text-[14px] text-[#1f2f3a]">{user.address}</p>
-            </InfoRow>
-          )}
+          <InfoRow label="Address" icon={MapPin}>
+            <p className="text-[14px] text-[#1f2f3a]">{user.address || '—'}</p>
+          </InfoRow>
+
+          <InfoRow label="Bio" icon={FileText}>
+            <p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{user.bio || '—'}</p>
+          </InfoRow>
 
           <InfoRow label="Role" icon={Shield}>
             <Badge label={user.role} className={roleBadge[user.role] || ''} />
