@@ -185,7 +185,7 @@ export default function AdminDashboard() {
 
       <SectionTitle>Recent Activity</SectionTitle>
 
-      <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-2">
         <CardPanel title="Recent Hackathons" viewAllTo="/admin/hackathons">
           {recentEvents.map((h) => (
             <div key={h.name} className="flex items-center justify-between border-b border-[#f5f5f5] px-5 py-3 last:border-0 gap-3">
