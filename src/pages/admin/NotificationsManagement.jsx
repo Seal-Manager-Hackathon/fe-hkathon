@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { BellPlus } from 'lucide-react'
-import { getNotifications, getUserDetail, getTeamDetail } from '../../api/admin'
+import { getNotifications, getUserDetail, getTeamDetail, deleteNotification, restoreNotification } from '../../api/admin'
 import BaseTable from '../../components/BaseTable'
 import FilterBar from '../../components/FilterBar'
 import { notificationsFilters } from './NotificationsFilters'
 import { notificationsColumns } from './NotificationsColumns'
+import { toast } from '../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -101,7 +102,30 @@ export default function NotificationsManagement() {
     setTargetDetails({})
   }
 
-  const columns = useMemo(() => notificationsColumns(targetDetails), [targetDetails])
+  async function handleDelete(notification) {
+    try {
+      await deleteNotification(notification.id)
+      toast.success('Thông báo đã bị vô hiệu hoá')
+      fetchNotifications()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to delete notification.')
+    }
+  }
+
+  async function handleRestore(notification) {
+    try {
+      await restoreNotification(notification.id)
+      toast.success('Thông báo đã được khôi phục')
+      fetchNotifications()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to restore notification.')
+    }
+  }
+
+  const columns = useMemo(
+    () => notificationsColumns(targetDetails, handleDelete, handleRestore),
+    [targetDetails],
+  )
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">

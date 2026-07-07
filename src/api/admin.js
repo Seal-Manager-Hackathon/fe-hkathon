@@ -210,4 +210,24 @@ export async function updateNotification(notificationId, payload) {
   return data
 }
 
+/**
+ * Soft-delete a notification (set IsDisable = true).
+ * @param {string} notificationId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteNotification(notificationId) {
+  const { data } = await api.post(`/admin/notifications/${notificationId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted notification (set IsDisable = false).
+ * @param {string} notificationId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreNotification(notificationId) {
+  const { data } = await api.post(`/admin/notifications/${notificationId}/restore`)
+  return data
+}
+
 
