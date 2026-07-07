@@ -14,7 +14,7 @@ export const notificationsFilters = [
   {
     type: 'select',
     key: 'targetType',
-    label: 'Target Type',
+    label: 'Target',
     options: TARGET_TYPE_OPTIONS_ALL,
     className: 'w-full sm:w-[180px]',
   },

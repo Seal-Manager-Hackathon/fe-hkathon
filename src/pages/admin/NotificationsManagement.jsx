@@ -1,14 +1,11 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { BellPlus } from 'lucide-react'
-import { getNotifications } from '../../api/admin'
+import { getNotifications, getUserDetail, getTeamDetail } from '../../api/admin'
 import BaseTable from '../../components/BaseTable'
 import FilterBar from '../../components/FilterBar'
-import Badge from '../../components/Badge'
-import TableActions from '../../components/TableActions'
 import { notificationsFilters } from './NotificationsFilters'
-import { targetTypeBadge } from '../../constants/adminOptions'
-import { formatDate } from '../../utils/format'
+import { notificationsColumns } from './NotificationsColumns'
 
 const PAGE_SIZE = 10
 
@@ -19,57 +16,6 @@ const DEFAULT_VALUES = {
   toDate: '',
 }
 
-const columns = [
-  {
-    key: 'title',
-    header: 'Title',
-    render: (row) => (
-      <Link
-        to={`/admin/notifications/${row.id}`}
-        className="block max-w-[280px] truncate text-[14px] font-semibold text-[#064f5d] hover:underline"
-      >
-        {row.title}
-      </Link>
-    ),
-  },
-  {
-    key: 'targetType',
-    header: 'Target Type',
-    render: (row) => (
-      <Badge label={row.targetType} className={targetTypeBadge[row.targetType] || ''} />
-    ),
-  },
-  {
-    key: 'status',
-    header: 'Status',
-    render: (row) => {
-      if (row.status === 'Unread') {
-        return <Badge label="Unread" className="bg-[#e3f2fd] text-[#1565c0]" />
-      }
-      if (row.status === 'Read') {
-        return <Badge label="Read" className="bg-[#f5f5f5] text-[#757575]" />
-      }
-      return <Badge label={row.status} className="bg-[#f5f5f5] text-[#757575]" />
-    },
-  },
-  {
-    key: 'createdAt',
-    header: 'Created',
-    render: (row) => (
-      <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>
-    ),
-  },
-  {
-    key: 'actions',
-    header: 'Actions',
-    headerClassName: 'text-right',
-    className: 'text-right',
-    render: (row) => (
-      <TableActions viewTo={`/admin/notifications/${row.id}`} editTo={`/admin/notifications/${row.id}/edit`} />
-    ),
-  },
-]
-
 export default function NotificationsManagement() {
   const [filters, setFilters] = useState(DEFAULT_VALUES)
   const [pageIndex, setPageIndex] = useState(1)
@@ -77,10 +23,9 @@ export default function NotificationsManagement() {
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [targetDetails, setTargetDetails] = useState({})
 
-  const hasActive = Object.entries(filters).some(
-    ([, v]) => v !== ''
-  )
+  const hasActive = Object.entries(filters).some(([, v]) => v !== '')
 
   const buildParams = useCallback(() => {
     const params = { PageIndex: pageIndex, PageSize: PAGE_SIZE }
@@ -92,13 +37,42 @@ export default function NotificationsManagement() {
     return params
   }, [filters, pageIndex])
 
+  const resolveTargets = useCallback(async (list) => {
+    const details = { ...targetDetails }
+    const promises = []
+
+    for (const item of list) {
+      if (item.targetType === 'Personal' && item.userId && !details[item.userId]) {
+        promises.push(
+          getUserDetail(item.userId)
+            .then((user) => { details[item.userId] = user })
+            .catch(() => { details[item.userId] = null }),
+        )
+      }
+      if (item.targetType === 'Team' && item.teamId && !details[`team:${item.teamId}`]) {
+        promises.push(
+          getTeamDetail(item.teamId)
+            .then((team) => { details[`team:${item.teamId}`] = team })
+            .catch(() => { details[`team:${item.teamId}`] = null }),
+        )
+      }
+    }
+
+    if (promises.length > 0) {
+      await Promise.all(promises)
+      setTargetDetails({ ...details })
+    }
+  }, [targetDetails])
+
   const fetchNotifications = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
       const result = await getNotifications(buildParams())
-      setNotifications(result.notifications || [])
+      const list = result.notifications || []
+      setNotifications(list)
       setTotalCount(result.totalCount || 0)
+      await resolveTargets(list)
     } catch (err) {
       const msg = err?.response?.data?.message || 'Failed to load notifications.'
       if (err?.response?.status === 400 && msg.includes('TargetType')) {
@@ -111,19 +85,23 @@ export default function NotificationsManagement() {
     } finally {
       setLoading(false)
     }
-  }, [buildParams])
+  }, [buildParams, resolveTargets])
 
   useEffect(() => { fetchNotifications() }, [fetchNotifications])
 
   function handleFilterChange(key, value) {
     setFilters((prev) => ({ ...prev, [key]: value }))
     setPageIndex(1)
+    setTargetDetails({})
   }
 
   function handleReset() {
     setFilters(DEFAULT_VALUES)
     setPageIndex(1)
+    setTargetDetails({})
   }
+
+  const columns = useMemo(() => notificationsColumns(targetDetails), [targetDetails])
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
