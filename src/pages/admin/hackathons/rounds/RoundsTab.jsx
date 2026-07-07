@@ -126,7 +126,7 @@ export default function RoundsTab({ eventId }) {
           <FilterBar filters={roundFilters} values={filters} onChange={handleFilterChange} onReset={handleReset} hasActive={hasActive} />
         </div>
 
-        <BaseTable borderless columns={roundColumns(openSwap, handleDelete, handleRestore)} data={rounds} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No rounds match the current filters.' : 'No rounds configured for this event.'} keyExtractor={(row) => row.id} minWidth="780px" />
+        <BaseTable borderless columns={roundColumns(eventId, openSwap, handleDelete, handleRestore)} data={rounds} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No rounds match the current filters.' : 'No rounds configured for this event.'} keyExtractor={(row) => row.id} minWidth="780px" />
       </div>
 
       {swapTarget && (

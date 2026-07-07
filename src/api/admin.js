@@ -391,6 +391,13 @@ export async function updateRound(roundId, payload) {
   return data
 }
 
+// ─── Criteria Templates ──────────────────────────────────────────────────────
+
+export async function getCriteriaTemplates(roundId, params = {}) {
+  const { data } = await api.get(`/admin/rounds/${roundId}/criteria-templates`, { params })
+  return data.data
+}
+
 // ─── Tracks ─────────────────────────────────────────────────────────────────────
 
 export async function getTracks(eventId, params = {}) {

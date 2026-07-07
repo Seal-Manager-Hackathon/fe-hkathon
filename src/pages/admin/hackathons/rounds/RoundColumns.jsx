@@ -1,4 +1,4 @@
-import { Trash2, RotateCcw, ArrowLeftRight, Edit, Eye, Hash, Calendar, Play, Flag, Users, CircleCheck, MoreHorizontal } from 'lucide-react'
+import { Trash2, RotateCcw, ArrowLeftRight, Edit, Eye, Hash, Calendar, Play, Flag, Users, CircleCheck, MoreHorizontal, ClipboardList } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../../components/Badge'
 import { formatDateTime } from '../../../../utils/format'
@@ -14,7 +14,10 @@ const viewBtnClass =
 const swapBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] transition-colors hover:bg-[#bbdefb]'
 
-export function roundColumns(onSwap, onDelete, onRestore) {
+const criteriaBtnClass =
+  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] transition-colors hover:bg-[#ffe0b2]'
+
+export function roundColumns(eventId, onSwap, onDelete, onRestore) {
   return [
     { key: 'roundNo', header: '#', headerIcon: Hash, render: (row) => <span className="text-[13px] text-gray-500">Round {row.roundNo}</span> },
     { key: 'name', header: 'Round Name', headerIcon: Calendar, render: (row) => <Link to={`/admin/rounds/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.name}</Link> },
@@ -31,6 +34,11 @@ export function roundColumns(onSwap, onDelete, onRestore) {
       className: 'text-right',
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
+          {!row.isDisable && (
+            <Link to={`/admin/rounds/${row.id}/criteria-templates`} className={criteriaBtnClass}>
+              <ClipboardList className="h-3.5 w-3.5" /> Criteria
+            </Link>
+          )}
           <Link to={`/admin/rounds/${row.id}`} className={viewBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
