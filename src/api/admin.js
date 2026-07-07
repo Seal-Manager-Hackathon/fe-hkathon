@@ -318,3 +318,23 @@ export async function getMaxRoundNo(eventId) {
   return data.data
 }
 
+/**
+ * Soft-delete a round.
+ * @param {string} roundId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteRound(roundId) {
+  const { data } = await api.post(`/admin/rounds/${roundId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted round.
+ * @param {string} roundId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreRound(roundId) {
+  const { data } = await api.post(`/admin/rounds/${roundId}/restore`)
+  return data
+}
+

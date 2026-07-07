@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import BaseTable from '../../components/BaseTable'
-import { getRounds, getMaxRoundNo } from '../../api/admin'
+import { getRounds, getMaxRoundNo, deleteRound, restoreRound } from '../../api/admin'
 import { roundColumns } from './RoundColumns'
+import { toast } from '../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -36,6 +37,28 @@ export default function RoundsTab({ eventId }) {
 
   const nextRound = maxRoundNo != null ? maxRoundNo + 1 : 1
 
+  async function handleDelete(round) {
+    try {
+      await deleteRound(round.id)
+      toast.success('Round deleted')
+      fetchRounds()
+      getMaxRoundNo(eventId).then(setMaxRoundNo).catch(() => setMaxRoundNo(null))
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to delete round.')
+    }
+  }
+
+  async function handleRestore(round) {
+    try {
+      await restoreRound(round.id)
+      toast.success('Round restored')
+      fetchRounds()
+      getMaxRoundNo(eventId).then(setMaxRoundNo).catch(() => setMaxRoundNo(null))
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to restore round.')
+    }
+  }
+
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
@@ -45,7 +68,7 @@ export default function RoundsTab({ eventId }) {
         </Link>
       </div>
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
-      <BaseTable columns={roundColumns} data={rounds} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText="No rounds configured for this event." keyExtractor={(row) => row.id} minWidth="700px" />
+      <BaseTable columns={roundColumns(handleDelete, handleRestore)} data={rounds} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText="No rounds configured for this event." keyExtractor={(row) => row.id} minWidth="700px" />
     </>
   )
 }
