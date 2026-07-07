@@ -371,3 +371,30 @@ export async function updateRound(roundId, payload) {
   return data
 }
 
+// ─── Tracks ─────────────────────────────────────────────────────────────────────
+
+export async function getTracks(eventId, params = {}) {
+  const { data } = await api.get(`/admin/events/${eventId}/tracks`, { params })
+  return data.data
+}
+
+export async function createTrack(eventId, payload) {
+  const { data } = await api.post(`/admin/events/${eventId}/tracks`, payload)
+  return data
+}
+
+export async function updateTrack(trackId, payload) {
+  const { data } = await api.patch(`/admin/tracks/${trackId}`, payload)
+  return data
+}
+
+export async function deleteTrack(trackId) {
+  const { data } = await api.post(`/admin/tracks/${trackId}/delete`)
+  return data
+}
+
+export async function restoreTrack(trackId) {
+  const { data } = await api.post(`/admin/tracks/${trackId}/restore`)
+  return data
+}
+
