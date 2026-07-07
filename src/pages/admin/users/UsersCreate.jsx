@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { UserPlus } from 'lucide-react'
 import { createUser } from '../../../api/admin'
-import { ROLE_OPTIONS_SELECT } from '../../../constants/adminOptions'
+import { ROLE_OPTIONS_SELECT_NO_ADMIN } from '../../../constants/adminOptions'
 import SelectInput from '../../../components/SelectInput'
 import FormField from '../../../components/FormField'
 import FormActions from '../../../components/FormActions'
@@ -166,7 +166,7 @@ export default function UsersCreate() {
 
         <FormField label="Role" required error={fieldErrors.role}>
           <SelectInput
-            options={ROLE_OPTIONS_SELECT}
+            options={ROLE_OPTIONS_SELECT_NO_ADMIN}
             value={form.role}
             onChange={(v) => updateField('role', v)}
           />

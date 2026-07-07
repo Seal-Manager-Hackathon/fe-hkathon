@@ -20,6 +20,11 @@ export const ROLE_OPTIONS_SELECT = [
   ...ROLE_OPTIONS,
 ]
 
+export const ROLE_OPTIONS_SELECT_NO_ADMIN = [
+  { value: '', label: 'Select role...' },
+  ...ROLE_OPTIONS.filter((r) => r.value !== 'Admin'),
+]
+
 export const roleBadge = {
   Admin: 'bg-[#fce4ec] text-[#c62828]',
   Staff: 'bg-[#fff3e0] text-[#e65100]',
