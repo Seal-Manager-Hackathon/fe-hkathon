@@ -195,8 +195,8 @@ export default function AdminDashboard() {
 
       <SectionTitle>Recent Activity</SectionTitle>
 
-      <div className="rounded-xl border border-[#e9edf0] bg-white">
-        <div className="flex border-b border-[#e9edf0]">
+      <div className="rounded-xl border border-[#e9edf0] bg-white overflow-hidden">
+        <div className="flex bg-gradient-to-r from-[#064f5d] to-[#0a6e7d]">
           {[
             { key: 'hackathons', label: 'Hackathons', viewAll: '/admin/hackathons' },
             { key: 'users', label: 'Users', viewAll: '/admin/users' },
@@ -205,10 +205,11 @@ export default function AdminDashboard() {
             <button
               key={tab.key}
               onClick={() => setRecentTab(tab.key)}
-              className={`cursor-pointer px-5 py-3 text-[13px] font-semibold transition-colors ${recentTab === tab.key
-                ? 'border-b-2 border-[#064f5d] text-[#064f5d]'
-                : 'text-gray-400 hover:text-gray-600'
-                }`}
+              className={`cursor-pointer px-5 py-3 text-[13px] font-semibold transition-colors ${
+                recentTab === tab.key
+                  ? 'border-b-2 border-white text-white'
+                  : 'text-white/60 hover:text-white'
+              }`}
             >
               {tab.label}
             </button>
@@ -216,7 +217,7 @@ export default function AdminDashboard() {
           <div className="ml-auto flex items-center pr-4">
             <Link
               to={({ hackathons: '/admin/hackathons', users: '/admin/users', notifications: '/admin/notifications' })[recentTab]}
-              className="text-[12px] font-semibold text-[#064f5d] hover:underline"
+              className="text-[12px] font-semibold text-white/70 hover:text-white hover:underline"
             >
               View All
             </Link>
