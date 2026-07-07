@@ -338,3 +338,15 @@ export async function restoreRound(roundId) {
   return data
 }
 
+/**
+ * Swap two rounds within the same event.
+ * @param {string} eventId
+ * @param {string} roundId - source round
+ * @param {number} targetRoundNo - target round number to swap with
+ * @returns {Promise<{ message: string }>}
+ */
+export async function swapRounds(eventId, roundId, targetRoundNo) {
+  const { data } = await api.post(`/admin/events/${eventId}/rounds/${roundId}/swap`, { targetRoundNo })
+  return data
+}
+

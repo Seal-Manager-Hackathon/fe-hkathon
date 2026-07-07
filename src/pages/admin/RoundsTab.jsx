@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import BaseTable from '../../components/BaseTable'
-import { getRounds, getMaxRoundNo, deleteRound, restoreRound } from '../../api/admin'
+import { getRounds, getMaxRoundNo, deleteRound, restoreRound, swapRounds } from '../../api/admin'
 import { roundColumns } from './RoundColumns'
 import { toast } from '../../utils/toast'
 
@@ -14,6 +14,9 @@ export default function RoundsTab({ eventId }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [maxRoundNo, setMaxRoundNo] = useState(null)
+  const [swapTarget, setSwapTarget] = useState(null)
+  const [swapRoundNo, setSwapRoundNo] = useState('')
+  const [swapping, setSwapping] = useState(false)
 
   const fetchRounds = useCallback(async () => {
     setLoading(true); setError('')
@@ -59,6 +62,27 @@ export default function RoundsTab({ eventId }) {
     }
   }
 
+  function openSwap(round) {
+    setSwapTarget(round)
+    setSwapRoundNo('')
+  }
+
+  async function handleSwap() {
+    const target = Number(swapRoundNo)
+    if (!target || !swapTarget) return
+    setSwapping(true)
+    try {
+      await swapRounds(eventId, swapTarget.id, target)
+      toast.success('Rounds swapped successfully')
+      setSwapTarget(null)
+      fetchRounds()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to swap rounds.')
+    } finally {
+      setSwapping(false)
+    }
+  }
+
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
@@ -68,7 +92,35 @@ export default function RoundsTab({ eventId }) {
         </Link>
       </div>
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
-      <BaseTable columns={roundColumns(handleDelete, handleRestore)} data={rounds} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText="No rounds configured for this event." keyExtractor={(row) => row.id} minWidth="700px" />
+      <BaseTable columns={roundColumns(openSwap, handleDelete, handleRestore)} data={rounds} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText="No rounds configured for this event." keyExtractor={(row) => row.id} minWidth="780px" />
+
+      {/* Swap Modal */}
+      {swapTarget && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
+          <div className="absolute inset-0 bg-black/30" onClick={() => setSwapTarget(null)} />
+          <div className="relative z-10 w-full max-w-[400px] overflow-hidden rounded-xl border border-[#e8ecf0] bg-white shadow-2xl">
+            <div className="border-b border-[#f0f0f0] px-6 py-4">
+              <h3 className="text-[16px] font-bold text-[#1f2f3a]">Swap Round #{swapTarget.roundNo}</h3>
+              <p className="mt-0.5 text-[13px] text-gray-400">{swapTarget.name}</p>
+            </div>
+            <div className="px-6 py-5">
+              <label className="mb-1.5 block text-[13px] font-semibold text-[#1f2f3a]">Swap with Round #</label>
+              <select value={swapRoundNo} onChange={(e) => setSwapRoundNo(e.target.value)} className="field-input">
+                <option value="">Select a round...</option>
+                {rounds.filter((r) => !r.isDisable && r.id !== swapTarget.id).map((r) => (
+                  <option key={r.id} value={r.roundNo}>Round {r.roundNo} — {r.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center justify-end gap-3 border-t border-[#f0f0f0] px-6 py-4">
+              <button onClick={() => setSwapTarget(null)} className="cursor-pointer rounded-lg border border-[#d8e0e6] bg-white px-4 py-2 text-[14px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50">Cancel</button>
+              <button onClick={handleSwap} disabled={!swapRoundNo || swapping} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#1565c0] px-4 py-2 text-[14px] font-semibold text-white transition-colors hover:bg-[#0d47a1] disabled:cursor-not-allowed disabled:opacity-50">
+                {swapping ? 'Swapping...' : 'Swap'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
