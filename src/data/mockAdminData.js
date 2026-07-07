@@ -325,7 +325,6 @@ export const statusBadge = {
   Published: 'bg-[#e8f5e9] text-[#2e7d32]',
   Draft: 'bg-[#f5f5f5] text-[#757575]',
   Closed: 'bg-[#e0f2f1] text-[#00695c]',
-  Upcoming: 'bg-[#fff3e0] text-[#e65100]',
 }
 
 export const roleBadge = {

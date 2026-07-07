@@ -51,6 +51,22 @@ export async function getRecentUsers() {
   return data.data
 }
 
+/**
+ * Get paginated events (hackathons) list with search and filters.
+ * @param {Object} params
+ * @param {string} [params.Keyword] - Search event name (contains)
+ * @param {'Draft'|'Published'|'Closed'} [params.Status]
+ * @param {string} [params.FromDate] - ISO datetime
+ * @param {string} [params.ToDate] - ISO datetime
+ * @param {number} [params.PageIndex] - default 1
+ * @param {number} [params.PageSize] - default 10
+ * @returns {Promise<{ events: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getEvents(params = {}) {
+  const { data } = await api.get('/admin/events', { params })
+  return data.data
+}
+
 export async function getRecentNotifications() {
   const { data } = await api.get('/admin/notifications/recent')
   return data.data

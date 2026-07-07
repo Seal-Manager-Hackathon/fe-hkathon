@@ -44,7 +44,6 @@ export const DISABLE_OPTIONS = [
 export const HACKATHON_STATUS_OPTIONS = [
   { value: 'Draft', label: 'Draft' },
   { value: 'Published', label: 'Published' },
-  { value: 'Upcoming', label: 'Upcoming' },
   { value: 'Closed', label: 'Closed' },
 ]
 
