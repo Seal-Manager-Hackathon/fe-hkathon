@@ -1,30 +1,24 @@
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Bell, Menu } from 'lucide-react'
 import NotificationModal from '../NotificationModal'
 import UserMenu from '../UserMenu'
-import { useAuth } from '../../context/AuthContext'
 
-const mockNotifications = [
+const MOCK_NOTIFICATIONS = [
   { id: 1, title: 'SEAL Hackathon 2026 - Summer is now open', body: 'Registration is open for all students and teams. New tracks in AI, Blockchain, and Climate Tech are available.', date: 'Jul 06, 2026', read: false },
   { id: 2, title: 'New round added: Final Pitch', body: 'The Final Pitch round has been added to Cloud Builders Cup 2026. Submit your slides by July 20.', date: 'Jul 05, 2026', read: false },
   { id: 3, title: 'System maintenance scheduled', body: 'Platform will undergo maintenance on July 12 from 02:00 AM to 06:00 AM UTC.', date: 'Jul 03, 2026', read: true },
   { id: 4, title: 'Your team has been approved', body: 'Your team registration for SEAL Hackathon 2026 has been approved. Good luck!', date: 'Jul 01, 2026', read: true },
 ]
 
-const guestMenu = [
-  { icon: 'LogIn', label: 'Sign in', to: '/login' },
-  { icon: 'UserPlus', label: 'Sign up', to: '/register' },
-]
-
-export default function Header({ viewAllTo = '/notifications', showSidebarToggle, onToggleSidebar }) {
-  const { user, logout } = useAuth()
+export default function Header({ user, menuItems, onLogout, showSidebarToggle, onToggleSidebar }) {
   const [open, setOpen] = useState(false)
-  const [notifications, setNotifications] = useState(mockNotifications)
+  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
   const [selected, setSelected] = useState(null)
   const ref = useRef(null)
 
   const unreadCount = notifications.filter((n) => !n.read).length
+  const viewAllTo = user?.role === 'Admin' ? '/admin/my-notifications' : '/notifications'
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -39,14 +33,6 @@ export default function Header({ viewAllTo = '/notifications', showSidebarToggle
   }
 
   const resolvedUser = user || { name: 'Guest visitor' }
-  const resolvedMenu = useMemo(() => {
-    if (!user) return guestMenu
-    const profilePath = user.role === 'Admin' ? '/admin/profile' : '/profile'
-    return [
-      { icon: 'User', label: 'Profile', to: profilePath },
-      { icon: 'LogOut', label: 'Sign out', to: null },
-    ]
-  }, [user])
 
   return (
     <>
@@ -126,7 +112,7 @@ export default function Header({ viewAllTo = '/notifications', showSidebarToggle
           )}
         </div>
 
-        <UserMenu user={resolvedUser} menuItems={resolvedMenu} onLogout={logout} />
+        <UserMenu user={resolvedUser} menuItems={menuItems} onLogout={onLogout} />
         </div>
       </header>
 
