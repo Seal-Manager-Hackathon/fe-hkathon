@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Bell, Menu } from 'lucide-react'
+import { Bell, Menu, ArrowRight } from 'lucide-react'
 import NotificationModal from '../NotificationModal'
 import UserMenu from '../UserMenu'
 
@@ -104,9 +104,9 @@ export default function Header({ user, menuItems, onLogout, showSidebarToggle, o
               <Link
                 to={viewAllTo}
                 onClick={() => setOpen(false)}
-                className="flex cursor-pointer items-center justify-center border-t border-[#f0f0f0] px-5 py-3 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]/50"
+                className="inline-flex cursor-pointer items-center justify-center gap-1.5 border-t border-[#f0f0f0] px-5 py-3 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]/50"
               >
-                View all notifications
+                View all notifications <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
           )}

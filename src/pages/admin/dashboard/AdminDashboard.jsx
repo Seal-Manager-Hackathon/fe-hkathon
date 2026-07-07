@@ -7,6 +7,7 @@ import {
 import { roleBadge } from '../../../constants/adminOptions'
 import { formatDate } from '../../../utils/format'
 import { getEventsCount, getUsersCount, getTeamsCount, getRecentEvents, getRecentUsers, getRecentNotifications } from '../../../api/admin'
+import { Trophy, Users, Bell, ArrowRight } from 'lucide-react'
 import StatCard from '../../../components/StatCard'
 import SectionTitle from '../../../components/SectionTitle'
 import ViewButton from '../../../components/ViewButton'
@@ -198,28 +199,29 @@ export default function AdminDashboard() {
       <div className="rounded-xl border border-[#e9edf0] bg-white overflow-hidden">
         <div className="flex bg-gradient-to-r from-[#064f5d] to-[#0a6e7d]">
           {[
-            { key: 'hackathons', label: 'Hackathons', viewAll: '/admin/hackathons' },
-            { key: 'users', label: 'Users', viewAll: '/admin/users' },
-            { key: 'notifications', label: 'Notifications', viewAll: '/admin/notifications' },
+            { key: 'hackathons', label: 'Hackathons', icon: Trophy, viewAll: '/admin/hackathons' },
+            { key: 'users', label: 'Users', icon: Users, viewAll: '/admin/users' },
+            { key: 'notifications', label: 'Notifications', icon: Bell, viewAll: '/admin/notifications' },
           ].map((tab) => (
             <button
               key={tab.key}
               onClick={() => setRecentTab(tab.key)}
-              className={`cursor-pointer px-5 py-3 text-[13px] font-semibold transition-colors ${
+              className={`cursor-pointer px-5 py-3 text-[13px] font-semibold transition-colors inline-flex items-center gap-1.5 ${
                 recentTab === tab.key
                   ? 'border-b-2 border-white text-white'
                   : 'text-white/60 hover:text-white'
               }`}
             >
+              <tab.icon className="h-3.5 w-3.5" />
               {tab.label}
             </button>
           ))}
           <div className="ml-auto flex items-center pr-4">
             <Link
               to={({ hackathons: '/admin/hackathons', users: '/admin/users', notifications: '/admin/notifications' })[recentTab]}
-              className="text-[12px] font-semibold text-white/70 hover:text-white hover:underline"
+              className="inline-flex items-center gap-1 text-[12px] font-semibold text-white/70 hover:text-white hover:underline"
             >
-              View All
+              View All <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
         </div>

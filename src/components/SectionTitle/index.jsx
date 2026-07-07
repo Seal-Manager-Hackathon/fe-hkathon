@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
 
 export default function SectionTitle({ children, viewAllTo }) {
   return (
@@ -9,9 +10,9 @@ export default function SectionTitle({ children, viewAllTo }) {
       {viewAllTo && (
         <Link
           to={viewAllTo}
-          className="text-[13px] font-semibold text-[#064f5d] hover:underline"
+          className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#064f5d] hover:underline"
         >
-          View All
+          View All <ArrowRight className="h-3 w-3" />
         </Link>
       )}
     </div>
