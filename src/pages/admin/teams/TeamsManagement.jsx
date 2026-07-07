@@ -199,16 +199,8 @@ export default function TeamsManagement() {
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Teams</h1>
-        </div>
-        <Link
-          to="/admin/teams/create"
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto"
-        >
-          <Users className="h-4 w-4" />Create Team
-        </Link>
+      <div className="mb-6">
+        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Teams</h1>
       </div>
 
       <FilterBar
