@@ -6,7 +6,7 @@ import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import { usersColumns } from './UsersColumns'
 import { usersFilters } from './UsersFilters'
-import { toast } from '../../../utils/toast'
+import { toast, confirm } from '../../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -72,6 +72,8 @@ export default function UsersManagement() {
   }
 
   async function handleDelete(user) {
+    const ok = await confirm('Delete User', `Are you sure you want to delete "${user.firstName} ${user.lastName}"?`)
+    if (!ok) return
     try {
       await deleteUser(user.id)
       toast.success('User deleted')
@@ -82,6 +84,8 @@ export default function UsersManagement() {
   }
 
   async function handleRestore(user) {
+    const ok = await confirm('Restore User', `Are you sure you want to restore "${user.firstName} ${user.lastName}"?`)
+    if (!ok) return
     try {
       await restoreUser(user.id)
       toast.success('User restored')

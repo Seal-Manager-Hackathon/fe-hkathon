@@ -6,7 +6,7 @@ import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import { notificationsFilters } from './NotificationsFilters'
 import { notificationsColumns } from './NotificationsColumns'
-import { toast } from '../../../utils/toast'
+import { toast, confirm } from '../../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -105,6 +105,8 @@ export default function NotificationsManagement() {
   }
 
   async function handleDelete(notification) {
+    const ok = await confirm('Delete Notification', `Are you sure you want to delete "${notification.title}"?`)
+    if (!ok) return
     try {
       await deleteNotification(notification.id)
       toast.success('Thông báo đã bị vô hiệu hoá')
@@ -115,6 +117,8 @@ export default function NotificationsManagement() {
   }
 
   async function handleRestore(notification) {
+    const ok = await confirm('Restore Notification', `Are you sure you want to restore "${notification.title}"?`)
+    if (!ok) return
     try {
       await restoreNotification(notification.id)
       toast.success('Thông báo đã được khôi phục')
