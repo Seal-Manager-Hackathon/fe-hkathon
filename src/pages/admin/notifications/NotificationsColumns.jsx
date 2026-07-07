@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import Badge from '../../../components/Badge'
 import NotificationTarget from '../../../components/NotificationTarget'
 import { formatDate } from '../../../utils/format'
-import { Eye, Edit, Trash2, RotateCcw, Bell, Target, Calendar, CircleCheck } from 'lucide-react'
+import { Eye, Edit, Trash2, RotateCcw, Bell, Target, Calendar, CircleCheck, MoreHorizontal } from 'lucide-react'
 
 const actionBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
@@ -65,6 +65,7 @@ export function notificationsColumns(targetDetails = {}, onDelete, onRestore) {
     {
       key: 'actions',
       header: 'Actions',
+      headerIcon: MoreHorizontal,
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => (
