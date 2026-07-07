@@ -165,7 +165,7 @@ export default function AdminDashboard() {
       <div className="mb-8 flex flex-col gap-8">
         {resolvedSections.map((section) => (
           <div key={section.title}>
-            <SectionTitle viewAllTo={section.title === 'Hackathons' ? '/admin/hackathons' : undefined}>
+            <SectionTitle viewAllTo={({ Hackathons: '/admin/hackathons', Users: '/admin/users', Teams: '/admin/teams' })[section.title]}>
               {section.title}
             </SectionTitle>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
