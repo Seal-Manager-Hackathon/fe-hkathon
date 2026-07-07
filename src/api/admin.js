@@ -440,6 +440,11 @@ export async function getTopicDetail(topicId) {
   return data.data
 }
 
+export async function updateTopic(topicId, payload) {
+  const { data } = await api.patch(`/admin/topics/${topicId}`, payload)
+  return data
+}
+
 // ─── Team Lock/Unlock ─────────────────────────────────────────────────────────
 
 export async function lockTeam(teamId) {
