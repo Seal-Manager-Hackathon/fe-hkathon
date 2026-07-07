@@ -230,4 +230,14 @@ export async function restoreNotification(notificationId) {
   return data
 }
 
+/**
+ * Create a new notification.
+ * @param {{ title: string, description: string, targetType: 'Personal'|'Team'|'System', userId?: string, teamId?: string }} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function createNotification(payload) {
+  const { data } = await api.post('/admin/notifications', payload)
+  return data
+}
+
 
