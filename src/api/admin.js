@@ -261,3 +261,19 @@ export async function updateEvent(eventId, payload) {
   return data
 }
 
+/**
+ * Get paginated rounds for an event.
+ * @param {string} eventId
+ * @param {Object} params
+ * @param {string} [params.Keyword] - Search round name (contains)
+ * @param {number} [params.RoundNo]
+ * @param {boolean} [params.IsDisable]
+ * @param {number} [params.PageIndex] - default 1
+ * @param {number} [params.PageSize] - default 10
+ * @returns {Promise<{ rounds: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getRounds(eventId, params = {}) {
+  const { data } = await api.get(`/admin/events/${eventId}/rounds`, { params })
+  return data.data
+}
+

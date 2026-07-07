@@ -1,17 +1,66 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Edit, Calendar, Users } from 'lucide-react'
-import { getEventDetail } from '../../api/admin'
+import { getEventDetail, getRounds } from '../../api/admin'
 import Badge from '../../components/Badge'
+import BaseTable from '../../components/BaseTable'
 import { formatDate } from '../../utils/format'
 
-const TABS = ['Overview']
+const TABS = ['Overview', 'Rounds']
 
 const statusBadge = {
   Draft: 'bg-[#f5f5f5] text-[#757575]',
   Published: 'bg-[#e8f5e9] text-[#2e7d32]',
   Closed: 'bg-[#e0f2f1] text-[#00695c]',
 }
+
+const roundColumns = [
+  {
+    key: 'name',
+    header: 'Round Name',
+    render: (row) => (
+      <span className="text-[14px] font-semibold text-[#1f2f3a]">{row.name}</span>
+    ),
+  },
+  {
+    key: 'roundNo',
+    header: '#',
+    render: (row) => (
+      <span className="text-[13px] text-gray-500">Round {row.roundNo}</span>
+    ),
+  },
+  {
+    key: 'startTime',
+    header: 'Start',
+    render: (row) => (
+      <p className="text-[13px] text-gray-500">{formatDate(row.startTime)}</p>
+    ),
+  },
+  {
+    key: 'endTime',
+    header: 'End',
+    render: (row) => (
+      <p className="text-[13px] text-gray-500">{formatDate(row.endTime)}</p>
+    ),
+  },
+  {
+    key: 'limitTeam',
+    header: 'Max Teams',
+    render: (row) => (
+      <span className="text-[13px] text-gray-500">{row.limitTeam ?? '—'}</span>
+    ),
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    render: (row) =>
+      row.isDisable ? (
+        <Badge label="Disabled" className="bg-[#fce4ec] text-[#c62828]" />
+      ) : (
+        <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
+      ),
+  },
+]
 
 export default function HackathonDetail() {
   const { id } = useParams()
@@ -139,6 +188,7 @@ export default function HackathonDetail() {
       </div>
 
       {tab === 'Overview' && <OverviewTab event={event} />}
+      {tab === 'Rounds' && <RoundsTab eventId={id} />}
     </div>
   )
 }
@@ -184,6 +234,64 @@ function OverviewTab({ event }) {
             )}
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+const PAGE_SIZE = 10
+
+function RoundsTab({ eventId }) {
+  const [rounds, setRounds] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [pageIndex, setPageIndex] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const fetchRounds = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const result = await getRounds(eventId, { PageIndex: pageIndex, PageSize: PAGE_SIZE })
+      setRounds(result.rounds || [])
+      setTotalCount(result.totalCount || 0)
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Failed to load rounds.')
+      setRounds([])
+      setTotalCount(0)
+    } finally {
+      setLoading(false)
+    }
+  }, [eventId, pageIndex])
+
+  useEffect(() => { fetchRounds() }, [fetchRounds])
+
+  return (
+    <div className="rounded-xl border border-[#e8ecf0] bg-white">
+      <div className="flex items-center justify-between border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
+        <h3 className="text-[15px] font-bold text-[#1f2f3a]">Rounds ({totalCount})</h3>
+      </div>
+
+      {error && (
+        <div className="mx-5 mt-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">
+          {error}
+        </div>
+      )}
+
+      <div className="max-w-full overflow-x-auto">
+        <BaseTable
+          columns={roundColumns}
+          data={rounds}
+          page={pageIndex}
+          pageSize={PAGE_SIZE}
+          total={totalCount}
+          onPageChange={setPageIndex}
+          loading={loading}
+          serverSide
+          emptyText="No rounds configured for this event."
+          keyExtractor={(row) => row.id}
+          minWidth="700px"
+        />
       </div>
     </div>
   )
