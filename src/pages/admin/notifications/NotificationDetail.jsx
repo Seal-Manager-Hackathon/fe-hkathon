@@ -151,11 +151,9 @@ export default function NotificationDetail() {
           <InfoRow label="Created At" icon={Calendar}>
             <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(notification.createdAt)}</p>
           </InfoRow>
-          {notification.updatedAt && (
-            <InfoRow label="Updated At" icon={Clock}>
-              <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(notification.updatedAt)}</p>
-            </InfoRow>
-          )}
+          <InfoRow label="Updated At" icon={Clock}>
+            <p className="text-[14px] text-[#1f2f3a]">{notification.updatedAt ? formatDateTime(notification.updatedAt) : '—'}</p>
+          </InfoRow>
         </div>
       </CardPanel>
 

@@ -52,7 +52,11 @@ export default function TrackDetail() {
             <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{track.title}</h1>
             {track.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
           </div>
-          {event && <p className="mt-1 text-[14px] text-gray-400">Event: <span className="font-medium text-[#064f5d]">{event.name}</span><Badge label={event.status} className={`ml-2 ${statusBadge[event.status] || 'bg-[#f5f5f5] text-[#757575]'}`} /></p>}
+          {event ? (
+            <p className="mt-1 text-[14px] text-gray-400">Event: <span className="font-medium text-[#064f5d]">{event.name}</span><Badge label={event.status} className={`ml-2 ${statusBadge[event.status] || 'bg-[#f5f5f5] text-[#757575]'}`} /></p>
+          ) : (
+            <p className="mt-1 text-[14px] text-gray-400">Event: —</p>
+          )}
         </div>
         <Link to={`/admin/hackathons/${eventId}/tracks/${trackId}/edit`} className="inline-flex items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto"><Edit className="h-4 w-4" /> Edit Track</Link>
       </div>
@@ -63,16 +67,16 @@ export default function TrackDetail() {
               <InfoRow label="Max Teams" icon={Users}><p className="text-[14px] font-semibold text-[#1f2f3a]">{track.maxTeam ?? 'Unlimited'}</p></InfoRow>
               <InfoRow label="Registered Teams" icon={Flag}><p className="text-[14px] font-semibold text-[#1f2f3a]">{track.registerTeamCount ?? 0}</p></InfoRow>
               <InfoRow label="Created At" icon={Calendar}><p className="text-[14px] text-[#1f2f3a]">{formatDateTime(track.createdAt)}</p></InfoRow>
-              {track.updatedAt && <InfoRow label="Last Updated" icon={Clock}><p className="text-[14px] text-[#1f2f3a]">{formatDateTime(track.updatedAt)}</p></InfoRow>}
+              <InfoRow label="Last Updated" icon={Clock}><p className="text-[14px] text-[#1f2f3a]">{track.updatedAt ? formatDateTime(track.updatedAt) : '—'}</p></InfoRow>
             </div>
           </CardPanel>
-          {track.description && (
-            <CardPanel title="Description">
-              <p className="px-5 py-5 text-[14px] leading-relaxed text-[#1f2f3a] whitespace-pre-wrap">{track.description}</p>
-            </CardPanel>
-          )}
+          <CardPanel title="Description">
+            <div className="px-5 py-5">
+              <p className="text-[14px] leading-relaxed text-[#1f2f3a] whitespace-pre-wrap">{track.description || 'No description provided.'}</p>
+            </div>
+          </CardPanel>
         </div>
-        {event && <EventInfoCard event={event} />}
+        <EventInfoCard event={event} />
       </div>
     </div>
   )
@@ -91,9 +95,9 @@ function EventInfoCard({ event }) {
           </div>
         </div>
         <div className="px-5 py-3 space-y-2">
-          {event.season && <R icon={<Flag className="h-3.5 w-3.5 text-[#ef6c00]" />} label="Season" value={event.season} cls="text-[#ef6c00]" />}
+          <R icon={<Flag className="h-3.5 w-3.5 text-[#ef6c00]" />} label="Season" value={event.season || '—'} cls="text-[#ef6c00]" />
           <R icon={<Clock className="h-3.5 w-3.5 text-[#1565c0]" />} label="Start" value={formatDateTime(event.startTime)} mono />
-          {event.registerLimitTime && <R icon={<Clock className="h-3.5 w-3.5 text-[#e65100]" />} label="Reg Deadline" value={formatDateTime(event.registerLimitTime)} mono />}
+          <R icon={<Clock className="h-3.5 w-3.5 text-[#e65100]" />} label="Reg Deadline" value={event.registerLimitTime ? formatDateTime(event.registerLimitTime) : '—'} mono />
           <R icon={<Clock className="h-3.5 w-3.5 text-[#c62828]" />} label="End" value={formatDateTime(event.endTime)} mono />
           <R icon={<Users className="h-3.5 w-3.5 text-[#2e7d32]" />} label="Teams" value={event.limitTeam ?? '—'} cls="text-[#2e7d32]" />
           <R icon={<Users className="h-3.5 w-3.5 text-[#6a1b9a]" />} label="Members" value={`${event.minMember ?? '—'} – ${event.maxMember ?? '—'}`} cls="text-[#6a1b9a]" />

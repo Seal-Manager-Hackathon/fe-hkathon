@@ -126,7 +126,7 @@ export default function RoundEdit() {
             <input type="number" min="1" value={form.limitTeam} onChange={(e) => updateField('limitTeam', e.target.value)} placeholder="e.g. 15" className="field-input" />
           </FormField>
         </div>
-        {event && <EventInfoCard event={event} />}
+        <EventInfoCard event={event} />
       </div>
     </EntityFormPage>
   )
@@ -149,9 +149,9 @@ function EventInfoCard({ event }) {
             {event.isDisable && <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />}
           </div>
         </div>
-        {event.season && <InfoRow icon={<Flag className="h-3.5 w-3.5 text-[#ef6c00]" />} label="Season" value={event.season} valueClass="text-[#ef6c00]" />}
+        {event.season ? <InfoRow icon={<Flag className="h-3.5 w-3.5 text-[#ef6c00]" />} label="Season" value={event.season} valueClass="text-[#ef6c00]" /> : <InfoRow icon={<Flag className="h-3.5 w-3.5 text-[#ef6c00]" />} label="Season" value="—" valueClass="text-[#ef6c00]" />}
         <InfoRow icon={<Clock className="h-3.5 w-3.5 text-[#1565c0]" />} label="Start" value={formatDateTime(event.startTime)} mono />
-        {event.registerLimitTime && <InfoRow icon={<Clock className="h-3.5 w-3.5 text-[#e65100]" />} label="Reg Deadline" value={formatDateTime(event.registerLimitTime)} mono />}
+        <InfoRow icon={<Clock className="h-3.5 w-3.5 text-[#e65100]" />} label="Reg Deadline" value={event.registerLimitTime ? formatDateTime(event.registerLimitTime) : '—'} mono />
         <InfoRow icon={<Clock className="h-3.5 w-3.5 text-[#c62828]" />} label="End" value={formatDateTime(event.endTime)} mono />
         <InfoRow icon={<Users className="h-3.5 w-3.5 text-[#2e7d32]" />} label="Teams" value={event.limitTeam ?? '—'} valueClass="text-[#2e7d32]" />
         <InfoRow icon={<Users className="h-3.5 w-3.5 text-[#6a1b9a]" />} label="Members" value={`${event.minMember ?? '—'} – ${event.maxMember ?? '—'}`} valueClass="text-[#6a1b9a]" />

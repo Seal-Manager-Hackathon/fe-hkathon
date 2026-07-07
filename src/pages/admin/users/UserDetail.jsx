@@ -184,11 +184,9 @@ export default function UserDetail() {
                 <Badge label="Not verified" className="bg-[#fce4ec] text-[#c62828]" />
               )}
             </InfoRow>
-            {user.verifyEmailAt && (
-              <InfoRow label="Verified At" icon={Clock}>
-                <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.verifyEmailAt)}</p>
+            <InfoRow label="Verified At" icon={Clock}>
+                <p className="text-[14px] text-[#1f2f3a]">{user.verifyEmailAt ? formatDateTime(user.verifyEmailAt) : '—'}</p>
               </InfoRow>
-            )}
             <InfoRow label="Member Since" icon={Calendar}>
               <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.createdAt)}</p>
             </InfoRow>
@@ -198,22 +196,16 @@ export default function UserDetail() {
           </div>
         </CardPanel>
 
-        {(user.banReason || user.bannedAt) && (
-          <CardPanel title="Ban Information">
+        <CardPanel title="Ban Information">
             <div className="divide-y divide-[#f5f5f5]">
-              {user.banReason && (
-                <InfoRow label="Ban Reason" icon={AlertTriangle}>
-                  <p className="text-[14px] text-[#c62828]">{user.banReason}</p>
-                </InfoRow>
-              )}
-              {user.bannedAt && (
-                <InfoRow label="Banned At" icon={AlertTriangle}>
-                  <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.bannedAt)}</p>
-                </InfoRow>
-              )}
+              <InfoRow label="Ban Reason" icon={AlertTriangle}>
+                <p className="text-[14px] text-[#c62828]">{user.banReason || '—'}</p>
+              </InfoRow>
+              <InfoRow label="Banned At" icon={AlertTriangle}>
+                <p className="text-[14px] text-[#1f2f3a]">{user.bannedAt ? formatDateTime(user.bannedAt) : '—'}</p>
+              </InfoRow>
             </div>
           </CardPanel>
-        )}
       </div>
     </div>
   )
