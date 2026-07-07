@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import {
   statSections,
-  notifications,
   statusBadge,
   roleBadge,
   iconMap,
@@ -9,10 +8,10 @@ import {
 import { getEventsCount, getUsersCount, getTeamsCount, getRecentEvents, getRecentUsers, getRecentNotifications } from '../../api/admin'
 import StatCard from '../../components/StatCard'
 import SectionTitle from '../../components/SectionTitle'
-import CardPanel from '../../components/CardPanel'
 import ViewButton from '../../components/ViewButton'
 import Badge from '../../components/Badge'
 import Avatar from '../../components/Avatar'
+import { Link } from 'react-router-dom'
 
 export default function AdminDashboard() {
   const [counts, setCounts] = useState({
@@ -29,6 +28,7 @@ export default function AdminDashboard() {
     activeTeams: 0,
     disabledTeams: 0,
   })
+  const [recentTab, setRecentTab] = useState('hackathons')
   const [recentEvents, setRecentEvents] = useState([])
   const [dashboardUsers, setDashboardUsers] = useState([])
   const [dashboardNotifications, setDashboardNotifications] = useState([])
@@ -194,10 +194,38 @@ export default function AdminDashboard() {
 
       <SectionTitle>Recent Activity</SectionTitle>
 
-      <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-2">
-        <CardPanel title="Recent Hackathons" viewAllTo="/admin/hackathons">
-          {recentEvents.map((h) => (
-            <div key={h.name} className="flex items-center justify-between border-b border-[#f5f5f5] px-5 py-3 last:border-0 gap-3">
+      <div className="rounded-xl border border-[#e9edf0] bg-white">
+        <div className="flex border-b border-[#e9edf0]">
+          {[
+            { key: 'hackathons', label: 'Hackathons', viewAll: '/admin/hackathons' },
+            { key: 'users', label: 'Users', viewAll: '/admin/users' },
+            { key: 'notifications', label: 'Notifications', viewAll: '/admin/notifications' },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setRecentTab(tab.key)}
+              className={`cursor-pointer px-5 py-3 text-[13px] font-semibold transition-colors ${
+                recentTab === tab.key
+                  ? 'border-b-2 border-[#064f5d] text-[#064f5d]'
+                  : 'text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+          <div className="ml-auto flex items-center pr-4">
+            <Link
+              to={({ hackathons: '/admin/hackathons', users: '/admin/users', notifications: '/admin/notifications' })[recentTab]}
+              className="text-[12px] font-semibold text-[#064f5d] hover:underline"
+            >
+              View All
+            </Link>
+          </div>
+        </div>
+
+        <div className="divide-y divide-[#f5f5f5]">
+          {recentTab === 'hackathons' && recentEvents.map((h) => (
+            <div key={h.name} className="flex items-center justify-between px-5 py-3 gap-3">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{h.name}</p>
@@ -208,11 +236,9 @@ export default function AdminDashboard() {
               <ViewButton to={`/admin/hackathons/${h.id}`} />
             </div>
           ))}
-        </CardPanel>
 
-        <CardPanel title="Recent Users" viewAllTo="/admin/users">
-          {dashboardUsers.map((u) => (
-            <div key={u.email} className="flex items-center justify-between border-b border-[#f5f5f5] px-5 py-3 last:border-0 gap-3">
+          {recentTab === 'users' && dashboardUsers.map((u) => (
+            <div key={u.email} className="flex items-center justify-between px-5 py-3 gap-3">
               <Avatar src={u.avatarUrl} name={u.name} />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -224,11 +250,9 @@ export default function AdminDashboard() {
               <ViewButton to={`/admin/users/${u.id}`} />
             </div>
           ))}
-        </CardPanel>
 
-        <CardPanel title="System Notifications" viewAllTo="/admin/notifications">
-          {dashboardNotifications.map((n) => (
-            <div key={n.id} className="flex items-center justify-between border-b border-[#f5f5f5] px-5 py-3.5 last:border-0 gap-3">
+          {recentTab === 'notifications' && dashboardNotifications.map((n) => (
+            <div key={n.id} className="flex items-center justify-between px-5 py-3 gap-3">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[13px] font-semibold text-[#1f2f3a]">{n.title}</p>
                 <p className="mt-0.5 text-[11px] text-gray-400">{n.date}</p>
@@ -236,7 +260,13 @@ export default function AdminDashboard() {
               <ViewButton to={`/admin/notifications/${n.id}`} />
             </div>
           ))}
-        </CardPanel>
+
+          {(recentTab === 'hackathons' && recentEvents.length === 0) ||
+          (recentTab === 'users' && dashboardUsers.length === 0) ||
+          (recentTab === 'notifications' && dashboardNotifications.length === 0) ? (
+            <div className="px-5 py-8 text-center text-[13px] text-gray-400">No data available.</div>
+          ) : null}
+        </div>
       </div>
     </div>
   )
