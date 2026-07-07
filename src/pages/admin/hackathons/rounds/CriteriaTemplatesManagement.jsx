@@ -19,7 +19,7 @@ const criteriaFilters = [
 const viewBtnClass =
   'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] transition-colors hover:bg-[#e8e8e8]'
 
-function criteriaColumns() {
+function criteriaColumns(roundId) {
   return [
     {
       key: 'title',
@@ -47,7 +47,7 @@ function criteriaColumns() {
       className: 'text-right',
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
-          <Link to={`/admin/rounds/${row.roundId}/criteria-templates/${row.id}`} className={viewBtnClass}>
+          <Link to={`/admin/rounds/${roundId}/criteria-templates/${row.id}`} className={viewBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
         </div>
@@ -124,7 +124,7 @@ export default function CriteriaTemplatesManagement() {
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
 
       <BaseTable
-        columns={criteriaColumns()}
+        columns={criteriaColumns(roundId)}
         data={templates}
         page={pageIndex}
         pageSize={PAGE_SIZE}
