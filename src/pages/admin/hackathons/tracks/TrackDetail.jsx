@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Edit, Calendar, Clock, Users, Flag, Hash } from 'lucide-react'
+import { Edit, Calendar, Clock, Users, Flag, Hash, FileText } from 'lucide-react'
 import { getTrackDetail, getEventDetail } from '../../../../api/admin'
 import Badge from '../../../../components/Badge'
 import CardPanel from '../../../../components/CardPanel'
@@ -58,13 +58,19 @@ export default function TrackDetail() {
       </div>
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_320px]">
         <div className="space-y-5">
-          <CardPanel title="Details">
-            <InfoRow label="Max Teams" icon={Users}><p className="text-[14px] font-semibold text-[#1f2f3a]">{track.maxTeam ?? 'Unlimited'}</p></InfoRow>
-            <InfoRow label="Registered Teams" icon={Flag}><p className="text-[14px] font-semibold text-[#1f2f3a]">{track.registerTeamCount ?? 0}</p></InfoRow>
-            <InfoRow label="Created At" icon={Calendar}><p className="text-[14px] text-[#1f2f3a]">{formatDateTime(track.createdAt)}</p></InfoRow>
-            {track.updatedAt && <InfoRow label="Updated At" icon={Clock}><p className="text-[14px] text-[#1f2f3a]">{formatDateTime(track.updatedAt)}</p></InfoRow>}
+          <CardPanel title="Track Information">
+            <div className="divide-y divide-[#f5f5f5]">
+              <InfoRow label="Max Teams" icon={Users}><p className="text-[14px] font-semibold text-[#1f2f3a]">{track.maxTeam ?? 'Unlimited'}</p></InfoRow>
+              <InfoRow label="Registered Teams" icon={Flag}><p className="text-[14px] font-semibold text-[#1f2f3a]">{track.registerTeamCount ?? 0}</p></InfoRow>
+              <InfoRow label="Created At" icon={Calendar}><p className="text-[14px] text-[#1f2f3a]">{formatDateTime(track.createdAt)}</p></InfoRow>
+              {track.updatedAt && <InfoRow label="Last Updated" icon={Clock}><p className="text-[14px] text-[#1f2f3a]">{formatDateTime(track.updatedAt)}</p></InfoRow>}
+            </div>
           </CardPanel>
-          {track.description && <CardPanel title="Description"><p className="px-5 py-5 text-[14px] leading-relaxed text-[#1f2f3a] whitespace-pre-wrap">{track.description}</p></CardPanel>}
+          {track.description && (
+            <CardPanel title="Description">
+              <p className="px-5 py-5 text-[14px] leading-relaxed text-[#1f2f3a] whitespace-pre-wrap">{track.description}</p>
+            </CardPanel>
+          )}
         </div>
         {event && <EventInfoCard event={event} />}
       </div>
