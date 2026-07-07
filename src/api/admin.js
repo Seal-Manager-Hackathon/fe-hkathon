@@ -430,6 +430,11 @@ export async function getTopics(trackId, params = {}) {
   return data.data
 }
 
+export async function createTopic(trackId, payload) {
+  const { data } = await api.post(`/admin/tracks/${trackId}/topics`, payload)
+  return data
+}
+
 // ─── Team Lock/Unlock ─────────────────────────────────────────────────────────
 
 export async function lockTeam(teamId) {

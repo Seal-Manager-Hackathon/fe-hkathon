@@ -140,7 +140,7 @@ export default function TopicsManagement() {
           </h1>
         </div>
         {trackId && (
-          <Link to={`/admin/tracks/${trackId}/topics/create`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto">
+          <Link to={`/admin/hackathons/${eventId}/tracks/${trackId}/topics/create`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto">
             <Plus className="h-4 w-4" />Create Topic
           </Link>
         )}
