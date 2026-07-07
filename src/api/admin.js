@@ -198,4 +198,16 @@ export async function getNotificationDetail(notificationId) {
   return data.data
 }
 
+/**
+ * Update notification title and/or description.
+ * Only included fields are updated; omitted fields remain unchanged.
+ * @param {string} notificationId
+ * @param {{ title?: string, description?: string }} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateNotification(notificationId, payload) {
+  const { data } = await api.patch(`/admin/notifications/${notificationId}`, payload)
+  return data
+}
+
 
