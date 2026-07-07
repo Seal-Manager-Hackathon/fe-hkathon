@@ -34,9 +34,11 @@ export function trackColumns(onDelete, onRestore) {
           <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] transition-colors hover:bg-[#e8e8e8]">
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
-          <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.id}/edit`} className={editBtnClass}>
-            <Pencil className="h-3.5 w-3.5" /> Edit
-          </Link>
+          {!row.isDisable && (
+            <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.id}/edit`} className={editBtnClass}>
+              <Pencil className="h-3.5 w-3.5" /> Edit
+            </Link>
+          )}
           {row.isDisable ? (
             <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
               <RotateCcw className="h-3.5 w-3.5" /> Restore
