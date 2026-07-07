@@ -1,73 +1,87 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Edit, Calendar, MapPin, DollarSign, Users } from 'lucide-react'
-import { allHackathons, statusBadge, hackathonRounds, hackathonTracks, hackathonTeams } from '../../data/mockAdminData'
+import { Edit, Calendar, Users } from 'lucide-react'
+import { getEventDetail } from '../../api/admin'
 import Badge from '../../components/Badge'
-import NotFoundState from '../../components/NotFoundState'
-import OverviewTab from './hackathon-detail/OverviewTab'
-import RoundsTab from './hackathon-detail/RoundsTab'
-import TracksTopicsTab from './hackathon-detail/TracksTopicsTab'
-import TeamsTab from './hackathon-detail/TeamsTab'
+import { formatDate } from '../../utils/format'
 
-const TABS = ['Overview', 'Rounds', 'Tracks & Topics', 'Registered Teams']
+const TABS = ['Overview']
 
-const ROUND_NAMES = ['Qualification Round', 'Semi-Final', 'Final Round']
-const STATUSES = ['Completed', 'Active', 'Upcoming']
-
-const TRACK_TEMPLATES = [
-  { name: 'Core Track', topics: ['Main Challenge', 'Innovation Sprint'] },
-  { name: 'Special Topic', topics: ['Industry Focus', 'Social Impact'] },
-]
-
-function generateRounds(hackathon) {
-  const baseTeams = hackathon.teams || 8
-  return ROUND_NAMES.map((name, i) => ({
-    id: `gen-r${i + 1}`,
-    name,
-    startDate: hackathon.date,
-    endDate: hackathon.date,
-    status: STATUSES[i],
-    teams: i === 0 ? baseTeams * 3 : i === 1 ? Math.round(baseTeams * 1.5) : baseTeams,
-  }))
-}
-
-function generateTracks(hackathon) {
-  return TRACK_TEMPLATES.map((t, ti) => ({
-    id: `gen-t${ti + 1}`,
-    name: t.name,
-    topics: t.topics.map((tp, tpi) => ({
-      id: `gen-tp${ti + 1}-${tpi + 1}`,
-      name: tp,
-      teams: Math.max(1, Math.round((hackathon.teams || 4) / (ti + tpi + 1))),
-    })),
-  }))
-}
-
-function generateTeams(hackathon) {
-  const count = hackathon.teams || 4
-  const leaderNames = ['Alex Johnson', 'Maria Chen', 'David Kim', 'Sarah Wilson', 'James Brown', 'Emily Davis', 'Michael Lee', 'Lisa Wang', 'Thomas Nguyen', 'Anna Martinez', 'Grace Hopper', 'Kevin Tran']
-  return Array.from({ length: count }, (_, i) => ({
-    id: `gen-tm${i + 1}`,
-    name: `Team ${String.fromCharCode(65 + i)}`,
-    leader: leaderNames[i % leaderNames.length],
-    members: Math.max(2, Math.ceil(Math.random() * 4) + 1),
-    registered: hackathon.date,
-    status: i < Math.ceil(count * 0.6) ? 'Confirmed' : i < Math.ceil(count * 0.85) ? 'Pending' : 'Rejected',
-  }))
+const statusBadge = {
+  Draft: 'bg-[#f5f5f5] text-[#757575]',
+  Published: 'bg-[#e8f5e9] text-[#2e7d32]',
+  Closed: 'bg-[#e0f2f1] text-[#00695c]',
 }
 
 export default function HackathonDetail() {
   const { id } = useParams()
+  const [event, setEvent] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [tab, setTab] = useState('Overview')
 
-  const hackathon = allHackathons.find((h) => h.id === id)
-  if (!hackathon) {
-    return <NotFoundState entity="Hackathon" fallbackTo="/admin/hackathons" />
+  useEffect(() => {
+    let cancelled = false
+    async function fetch() {
+      setLoading(true)
+      setError('')
+      try {
+        const data = await getEventDetail(id)
+        if (!cancelled) setEvent(data)
+      } catch (err) {
+        if (!cancelled) {
+          const msg = err?.response?.data?.message || 'Failed to load event detail.'
+          setError(msg)
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    fetch()
+    return () => { cancelled = true }
+  }, [id])
+
+  // Loading skeleton
+  if (loading) {
+    return (
+      <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
+        <div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" />
+        <div className="mb-6 space-y-3">
+          <div className="h-8 w-64 animate-pulse rounded bg-gray-200" />
+          <div className="h-4 w-96 animate-pulse rounded bg-gray-200" />
+        </div>
+        <div className="h-80 animate-pulse rounded-xl bg-gray-100" />
+      </div>
+    )
   }
 
-  const rounds = hackathonRounds[id] || generateRounds(hackathon)
-  const tracks = hackathonTracks[id] || generateTracks(hackathon)
-  const teams = hackathonTeams[id] || generateTeams(hackathon)
+  // Error state
+  if (error) {
+    const isNotFound = error === 'Event Not Found' || error.includes('Not Found')
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center">
+        <p className="text-[18px] font-semibold text-gray-500">
+          {isNotFound ? 'Không tìm thấy sự kiện' : error}
+        </p>
+        <Link to="/admin/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
+          &larr; Back to Hackathons
+        </Link>
+      </div>
+    )
+  }
+
+  if (!event) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center">
+        <p className="text-[18px] font-semibold text-gray-500">Event not found.</p>
+        <Link to="/admin/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
+          &larr; Back to Hackathons
+        </Link>
+      </div>
+    )
+  }
+
+  const isDisabled = event.isDisable
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -83,21 +97,19 @@ export default function HackathonDetail() {
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{hackathon.name}</h1>
-            <Badge label={hackathon.status} className={statusBadge[hackathon.status]} />
+            <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{event.name}</h1>
+            <Badge label={event.status} className={statusBadge[event.status] || 'bg-[#f5f5f5] text-[#757575]'} />
+            {isDisabled && (
+              <Badge label="Disabled" className="bg-[#fce4ec] text-[#c62828]" />
+            )}
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] sm:text-[13px] text-gray-400">
             <span className="inline-flex items-center gap-1.5">
-              <Calendar className="h-3.5 w-3.5" /> {hackathon.season} · {hackathon.date}
+              <Calendar className="h-3.5 w-3.5" />
+              {event.season ? `${event.season} · ` : ''}{formatDate(event.startTime)} – {formatDate(event.endTime)}
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5" /> {hackathon.location}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <DollarSign className="h-3.5 w-3.5" /> {hackathon.prize}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Users className="h-3.5 w-3.5" /> {teams.length} teams
+              <Users className="h-3.5 w-3.5" /> {event.limitTeam ?? '—'} teams
             </span>
           </div>
         </div>
@@ -126,10 +138,53 @@ export default function HackathonDetail() {
         ))}
       </div>
 
-      {tab === 'Overview' && <OverviewTab hackathon={hackathon} />}
-      {tab === 'Rounds' && <RoundsTab rounds={rounds} />}
-      {tab === 'Tracks & Topics' && <TracksTopicsTab tracks={tracks} />}
-      {tab === 'Registered Teams' && <TeamsTab teams={teams} />}
+      {tab === 'Overview' && <OverviewTab event={event} />}
+    </div>
+  )
+}
+
+function OverviewTab({ event }) {
+  const rows = [
+    { label: 'Name', value: event.name },
+    { label: 'Description', value: event.description || '—', full: true },
+    { label: 'Season', value: event.season || '—' },
+    { label: 'Status', badge: event.status, badgeClass: statusBadge[event.status] },
+    { label: 'Active', badge: event.isDisable ? 'Disabled' : 'Active', badgeClass: event.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]' },
+    { label: 'Start Time', value: formatDate(event.startTime) },
+    { label: 'End Time', value: formatDate(event.endTime) },
+    { label: 'Registration Deadline', value: event.registerLimitTime ? formatDate(event.registerLimitTime) : '—' },
+    { label: 'Max Teams', value: event.limitTeam ?? '—' },
+    { label: 'Min Members', value: event.minMember ?? '—' },
+    { label: 'Max Members', value: event.maxMember ?? '—' },
+    { label: 'Number of Rounds', value: event.numberRound ?? 0 },
+    { label: 'Created', value: formatDate(event.createdAt) },
+    { label: 'Last Updated', value: formatDate(event.updatedAt) },
+  ]
+
+  return (
+    <div className="rounded-xl border border-[#e8ecf0] bg-white">
+      <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
+        <h3 className="text-[15px] font-bold text-[#1f2f3a]">Event Information</h3>
+      </div>
+      <div className="divide-y divide-[#f5f5f5]">
+        {rows.map((row, i) => (
+          <div
+            key={i}
+            className={`flex items-center px-5 ${row.full ? 'flex-col items-start py-3' : 'justify-between py-3'}`}
+          >
+            <span className={`text-[13px] text-gray-400 ${row.full ? 'mb-1 w-full' : ''}`}>
+              {row.label}
+            </span>
+            {row.badge ? (
+              <Badge label={row.badge} className={row.badgeClass} />
+            ) : (
+              <span className={`text-[14px] font-medium text-[#1f2f3a] ${row.full ? 'whitespace-pre-wrap leading-relaxed' : ''}`}>
+                {row.value}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

@@ -67,6 +67,16 @@ export async function getEvents(params = {}) {
   return data.data
 }
 
+/**
+ * Get event detail by ID.
+ * @param {string} eventId
+ * @returns {Promise<object>} full event object
+ */
+export async function getEventDetail(eventId) {
+  const { data } = await api.get(`/admin/events/${eventId}`)
+  return data.data
+}
+
 export async function getRecentNotifications() {
   const { data } = await api.get('/admin/notifications/recent')
   return data.data
