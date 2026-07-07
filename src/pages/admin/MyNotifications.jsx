@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { CheckCheck, Bell, Eye } from 'lucide-react'
 import { cn } from '../../utils/cn'
 import CardPanel from '../../components/CardPanel'
-import BackButton from '../../components/BackButton'
 import Badge from '../../components/Badge'
 import NotificationModal from '../../components/NotificationModal'
 
@@ -35,7 +34,14 @@ export default function MyNotifications() {
   return (
     <>
       <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-        <BackButton fallback="/admin" label="Back to Dashboard" />
+      <div className="mb-6">
+          <Link
+            to="/admin"
+            className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
+          >
+            &larr; Back to Dashboard
+          </Link>
+        </div>
 
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>

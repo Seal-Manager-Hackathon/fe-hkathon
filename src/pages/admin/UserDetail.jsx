@@ -9,7 +9,6 @@ import { roleBadge } from '../../constants/adminOptions'
 import { formatDate } from '../../utils/format'
 import Badge from '../../components/Badge'
 import CardPanel from '../../components/CardPanel'
-import BackButton from '../../components/BackButton'
 import InfoRow from '../../components/InfoRow'
 import Avatar from '../../components/Avatar'
 
@@ -88,7 +87,14 @@ export default function UserDetail() {
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <BackButton fallback="/admin/users" label="Back to Users" />
+      <div className="mb-6">
+        <Link
+          to="/admin/users"
+          className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
+        >
+          &larr; Back to Users
+        </Link>
+      </div>
 
       {/* === Profile-style header === */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">

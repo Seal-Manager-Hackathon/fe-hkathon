@@ -3,7 +3,6 @@ import { Edit, Calendar, Users, Megaphone } from 'lucide-react'
 import { allNotifications, notificationTypeBadge, notificationStatusBadge } from '../../data/mockAdminData'
 import Badge from '../../components/Badge'
 import CardPanel from '../../components/CardPanel'
-import BackButton from '../../components/BackButton'
 import NotFoundState from '../../components/NotFoundState'
 import InfoRow from '../../components/InfoRow'
 
@@ -17,7 +16,14 @@ export default function NotificationDetail() {
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <BackButton fallback="/admin/notifications" label="Back to Notifications" />
+      <div className="mb-6">
+        <Link
+          to="/admin/notifications"
+          className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
+        >
+          &larr; Back to Notifications
+        </Link>
+      </div>
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>

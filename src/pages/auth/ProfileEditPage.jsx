@@ -1,6 +1,5 @@
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import BackButton from '../../components/BackButton'
 import ProfileEditForm from '../../components/ProfileEditForm'
 
 export default function ProfileEditPage() {
@@ -10,7 +9,14 @@ export default function ProfileEditPage() {
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <BackButton fallback="/profile" label="Back to Profile" />
+      <div className="mb-6">
+        <Link
+          to="/profile"
+          className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
+        >
+          &larr; Back to Profile
+        </Link>
+      </div>
 
       <div className="mb-6">
         <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Edit Profile</h1>

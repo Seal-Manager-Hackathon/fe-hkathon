@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom'
 import { Edit, Calendar, MapPin, DollarSign, Users } from 'lucide-react'
 import { allHackathons, statusBadge, hackathonRounds, hackathonTracks, hackathonTeams } from '../../data/mockAdminData'
 import Badge from '../../components/Badge'
-import BackButton from '../../components/BackButton'
 import NotFoundState from '../../components/NotFoundState'
 import OverviewTab from './hackathon-detail/OverviewTab'
 import RoundsTab from './hackathon-detail/RoundsTab'
@@ -72,7 +71,14 @@ export default function HackathonDetail() {
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <BackButton fallback="/admin/hackathons" label="Back to Hackathons" />
+      <div className="mb-6">
+        <Link
+          to="/admin/hackathons"
+          className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
+        >
+          &larr; Back to Hackathons
+        </Link>
+      </div>
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
