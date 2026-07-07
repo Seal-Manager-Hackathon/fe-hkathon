@@ -10,18 +10,19 @@ export const statusBadge = {
 }
 
 export default function OverviewTab({ event }) {
-  const rows = [
-    { label: 'Season', value: event.season || '—', icon: <Flag className="h-4 w-4 text-[#ef6c00]" /> },
-    { label: 'Start Time', value: formatDate(event.startTime), icon: <Calendar className="h-4 w-4 text-[#1565c0]" /> },
-    { label: 'End Time', value: formatDate(event.endTime), icon: <Calendar className="h-4 w-4 text-[#c62828]" /> },
-    { label: 'Registration Deadline', value: event.registerLimitTime ? formatDate(event.registerLimitTime) : '—', icon: <Clock className="h-4 w-4 text-[#e65100]" /> },
-    { label: 'Max Teams', value: event.limitTeam ?? '—', icon: <Users className="h-4 w-4 text-[#2e7d32]" /> },
-    { label: 'Min Members', value: event.minMember ?? '—', icon: <UserPlus className="h-4 w-4 text-[#6a1b9a]" /> },
-    { label: 'Max Members', value: event.maxMember ?? '—', icon: <UserPlus className="h-4 w-4 text-[#6a1b9a]" /> },
-    { label: 'Number of Rounds', value: event.numberRound ?? 0, icon: <Hash className="h-4 w-4 text-[#37474f]" /> },
-    { label: 'Created', value: formatDate(event.createdAt), icon: <Clock className="h-4 w-4 text-[#546e7a]" /> },
-    { label: 'Last Updated', value: formatDate(event.updatedAt), icon: <Clock className="h-4 w-4 text-[#546e7a]" /> },
+  const cards = [
+    { label: 'Season', value: event.season || '—', icon: <Flag className="h-5 w-5 text-[#ef6c00]" />, bg: 'bg-orange-50' },
+    { label: 'Start Time', value: formatDate(event.startTime), icon: <Calendar className="h-5 w-5 text-[#1565c0]" />, bg: 'bg-blue-50' },
+    { label: 'End Time', value: formatDate(event.endTime), icon: <Calendar className="h-5 w-5 text-[#c62828]" />, bg: 'bg-red-50' },
+    { label: 'Reg Deadline', value: event.registerLimitTime ? formatDate(event.registerLimitTime) : '—', icon: <Clock className="h-5 w-5 text-[#e65100]" />, bg: 'bg-orange-50' },
+    { label: 'Max Teams', value: event.limitTeam ?? '—', icon: <Users className="h-5 w-5 text-[#2e7d32]" />, bg: 'bg-green-50' },
+    { label: 'Min Members', value: event.minMember ?? '—', icon: <UserPlus className="h-5 w-5 text-[#6a1b9a]" />, bg: 'bg-purple-50' },
+    { label: 'Max Members', value: event.maxMember ?? '—', icon: <UserPlus className="h-5 w-5 text-[#6a1b9a]" />, bg: 'bg-purple-50' },
+    { label: 'Rounds', value: event.numberRound ?? 0, icon: <Hash className="h-5 w-5 text-[#37474f]" />, bg: 'bg-gray-100' },
+    { label: 'Created', value: formatDate(event.createdAt), icon: <Clock className="h-5 w-5 text-[#546e7a]" />, bg: 'bg-gray-50' },
+    { label: 'Updated', value: formatDate(event.updatedAt), icon: <Clock className="h-5 w-5 text-[#546e7a]" />, bg: 'bg-gray-50' },
   ]
+
   return (
     <>
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -40,20 +41,19 @@ export default function OverviewTab({ event }) {
           <Edit className="h-4 w-4" />Edit Hackathon
         </Link>
       </div>
-      <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
-      <div className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-5 py-4"><h3 className="text-[15px] font-bold text-white">Event Information</h3></div>
-      <div className="divide-y divide-[#f5f5f5]">
-        {rows.map((row, i) => (
-          <div key={i} className={`flex items-center px-5 ${row.full ? 'flex-col items-start py-3' : 'justify-between py-3'}`}>
-            <span className={`text-[13px] text-gray-400 flex items-center gap-2 ${row.full ? 'mb-1 w-full' : ''}`}>
-              {row.icon}
-              {row.label}
-            </span>
-            {row.badge ? <Badge label={row.badge} className={row.badgeClass} /> : <span className={`text-[14px] font-medium text-[#1f2f3a] ${row.full ? 'whitespace-pre-wrap leading-relaxed' : ''}`}>{row.value}</span>}
+
+      <h3 className="mb-4 text-[15px] font-bold text-[#1f2f3a]">Event Information</h3>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {cards.map((c, i) => (
+          <div key={i} className={`rounded-xl border border-[#e8ecf0] ${c.bg} p-4 flex flex-col gap-2`}>
+            <div className="flex items-center gap-2">
+              {c.icon}
+              <span className="text-[12px] font-medium text-gray-400 uppercase tracking-wide">{c.label}</span>
+            </div>
+            <p className="text-[16px] font-bold text-[#1f2f3a]">{c.value}</p>
           </div>
         ))}
       </div>
-    </div>
     </>
   )
 }
