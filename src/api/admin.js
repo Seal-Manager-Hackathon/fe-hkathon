@@ -398,6 +398,11 @@ export async function getCriteriaTemplates(roundId, params = {}) {
   return data.data
 }
 
+export async function createCriteriaTemplate(roundId, payload) {
+  const { data } = await api.post(`/admin/rounds/${roundId}/criteria-templates`, payload)
+  return data
+}
+
 // ─── Tracks ─────────────────────────────────────────────────────────────────────
 
 export async function getTracks(eventId, params = {}) {

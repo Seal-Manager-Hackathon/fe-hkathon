@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Eye, FileText, Calendar, CircleCheck, MoreHorizontal, Search, Ban, ArrowLeft } from 'lucide-react'
+import { Plus, Eye, FileText, Calendar, CircleCheck, MoreHorizontal, Search, Ban, ArrowLeft } from 'lucide-react'
 import { getCriteriaTemplates, getRoundDetail } from '../../../../api/admin'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
@@ -108,10 +108,15 @@ export default function CriteriaTemplatesManagement() {
           <ArrowLeft className="h-4 w-4" /> Back to Rounds
         </Link>
       </div>
-      <div className="mb-6">
-        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">
-          Criteria Templates {round?.name ? `— ${round.name}` : ''}
-        </h1>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">
+            Criteria Templates {round?.name ? `— ${round.name}` : ''}
+          </h1>
+        </div>
+        <Link to={`/admin/rounds/${roundId}/criteria-templates/create`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto">
+          <Plus className="h-4 w-4" />Create Template
+        </Link>
       </div>
 
       <FilterBar filters={criteriaFilters} values={filters} onChange={handleFilterChange} onReset={handleReset} hasActive={hasActive} />

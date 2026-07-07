@@ -19,6 +19,7 @@ const RoundCreate = lazy(() => import('../pages/admin/hackathons/rounds/RoundCre
 const RoundEdit = lazy(() => import('../pages/admin/hackathons/rounds/RoundEdit'))
 const RoundDetail = lazy(() => import('../pages/admin/hackathons/rounds/RoundDetail'))
 const CriteriaTemplatesManagement = lazy(() => import('../pages/admin/hackathons/rounds/CriteriaTemplatesManagement'))
+const CriteriaTemplateCreate = lazy(() => import('../pages/admin/hackathons/rounds/CriteriaTemplateCreate'))
 const TrackCreate = lazy(() => import('../pages/admin/hackathons/tracks/TrackCreate'))
 const TrackDetail = lazy(() => import('../pages/admin/hackathons/tracks/TrackDetail'))
 const TrackEdit = lazy(() => import('../pages/admin/hackathons/tracks/TrackEdit'))
@@ -84,6 +85,7 @@ export const routes = [
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><TeamDetail /></Suspense> },
     ]},
     { path: 'rounds/:roundId/edit', element: <Suspense fallback={<RouteFallback />}><RoundEdit /></Suspense> },
+    { path: 'rounds/:roundId/criteria-templates/create', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplateCreate /></Suspense> },
     { path: 'rounds/:roundId/criteria-templates', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplatesManagement /></Suspense> },
     { path: 'rounds/:roundId', element: <Suspense fallback={<RouteFallback />}><RoundDetail /></Suspense> },
     { path: 'my-notifications', element: <Suspense fallback={<RouteFallback />}><MyNotifications /></Suspense> },
