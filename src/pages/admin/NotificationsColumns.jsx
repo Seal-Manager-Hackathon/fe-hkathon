@@ -6,6 +6,8 @@ import { Eye, Edit, Trash2, RotateCcw } from 'lucide-react'
 
 const actionBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
+const restoreBtnClass =
+  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9]'
 const dangerBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2]'
 
@@ -76,7 +78,7 @@ export function notificationsColumns(targetDetails = {}, onDelete, onRestore) {
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
           {row.isDisable ? (
-            <button onClick={() => onRestore?.(row)} className={actionBtnClass}>
+            <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
               <RotateCcw className="h-3.5 w-3.5" /> Restore
             </button>
           ) : (
