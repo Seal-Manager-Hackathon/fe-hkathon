@@ -85,7 +85,7 @@ export default function RoundDetail() {
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6">
         <Link to={backUrl} className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
-          &larr; {event ? `Back to ${event.name}` : 'Back to Hackathons'}
+          &larr; Back to Hackathons
         </Link>
       </div>
 
