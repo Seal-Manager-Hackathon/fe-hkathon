@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { Edit, Calendar, Users } from 'lucide-react'
+import { Edit, Calendar, Users, Info, FileText, Layers } from 'lucide-react'
 import { getEventDetail } from '../../api/admin'
 import Badge from '../../components/Badge'
 import { formatDate } from '../../utils/format'
 import { statusBadge } from './OverviewTab'
 import OverviewTab from './OverviewTab'
+import DescriptionTab from './DescriptionTab'
 import RoundsTab from './RoundsTab'
 
-const TABS = ['Overview', 'Rounds']
+const TABS = [
+  { key: 'Overview', icon: <Info className="h-4 w-4" /> },
+  { key: 'Description', icon: <FileText className="h-4 w-4" /> },
+  { key: 'Rounds', icon: <Layers className="h-4 w-4" /> },
+]
 
 export default function HackathonDetail() {
   const { id } = useParams()
@@ -17,7 +22,8 @@ export default function HackathonDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const tabParam = searchParams.get('tab')
-  const [tab, setTab] = useState(() => TABS.includes(tabParam) ? tabParam : 'Overview')
+  const validKeys = TABS.map((t) => t.key)
+  const [tab, setTab] = useState(() => validKeys.includes(tabParam) ? tabParam : 'Overview')
 
   useEffect(() => {
     let cancelled = false
@@ -76,7 +82,7 @@ export default function HackathonDetail() {
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{event.name}</h1>
             <Badge label={event.status} className={statusBadge[event.status] || 'bg-[#f5f5f5] text-[#757575]'} />
-            {event.isDisable && <Badge label="Disabled" className="bg-[#fce4ec] text-[#c62828]" />}
+            {event.isDisable && <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />}
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-3 text-[12px] sm:text-[13px] text-gray-400">
             <span className="inline-flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />{event.season ? `${event.season} · ` : ''}{formatDate(event.startTime)} – {formatDate(event.endTime)}</span>
@@ -90,11 +96,15 @@ export default function HackathonDetail() {
 
       <div className="mb-6 flex gap-1 overflow-x-auto border-b border-[#e8ecf0]">
         {TABS.map((t) => (
-          <button key={t} onClick={() => switchTab(t)} className={`cursor-pointer shrink-0 px-4 py-3 text-[13px] font-semibold transition-colors sm:px-5 sm:text-[14px] ${tab === t ? 'border-b-2 border-[#064f5d] text-[#064f5d]' : 'text-gray-400 hover:text-[#1f2f3a]'}`}>{t}</button>
+          <button key={t.key} onClick={() => switchTab(t.key)} className={`cursor-pointer shrink-0 inline-flex items-center gap-1.5 px-4 py-3 text-[13px] font-semibold transition-colors sm:px-5 sm:text-[14px] ${tab === t.key ? 'border-b-2 border-[#064f5d] text-[#064f5d]' : 'text-gray-400 hover:text-[#1f2f3a]'}`}>
+            {t.icon}
+            {t.key}
+          </button>
         ))}
       </div>
 
       {tab === 'Overview' && <OverviewTab event={event} />}
+      {tab === 'Description' && <DescriptionTab description={event.description} />}
       {tab === 'Rounds' && <RoundsTab eventId={id} />}
     </div>
   )
