@@ -134,11 +134,6 @@ export default function RoundDetail() {
               <InfoRow label="Status" icon={CircleCheck}>
                 {round.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
               </InfoRow>
-            </div>
-          </CardPanel>
-
-          <CardPanel title="Timeline">
-            <div className="divide-y divide-[#f5f5f5]">
               <InfoRow label="Created At" icon={Calendar}>
                 <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(round.createdAt)}</p>
               </InfoRow>
