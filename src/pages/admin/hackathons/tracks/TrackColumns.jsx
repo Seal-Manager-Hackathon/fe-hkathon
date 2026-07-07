@@ -15,7 +15,6 @@ const restoreBtnClass =
 export function trackColumns(onDelete, onRestore) {
   return [
     { key: 'title', header: 'Track Title', headerIcon: FileText, render: (row) => <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.title}</Link> },
-    { key: 'description', header: 'Description', headerIcon: FileText, render: (row) => <p className="text-[13px] text-gray-500 max-w-[300px] truncate">{row.description || '—'}</p> },
     { key: 'maxTeam', header: 'Max Teams', headerIcon: Users, render: (row) => <span className="text-[13px] text-gray-500">{row.maxTeam ?? '—'}</span> },
     { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => row.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
     { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p> },

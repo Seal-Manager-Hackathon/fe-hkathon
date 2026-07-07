@@ -32,12 +32,6 @@ function topicColumns(onDelete, onRestore) {
       render: (row) => <Link to={`/admin/topics/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.title}</Link>,
     },
     {
-      key: 'description',
-      header: 'Description',
-      headerIcon: FileText,
-      render: (row) => <p className="text-[13px] text-gray-500 max-w-[300px] truncate">{row.description || '—'}</p>,
-    },
-    {
       key: 'status',
       header: 'Status',
       headerIcon: CircleCheck,
@@ -93,8 +87,8 @@ export default function TopicsManagement() {
   const hasActive = Object.entries(filters).some(([, v]) => v !== '')
 
   useEffect(() => {
-    getTrackDetail(track?.eventId || '', trackId).then((d) => setTrack(d)).catch(() => {})
-  }, [trackId])
+    getTrackDetail(eventId || '', trackId).then((d) => setTrack(d)).catch(() => {})
+  }, [eventId, trackId])
 
   const fetchTopics = useCallback(async () => {
     setLoading(true); setError('')
@@ -105,7 +99,6 @@ export default function TopicsManagement() {
       const result = await getTopics(trackId, params)
       setTopics(result.topics || [])
       setTotalCount(result.totalCount || 0)
-      if (result.trackTitle) setTrack((prev) => prev || { title: result.trackTitle })
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to load topics.')
       setTopics([]); setTotalCount(0)
