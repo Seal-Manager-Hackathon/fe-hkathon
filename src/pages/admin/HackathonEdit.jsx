@@ -5,27 +5,11 @@ import FormField from '../../components/FormField'
 import NotFoundState from '../../components/NotFoundState'
 import EntityFormPage from '../../components/EntityFormPage'
 import { allHackathons } from '../../data/mockAdminData'
-
-const STATUS_OPTIONS = [
-  { value: 'Draft', label: 'Draft' },
-  { value: 'Published', label: 'Published' },
-  { value: 'Upcoming', label: 'Upcoming' },
-  { value: 'Closed', label: 'Closed' },
-]
-
-const VISIBILITY_OPTIONS = [
-  { value: 'Public', label: 'Public' },
-  { value: 'Private', label: 'Private' },
-  { value: 'Unlisted', label: 'Unlisted' },
-]
-
-const YEAR_OPTIONS = [
-  { value: '2024', label: '2024' },
-  { value: '2025', label: '2025' },
-  { value: '2026', label: '2026' },
-  { value: '2027', label: '2027' },
-  { value: '2028', label: '2028' },
-]
+import {
+  HACKATHON_STATUS_OPTIONS,
+  VISIBILITY_OPTIONS,
+  YEAR_OPTIONS_2024_2028,
+} from '../../constants/adminOptions'
 
 export default function HackathonEdit() {
   const { id } = useParams()
@@ -85,7 +69,7 @@ export default function HackathonEdit() {
               <input type="text" value={form.season} onChange={(e) => updateField('season', e.target.value)} placeholder="e.g. Spring 2027" className="field-input" />
             </FormField>
             <FormField label="Year" required>
-              <SelectInput options={YEAR_OPTIONS} value={form.year} onChange={(v) => updateField('year', v)} />
+              <SelectInput options={YEAR_OPTIONS_2024_2028} value={form.year} onChange={(v) => updateField('year', v)} />
             </FormField>
           </div>
           <FormField label="Date" required>
@@ -101,7 +85,7 @@ export default function HackathonEdit() {
 
         <div className="space-y-5">
           <FormField label="Status">
-            <SelectInput options={STATUS_OPTIONS} value={form.status} onChange={(v) => updateField('status', v)} />
+            <SelectInput options={HACKATHON_STATUS_OPTIONS} value={form.status} onChange={(v) => updateField('status', v)} />
           </FormField>
           <FormField label="Visibility">
             <SelectInput options={VISIBILITY_OPTIONS} value={form.visibility} onChange={(v) => updateField('visibility', v)} />

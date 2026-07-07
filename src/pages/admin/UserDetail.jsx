@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { Edit, Mail, Calendar, Hash, UserCheck } from 'lucide-react'
-import { allUsers, roleBadge, userStatusBadge } from '../../data/mockAdminData'
+import { allUsers, userStatusBadge } from '../../data/mockAdminData'
+import { roleBadge } from '../../constants/adminOptions'
 import Badge from '../../components/Badge'
 import CardPanel from '../../components/CardPanel'
 import BackButton from '../../components/BackButton'

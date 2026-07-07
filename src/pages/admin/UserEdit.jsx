@@ -5,15 +5,9 @@ import FormField from '../../components/FormField'
 import NotFoundState from '../../components/NotFoundState'
 import EntityFormPage from '../../components/EntityFormPage'
 import { allUsers } from '../../data/mockAdminData'
+import { ROLE_OPTIONS } from '../../constants/adminOptions'
 
-const ROLE_OPTIONS = [
-  { value: 'Student', label: 'Student' },
-  { value: 'Lecturer', label: 'Lecturer' },
-  { value: 'Staff', label: 'Staff' },
-  { value: 'Admin', label: 'Admin' },
-]
-
-const STATUS_OPTIONS = [
+const USER_STATUS_OPTIONS = [
   { value: 'Active', label: 'Active' },
   { value: 'Inactive', label: 'Inactive' },
 ]
@@ -76,7 +70,7 @@ export default function UserEdit() {
             <SelectInput options={ROLE_OPTIONS} value={form.role} onChange={(v) => updateField('role', v)} />
           </FormField>
           <FormField label="Status">
-            <SelectInput options={STATUS_OPTIONS} value={form.status} onChange={(v) => updateField('status', v)} />
+            <SelectInput options={USER_STATUS_OPTIONS} value={form.status} onChange={(v) => updateField('status', v)} />
           </FormField>
           {form.status === 'Inactive' && (
             <div className="rounded-lg border border-[#fff3e0] bg-[#fff8e1] px-4 py-3 text-[13px] text-[#e65100]">

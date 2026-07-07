@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import { Edit, Mail, Shield, Calendar, Hash, GraduationCap, BadgeCheck, UserCheck } from 'lucide-react'
-import Badge from '../../components/Badge'
-import CardPanel from '../../components/CardPanel'
-import InfoRow from '../../components/InfoRow'
-import Avatar from '../../components/Avatar'
+import Badge from '../Badge'
+import CardPanel from '../CardPanel'
+import InfoRow from '../InfoRow'
+import Avatar from '../Avatar'
+import { formatDate } from '../../utils/format'
 
 export default function ProfileInfo({ user, editTo, children }) {
   const displayName = user?.firstName
@@ -61,7 +62,7 @@ export default function ProfileInfo({ user, editTo, children }) {
             )}
           </InfoRow>
           <InfoRow label="Member Since" icon={Calendar}>
-            <p className="text-[14px] text-[#1f2f3a]">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}</p>
+            <p className="text-[14px] text-[#1f2f3a]">{formatDate(user?.createdAt)}</p>
           </InfoRow>
         </div>
       </CardPanel>

@@ -4,26 +4,11 @@ import { allNotifications, notificationTypeBadge, notificationStatusBadge } from
 import DataManagementPage from '../../components/DataManagementPage'
 import Badge from '../../components/Badge'
 import TableActions from '../../components/TableActions'
-
-const TYPE_OPTIONS = [
-  { value: '', label: 'All Types' },
-  { value: 'Announcement', label: 'Announcement' },
-  { value: 'Update', label: 'Update' },
-  { value: 'Alert', label: 'Alert' },
-]
-
-const STATUS_OPTIONS = [
-  { value: '', label: 'All Statuses' },
-  { value: 'Sent', label: 'Sent' },
-  { value: 'Draft', label: 'Draft' },
-]
-
-const AUDIENCE_OPTIONS = [
-  { value: '', label: 'All Audiences' },
-  { value: 'All Users', label: 'All Users' },
-  { value: 'Participants', label: 'Participants' },
-  { value: 'Staff', label: 'Staff' },
-]
+import {
+  NOTIFICATION_TYPE_OPTIONS_ALL as TYPE_OPTIONS,
+  NOTIFICATION_STATUS_OPTIONS_ALL as STATUS_OPTIONS,
+  AUDIENCE_OPTIONS_ALL,
+} from '../../constants/adminOptions'
 
 const columns = [
   {
@@ -97,7 +82,7 @@ export default function NotificationsManagement() {
       filters={[
         { key: 'type', label: 'Type', options: TYPE_OPTIONS, className: 'w-full sm:w-[180px]' },
         { key: 'status', label: 'Status', options: STATUS_OPTIONS, className: 'w-full sm:w-[160px]' },
-        { key: 'audience', label: 'Audience', options: AUDIENCE_OPTIONS, className: 'w-full sm:w-[180px]' },
+        { key: 'audience', label: 'Audience', options: AUDIENCE_OPTIONS_ALL, className: 'w-full sm:w-[180px]' },
       ]}
       data={allNotifications}
       columns={columns}

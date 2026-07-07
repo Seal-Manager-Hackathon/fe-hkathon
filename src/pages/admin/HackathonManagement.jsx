@@ -4,27 +4,16 @@ import { allHackathons, statusBadge, visibilityBadge } from '../../data/mockAdmi
 import DataManagementPage from '../../components/DataManagementPage'
 import Badge from '../../components/Badge'
 import TableActions from '../../components/TableActions'
+import {
+  HACKATHON_STATUS_OPTIONS_ALL as STATUS_OPTIONS,
+  VISIBILITY_OPTIONS_ALL,
+} from '../../constants/adminOptions'
 
 const YEAR_OPTIONS = [
   { value: '', label: 'All Years' },
   { value: '2026', label: '2026' },
   { value: '2025', label: '2025' },
   { value: '2024', label: '2024' },
-]
-
-const STATUS_OPTIONS = [
-  { value: '', label: 'All Statuses' },
-  { value: 'Published', label: 'Published' },
-  { value: 'Draft', label: 'Draft' },
-  { value: 'Closed', label: 'Closed' },
-  { value: 'Upcoming', label: 'Upcoming' },
-]
-
-const VISIBILITY_OPTIONS = [
-  { value: '', label: 'All Visibilities' },
-  { value: 'Public', label: 'Public' },
-  { value: 'Private', label: 'Private' },
-  { value: 'Unlisted', label: 'Unlisted' },
 ]
 
 const columns = [
@@ -101,7 +90,7 @@ export default function HackathonManagement() {
       filters={[
         { key: 'year', label: 'Year', options: YEAR_OPTIONS, className: 'w-full sm:w-[160px]' },
         { key: 'status', label: 'Status', options: STATUS_OPTIONS, className: 'w-full sm:w-[180px]' },
-        { key: 'visibility', label: 'Visibility', options: VISIBILITY_OPTIONS, className: 'w-full sm:w-[160px]' },
+        { key: 'visibility', label: 'Visibility', options: VISIBILITY_OPTIONS_ALL, className: 'w-full sm:w-[160px]' },
       ]}
       data={allHackathons}
       columns={columns}

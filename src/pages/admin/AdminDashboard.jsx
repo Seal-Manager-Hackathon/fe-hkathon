@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import {
   statSections,
   statusBadge,
-  roleBadge,
   iconMap,
 } from '../../data/mockAdminData'
+import { roleBadge } from '../../constants/adminOptions'
+import { formatDate } from '../../utils/format'
 import { getEventsCount, getUsersCount, getTeamsCount, getRecentEvents, getRecentUsers, getRecentNotifications } from '../../api/admin'
 import StatCard from '../../components/StatCard'
 import SectionTitle from '../../components/SectionTitle'
@@ -76,8 +77,8 @@ export default function AdminDashboard() {
             result.events.map((e) => ({
               id: e.id,
               name: e.name,
-              season: e.startTime ? new Date(e.startTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '',
-              date: e.createdAt ? new Date(e.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+              season: e.startTime ? formatDate(e.startTime, '') : '',
+              date: e.createdAt ? formatDate(e.createdAt, '') : '',
               status: e.status,
               teams: 0,
               prize: '',

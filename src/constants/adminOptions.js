@@ -1,8 +1,8 @@
 /**
- * Shared admin options: roles, badges, and filter option sets.
- * Imported by UsersManagement, UsersCreate, UserEdit, UserDetail, AdminDashboard.
+ * Shared admin constants: options, badges, and filter sets.
  */
 
+/* ─── Role ─── */
 export const ROLE_OPTIONS = [
   { value: 'Admin', label: 'Admin' },
   { value: 'Staff', label: 'Staff' },
@@ -27,6 +27,7 @@ export const roleBadge = {
   Lecturer: 'bg-[#f3e5f5] text-[#7b1fa2]',
 }
 
+/* ─── User filters ─── */
 export const VERIFIED_OPTIONS = [
   { value: '', label: 'All' },
   { value: 'true', label: 'Verified' },
@@ -39,8 +40,84 @@ export const DISABLE_OPTIONS = [
   { value: 'false', label: 'Active' },
 ]
 
-export const USER_STATUS_OPTIONS = [
-  { value: '', label: 'All Statuses' },
-  { value: 'true', label: 'Disabled' },
-  { value: 'false', label: 'Active' },
+/* ─── Hackathon ─── */
+export const HACKATHON_STATUS_OPTIONS = [
+  { value: 'Draft', label: 'Draft' },
+  { value: 'Published', label: 'Published' },
+  { value: 'Upcoming', label: 'Upcoming' },
+  { value: 'Closed', label: 'Closed' },
 ]
+
+export const HACKATHON_STATUS_OPTIONS_ALL = [
+  { value: '', label: 'All Statuses' },
+  ...HACKATHON_STATUS_OPTIONS,
+]
+
+export const VISIBILITY_OPTIONS = [
+  { value: 'Public', label: 'Public' },
+  { value: 'Private', label: 'Private' },
+  { value: 'Unlisted', label: 'Unlisted' },
+]
+
+export const VISIBILITY_OPTIONS_ALL = [
+  { value: '', label: 'All Visibilities' },
+  ...VISIBILITY_OPTIONS,
+]
+
+export const YEAR_OPTIONS_2024_2028 = [
+  { value: '2024', label: '2024' },
+  { value: '2025', label: '2025' },
+  { value: '2026', label: '2026' },
+  { value: '2027', label: '2027' },
+  { value: '2028', label: '2028' },
+]
+
+/* ─── Notification ─── */
+export const NOTIFICATION_TYPE_OPTIONS = [
+  { value: 'Announcement', label: 'Announcement' },
+  { value: 'Update', label: 'Update' },
+  { value: 'Alert', label: 'Alert' },
+]
+
+export const NOTIFICATION_TYPE_OPTIONS_ALL = [
+  { value: '', label: 'All Types' },
+  ...NOTIFICATION_TYPE_OPTIONS,
+]
+
+export const NOTIFICATION_TYPE_OPTIONS_SELECT = [
+  { value: '', label: 'Select type...' },
+  ...NOTIFICATION_TYPE_OPTIONS,
+]
+
+export const AUDIENCE_OPTIONS = [
+  { value: 'All Users', label: 'All Users' },
+  { value: 'Participants', label: 'Participants' },
+  { value: 'Staff', label: 'Staff' },
+]
+
+export const AUDIENCE_OPTIONS_ALL = [
+  { value: '', label: 'All Audiences' },
+  ...AUDIENCE_OPTIONS,
+]
+
+export const AUDIENCE_OPTIONS_SELECT = [
+  { value: '', label: 'Select audience...' },
+  ...AUDIENCE_OPTIONS,
+]
+
+export const NOTIFICATION_STATUS_OPTIONS = [
+  { value: 'Sent', label: 'Sent' },
+  { value: 'Draft', label: 'Draft' },
+]
+
+export const NOTIFICATION_STATUS_OPTIONS_ALL = [
+  { value: '', label: 'All Statuses' },
+  ...NOTIFICATION_STATUS_OPTIONS,
+]
+
+export const NOTIFICATION_STATUS_OPTIONS_SELECT = [
+  { value: '', label: 'Select status...' },
+  { value: 'Sent', label: 'Send immediately' },
+  { value: 'Draft', label: 'Save as draft' },
+]
+

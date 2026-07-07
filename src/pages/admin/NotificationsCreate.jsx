@@ -4,26 +4,11 @@ import { Send } from 'lucide-react'
 import SelectInput from '../../components/SelectInput'
 import FormField from '../../components/FormField'
 import EntityFormPage from '../../components/EntityFormPage'
-
-const TYPE_OPTIONS = [
-  { value: '', label: 'Select type...' },
-  { value: 'Announcement', label: 'Announcement' },
-  { value: 'Update', label: 'Update' },
-  { value: 'Alert', label: 'Alert' },
-]
-
-const AUDIENCE_OPTIONS = [
-  { value: '', label: 'Select audience...' },
-  { value: 'All Users', label: 'All Users' },
-  { value: 'Participants', label: 'Participants' },
-  { value: 'Staff', label: 'Staff' },
-]
-
-const STATUS_OPTIONS = [
-  { value: '', label: 'Select status...' },
-  { value: 'Sent', label: 'Send immediately' },
-  { value: 'Draft', label: 'Save as draft' },
-]
+import {
+  NOTIFICATION_TYPE_OPTIONS_SELECT as TYPE_OPTIONS,
+  AUDIENCE_OPTIONS_SELECT as AUDIENCE_OPTIONS,
+  NOTIFICATION_STATUS_OPTIONS_SELECT as STATUS_OPTIONS,
+} from '../../constants/adminOptions'
 
 export default function NotificationsCreate() {
   const navigate = useNavigate()

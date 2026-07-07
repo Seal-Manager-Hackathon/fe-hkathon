@@ -3,14 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import SelectInput from '../../components/SelectInput'
 import FormField from '../../components/FormField'
 import EntityFormPage from '../../components/EntityFormPage'
-
-const ROLE_OPTIONS = [
-  { value: '', label: 'Select role...' },
-  { value: 'Student', label: 'Student' },
-  { value: 'Lecturer', label: 'Lecturer' },
-  { value: 'Staff', label: 'Staff' },
-  { value: 'Admin', label: 'Admin' },
-]
+import { ROLE_OPTIONS_SELECT } from '../../constants/adminOptions'
 
 const STATUS_OPTIONS = [
   { value: '', label: 'Select status...' },
@@ -63,7 +56,7 @@ export default function UsersCreate() {
         </FormField>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField label="Role" required>
-            <SelectInput options={ROLE_OPTIONS} value={form.role} onChange={(v) => updateField('role', v)} />
+            <SelectInput options={ROLE_OPTIONS_SELECT} value={form.role} onChange={(v) => updateField('role', v)} />
           </FormField>
           <FormField label="Status" required>
             <SelectInput options={STATUS_OPTIONS} value={form.status} onChange={(v) => updateField('status', v)} />

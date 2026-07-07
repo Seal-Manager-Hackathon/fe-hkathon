@@ -5,23 +5,7 @@ import FormField from '../../components/FormField'
 import NotFoundState from '../../components/NotFoundState'
 import EntityFormPage from '../../components/EntityFormPage'
 import { allNotifications } from '../../data/mockAdminData'
-
-const TYPE_OPTIONS = [
-  { value: 'Announcement', label: 'Announcement' },
-  { value: 'Update', label: 'Update' },
-  { value: 'Alert', label: 'Alert' },
-]
-
-const AUDIENCE_OPTIONS = [
-  { value: 'All Users', label: 'All Users' },
-  { value: 'Participants', label: 'Participants' },
-  { value: 'Staff', label: 'Staff' },
-]
-
-const STATUS_OPTIONS = [
-  { value: 'Sent', label: 'Sent' },
-  { value: 'Draft', label: 'Draft' },
-]
+import { NOTIFICATION_TYPE_OPTIONS, AUDIENCE_OPTIONS, NOTIFICATION_STATUS_OPTIONS } from '../../constants/adminOptions'
 
 export default function NotificationEdit() {
   const { id } = useParams()
@@ -79,13 +63,13 @@ export default function NotificationEdit() {
 
         <div className="space-y-5">
           <FormField label="Type">
-            <SelectInput options={TYPE_OPTIONS} value={form.type} onChange={(v) => updateField('type', v)} />
+            <SelectInput options={NOTIFICATION_TYPE_OPTIONS} value={form.type} onChange={(v) => updateField('type', v)} />
           </FormField>
           <FormField label="Audience">
             <SelectInput options={AUDIENCE_OPTIONS} value={form.audience} onChange={(v) => updateField('audience', v)} />
           </FormField>
           <FormField label="Status">
-            <SelectInput options={STATUS_OPTIONS} value={form.status} onChange={(v) => updateField('status', v)} />
+            <SelectInput options={NOTIFICATION_STATUS_OPTIONS} value={form.status} onChange={(v) => updateField('status', v)} />
           </FormField>
         </div>
       </div>
