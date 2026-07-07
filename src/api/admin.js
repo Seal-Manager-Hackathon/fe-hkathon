@@ -125,4 +125,20 @@ export async function getNotifications(params = {}) {
   return data.data
 }
 
+/**
+ * Get paginated teams list with search and filters.
+ * @param {Object} params
+ * @param {string} [params.Keyword] - Search team name (contains)
+ * @param {boolean} [params.CanEdit]
+ * @param {string} [params.FromDate] - ISO datetime
+ * @param {string} [params.ToDate] - ISO datetime
+ * @param {number} [params.PageIndex] - default 1
+ * @param {number} [params.PageSize] - default 10
+ * @returns {Promise<{ teams: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getTeams(params = {}) {
+  const { data } = await api.get('/admin/teams', { params })
+  return data.data
+}
+
 

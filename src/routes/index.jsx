@@ -23,6 +23,9 @@ const NotificationsManagement = lazy(() => import('../pages/admin/NotificationsM
 const NotificationsCreate = lazy(() => import('../pages/admin/NotificationsCreate'))
 const NotificationDetail = lazy(() => import('../pages/admin/NotificationDetail'))
 const NotificationEdit = lazy(() => import('../pages/admin/NotificationEdit'))
+const TeamsManagement = lazy(() => import('../pages/admin/TeamsManagement'))
+const TeamDetail = lazy(() => import('../pages/admin/TeamDetail'))
+const TeamEdit = lazy(() => import('../pages/admin/TeamEdit'))
 const MyNotifications = lazy(() => import('../pages/admin/MyNotifications'))
 const AdminProfile = lazy(() => import('../pages/admin/AdminProfile'))
 const AdminProfileEdit = lazy(() => import('../pages/admin/AdminProfileEdit'))
@@ -55,6 +58,11 @@ export const routes = [
       { path: 'create', element: <Suspense fallback={<RouteFallback />}><NotificationsCreate /></Suspense> },
       { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><NotificationEdit /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><NotificationDetail /></Suspense> },
+    ]},
+    { path: 'teams', children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><TeamsManagement /></Suspense> },
+      { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><TeamEdit /></Suspense> },
+      { path: ':id', element: <Suspense fallback={<RouteFallback />}><TeamDetail /></Suspense> },
     ]},
     { path: 'my-notifications', element: <Suspense fallback={<RouteFallback />}><MyNotifications /></Suspense> },
     { path: 'profile', children: [

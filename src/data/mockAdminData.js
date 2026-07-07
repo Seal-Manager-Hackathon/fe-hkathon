@@ -2,13 +2,14 @@ import {
   Trophy, Users, UserCheck, Shield,
   GraduationCap, Briefcase,
   Layers, CheckCircle, XCircle, Clock,
-  Bell,
+  Bell, UserRound,
 } from 'lucide-react'
 
 export const mockAdminNavItems = [
   { key: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', to: '/admin' },
   { key: 'hackathons', label: 'Hackathons', icon: 'Trophy', to: '/admin/hackathons' },
   { key: 'users', label: 'Users', icon: 'Users', to: '/admin/users' },
+  { key: 'teams', label: 'Teams', icon: 'UserRound', to: '/admin/teams' },
   { key: 'notifications', label: 'Notifications', icon: 'Bell', to: '/admin/notifications' },
 ]
 

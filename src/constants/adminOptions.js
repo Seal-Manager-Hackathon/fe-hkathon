@@ -139,3 +139,9 @@ export const targetTypeBadge = {
   System: 'bg-[#f3e5f5] text-[#7b1fa2]',
 }
 
+/* ─── Team filters ─── */
+export const CAN_EDIT_OPTIONS = [
+  { value: '', label: 'All' },
+  { value: 'true', label: 'Can Edit' },
+  { value: 'false', label: 'Cannot Edit' },
+]
