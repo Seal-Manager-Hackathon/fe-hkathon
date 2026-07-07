@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import { Plus, Trophy, CircleDot, Play, Flag, Calendar, MoreHorizontal } from 'lucide-react'
 import { getEvents } from '../../../api/admin'
 import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
@@ -29,6 +29,7 @@ const columns = [
   {
     key: 'name',
     header: 'Name',
+    headerIcon: Trophy,
     render: (row) => (
       <Link
         to={`/admin/hackathons/${row.id}`}
@@ -39,15 +40,9 @@ const columns = [
     ),
   },
   {
-    key: 'status',
-    header: 'Status',
-    render: (row) => (
-      <Badge label={row.status} className={statusBadge[row.status] || 'bg-[#f5f5f5] text-[#757575]'} />
-    ),
-  },
-  {
     key: 'startTime',
     header: 'Start',
+    headerIcon: Play,
     render: (row) => (
       <p className="text-[13px] text-gray-500">{formatDate(row.startTime)}</p>
     ),
@@ -55,6 +50,7 @@ const columns = [
   {
     key: 'endTime',
     header: 'End',
+    headerIcon: Flag,
     render: (row) => (
       <p className="text-[13px] text-gray-500">{formatDate(row.endTime)}</p>
     ),
@@ -62,13 +58,23 @@ const columns = [
   {
     key: 'createdAt',
     header: 'Created',
+    headerIcon: Calendar,
     render: (row) => (
       <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>
     ),
   },
   {
+    key: 'status',
+    header: 'Status',
+    headerIcon: CircleDot,
+    render: (row) => (
+      <Badge label={row.status} className={statusBadge[row.status] || 'bg-[#f5f5f5] text-[#757575]'} />
+    ),
+  },
+  {
     key: 'actions',
     header: 'Actions',
+    headerIcon: MoreHorizontal,
     headerClassName: 'text-right',
     className: 'text-right',
     render: (row) => (
