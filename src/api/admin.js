@@ -99,3 +99,14 @@ export async function updateUser(userId, formData) {
 }
 
 
+/**
+ * Create a new user (Admin only).
+ * @param {{ email, password, firstName, lastName, role, college }} payload
+ * @returns {Promise<{ id, email, firstName, lastName, role, college }>}
+ */
+export async function createUser(payload) {
+  const { data } = await api.post('/admin/users', payload)
+  return data.data
+}
+
+

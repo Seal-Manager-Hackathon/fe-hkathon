@@ -4,10 +4,10 @@
 
 /* ─── Role ─── */
 export const ROLE_OPTIONS = [
-  { value: 'Admin', label: 'Admin' },
-  { value: 'Staff', label: 'Staff' },
   { value: 'Student', label: 'Student' },
   { value: 'Lecturer', label: 'Lecturer' },
+  { value: 'Staff', label: 'Staff' },
+  { value: 'Admin', label: 'Admin' },
 ]
 
 export const ROLE_OPTIONS_ALL = [
