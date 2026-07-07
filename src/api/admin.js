@@ -141,4 +141,14 @@ export async function getTeams(params = {}) {
   return data.data
 }
 
+/**
+ * Get team detail by ID, including member list.
+ * @param {string} teamId
+ * @returns {Promise<{ id, name, canEdit, isDisable, createdAt, updatedAt, members: Array }>}
+ */
+export async function getTeamDetail(teamId) {
+  const { data } = await api.get(`/admin/teams/${teamId}`)
+  return data.data
+}
+
 
