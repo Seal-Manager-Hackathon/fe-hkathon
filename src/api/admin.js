@@ -74,3 +74,14 @@ export async function getUsers(params = {}) {
   return data.data
 }
 
+/**
+ * Get user detail by ID.
+ * @param {string} userId
+ * @returns {Promise<object>} full user object
+ */
+export async function getUserDetail(userId) {
+  const { data } = await api.get(`/admin/users/${userId}`)
+  return data.data
+}
+
+
