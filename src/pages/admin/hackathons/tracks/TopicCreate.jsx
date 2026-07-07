@@ -69,7 +69,7 @@ export default function TopicCreate() {
       <div className="grid grid-cols-1 gap-x-10 gap-y-5 lg:grid-cols-[1fr_320px]">
         <div className="space-y-5">
           <FormField label="Topic Title" required icon={FileText}>
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Chatbot hỗ trợ học tập" maxLength={200} className="field-input" />
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. AI Chatbot for Education" maxLength={200} className="field-input" />
           </FormField>
           <FormField label="Description" icon={FileText}>
             <RichTextEditor value={description} onChange={setDescription} placeholder="Topic description..." />

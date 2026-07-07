@@ -95,7 +95,7 @@ export default function NotificationsCreate() {
       backUrl="/admin/notifications"
       backLabel="Back to Notifications"
       title="Create Notification"
-      description="Tạo thông báo mới. Tuỳ theo đối tượng nhận mà hệ thống sẽ gửi khác nhau."
+      description="Create a new notification. Delivery depends on the selected target."
       saveLabel="Send Notification"
       savingLabel="Sending..."
       canSave={canSave}

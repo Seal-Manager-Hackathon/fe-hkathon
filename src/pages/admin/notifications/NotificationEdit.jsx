@@ -99,7 +99,7 @@ export default function NotificationEdit() {
       backUrl={`/admin/notifications/${id}`}
       backLabel="Back to Notification"
       title="Edit Notification"
-      description="Chỉ có thể chỉnh sửa tiêu đề và nội dung thông báo."
+      description="Only title and content can be edited."
       saveLabel="Save Changes"
       canSave={canSave}
       onSave={handleSave}

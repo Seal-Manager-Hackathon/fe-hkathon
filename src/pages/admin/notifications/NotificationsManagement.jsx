@@ -109,7 +109,7 @@ export default function NotificationsManagement() {
     if (!ok) return
     try {
       await deleteNotification(notification.id)
-      toast.success('Thông báo đã bị vô hiệu hoá')
+      toast.success('Notification disabled')
       fetchNotifications()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to delete notification.')
@@ -121,7 +121,7 @@ export default function NotificationsManagement() {
     if (!ok) return
     try {
       await restoreNotification(notification.id)
-      toast.success('Thông báo đã được khôi phục')
+      toast.success('Notification restored')
       fetchNotifications()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to restore notification.')
