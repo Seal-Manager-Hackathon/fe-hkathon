@@ -88,7 +88,7 @@ export default function HackathonDetail() {
       </div>
 
       {tab === 'Overview' && <OverviewTab event={event} />}
-      {tab === 'Description' && <DescriptionTab description={event.description} />}
+      {tab === 'Description' && <DescriptionTab eventId={id} description={event.description} />}
       {tab === 'Rounds' && <RoundsTab eventId={id} />}
     </div>
   )
