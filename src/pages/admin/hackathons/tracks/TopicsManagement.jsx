@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Plus, Eye, Edit, Trash2, RotateCcw, FileText, Calendar, CircleCheck, MoreHorizontal, Search, Ban, ArrowLeft } from 'lucide-react'
-import { getTopics, getTrackDetail } from '../../../../api/admin'
+import { getTopics, getTrackDetail, deleteTopic, restoreTopic } from '../../../../api/admin'
+import { toast, confirm } from '../../../../utils/toast'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
@@ -119,6 +120,28 @@ export default function TopicsManagement() {
     setPageIndex(1)
   }
 
+  async function handleDelete(row) {
+    if (!(await confirm('Delete Topic', `Are you sure you want to delete "${row.title}"?`))) return
+    try {
+      await deleteTopic(row.id)
+      toast.success('Topic deleted successfully')
+      fetchTopics()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to delete topic.')
+    }
+  }
+
+  async function handleRestore(row) {
+    if (!(await confirm('Restore Topic', `Are you sure you want to restore "${row.title}"?`))) return
+    try {
+      await restoreTopic(row.id)
+      toast.success('Topic restored successfully')
+      fetchTopics()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to restore topic.')
+    }
+  }
+
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-4">
@@ -144,7 +167,7 @@ export default function TopicsManagement() {
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
 
       <BaseTable
-        columns={topicColumns(eventId, trackId, () => {}, () => {})}
+        columns={topicColumns(eventId, trackId, handleDelete, handleRestore)}
         data={topics}
         page={pageIndex}
         pageSize={PAGE_SIZE}

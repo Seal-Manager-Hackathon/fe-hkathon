@@ -445,6 +445,16 @@ export async function updateTopic(topicId, payload) {
   return data
 }
 
+export async function deleteTopic(topicId) {
+  const { data } = await api.post(`/admin/topics/${topicId}/delete`)
+  return data
+}
+
+export async function restoreTopic(topicId) {
+  const { data } = await api.post(`/admin/topics/${topicId}/restore`)
+  return data
+}
+
 // ─── Team Lock/Unlock ─────────────────────────────────────────────────────────
 
 export async function lockTeam(teamId) {
