@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Eye, Edit, Trash2, RotateCcw, User, Shield, UserCheck, GraduationCap, Calendar, MoreHorizontal, CircleCheck } from 'lucide-react'
+import { Eye, Edit, Trash2, RotateCcw, User, Shield, UserCheck, GraduationCap, Calendar, MoreHorizontal, CircleCheck, Ban, Circle, AlertTriangle } from 'lucide-react'
 import Badge from '../../../components/Badge'
 import Avatar from '../../../components/Avatar'
 import { roleBadge } from '../../../constants/adminOptions'
@@ -11,6 +11,10 @@ const dangerBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2]'
 const restoreBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9]'
+const banBtnClass =
+  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] transition-colors hover:bg-[#ffe0b2]'
+const unbanBtnClass =
+  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9]'
 
 /**
  * Builds table columns for the UsersManagement list.
@@ -18,7 +22,7 @@ const restoreBtnClass =
  * @param {function} onRestore - (user) => void
  * @returns {Array} column descriptors
  */
-export function usersColumns(onDelete, onRestore) {
+export function usersColumns(onDelete, onRestore, onBan, onUnban) {
   return [
     {
       key: 'user',
@@ -48,17 +52,6 @@ export function usersColumns(onDelete, onRestore) {
       ),
     },
     {
-      key: 'verified',
-      header: 'Verified',
-      headerIcon: UserCheck,
-      render: (row) =>
-        row.isVerified ? (
-          <Badge label="Yes" className="bg-[#e8f5e9] text-[#2e7d32]" />
-        ) : (
-          <Badge label="No" className="bg-[#fce4ec] text-[#c62828]" />
-        ),
-    },
-    {
       key: 'college',
       header: 'College',
       headerIcon: GraduationCap,
@@ -73,6 +66,28 @@ export function usersColumns(onDelete, onRestore) {
       render: (row) => (
         <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
       ),
+    },
+    {
+      key: 'verified',
+      header: 'Verified',
+      headerIcon: UserCheck,
+      render: (row) =>
+        row.isVerified ? (
+          <Badge label="Yes" className="bg-[#e8f5e9] text-[#2e7d32]" />
+        ) : (
+          <Badge label="No" className="bg-[#fce4ec] text-[#c62828]" />
+        ),
+    },
+    {
+      key: 'banned',
+      header: 'Banned',
+      headerIcon: AlertTriangle,
+      render: (row) =>
+        row.bannedAt ? (
+          <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" />
+        ) : (
+          <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" />
+        ),
     },
     {
       key: 'status',
@@ -105,6 +120,15 @@ export function usersColumns(onDelete, onRestore) {
               <Link to={`/admin/users/${row.id}/edit`} className={actionBtnClass}>
                 <Edit className="h-3.5 w-3.5" /> Edit
               </Link>
+              {row.bannedAt ? (
+                <button onClick={() => onUnban?.(row)} className={unbanBtnClass}>
+                  <Circle className="h-3.5 w-3.5" /> Unban
+                </button>
+              ) : (
+                <button onClick={() => onBan?.(row)} className={banBtnClass}>
+                  <Ban className="h-3.5 w-3.5" /> Ban
+                </button>
+              )}
               <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
                 <Trash2 className="h-3.5 w-3.5" /> Delete
               </button>

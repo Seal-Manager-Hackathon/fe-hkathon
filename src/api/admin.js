@@ -318,6 +318,16 @@ export async function restoreUser(userId) {
   return data
 }
 
+export async function banUser(userId, banReason) {
+  const { data } = await api.post(`/admin/users/${userId}/ban`, { banReason })
+  return data
+}
+
+export async function unbanUser(userId) {
+  const { data } = await api.post(`/admin/users/${userId}/unban`)
+  return data
+}
+
 /**
  * Get the highest round number in an event (null if none).
  * @param {string} eventId

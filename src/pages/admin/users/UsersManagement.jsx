@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { UserPlus } from 'lucide-react'
-import { getUsers, deleteUser, restoreUser } from '../../../api/admin'
+import { getUsers, deleteUser, restoreUser, banUser, unbanUser } from '../../../api/admin'
 import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import { usersColumns } from './UsersColumns'
 import { usersFilters } from './UsersFilters'
-import { toast, confirm } from '../../../utils/toast'
+import { toast, confirm, promptReason } from '../../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -95,6 +95,30 @@ export default function UsersManagement() {
     }
   }
 
+  async function handleBan(user) {
+    const reason = await promptReason('Ban User', 'Ban Reason', `Why are you banning ${user.firstName} ${user.lastName}?`, 'Ban')
+    if (!reason) return
+    try {
+      await banUser(user.id, reason)
+      toast.success('User banned')
+      fetchUsers()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to ban user.')
+    }
+  }
+
+  async function handleUnban(user) {
+    const ok = await confirm('Unban User', `Are you sure you want to unban "${user.firstName} ${user.lastName}"?`)
+    if (!ok) return
+    try {
+      await unbanUser(user.id)
+      toast.success('User unbanned')
+      fetchUsers()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to unban user.')
+    }
+  }
+
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -125,7 +149,7 @@ export default function UsersManagement() {
       )}
 
       <BaseTable
-        columns={usersColumns(handleDelete, handleRestore)}
+        columns={usersColumns(handleDelete, handleRestore, handleBan, handleUnban)}
         data={users}
         page={pageIndex}
         pageSize={PAGE_SIZE}
