@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { Trophy, Leaf, Users, UserCheck, UserPlus, CircleDot, EyeOff, Play, Clock, Flag, FileText } from 'lucide-react'
 import SelectInput from '../../../components/SelectInput'
 import FormField from '../../../components/FormField'
 import EntityFormPage from '../../../components/EntityFormPage'
@@ -169,33 +170,33 @@ export default function HackathonEdit() {
     >
       <div className="grid grid-cols-1 gap-x-8 gap-y-5 lg:grid-cols-2">
         <div className="space-y-5">
-          <FormField label="Hackathon Name">
+          <FormField label="Hackathon Name" icon={Trophy}>
             <input type="text" value={form.name} onChange={(e) => updateField('name', e.target.value)} placeholder="e.g. SEAL Hackathon 2027 - Spring" className="field-input" />
           </FormField>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="Season">
+            <FormField label="Season" icon={Leaf}>
               <SelectInput options={SEASON_OPTIONS_SELECT} value={form.season} onChange={(v) => updateField('season', v)} />
             </FormField>
-            <FormField label="Max Teams">
+            <FormField label="Max Teams" icon={Users}>
               <input type="number" min="0" value={form.limitTeam} onChange={(e) => updateField('limitTeam', e.target.value)} placeholder="e.g. 15" className="field-input" />
             </FormField>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="Min Members per Team">
+            <FormField label="Min Members per Team" icon={UserCheck}>
               <input type="number" min="0" value={form.minMember} onChange={(e) => updateField('minMember', e.target.value)} placeholder="e.g. 3" className="field-input" />
             </FormField>
-            <FormField label="Max Members per Team">
+            <FormField label="Max Members per Team" icon={UserPlus}>
               <input type="number" min="0" value={form.maxMember} onChange={(e) => updateField('maxMember', e.target.value)} placeholder="e.g. 5" className="field-input" />
             </FormField>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="Status">
+            <FormField label="Status" icon={CircleDot}>
               <SelectInput options={STATUS_OPTIONS} value={form.status} onChange={(v) => updateField('status', v)} />
             </FormField>
-            <FormField label="Visibility">
+            <FormField label="Visibility" icon={EyeOff}>
               <SelectInput
                 options={[{ value: 'false', label: 'Enabled (visible)' }, { value: 'true', label: 'Disabled (hidden)' }]}
                 value={form.isDisable ? 'true' : 'false'}
@@ -206,29 +207,24 @@ export default function HackathonEdit() {
         </div>
 
         <div className="space-y-5">
-          <FormField label="Start Time">
+          <FormField label="Start Time" icon={Play}>
             <input type="datetime-local" value={form.startTime} onChange={(e) => updateField('startTime', e.target.value)} className="field-input" />
           </FormField>
-          <FormField label="Registration Deadline">
+          <FormField label="Registration Deadline" icon={Clock}>
             <input type="datetime-local" value={form.registerLimitTime} onChange={(e) => updateField('registerLimitTime', e.target.value)} className="field-input" />
           </FormField>
-          <FormField label="End Time">
+          <FormField label="End Time" icon={Flag}>
             <input type="datetime-local" value={form.endTime} onChange={(e) => updateField('endTime', e.target.value)} className="field-input" />
           </FormField>
         </div>
 
         <div className="lg:col-span-2">
-          <FormField label="Description">
+          <FormField label="Description" icon={FileText}>
             <textarea value={form.description} onChange={(e) => updateField('description', e.target.value)} placeholder="Describe the hackathon..." rows={6} className="field-input resize-y" />
           </FormField>
         </div>
       </div>
 
-      {event && (
-        <div className="mt-5 text-[12px] text-gray-400">
-          Created {formatDate(event.createdAt)} &middot; Updated {formatDate(event.updatedAt)}
-        </div>
-      )}
-    </EntityFormPage>
+      </EntityFormPage>
   )
 }
