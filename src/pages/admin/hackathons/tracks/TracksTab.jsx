@@ -10,9 +10,11 @@ const PAGE_SIZE = 10
 
 const DEFAULT_VALUES = { keyword: '', isDisable: '' }
 
+import { Search, Ban } from 'lucide-react'
+
 const trackFilters = [
-  { key: 'keyword', label: 'Track Name', type: 'search', placeholder: 'Search track name...' },
-  { key: 'isDisable', label: 'Deleted', type: 'select', options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
+  { type: 'search', key: 'keyword', label: 'Track Name', icon: Search, placeholder: 'Search track name...' },
+  { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
 ]
 
 export default function TracksTab({ eventId }) {
