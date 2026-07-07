@@ -250,3 +250,14 @@ export async function createEvent(payload) {
   return data
 }
 
+/**
+ * Update event by ID. Only included fields are updated; omitted fields remain unchanged.
+ * @param {string} eventId
+ * @param {{ name?: string, description?: string, startTime?: string, endTime?: string, registerLimitTime?: string, limitTeam?: number, minMember?: number, maxMember?: number, season?: string, isDisable?: boolean, status?: string }} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateEvent(eventId, payload) {
+  const { data } = await api.patch(`/admin/events/${eventId}`, payload)
+  return data
+}
+
