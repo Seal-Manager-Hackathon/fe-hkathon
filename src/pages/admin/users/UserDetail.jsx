@@ -134,88 +134,87 @@ export default function UserDetail() {
         </Link>
       </div>
 
-      {/* === Single detail card === */}
-      <CardPanel title="Account Information">
-        <div className="divide-y divide-[#f5f5f5]">
-          <InfoRow label="Full Name" icon={BadgeCheck}>
-            <p className="text-[14px] font-medium text-[#1f2f3a]">{fullName}</p>
-          </InfoRow>
+      {/* === Section cards === */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <CardPanel title="Personal Information">
+          <div className="divide-y divide-[#f5f5f5]">
+            <InfoRow label="Full Name" icon={BadgeCheck}>
+              <p className="text-[14px] font-medium text-[#1f2f3a]">{fullName}</p>
+            </InfoRow>
+            <InfoRow label="Email" icon={Mail}>
+              <p className="text-[14px] text-[#064f5d]">{user.email}</p>
+            </InfoRow>
+            <InfoRow label="Phone" icon={Phone}>
+              <p className="text-[14px] text-[#1f2f3a]">{user.phoneNumber || '—'}</p>
+            </InfoRow>
+            <InfoRow label="Date of Birth" icon={Calendar}>
+              <p className="text-[14px] text-[#1f2f3a]">{user.dateOfBirth ? formatDate(user.dateOfBirth) : '—'}</p>
+            </InfoRow>
+            <InfoRow label="Address" icon={MapPin}>
+              <p className="text-[14px] text-[#1f2f3a]">{user.address || '—'}</p>
+            </InfoRow>
+            <InfoRow label="Bio" icon={FileText}>
+              <p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{user.bio || '—'}</p>
+            </InfoRow>
+            <InfoRow label="College" icon={GraduationCap}>
+              <p className="text-[14px] text-[#1f2f3a]">{user.college || '—'}</p>
+            </InfoRow>
+            <InfoRow label="Student ID" icon={Hash}>
+              <p className="text-[14px] font-mono text-[13px] text-gray-500">{user.studentId || '—'}</p>
+            </InfoRow>
+            <InfoRow label="Role" icon={Shield}>
+              <Badge label={user.role} className={roleBadge[user.role] || ''} />
+            </InfoRow>
+          </div>
+        </CardPanel>
 
-          <InfoRow label="Email" icon={Mail}>
-            <p className="text-[14px] text-[#064f5d]">{user.email}</p>
-          </InfoRow>
-
-          <InfoRow label="Phone" icon={Phone}>
-            <p className="text-[14px] text-[#1f2f3a]">{user.phoneNumber || '—'}</p>
-          </InfoRow>
-
-          <InfoRow label="College" icon={GraduationCap}>
-            <p className="text-[14px] text-[#1f2f3a]">{user.college || '—'}</p>
-          </InfoRow>
-
-          <InfoRow label="Student ID" icon={Hash}>
-            <p className="text-[14px] font-mono text-[13px] text-gray-500">{user.studentId || '—'}</p>
-          </InfoRow>
-
-          <InfoRow label="Date of Birth" icon={Calendar}>
-            <p className="text-[14px] text-[#1f2f3a]">{user.dateOfBirth ? formatDate(user.dateOfBirth) : '—'}</p>
-          </InfoRow>
-
-          <InfoRow label="Address" icon={MapPin}>
-            <p className="text-[14px] text-[#1f2f3a]">{user.address || '—'}</p>
-          </InfoRow>
-
-          <InfoRow label="Bio" icon={FileText}>
-            <p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{user.bio || '—'}</p>
-          </InfoRow>
-
-          <InfoRow label="Role" icon={Shield}>
-            <Badge label={user.role} className={roleBadge[user.role] || ''} />
-          </InfoRow>
-
-          <InfoRow label="Status" icon={BadgeCheck}>
-            {isDisabled ? (
-              <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" />
-            ) : (
-              <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
+        <CardPanel title="Account Status">
+          <div className="divide-y divide-[#f5f5f5]">
+            <InfoRow label="Status" icon={BadgeCheck}>
+              {isDisabled ? (
+                <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" />
+              ) : (
+                <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
+              )}
+            </InfoRow>
+            <InfoRow label="Verified" icon={Shield}>
+              {user.isVerified ? (
+                <Badge label="Verified" className="bg-[#e8f5e9] text-[#2e7d32]" />
+              ) : (
+                <Badge label="Not verified" className="bg-[#fce4ec] text-[#c62828]" />
+              )}
+            </InfoRow>
+            {user.verifyEmailAt && (
+              <InfoRow label="Verified At" icon={Clock}>
+                <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.verifyEmailAt)}</p>
+              </InfoRow>
             )}
-          </InfoRow>
-
-          <InfoRow label="Verified" icon={Shield}>
-            {user.isVerified ? (
-              <Badge label="Verified" className="bg-[#e8f5e9] text-[#2e7d32]" />
-            ) : (
-              <Badge label="Not verified" className="bg-[#fce4ec] text-[#c62828]" />
-            )}
-          </InfoRow>
-
-          {user.verifyEmailAt && (
-            <InfoRow label="Verified At" icon={Clock}>
-              <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.verifyEmailAt)}</p>
+            <InfoRow label="Member Since" icon={Calendar}>
+              <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.createdAt)}</p>
             </InfoRow>
-          )}
-
-          <InfoRow label="Member Since" icon={Calendar}>
-            <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.createdAt)}</p>
-          </InfoRow>
-
-          <InfoRow label="Last Updated" icon={Clock}>
-            <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.updatedAt)}</p>
-          </InfoRow>
-
-          {user.banReason && (
-            <InfoRow label="Ban Reason" icon={AlertTriangle}>
-              <p className="text-[14px] text-[#c62828]">{user.banReason}</p>
+            <InfoRow label="Last Updated" icon={Clock}>
+              <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.updatedAt)}</p>
             </InfoRow>
-          )}
+          </div>
+        </CardPanel>
 
-          {user.bannedAt && (
-            <InfoRow label="Banned At" icon={AlertTriangle}>
-              <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.bannedAt)}</p>
-            </InfoRow>
-          )}
-        </div>
-      </CardPanel>
+        {(user.banReason || user.bannedAt) && (
+          <CardPanel title="Ban Information">
+            <div className="divide-y divide-[#f5f5f5]">
+              {user.banReason && (
+                <InfoRow label="Ban Reason" icon={AlertTriangle}>
+                  <p className="text-[14px] text-[#c62828]">{user.banReason}</p>
+                </InfoRow>
+              )}
+              {user.bannedAt && (
+                <InfoRow label="Banned At" icon={AlertTriangle}>
+                  <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.bannedAt)}</p>
+                </InfoRow>
+              )}
+            </div>
+          </CardPanel>
+        )}
+      </div>
     </div>
   )
 }
