@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Bell, FileText, Target, User, Users } from 'lucide-react'
 import FormField from '../../../components/FormField'
 import SelectInput from '../../../components/SelectInput'
 import SearchableSelect from '../../../components/SearchableSelect'
@@ -108,7 +109,7 @@ export default function NotificationsCreate() {
       )}
 
       <div className="w-full max-w-[640px] space-y-5">
-        <FormField label="Title" required>
+        <FormField label="Title" icon={Bell}>
           <input
             type="text"
             value={form.title}
@@ -118,7 +119,7 @@ export default function NotificationsCreate() {
           />
         </FormField>
 
-        <FormField label="Message Body" required>
+        <FormField label="Message Body" icon={FileText}>
           <textarea
             value={form.description}
             onChange={(e) => updateField('description', e.target.value)}
@@ -128,7 +129,7 @@ export default function NotificationsCreate() {
           />
         </FormField>
 
-        <FormField label="Target Type" required>
+        <FormField label="Target Type" icon={Target}>
           <SelectInput
             options={TARGET_TYPE_SELECT}
             value={form.targetType}
@@ -137,7 +138,7 @@ export default function NotificationsCreate() {
         </FormField>
 
         {form.targetType === 'Personal' && (
-          <FormField label="User" required>
+          <FormField label="User" icon={User}>
             <SearchableSelect
               fetchFn={fetchUsers}
               value={form.userId}
@@ -149,7 +150,7 @@ export default function NotificationsCreate() {
         )}
 
         {form.targetType === 'Team' && (
-          <FormField label="Team" required>
+          <FormField label="Team" icon={Users}>
             <SearchableSelect
               fetchFn={fetchTeams}
               value={form.teamId}

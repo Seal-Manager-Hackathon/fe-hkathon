@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { Bell, FileText } from 'lucide-react'
 import FormField from '../../../components/FormField'
 import EntityFormPage from '../../../components/EntityFormPage'
 import { getNotificationDetail, updateNotification } from '../../../api/admin'
@@ -111,7 +112,7 @@ export default function NotificationEdit() {
       )}
 
       <div className="w-full max-w-[640px] space-y-5">
-        <FormField label="Title" required>
+        <FormField label="Title" icon={Bell}>
           <input
             type="text"
             value={form.title}
@@ -120,7 +121,7 @@ export default function NotificationEdit() {
             className="field-input"
           />
         </FormField>
-        <FormField label="Message Body" required>
+        <FormField label="Message Body" icon={FileText}>
           <textarea
             value={form.description}
             onChange={(e) => updateField('description', e.target.value)}

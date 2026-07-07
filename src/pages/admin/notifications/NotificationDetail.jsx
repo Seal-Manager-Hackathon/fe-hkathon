@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Edit, Calendar, Clock } from 'lucide-react'
+import { Edit, Calendar, Clock, Target, BadgeCheck } from 'lucide-react'
 import { getNotificationDetail, getUserDetail, getTeamDetail } from '../../../api/admin'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
@@ -134,7 +134,7 @@ export default function NotificationDetail() {
       {/* Details card */}
       <CardPanel title="Details">
         <div className="divide-y divide-[#f5f5f5]">
-          <InfoRow label="Target">
+          <InfoRow label="Target" icon={Target}>
             <NotificationTarget
               targetType={notification.targetType}
               userId={notification.userId}
@@ -142,7 +142,7 @@ export default function NotificationDetail() {
               details={targetDetails}
             />
           </InfoRow>
-          <InfoRow label="Status">
+          <InfoRow label="Status" icon={BadgeCheck}>
             {notification.status === 'Read'
               ? <Badge label="Read" className="bg-[#f5f5f5] text-[#757575]" />
               : <Badge label="Unread" className="bg-[#e3f2fd] text-[#1565c0]" />
