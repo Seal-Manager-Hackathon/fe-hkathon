@@ -277,3 +277,14 @@ export async function getRounds(eventId, params = {}) {
   return data.data
 }
 
+/**
+ * Create a new round for an event. RoundNo is auto-calculated.
+ * @param {string} eventId
+ * @param {{ name: string, startTime: string, endTime: string, description?: string, startSubmission?: string, endSubmission?: string, limitTeam?: number }} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function createRound(eventId, payload) {
+  const { data } = await api.post(`/admin/events/${eventId}/rounds`, payload)
+  return data
+}
+

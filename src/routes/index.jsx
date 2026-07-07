@@ -29,6 +29,7 @@ const TeamEdit = lazy(() => import('../pages/admin/TeamEdit'))
 const MyNotifications = lazy(() => import('../pages/admin/MyNotifications'))
 const AdminProfile = lazy(() => import('../pages/admin/AdminProfile'))
 const AdminProfileEdit = lazy(() => import('../pages/admin/AdminProfileEdit'))
+const RoundCreate = lazy(() => import('../pages/admin/RoundCreate'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 export const routes = [
@@ -46,6 +47,7 @@ export const routes = [
       { path: 'create', element: <Suspense fallback={<RouteFallback />}><HackathonCreate /></Suspense> },
       { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><HackathonEdit /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><HackathonDetail /></Suspense> },
+      { path: ':eventId/rounds/create', element: <Suspense fallback={<RouteFallback />}><RoundCreate /></Suspense> },
     ]},
     { path: 'users', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><UsersManagement /></Suspense> },
