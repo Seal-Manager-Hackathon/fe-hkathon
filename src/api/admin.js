@@ -151,4 +151,15 @@ export async function getTeamDetail(teamId) {
   return data.data
 }
 
+/**
+ * Update team by ID. Only included fields are updated; omitted fields remain unchanged.
+ * @param {string} teamId
+ * @param {{ name?: string, canEdit?: boolean, isDisable?: boolean }} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateTeam(teamId, payload) {
+  const { data } = await api.put(`/admin/teams/${teamId}`, payload)
+  return data
+}
+
 
