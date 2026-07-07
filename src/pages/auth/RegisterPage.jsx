@@ -1,3 +1,5 @@
+import BrandLogo from '../../components/BrandLogo'
+
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { UserPlus, Mail, User, ArrowLeft, Loader2 } from 'lucide-react'
@@ -7,8 +9,6 @@ import { toast } from '../../utils/toast'
 import PasswordInput from '../../components/PasswordInput'
 
 const UNVERIFIED_MSG = 'Unverified Account Please Login To Verify'
-
-import BrandLogo from '../../components/BrandLogo'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
