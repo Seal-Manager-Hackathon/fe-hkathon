@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Users, Trash2, RotateCcw } from 'lucide-react'
+import { Users, Trash2, RotateCcw, CircleCheck, UserRound, Calendar, Edit, MoreHorizontal } from 'lucide-react'
 import { getTeams, deleteTeam, restoreTeam } from '../../../api/admin'
 import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import Badge from '../../../components/Badge'
 import { teamsFilters } from './TeamsFilters'
 import { formatDate } from '../../../utils/format'
-import { toast } from '../../../utils/toast'
+import { toast, confirm } from '../../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -29,6 +29,7 @@ function teamColumns(onDelete, onRestore) {
     {
       key: 'name',
       header: 'Team Name',
+      headerIcon: UserRound,
       render: (row) => (
         <Link to={`/admin/teams/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">
           {row.name}
@@ -38,26 +39,30 @@ function teamColumns(onDelete, onRestore) {
     {
       key: 'canEdit',
       header: 'Can Edit',
+      headerIcon: Edit,
       render: (row) => (
         <Badge label={row.canEdit ? 'Yes' : 'No'} className={row.canEdit ? 'bg-[#e8f5e9] text-[#2e7d32]' : 'bg-[#fce4ec] text-[#c62828]'} />
       ),
     },
     {
+      key: 'createdAt',
+      header: 'Created',
+      headerIcon: Calendar,
+      render: (row) => <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>,
+    },
+    {
       key: 'isDisable',
       header: 'Status',
+      headerIcon: CircleCheck,
       render: (row) => {
         if (row.isDisable) return <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />
         return <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
       },
     },
     {
-      key: 'createdAt',
-      header: 'Created',
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>,
-    },
-    {
       key: 'actions',
       header: 'Actions',
+      headerIcon: MoreHorizontal,
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => (
@@ -66,7 +71,7 @@ function teamColumns(onDelete, onRestore) {
             <Users className="h-3.5 w-3.5" /> View
           </Link>
           <Link to={`/admin/teams/${row.id}/edit`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] hover:bg-[#bbdefb]">
-            Edit
+            <Edit className="h-3.5 w-3.5" /> Edit
           </Link>
           {row.isDisable ? (
             <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
@@ -135,16 +140,28 @@ export default function TeamsManagement() {
     setPageIndex(1)
   }
 
-  function handleDelete(team) {
-    deleteTeam(team.id)
-      .then(() => { toast.success('Team deleted'); fetchTeams() })
-      .catch((err) => toast.error(err?.response?.data?.message || 'Failed to delete team.'))
+  async function handleDelete(team) {
+    const ok = await confirm('Delete Team', `Are you sure you want to delete "${team.name}"?`)
+    if (!ok) return
+    try {
+      await deleteTeam(team.id)
+      toast.success('Team deleted')
+      fetchTeams()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to delete team.')
+    }
   }
 
-  function handleRestore(team) {
-    restoreTeam(team.id)
-      .then(() => { toast.success('Team restored'); fetchTeams() })
-      .catch((err) => toast.error(err?.response?.data?.message || 'Failed to restore team.'))
+  async function handleRestore(team) {
+    const ok = await confirm('Restore Team', `Are you sure you want to restore "${team.name}"?`)
+    if (!ok) return
+    try {
+      await restoreTeam(team.id)
+      toast.success('Team restored')
+      fetchTeams()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to restore team.')
+    }
   }
 
   return (
@@ -152,9 +169,6 @@ export default function TeamsManagement() {
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Teams</h1>
-          <p className="mt-1 text-[14px] sm:text-[15px] text-gray-500">
-            Manage all {totalCount} teams.
-          </p>
         </div>
         <Link
           to="/admin/teams/create"

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
-  Edit, Calendar, Clock, Users, CheckCircle, XCircle, Crown,
+  Edit, Calendar, Clock, Users, CheckCircle, XCircle, Crown, User, Shield, CircleCheck, ArrowLeft,
 } from 'lucide-react'
 import { getTeamDetail } from '../../../api/admin'
 import { formatDate } from '../../../utils/format'
@@ -15,6 +15,7 @@ const memberColumns = [
   {
     key: 'member',
     header: 'Member',
+    headerIcon: User,
     render: (row) => (
       <div className="flex items-center gap-3">
         <Avatar src={row.avatarUrl} name={`${row.firstName} ${row.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
@@ -30,6 +31,7 @@ const memberColumns = [
   {
     key: 'role',
     header: 'Role',
+    headerIcon: Shield,
     render: (row) =>
       row.isLeader ? (
         <div className="inline-flex items-center gap-1.5">
@@ -43,6 +45,7 @@ const memberColumns = [
   {
     key: 'status',
     header: 'Status',
+    headerIcon: CircleCheck,
     render: (row) =>
       row.status === 'Active' ? (
         <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
@@ -109,27 +112,17 @@ export default function TeamDetail() {
     )
   }
 
-  if (!team) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">Team not found.</p>
-        <Link to="/admin/teams" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
-          &larr; Back to Teams
-        </Link>
-      </div>
-    )
-  }
-
-  const members = team.members || []
+  const members = team?.members || []
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <div className="mb-6">
+      {/* Breadcrumb */}
+      <div className="mb-4">
         <Link
           to="/admin/teams"
-          className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
+          className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] hover:underline"
         >
-          &larr; Back to Teams
+          <ArrowLeft className="h-4 w-4" /> Back to Teams
         </Link>
       </div>
 
@@ -144,8 +137,6 @@ export default function TeamDetail() {
             )}
           </div>
           <p className="mt-2 text-[12px] sm:text-[13px] text-gray-400">
-            {members.length} member{members.length !== 1 ? 's' : ''}
-            <span className="mx-2">&middot;</span>
             Created {formatDate(team.createdAt)}
           </p>
         </div>
@@ -160,7 +151,7 @@ export default function TeamDetail() {
 
       <CardPanel title="Team Information">
         <div className="divide-y divide-[#f5f5f5]">
-          <InfoRow label="Team Name">
+          <InfoRow label="Team Name" icon={Users}>
             <p className="text-[14px] font-medium text-[#1f2f3a]">{team.name}</p>
           </InfoRow>
           <InfoRow label="Can Edit" icon={team.canEdit ? CheckCircle : XCircle}>
@@ -170,7 +161,7 @@ export default function TeamDetail() {
               <Badge label="No" className="bg-[#fce4ec] text-[#c62828]" />
             )}
           </InfoRow>
-          <InfoRow label="Status">
+          <InfoRow label="Status" icon={CircleCheck}>
             {team.isDisable ? (
               <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" />
             ) : (
@@ -187,7 +178,7 @@ export default function TeamDetail() {
       </CardPanel>
 
       <div className="mt-5">
-        <CardPanel title={`Members (${members.length})`}>
+        <CardPanel title="Members">
           {members.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
               <Users className="mb-3 h-10 w-10 text-gray-300" />
@@ -212,4 +203,3 @@ export default function TeamDetail() {
     </div>
   )
 }
-

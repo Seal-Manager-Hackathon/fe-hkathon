@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Save } from 'lucide-react'
+import { Save, UserRound } from 'lucide-react'
 import { getTeamDetail, updateTeam } from '../../../api/admin'
 import FormField from '../../../components/FormField'
 import FormActions from '../../../components/FormActions'
@@ -99,7 +99,7 @@ export default function TeamEdit() {
       )}
 
       <div className="w-full max-w-[480px]">
-        <FormField label="Team Name">
+        <FormField label="Team Name" icon={UserRound}>
           <input
             type="text"
             value={name}
