@@ -20,9 +20,9 @@ const DEFAULT_VALUES = {
 }
 
 const dangerBtnClass =
-  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2]'
+  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2] w-[92px]'
 const restoreBtnClass =
-  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9]'
+  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[92px]'
 
 function teamColumns(onDelete, onRestore, onLock, onUnlock) {
   return [
@@ -76,11 +76,11 @@ function teamColumns(onDelete, onRestore, onLock, onUnlock) {
                 <Edit className="h-3.5 w-3.5" /> Edit
               </Link>
               {row.canEdit ? (
-                <button onClick={() => onLock?.(row)} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] hover:bg-[#ffe0b2]">
+                <button onClick={() => onLock?.(row)} className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] hover:bg-[#ffe0b2] w-[88px]">
                   <Lock className="h-3.5 w-3.5" /> Lock
                 </button>
               ) : (
-                <button onClick={() => onUnlock?.(row)} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9]">
+                <button onClick={() => onUnlock?.(row)} className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9] w-[88px]">
                   <LockOpen className="h-3.5 w-3.5" /> Unlock
                 </button>
               )}
