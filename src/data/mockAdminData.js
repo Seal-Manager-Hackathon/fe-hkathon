@@ -8,8 +8,8 @@ import {
 export const mockAdminNavItems = [
   { key: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', to: '/admin' },
   { key: 'hackathons', label: 'Hackathons', icon: 'Trophy', to: '/admin/hackathons' },
-  { key: 'users', label: 'Users', icon: 'Users', to: '/admin/users' },
   { key: 'teams', label: 'Teams', icon: 'UserRound', to: '/admin/teams' },
+  { key: 'users', label: 'Users', icon: 'Users', to: '/admin/users' },
   { key: 'notifications', label: 'Notifications', icon: 'Bell', to: '/admin/notifications' },
 ]
 
