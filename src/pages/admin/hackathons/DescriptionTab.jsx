@@ -1,5 +1,6 @@
 import { FileText, Edit } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import RichTextViewer from '../../../components/RichTextViewer'
 
 export default function DescriptionTab({ eventId, description }) {
   return (
@@ -18,11 +19,7 @@ export default function DescriptionTab({ eventId, description }) {
         </Link>
       </div>
       <div className="px-5 py-5">
-        {description ? (
-          <div className="prose prose-sm max-w-none text-[14px] leading-relaxed text-[#1f2f3a] whitespace-pre-wrap">{description}</div>
-        ) : (
-          <p className="text-[14px] text-gray-400">No description provided.</p>
-        )}
+        <RichTextViewer content={description} />
       </div>
     </div>
   )

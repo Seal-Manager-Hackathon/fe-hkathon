@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { Edit, Calendar, Clock, Users, Flag, Hash, FileText } from 'lucide-react'
 import { getTrackDetail, getEventDetail } from '../../../../api/admin'
 import Badge from '../../../../components/Badge'
+import RichTextViewer from '../../../../components/RichTextViewer'
 import CardPanel from '../../../../components/CardPanel'
 import InfoRow from '../../../../components/InfoRow'
 import { formatDateTime } from '../../../../utils/format'
@@ -72,7 +73,7 @@ export default function TrackDetail() {
           </CardPanel>
           <CardPanel title="Description">
             <div className="px-5 py-5">
-              <p className="text-[14px] leading-relaxed text-[#1f2f3a] whitespace-pre-wrap">{track.description || 'No description provided.'}</p>
+              <RichTextViewer content={track.description} />
             </div>
           </CardPanel>
         </div>

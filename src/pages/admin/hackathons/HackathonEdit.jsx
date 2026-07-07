@@ -4,6 +4,7 @@ import { Trophy, Leaf, Users, UserCheck, UserPlus, CircleDot, EyeOff, Play, Cloc
 import SelectInput from '../../../components/SelectInput'
 import FormField from '../../../components/FormField'
 import EntityFormPage from '../../../components/EntityFormPage'
+import RichTextEditor from '../../../components/RichTextEditor'
 import { getEventDetail, updateEvent } from '../../../api/admin'
 import { SEASON_OPTIONS_SELECT } from '../../../constants/adminOptions'
 import { toast } from '../../../utils/toast'
@@ -220,7 +221,7 @@ export default function HackathonEdit() {
 
         <div className="lg:col-span-2">
           <FormField label="Description" icon={FileText}>
-            <textarea value={form.description} onChange={(e) => updateField('description', e.target.value)} placeholder="Describe the hackathon..." rows={6} className="field-input resize-y" />
+            <RichTextEditor value={form.description} onChange={(v) => updateField('description', v)} placeholder="Describe the hackathon..." />
           </FormField>
         </div>
       </div>

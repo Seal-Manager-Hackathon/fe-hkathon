@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Calendar, Clock, Users, Hash, Flag, FileText } from 'lucide-react'
 import FormField from '../../../../components/FormField'
 import EntityFormPage from '../../../../components/EntityFormPage'
+import RichTextEditor from '../../../../components/RichTextEditor'
 import { createTrack, getEventDetail } from '../../../../api/admin'
 import { toast } from '../../../../utils/toast'
 import { formatDateTime } from '../../../../utils/format'
@@ -66,7 +67,7 @@ export default function TrackCreate() {
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. AI - Artificial Intelligence" maxLength={200} className="field-input" />
           </FormField>
           <FormField label="Description" icon={FileText}>
-            <textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Track description..." className="field-input" />
+            <RichTextEditor value={description} onChange={setDescription} placeholder="Track description..." />
           </FormField>
           <FormField label="Max Teams" icon={Users}>
             <input type="number" min="0" value={maxTeam} onChange={(e) => setMaxTeam(e.target.value)} placeholder="15" className="field-input" />

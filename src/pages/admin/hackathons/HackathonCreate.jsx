@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import SelectInput from '../../../components/SelectInput'
 import FormField from '../../../components/FormField'
 import EntityFormPage from '../../../components/EntityFormPage'
+import RichTextEditor from '../../../components/RichTextEditor'
 import { createEvent } from '../../../api/admin'
 import { SEASON_OPTIONS_SELECT } from '../../../constants/adminOptions'
 import { toast } from '../../../utils/toast'
@@ -158,13 +159,7 @@ export default function HackathonCreate() {
 
         <div className="lg:col-span-2">
           <FormField label="Description">
-            <textarea
-              value={form.description}
-              onChange={(e) => updateField('description', e.target.value)}
-              placeholder="Describe the hackathon..."
-              rows={6}
-              className="field-input resize-y"
-            />
+            <RichTextEditor value={form.description} onChange={(v) => updateField('description', v)} placeholder="Describe the hackathon..." />
           </FormField>
         </div>
       </div>
