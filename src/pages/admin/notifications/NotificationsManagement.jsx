@@ -79,7 +79,7 @@ export default function NotificationsManagement() {
     } catch (err) {
       const msg = err?.response?.data?.message || 'Failed to load notifications.'
       if (err?.response?.status === 400 && msg.includes('TargetType')) {
-        setError('Loại thông báo không hợp lệ')
+        setError('Invalid notification target type')
       } else {
         setError(msg)
       }

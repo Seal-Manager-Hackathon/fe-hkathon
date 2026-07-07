@@ -56,7 +56,7 @@ export default function HackathonDetail() {
     const isNotFound = error === 'Event Not Found' || error.includes('Not Found')
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">{isNotFound ? 'Không tìm thấy sự kiện' : error}</p>
+        <p className="text-[18px] font-semibold text-gray-500">{isNotFound ? 'Event not found' : error}</p>
         <Link to="/admin/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Hackathons</Link>
       </div>
     )

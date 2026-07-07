@@ -83,7 +83,7 @@ export default function NotificationEdit() {
   if (notFound) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">Không tìm thấy thông báo</p>
+        <p className="text-[18px] font-semibold text-gray-500">Notification not found</p>
         <button
           onClick={() => navigate('/admin/notifications')}
           className="mt-4 cursor-pointer text-[14px] font-medium text-[#064f5d] hover:underline"

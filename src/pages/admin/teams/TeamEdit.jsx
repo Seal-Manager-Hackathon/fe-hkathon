@@ -67,7 +67,7 @@ export default function TeamEdit() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center">
         <p className="text-[18px] font-semibold text-gray-500">
-          {isNotFound ? 'Team không tồn tại' : error}
+          {isNotFound ? 'Team not found' : error}
         </p>
         <button
           onClick={() => navigate('/admin/teams')}

@@ -103,7 +103,7 @@ export default function TeamDetail() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center">
         <p className="text-[18px] font-semibold text-gray-500">
-          {isNotFound ? 'Team không tồn tại' : error}
+          {isNotFound ? 'Team not found' : error}
         </p>
         <Link to="/admin/teams" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
           &larr; Back to Teams

@@ -117,9 +117,9 @@ export default function UsersCreate() {
         setFieldErrors((prev) => ({ ...prev, ...mapped }))
       } else {
         if (message.includes('Email Already Exists') || message.includes('already exists')) {
-          setFieldErrors({ email: 'Email đã được sử dụng' })
+          setFieldErrors({ email: 'Email already in use' })
         } else if (message.includes('Invalid Role')) {
-          setFieldErrors({ role: 'Vai trò không hợp lệ' })
+          setFieldErrors({ role: 'Invalid role' })
         } else {
           setSaveError(message)
         }
