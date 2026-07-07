@@ -70,9 +70,11 @@ function teamColumns(onDelete, onRestore) {
           <Link to={`/admin/teams/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] hover:bg-[#e8e8e8]">
             <Users className="h-3.5 w-3.5" /> View
           </Link>
-          <Link to={`/admin/teams/${row.id}/edit`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] hover:bg-[#bbdefb]">
-            <Edit className="h-3.5 w-3.5" /> Edit
-          </Link>
+          {!row.isDisable && (
+            <Link to={`/admin/teams/${row.id}/edit`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] hover:bg-[#bbdefb]">
+              <Edit className="h-3.5 w-3.5" /> Edit
+            </Link>
+          )}
           {row.isDisable ? (
             <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
               <RotateCcw className="h-3.5 w-3.5" /> Restore
