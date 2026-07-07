@@ -16,18 +16,18 @@ import { Link } from 'react-router-dom'
 
 export default function AdminDashboard() {
   const [counts, setCounts] = useState({
-    totalEvents: 0,
-    publishedEvents: 0,
-    draftEvents: 0,
-    closedEvents: 0,
-    totalUsers: 0,
-    studentUsers: 0,
-    lecturerUsers: 0,
-    staffUsers: 0,
-    adminUsers: 0,
-    totalTeams: 0,
-    activeTeams: 0,
-    disabledTeams: 0,
+    totalEvents: "-",
+    publishedEvents: "-",
+    draftEvents: "-",
+    closedEvents: "-",
+    totalUsers: "-",
+    studentUsers: "-",
+    lecturerUsers: "-",
+    staffUsers: "-",
+    adminUsers: "-",
+    totalTeams: "-",
+    activeTeams: "-",
+    disabledTeams: "-",
   })
   const [recentTab, setRecentTab] = useState('hackathons')
   const [recentEvents, setRecentEvents] = useState([])
@@ -205,11 +205,10 @@ export default function AdminDashboard() {
             <button
               key={tab.key}
               onClick={() => setRecentTab(tab.key)}
-              className={`cursor-pointer px-5 py-3 text-[13px] font-semibold transition-colors ${
-                recentTab === tab.key
-                  ? 'border-b-2 border-[#064f5d] text-[#064f5d]'
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
+              className={`cursor-pointer px-5 py-3 text-[13px] font-semibold transition-colors ${recentTab === tab.key
+                ? 'border-b-2 border-[#064f5d] text-[#064f5d]'
+                : 'text-gray-400 hover:text-gray-600'
+                }`}
             >
               {tab.label}
             </button>
@@ -263,8 +262,8 @@ export default function AdminDashboard() {
           ))}
 
           {(recentTab === 'hackathons' && recentEvents.length === 0) ||
-          (recentTab === 'users' && dashboardUsers.length === 0) ||
-          (recentTab === 'notifications' && dashboardNotifications.length === 0) ? (
+            (recentTab === 'users' && dashboardUsers.length === 0) ||
+            (recentTab === 'notifications' && dashboardNotifications.length === 0) ? (
             <div className="px-5 py-8 text-center text-[13px] text-gray-400">No data available.</div>
           ) : null}
         </div>
