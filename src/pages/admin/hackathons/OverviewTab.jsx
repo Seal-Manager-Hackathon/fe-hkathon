@@ -1,4 +1,4 @@
-import { Calendar, Clock, Users, Hash, Flag, UserPlus, Edit, FileText } from 'lucide-react'
+import { Calendar, Clock, Users, Hash, Flag, UserPlus, FileText } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../components/Badge'
 import RichTextViewer from '../../../components/RichTextViewer'
@@ -10,7 +10,7 @@ export const statusBadge = {
   Closed: 'bg-[#e0f2f1] text-[#00695c]',
 }
 
-export default function OverviewTab({ event, eventId }) {
+export default function OverviewTab({ event }) {
   const cards = [
     { label: 'Season', value: event.season || '—', icon: <Flag className="h-5 w-5 text-[#ef6c00]" />, bg: 'bg-orange-50' },
     { label: 'Start Time', value: formatDateTime(event.startTime), icon: <Calendar className="h-5 w-5 text-[#1565c0]" />, bg: 'bg-blue-50' },
@@ -57,18 +57,11 @@ export default function OverviewTab({ event, eventId }) {
       </div>
 
       <div className="mt-8 rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
-        <div className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-5 py-4 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-5 py-4">
           <h3 className="text-[15px] font-bold text-white flex items-center gap-2">
             <FileText className="h-4 w-4" />
             Description
           </h3>
-          <Link
-            to={`/admin/hackathons/${eventId}/edit`}
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-white/20 px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-white/30"
-          >
-            <Edit className="h-3.5 w-3.5" />
-            Edit
-          </Link>
         </div>
         <div className="px-5 py-5">
           <RichTextViewer content={event.description} />
