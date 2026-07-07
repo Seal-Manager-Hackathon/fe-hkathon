@@ -1,17 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { Save } from 'lucide-react'
+import { Save, User, Phone, FileText, GraduationCap, Calendar, MapPin, IdCard } from 'lucide-react'
 import { getUserDetail, updateUser } from '../../../api/admin'
-import SelectInput from '../../../components/SelectInput'
 import FormField from '../../../components/FormField'
 import FormActions from '../../../components/FormActions'
 import Avatar from '../../../components/Avatar'
 import { getErrorMessage } from '../../../utils/error'
-
-const STATUS_OPTIONS = [
-  { value: 'Active', label: 'Active' },
-  { value: 'Inactive', label: 'Inactive' },
-]
 
 export default function UserEdit() {
   const { id } = useParams()
@@ -31,8 +25,6 @@ export default function UserEdit() {
     dateOfBirth: '',
     studentId: '',
     college: '',
-    status: 'Active',
-    isDisable: false,
   })
   const [avatarFile, setAvatarFile] = useState(null)
   const [avatarPreview, setAvatarPreview] = useState('')
@@ -56,8 +48,6 @@ export default function UserEdit() {
             dateOfBirth: data.dateOfBirth ? data.dateOfBirth.slice(0, 10) : '',
             studentId: data.studentId || '',
             college: data.college || '',
-            status: data.isDisable ? 'Inactive' : 'Active',
-            isDisable: data.isDisable || false,
           })
           setAvatarPreview(data.avatarUrl || '')
         }
@@ -93,7 +83,6 @@ export default function UserEdit() {
     try {
       const fd = new FormData()
 
-      // Chỉ gửi field đã thay đổi so với dữ liệu gốc
       if (form.firstName !== (user.firstName || '')) fd.append('FirstName', form.firstName)
       if (form.lastName !== (user.lastName || '')) fd.append('LastName', form.lastName)
       if (form.phoneNumber !== (user.phoneNumber || '')) fd.append('PhoneNumber', form.phoneNumber)
@@ -102,20 +91,11 @@ export default function UserEdit() {
       if (form.studentId !== (user.studentId || '')) fd.append('StudentId', form.studentId)
       if (form.college !== (user.college || '')) fd.append('College', form.college)
 
-      // DateOfBirth: gửi ISO nếu khác
       const origDob = user.dateOfBirth ? user.dateOfBirth.slice(0, 10) : ''
       if (form.dateOfBirth && form.dateOfBirth !== origDob) {
         fd.append('DateOfBirth', new Date(form.dateOfBirth).toISOString())
       }
 
-      // Status → gửi Status string
-      const origStatus = user.isDisable ? 'Inactive' : 'Active'
-      if (form.status !== origStatus) {
-        fd.append('Status', form.status)
-        fd.append('IsDisable', form.status === 'Inactive')
-      }
-
-      // Avatar file
       if (avatarFile) fd.append('AvatarFile', avatarFile)
 
       await updateUser(id, fd)
@@ -160,60 +140,57 @@ export default function UserEdit() {
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      {/* Back + Title */}
-      <div className="mb-6">
-        <Link
-          to={`/admin/users/${id}`}
-          className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
-        >
-          &larr; Back to User
+      {/* Breadcrumb */}
+      <div className="mb-4 flex items-center gap-1.5 text-[13px] text-gray-400">
+        <Link to="/admin/users" className="hover:text-[#064f5d] hover:underline">
+          Users
         </Link>
+        <span>/</span>
+        <span className="font-medium text-[#1f2f3a]">Edit {displayName}</span>
       </div>
 
-      <div className="mb-8">
-        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Edit User</h1>
-        <p className="mt-1 text-[15px] text-gray-500">
-          Update user account information and settings.
-        </p>
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[26px]">Edit User</h2>
+        <p className="mt-1 text-[14px] text-gray-500">Update profile information for {displayName}</p>
       </div>
 
-      {/* Save error banner */}
-      {error && user && (
-        <div className="mb-6 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">
-          {error}
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* Avatar sidebar */}
-        <div className="flex flex-col items-center gap-4 lg:items-start">
-          <Avatar
-            src={avatarPreview}
-            name={displayName}
-            size="h-24 w-24 sm:h-28 sm:w-28"
-            textSize="text-[28px] sm:text-[32px]"
-          />
-          <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d8e0e6] bg-white px-4 py-2 text-[13px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50">
-            Upload Photo
+      {/* Avatar */}
+      <div className="mb-6 flex items-center gap-4">
+        <Avatar
+          src={avatarPreview}
+          name={displayName}
+          size="h-16 w-16"
+          textSize="text-[18px]"
+        />
+        <div className="flex items-center gap-2">
+          <label className="cursor-pointer rounded-lg bg-[#f4f6f8] px-3 py-2 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]">
+            Change Photo
             <input type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
           </label>
           {avatarFile && (
             <button
               onClick={removeAvatar}
-              className="text-[12px] text-gray-400 hover:text-[#c62828]"
+              className="cursor-pointer rounded-lg bg-[#fce4ec] px-3 py-2 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2]"
             >
-              Remove new photo
+              Remove
             </button>
           )}
-          <p className="text-[12px] text-gray-400">
-            Recommended: Square image, max 2MB
-          </p>
         </div>
+      </div>
 
-        {/* Form fields */}
-        <div className="space-y-5 lg:col-span-2">
+      {/* Error */}
+      {error && (
+        <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">
+          {error}
+        </div>
+      )}
+
+      {/* Form */}
+      <div className="rounded-xl border border-[#e8ecf0] bg-white p-6">
+        <div className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="First Name">
+            <FormField label="First Name" icon={User}>
               <input
                 type="text"
                 value={form.firstName}
@@ -222,7 +199,7 @@ export default function UserEdit() {
                 className="field-input"
               />
             </FormField>
-            <FormField label="Last Name">
+            <FormField label="Last Name" icon={User}>
               <input
                 type="text"
                 value={form.lastName}
@@ -233,7 +210,7 @@ export default function UserEdit() {
             </FormField>
           </div>
 
-          <FormField label="Phone Number">
+          <FormField label="Phone Number" icon={Phone}>
             <input
               type="tel"
               value={form.phoneNumber}
@@ -243,7 +220,7 @@ export default function UserEdit() {
             />
           </FormField>
 
-          <FormField label="Bio">
+          <FormField label="Bio" icon={FileText}>
             <textarea
               value={form.bio}
               onChange={(e) => updateField('bio', e.target.value)}
@@ -254,7 +231,7 @@ export default function UserEdit() {
           </FormField>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="College">
+            <FormField label="College" icon={GraduationCap}>
               <input
                 type="text"
                 value={form.college}
@@ -263,7 +240,7 @@ export default function UserEdit() {
                 className="field-input"
               />
             </FormField>
-            <FormField label="Student ID">
+            <FormField label="Student ID" icon={IdCard}>
               <input
                 type="text"
                 value={form.studentId}
@@ -275,7 +252,7 @@ export default function UserEdit() {
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="Date of Birth">
+            <FormField label="Date of Birth" icon={Calendar}>
               <input
                 type="date"
                 value={form.dateOfBirth}
@@ -283,7 +260,7 @@ export default function UserEdit() {
                 className="field-input"
               />
             </FormField>
-            <FormField label="Address">
+            <FormField label="Address" icon={MapPin}>
               <input
                 type="text"
                 value={form.address}
@@ -293,22 +270,6 @@ export default function UserEdit() {
               />
             </FormField>
           </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="Status">
-              <SelectInput
-                options={STATUS_OPTIONS}
-                value={form.status}
-                onChange={(v) => updateField('status', v)}
-              />
-            </FormField>
-          </div>
-
-          {form.status === 'Inactive' && (
-            <div className="rounded-lg border border-[#fff3e0] bg-[#fff8e1] px-4 py-3 text-[13px] text-[#e65100]">
-              Setting this account to inactive will prevent the user from logging in and participating in hackathons.
-            </div>
-          )}
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Eye, Edit, Trash2, RotateCcw } from 'lucide-react'
+import { Eye, Edit, Trash2, RotateCcw, User, Shield, UserCheck, GraduationCap, Calendar, MoreHorizontal } from 'lucide-react'
 import Badge from '../../../components/Badge'
 import Avatar from '../../../components/Avatar'
 import { roleBadge } from '../../../constants/adminOptions'
@@ -23,6 +23,7 @@ export function usersColumns(onDelete, onRestore) {
     {
       key: 'user',
       header: 'User',
+      headerIcon: User,
       render: (row) => (
         <div className="flex items-center gap-3">
           <Avatar src={row.avatarUrl} name={`${row.firstName} ${row.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
@@ -41,23 +42,15 @@ export function usersColumns(onDelete, onRestore) {
     {
       key: 'role',
       header: 'Role',
+      headerIcon: Shield,
       render: (row) => (
         <Badge label={row.role} className={roleBadge[row.role] || ''} />
       ),
     },
     {
-      key: 'status',
-      header: 'Status',
-      render: (row) => {
-        if (row.isDisable) {
-          return <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />
-        }
-        return <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
-      },
-    },
-    {
       key: 'verified',
       header: 'Verified',
+      headerIcon: UserCheck,
       render: (row) =>
         row.isVerified ? (
           <Badge label="Yes" className="bg-[#e8f5e9] text-[#2e7d32]" />
@@ -68,6 +61,7 @@ export function usersColumns(onDelete, onRestore) {
     {
       key: 'college',
       header: 'College',
+      headerIcon: GraduationCap,
       render: (row) => (
         <p className="text-[13px] text-gray-500">{row.college || '—'}</p>
       ),
@@ -75,6 +69,7 @@ export function usersColumns(onDelete, onRestore) {
     {
       key: 'createdAt',
       header: 'Joined',
+      headerIcon: Calendar,
       render: (row) => (
         <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>
       ),
@@ -82,6 +77,7 @@ export function usersColumns(onDelete, onRestore) {
     {
       key: 'actions',
       header: 'Actions',
+      headerIcon: MoreHorizontal,
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => (

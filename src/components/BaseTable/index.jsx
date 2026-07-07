@@ -45,7 +45,10 @@ export default function BaseTable({
             <tr className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d]">
               {columns.map((col) => (
                 <th key={col.key} className={`px-5 py-3 text-left text-[12px] font-bold uppercase tracking-wider text-white ${col.headerClassName || ''}`}>
-                  {col.header}
+                  <span className="inline-flex items-center gap-1.5">
+                    {col.headerIcon && <col.headerIcon className="h-3.5 w-3.5" />}
+                    {col.header}
+                  </span>
                 </th>
               ))}
             </tr>
@@ -74,7 +77,10 @@ export default function BaseTable({
                 key={col.key}
                 className={`px-5 py-3 text-left text-[12px] font-bold uppercase tracking-wider text-white ${col.headerClassName || ''}`}
               >
-                {col.header}
+                <span className="inline-flex items-center gap-1.5">
+                  {col.headerIcon && <col.headerIcon className="h-3.5 w-3.5" />}
+                  {col.header}
+                </span>
               </th>
             ))}
           </tr>

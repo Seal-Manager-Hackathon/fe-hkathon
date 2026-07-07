@@ -96,9 +96,7 @@ export default function UsersManagement() {
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Users</h1>
-          <p className="mt-1 text-[14px] sm:text-[15px] text-gray-500">
-            Manage all {totalCount} user accounts.
-          </p>
+
         </div>
         <Link
           to="/admin/users/create"
