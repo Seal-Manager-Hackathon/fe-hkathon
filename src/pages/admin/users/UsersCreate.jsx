@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { UserPlus } from 'lucide-react'
-import { createUser } from '../../../api/admin'
+import { UserPlus, Users, GraduationCap, Briefcase, Shield } from 'lucide-react'
+import { createUser, getUsersCount } from '../../../api/admin'
 import { ROLE_OPTIONS_SELECT_NO_ADMIN } from '../../../constants/adminOptions'
 import SelectInput from '../../../components/SelectInput'
 import FormField from '../../../components/FormField'
@@ -38,12 +38,18 @@ function validate(form) {
   return errors
 }
 
-/** Generate a default secure password for admin-created users */
 function generatePassword() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$'
   let pwd = ''
   for (let i = 0; i < 12; i++) pwd += chars.charAt(Math.floor(Math.random() * chars.length))
   return pwd
+}
+
+const ROLE_META = {
+  Student: { icon: GraduationCap, color: 'bg-[#e3f2fd] text-[#1565c0] border-[#bbdefb]', iconColor: 'text-[#1565c0]' },
+  Lecturer: { icon: Briefcase, color: 'bg-[#f3e5f5] text-[#7b1fa2] border-[#e1bee7]', iconColor: 'text-[#7b1fa2]' },
+  Staff: { icon: Shield, color: 'bg-[#e8f5e9] text-[#2e7d32] border-[#c8e6c9]', iconColor: 'text-[#2e7d32]' },
+  Admin: { icon: Users, color: 'bg-[#fff3e0] text-[#e65100] border-[#ffe0b2]', iconColor: 'text-[#e65100]' },
 }
 
 export default function UsersCreate() {
@@ -52,6 +58,27 @@ export default function UsersCreate() {
   const [fieldErrors, setFieldErrors] = useState({})
   const [saveError, setSaveError] = useState('')
   const [saving, setSaving] = useState(false)
+  const [counts, setCounts] = useState({})
+
+  useEffect(() => {
+    async function fetch() {
+      try {
+        const [student, lecturer, staff, admin] = await Promise.all([
+          getUsersCount('Student'),
+          getUsersCount('Lecturer'),
+          getUsersCount('Staff'),
+          getUsersCount('Admin'),
+        ])
+        setCounts({
+          Student: student?.total ?? 0,
+          Lecturer: lecturer?.total ?? 0,
+          Staff: staff?.total ?? 0,
+          Admin: admin?.total ?? 0,
+        })
+      } catch {}
+    }
+    fetch()
+  }, [])
 
   function updateField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -108,6 +135,8 @@ export default function UsersCreate() {
     form.email.trim() &&
     form.role
 
+  const totalUsers = Object.values(counts).reduce((a, b) => a + b, 0)
+
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6">
@@ -132,54 +161,87 @@ export default function UsersCreate() {
         </div>
       )}
 
-      <div className="w-full max-w-[560px] space-y-5">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormField label="First Name" required error={fieldErrors.firstName}>
+      <div className="grid grid-cols-1 gap-x-10 gap-y-5 lg:grid-cols-[1fr_280px]">
+        <div className="space-y-5">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <FormField label="First Name" required error={fieldErrors.firstName}>
+              <input
+                type="text"
+                value={form.firstName}
+                onChange={(e) => updateField('firstName', e.target.value)}
+                placeholder="e.g. John"
+                className={`field-input ${fieldErrors.firstName ? 'input-error' : ''}`}
+              />
+            </FormField>
+            <FormField label="Last Name" required error={fieldErrors.lastName}>
+              <input
+                type="text"
+                value={form.lastName}
+                onChange={(e) => updateField('lastName', e.target.value)}
+                placeholder="e.g. Doe"
+                className={`field-input ${fieldErrors.lastName ? 'input-error' : ''}`}
+              />
+            </FormField>
+          </div>
+
+          <FormField label="Email" required error={fieldErrors.email}>
             <input
-              type="text"
-              value={form.firstName}
-              onChange={(e) => updateField('firstName', e.target.value)}
-              placeholder="e.g. John"
-              className={`field-input ${fieldErrors.firstName ? 'input-error' : ''}`}
+              type="email"
+              value={form.email}
+              onChange={(e) => updateField('email', e.target.value)}
+              placeholder="e.g. staff@fpt.edu.vn"
+              className={`field-input ${fieldErrors.email ? 'input-error' : ''}`}
             />
           </FormField>
-          <FormField label="Last Name" required error={fieldErrors.lastName}>
-            <input
-              type="text"
-              value={form.lastName}
-              onChange={(e) => updateField('lastName', e.target.value)}
-              placeholder="e.g. Doe"
-              className={`field-input ${fieldErrors.lastName ? 'input-error' : ''}`}
+
+          <FormField label="Role" required error={fieldErrors.role}>
+            <SelectInput
+              options={ROLE_OPTIONS_SELECT_NO_ADMIN}
+              value={form.role}
+              onChange={(v) => updateField('role', v)}
             />
           </FormField>
+
+          <FormActions
+            onSave={handleSave}
+            saving={saving}
+            canSave={isFormComplete}
+            saveLabel="Create User"
+            saveIcon={UserPlus}
+          />
         </div>
 
-        <FormField label="Email" required error={fieldErrors.email}>
-          <input
-            type="email"
-            value={form.email}
-            onChange={(e) => updateField('email', e.target.value)}
-            placeholder="e.g. staff@fpt.edu.vn"
-            className={`field-input ${fieldErrors.email ? 'input-error' : ''}`}
-          />
-        </FormField>
-
-        <FormField label="Role" required error={fieldErrors.role}>
-          <SelectInput
-            options={ROLE_OPTIONS_SELECT_NO_ADMIN}
-            value={form.role}
-            onChange={(v) => updateField('role', v)}
-          />
-        </FormField>
+        {/* Sidebar — User counts by role */}
+        <div className="self-start space-y-4">
+          <div className="rounded-xl border border-[#e8ecf0] bg-white shadow-sm overflow-hidden">
+            <div className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-5 py-4">
+              <h4 className="text-[14px] font-bold text-white flex items-center gap-2">
+                <Users className="h-4 w-4 text-[#80deea]" /> Users in System
+              </h4>
+            </div>
+            <div className="divide-y divide-[#f5f5f5]">
+              <div className="px-5 py-3">
+                <p className="text-[13px] text-gray-400">Total</p>
+                <p className="text-[22px] font-bold text-[#1f2f3a]">{totalUsers}</p>
+              </div>
+              {Object.entries(ROLE_META).map(([role, meta]) => {
+                const Icon = meta.icon
+                return (
+                  <div key={role} className="flex items-center gap-3 px-5 py-3">
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg border ${meta.color.replace(/text-\S+/, '')}`}>
+                      <Icon className={`h-4 w-4 ${meta.iconColor}`} />
+                    </div>
+                    <div>
+                      <p className="text-[11px] uppercase tracking-wider text-gray-400">{role}</p>
+                      <p className="text-[14px] font-semibold text-[#1f2f3a]">{counts[role] ?? '—'}</p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
       </div>
-
-      <FormActions
-        onSave={handleSave}
-        saving={saving}
-        canSave={isFormComplete}
-        saveLabel="Create User"
-        saveIcon={UserPlus}
-      />
     </div>
   )
 }
