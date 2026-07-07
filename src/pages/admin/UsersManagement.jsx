@@ -1,103 +1,119 @@
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { UserPlus } from 'lucide-react'
-import { allUsers, roleBadge, userStatusBadge } from '../../data/mockAdminData'
-import DataManagementPage from '../../components/DataManagementPage'
-import Badge from '../../components/Badge'
-import TableActions from '../../components/TableActions'
-import Avatar from '../../components/Avatar'
+import { getUsers } from '../../api/admin'
+import BaseTable from '../../components/BaseTable'
+import FilterBar from '../../components/FilterBar'
+import { usersColumns } from './UsersColumns'
+import { usersFilters } from './UsersFilters'
 
-const ROLE_OPTIONS = [
-  { value: '', label: 'All Roles' },
-  { value: 'Student', label: 'Student' },
-  { value: 'Lecturer', label: 'Lecturer' },
-  { value: 'Staff', label: 'Staff' },
-  { value: 'Admin', label: 'Admin' },
-]
+const PAGE_SIZE = 10
 
-const STATUS_OPTIONS = [
-  { value: '', label: 'All Statuses' },
-  { value: 'Active', label: 'Active' },
-  { value: 'Inactive', label: 'Inactive' },
-]
-
-const columns = [
-  {
-    key: 'user',
-    header: 'User',
-    render: (row) => (
-      <div className="flex items-center gap-3">
-        <Avatar src={row.avatar} name={row.name} size="h-9 w-9" textSize="text-[13px]" />
-        <div>
-          <Link
-            to={`/admin/users/${row.id}`}
-            className="text-[14px] font-semibold text-[#064f5d] hover:underline"
-          >
-            {row.name}
-          </Link>
-          <p className="text-[12px] text-gray-400">{row.email}</p>
-        </div>
-      </div>
-    ),
-  },
-  {
-    key: 'role',
-    header: 'Role',
-    render: (row) => (
-      <Badge label={row.role} className={roleBadge[row.role]} />
-    ),
-  },
-  {
-    key: 'status',
-    header: 'Status',
-    render: (row) => (
-      <Badge label={row.status} className={userStatusBadge[row.status]} />
-    ),
-  },
-  {
-    key: 'submissions',
-    header: 'Submissions',
-    render: (row) => (
-      <p className="text-[14px] font-semibold text-[#1f2f3a]">{row.submissions}</p>
-    ),
-  },
-  {
-    key: 'joined',
-    header: 'Joined',
-    render: (row) => (
-      <p className="text-[13px] text-gray-500">{row.joined}</p>
-    ),
-  },
-  {
-    key: 'actions',
-    header: 'Actions',
-    headerClassName: 'text-right',
-    className: 'text-right',
-    render: (row) => (
-      <TableActions viewTo={`/admin/users/${row.id}`} editTo={`/admin/users/${row.id}/edit`} />
-    ),
-  },
-]
+const DEFAULT_VALUES = {
+  keyword: '',
+  role: '',
+  isDisable: '',
+  isVerified: '',
+  fromDate: '',
+  toDate: '',
+}
 
 export default function UsersManagement() {
+  const [filters, setFilters] = useState(DEFAULT_VALUES)
+  const [pageIndex, setPageIndex] = useState(1)
+  const [users, setUsers] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const hasActive = Object.entries(filters).some(
+    ([, v]) => v !== ''
+  )
+
+  const buildParams = useCallback(() => {
+    const params = { PageIndex: pageIndex, PageSize: PAGE_SIZE }
+    const { keyword, role, isDisable, isVerified, fromDate, toDate } = filters
+    if (keyword) params.Keyword = keyword
+    if (role) params.Role = role
+    if (isDisable !== '') params.IsDisable = isDisable === 'true'
+    if (isVerified !== '') params.IsVerified = isVerified === 'true'
+    if (fromDate) params.FromDate = new Date(fromDate).toISOString()
+    if (toDate) params.ToDate = new Date(toDate).toISOString()
+    return params
+  }, [filters, pageIndex])
+
+  const fetchUsers = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const result = await getUsers(buildParams())
+      setUsers(result.users || [])
+      setTotalCount(result.totalCount || 0)
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Failed to load users.')
+      setUsers([])
+      setTotalCount(0)
+    } finally {
+      setLoading(false)
+    }
+  }, [buildParams])
+
+  useEffect(() => { fetchUsers() }, [fetchUsers])
+
+  function handleFilterChange(key, value) {
+    setFilters((prev) => ({ ...prev, [key]: value }))
+    setPageIndex(1)
+  }
+
+  function handleReset() {
+    setFilters(DEFAULT_VALUES)
+    setPageIndex(1)
+  }
+
   return (
-    <DataManagementPage
-      entityName="Users"
-      entityRouteBase="users"
-      createLabel="Create User"
-      createIcon={UserPlus}
-      countLabel="user accounts."
-      searchPlaceholder="Search by name or email..."
-      searchKeys={['name', 'email']}
-      filters={[
-        { key: 'role', label: 'Role', options: ROLE_OPTIONS, className: 'w-full sm:w-[160px]' },
-        { key: 'status', label: 'Status', options: STATUS_OPTIONS, className: 'w-full sm:w-[160px]' },
-      ]}
-      data={allUsers}
-      columns={columns}
-      pageSize={10}
-      emptyText="No users match the current filters."
-      emptyFallbackText="No users in the system yet."
-      keyExtractor={(row) => row.id}
-    />
+    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Users</h1>
+          <p className="mt-1 text-[14px] sm:text-[15px] text-gray-500">
+            Manage all {totalCount} user accounts.
+          </p>
+        </div>
+        <Link
+          to="/admin/users/create"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto"
+        >
+          <UserPlus className="h-4 w-4" />Create User
+        </Link>
+      </div>
+
+      <FilterBar
+        filters={usersFilters}
+        values={filters}
+        onChange={handleFilterChange}
+        onReset={handleReset}
+        hasActive={hasActive}
+      />
+
+      {error && (
+        <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">
+          {error}
+        </div>
+      )}
+
+      <BaseTable
+        columns={usersColumns}
+        data={users}
+        page={pageIndex}
+        pageSize={PAGE_SIZE}
+        total={totalCount}
+        onPageChange={setPageIndex}
+        loading={loading}
+        serverSide
+        emptyText={hasActive ? 'No users match the current filters.' : 'No users in the system yet.'}
+        keyExtractor={(row) => row.id}
+        minWidth="900px"
+      />
+    </div>
   )
 }

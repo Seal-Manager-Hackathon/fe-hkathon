@@ -51,11 +51,26 @@ export async function getRecentUsers() {
   return data.data
 }
 
-/**
- * Get 5 most recent notifications.
- * @returns {Promise<{ notifications: Array }>}
- */
 export async function getRecentNotifications() {
   const { data } = await api.get('/admin/notifications/recent')
   return data.data
 }
+
+/**
+ * Get paginated users list with search and filters.
+ * @param {Object} params
+ * @param {string} [params.Keyword] - Search email, firstName, lastName, fullName
+ * @param {'Admin'|'Staff'|'Student'|'Lecturer'} [params.Role]
+ * @param {boolean} [params.IsDisable]
+ * @param {boolean} [params.IsVerified]
+ * @param {string} [params.FromDate] - ISO datetime
+ * @param {string} [params.ToDate] - ISO datetime
+ * @param {number} [params.PageIndex] - default 1
+ * @param {number} [params.PageSize] - default 10
+ * @returns {Promise<{ users: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getUsers(params = {}) {
+  const { data } = await api.get('/admin/users', { params })
+  return data.data
+}
+

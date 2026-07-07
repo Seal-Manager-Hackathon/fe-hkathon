@@ -1,10 +1,13 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { RotateCcw } from 'lucide-react'
+import FilterBar from '../FilterBar'
 import BaseTable from '../BaseTable'
-import SearchInput from '../SearchInput'
-import SelectInput from '../SelectInput'
 
+/**
+ * Reusable client-side data management page with search, selects, and reset.
+ * Renders entity list using BaseTable.
+ * For server-side pagination use a custom page instead.
+ */
 export default function DataManagementPage({
   entityName,
   entityRouteBase,
@@ -26,34 +29,42 @@ export default function DataManagementPage({
   const [search, setSearch] = useState('')
   const [filterValues, setFilterValues] = useState(() => {
     const initial = {}
-    filters.forEach((f) => {
-      initial[f.key] = ''
-    })
+    filters.forEach((f) => { initial[f.key] = '' })
     return initial
   })
   const [page, setPage] = useState(1)
 
+  const allValues = { search, ...filterValues }
   const hasActiveFilters =
-    search !== '' || Object.values(filterValues).some((v) => v !== '')
+    allValues.search !== '' || Object.values(filterValues).some((v) => v !== '')
+
+  function handleFilterChange(key, value) {
+    if (key === 'search') setSearch(value)
+    else setFilterValues((prev) => ({ ...prev, [key]: value }))
+    setPage(1)
+  }
 
   function handleReset() {
     setSearch('')
     const reset = {}
-    filters.forEach((f) => {
-      reset[f.key] = ''
-    })
+    filters.forEach((f) => { reset[f.key] = '' })
     setFilterValues(reset)
     setPage(1)
   }
 
+  const filterBarItems = [
+    { type: 'search', key: 'search', placeholder: searchPlaceholder, className: 'w-full sm:w-[300px]' },
+    ...filters.map((f) => ({ type: 'select', key: f.key, label: f.label, options: f.options, className: f.className })),
+  ]
+
   const filtered = useMemo(() => {
     return data.filter((item) => {
       if (search) {
-        const matchesSearch = searchKeys.some((key) => {
+        const matches = searchKeys.some((key) => {
           const val = item[key]
           return val && String(val).toLowerCase().includes(search.toLowerCase())
         })
-        if (!matchesSearch) return false
+        if (!matches) return false
       }
       for (const f of filters) {
         const fv = filterValues[f.key]
@@ -65,7 +76,6 @@ export default function DataManagementPage({
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      {/* Header */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">
@@ -84,41 +94,14 @@ export default function DataManagementPage({
         </Link>
       </div>
 
-      {/* Filter Row */}
-      <div className="mb-6 flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-4">
-        <SearchInput
-          className="w-full sm:w-[300px]"
-          placeholder={searchPlaceholder}
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value)
-            setPage(1)
-          }}
-        />
-        {filters.map((f) => (
-          <SelectInput
-            key={f.key}
-            label={f.label}
-            options={f.options}
-            value={filterValues[f.key]}
-            onChange={(v) => {
-              setFilterValues((prev) => ({ ...prev, [f.key]: v }))
-              setPage(1)
-            }}
-            className={f.className}
-          />
-        ))}
-        <button
-          onClick={handleReset}
-          disabled={!hasActiveFilters}
-          className="mb-[1px] inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d8e0e6] bg-white px-4 py-2.5 text-[14px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <RotateCcw className="h-4 w-4" />
-          Reset
-        </button>
-      </div>
+      <FilterBar
+        filters={filterBarItems}
+        values={allValues}
+        onChange={handleFilterChange}
+        onReset={handleReset}
+        hasActive={hasActiveFilters}
+      />
 
-      {/* Table */}
       <BaseTable
         columns={columns}
         data={filtered}

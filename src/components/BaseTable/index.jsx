@@ -24,15 +24,17 @@ export default function BaseTable({
   emptyText = 'No data found.',
   keyExtractor,
   minWidth = '600px',
+  serverSide = false,
 }) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
   const isFirstPage = page <= 1
   const isLastPage = page >= totalPages
 
   const rows = useMemo(() => {
+    if (serverSide) return data
     const start = (page - 1) * pageSize
     return data.slice(start, start + pageSize)
-  }, [data, page, pageSize])
+  }, [data, page, pageSize, serverSide])
 
   if (!loading && data.length === 0) {
     return (
