@@ -84,4 +84,18 @@ export async function getUserDetail(userId) {
   return data.data
 }
 
+/**
+ * Update user by ID. Sends multipart/form-data.
+ * Only included fields are updated; omitted fields remain unchanged.
+ * @param {string} userId
+ * @param {FormData} formData
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateUser(userId, formData) {
+  const { data } = await api.put(`/admin/users/${userId}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return data
+}
+
 
