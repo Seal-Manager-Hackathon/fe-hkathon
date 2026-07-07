@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { Info, FileText, Layers, FolderKanban } from 'lucide-react'
+import { Info, Layers, FolderKanban } from 'lucide-react'
 import { getEventDetail } from '../../../api/admin'
 import OverviewTab from './OverviewTab'
-import DescriptionTab from './DescriptionTab'
 import RoundsTab from './rounds/RoundsTab'
 import TracksTab from './tracks/TracksTab'
 
 const TABS = [
   { key: 'Overview', icon: <Info className="h-4 w-4" /> },
-  { key: 'Description', icon: <FileText className="h-4 w-4" /> },
   { key: 'Rounds', icon: <Layers className="h-4 w-4" /> },
   { key: 'Tracks', icon: <FolderKanban className="h-4 w-4" /> },
 ]
@@ -86,8 +84,7 @@ export default function HackathonDetail() {
         ))}
       </div>
 
-      {tab === 'Overview' && <OverviewTab event={event} />}
-      {tab === 'Description' && <DescriptionTab eventId={id} description={event.description} />}
+      {tab === 'Overview' && <OverviewTab event={event} eventId={id} />}
       {tab === 'Rounds' && <RoundsTab eventId={id} />}
       {tab === 'Tracks' && <TracksTab eventId={id} />}
     </div>

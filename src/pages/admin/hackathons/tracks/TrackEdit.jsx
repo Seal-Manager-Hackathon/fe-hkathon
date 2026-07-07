@@ -115,7 +115,7 @@ function EventInfoCard({ event }) {
       </div>
       <div className="divide-y divide-[#f5f5f5]">
         <div className="px-5 py-3.5">
-          <p className="text-[14px] font-bold text-[#064f5d] leading-snug">{event.name}</p>
+          <Link to={`/admin/hackathons/${event.id}`} className="text-[14px] font-bold text-[#064f5d] leading-snug hover:underline">{event.name}</Link>
           <div className="mt-1.5 flex items-center gap-2">
             <Badge label={event.status} className={statusBadge[event.status] || 'bg-[#f5f5f5] text-[#757575]'} />
             {event.isDisable && <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />}
