@@ -6,7 +6,7 @@ import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import Badge from '../../../components/Badge'
 import { teamsFilters } from './TeamsFilters'
-import { formatDate } from '../../../utils/format'
+import { formatDateTime } from '../../../utils/format'
 import { toast, confirm } from '../../../utils/toast'
 
 const PAGE_SIZE = 10
@@ -40,7 +40,7 @@ function teamColumns(onDelete, onRestore, onLock, onUnlock) {
       key: 'createdAt',
       header: 'Created',
       headerIcon: Calendar,
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>,
+      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>,
     },
     {
       key: 'canEdit',

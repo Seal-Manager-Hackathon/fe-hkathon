@@ -3,7 +3,7 @@ import { Eye, Edit, Trash2, RotateCcw, User, Shield, UserCheck, GraduationCap, C
 import Badge from '../../../components/Badge'
 import Avatar from '../../../components/Avatar'
 import { roleBadge } from '../../../constants/adminOptions'
-import { formatDate } from '../../../utils/format'
+import { formatDateTime } from '../../../utils/format'
 
 const actionBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
@@ -71,7 +71,7 @@ export function usersColumns(onDelete, onRestore) {
       header: 'Joined',
       headerIcon: Calendar,
       render: (row) => (
-        <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>
+        <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
       ),
     },
     {

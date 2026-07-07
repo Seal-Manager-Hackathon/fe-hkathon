@@ -10,10 +10,12 @@ const PAGE_SIZE = 10
 
 const DEFAULT_VALUES = { keyword: '', roundNo: '', isDisable: '' }
 
+import { Search, Hash, Ban } from 'lucide-react'
+
 const roundFilters = [
-  { key: 'keyword', label: 'Round Name', type: 'search', placeholder: 'Search round name...' },
-  { key: 'roundNo', label: 'Round #', type: 'search', inputType: 'number', placeholder: 'Enter round number' },
-  { key: 'isDisable', label: 'Deleted', type: 'select', options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
+  { type: 'search', key: 'keyword', label: 'Round Name', icon: Search, placeholder: 'Search round name...' },
+  { type: 'search', key: 'roundNo', label: 'Round #', icon: Hash, inputType: 'number', placeholder: 'Enter round number' },
+  { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
 ]
 
 export default function RoundsTab({ eventId }) {

@@ -1,7 +1,7 @@
 import { Calendar, Clock, Users, Hash, Flag, UserPlus, Edit } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../components/Badge'
-import { formatDate } from '../../../utils/format'
+import { formatDateTime } from '../../../utils/format'
 
 export const statusBadge = {
   Draft: 'bg-[#f5f5f5] text-[#757575]',
@@ -12,15 +12,15 @@ export const statusBadge = {
 export default function OverviewTab({ event }) {
   const cards = [
     { label: 'Season', value: event.season || '—', icon: <Flag className="h-5 w-5 text-[#ef6c00]" />, bg: 'bg-orange-50' },
-    { label: 'Start Time', value: formatDate(event.startTime), icon: <Calendar className="h-5 w-5 text-[#1565c0]" />, bg: 'bg-blue-50' },
-    { label: 'End Time', value: formatDate(event.endTime), icon: <Calendar className="h-5 w-5 text-[#c62828]" />, bg: 'bg-red-50' },
-    { label: 'Reg Deadline', value: event.registerLimitTime ? formatDate(event.registerLimitTime) : '—', icon: <Clock className="h-5 w-5 text-[#e65100]" />, bg: 'bg-orange-50' },
+    { label: 'Start Time', value: formatDateTime(event.startTime), icon: <Calendar className="h-5 w-5 text-[#1565c0]" />, bg: 'bg-blue-50' },
+    { label: 'End Time', value: formatDateTime(event.endTime), icon: <Calendar className="h-5 w-5 text-[#c62828]" />, bg: 'bg-red-50' },
+    { label: 'Reg Deadline', value: event.registerLimitTime ? formatDateTime(event.registerLimitTime) : '—', icon: <Clock className="h-5 w-5 text-[#e65100]" />, bg: 'bg-orange-50' },
     { label: 'Max Teams', value: event.limitTeam ?? '—', icon: <Users className="h-5 w-5 text-[#2e7d32]" />, bg: 'bg-green-50' },
     { label: 'Min Members', value: event.minMember ?? '—', icon: <UserPlus className="h-5 w-5 text-[#6a1b9a]" />, bg: 'bg-purple-50' },
     { label: 'Max Members', value: event.maxMember ?? '—', icon: <UserPlus className="h-5 w-5 text-[#6a1b9a]" />, bg: 'bg-purple-50' },
     { label: 'Rounds', value: event.numberRound ?? 0, icon: <Hash className="h-5 w-5 text-[#37474f]" />, bg: 'bg-gray-100' },
-    { label: 'Created', value: formatDate(event.createdAt), icon: <Clock className="h-5 w-5 text-[#546e7a]" />, bg: 'bg-gray-50' },
-    { label: 'Updated', value: formatDate(event.updatedAt), icon: <Clock className="h-5 w-5 text-[#546e7a]" />, bg: 'bg-gray-50' },
+    { label: 'Created', value: formatDateTime(event.createdAt), icon: <Clock className="h-5 w-5 text-[#546e7a]" />, bg: 'bg-gray-50' },
+    { label: 'Updated', value: formatDateTime(event.updatedAt), icon: <Clock className="h-5 w-5 text-[#546e7a]" />, bg: 'bg-gray-50' },
   ]
 
   return (
@@ -33,7 +33,7 @@ export default function OverviewTab({ event }) {
             {event.isDisable && <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />}
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-3 text-[12px] sm:text-[13px] text-gray-400">
-            <span className="inline-flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />{event.season ? `${event.season} · ` : ''}{formatDate(event.startTime)} – {formatDate(event.endTime)}</span>
+            <span className="inline-flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />{event.season ? `${event.season} · ` : ''}{formatDateTime(event.startTime)} – {formatDateTime(event.endTime)}</span>
             <span className="inline-flex items-center gap-1.5"><Users className="h-3.5 w-3.5" /> {event.limitTeam ?? '—'} teams</span>
           </div>
         </div>

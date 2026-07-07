@@ -5,7 +5,7 @@ import { getTrackDetail, getEventDetail } from '../../../../api/admin'
 import Badge from '../../../../components/Badge'
 import CardPanel from '../../../../components/CardPanel'
 import InfoRow from '../../../../components/InfoRow'
-import { formatDate } from '../../../../utils/format'
+import { formatDateTime } from '../../../../utils/format'
 
 const statusBadge = {
   Draft: 'bg-[#f5f5f5] text-[#757575]',
@@ -61,8 +61,8 @@ export default function TrackDetail() {
           <CardPanel title="Details">
             <InfoRow label="Max Teams" icon={Users}><p className="text-[14px] font-semibold text-[#1f2f3a]">{track.maxTeam ?? 'Unlimited'}</p></InfoRow>
             <InfoRow label="Registered Teams" icon={Flag}><p className="text-[14px] font-semibold text-[#1f2f3a]">{track.registerTeamCount ?? 0}</p></InfoRow>
-            <InfoRow label="Created At" icon={Calendar}><p className="text-[14px] text-[#1f2f3a]">{formatDate(track.createdAt)}</p></InfoRow>
-            {track.updatedAt && <InfoRow label="Updated At" icon={Clock}><p className="text-[14px] text-[#1f2f3a]">{formatDate(track.updatedAt)}</p></InfoRow>}
+            <InfoRow label="Created At" icon={Calendar}><p className="text-[14px] text-[#1f2f3a]">{formatDateTime(track.createdAt)}</p></InfoRow>
+            {track.updatedAt && <InfoRow label="Updated At" icon={Clock}><p className="text-[14px] text-[#1f2f3a]">{formatDateTime(track.updatedAt)}</p></InfoRow>}
           </CardPanel>
           {track.description && <CardPanel title="Description"><p className="px-5 py-5 text-[14px] leading-relaxed text-[#1f2f3a] whitespace-pre-wrap">{track.description}</p></CardPanel>}
         </div>
@@ -86,9 +86,9 @@ function EventInfoCard({ event }) {
         </div>
         <div className="px-5 py-3 space-y-2">
           {event.season && <R icon={<Flag className="h-3.5 w-3.5 text-[#ef6c00]" />} label="Season" value={event.season} cls="text-[#ef6c00]" />}
-          <R icon={<Clock className="h-3.5 w-3.5 text-[#1565c0]" />} label="Start" value={formatDate(event.startTime)} mono />
-          {event.registerLimitTime && <R icon={<Clock className="h-3.5 w-3.5 text-[#e65100]" />} label="Reg Deadline" value={formatDate(event.registerLimitTime)} mono />}
-          <R icon={<Clock className="h-3.5 w-3.5 text-[#c62828]" />} label="End" value={formatDate(event.endTime)} mono />
+          <R icon={<Clock className="h-3.5 w-3.5 text-[#1565c0]" />} label="Start" value={formatDateTime(event.startTime)} mono />
+          {event.registerLimitTime && <R icon={<Clock className="h-3.5 w-3.5 text-[#e65100]" />} label="Reg Deadline" value={formatDateTime(event.registerLimitTime)} mono />}
+          <R icon={<Clock className="h-3.5 w-3.5 text-[#c62828]" />} label="End" value={formatDateTime(event.endTime)} mono />
           <R icon={<Users className="h-3.5 w-3.5 text-[#2e7d32]" />} label="Teams" value={event.limitTeam ?? '—'} cls="text-[#2e7d32]" />
           <R icon={<Users className="h-3.5 w-3.5 text-[#6a1b9a]" />} label="Members" value={`${event.minMember ?? '—'} – ${event.maxMember ?? '—'}`} cls="text-[#6a1b9a]" />
           <R icon={<Hash className="h-3.5 w-3.5 text-[#37474f]" />} label="Rounds" value={event.numberRound ?? 0} cls="text-[#37474f]" />

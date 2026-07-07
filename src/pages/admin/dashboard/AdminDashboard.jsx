@@ -5,7 +5,7 @@ import {
   iconMap,
 } from '../../../data/mockAdminData'
 import { roleBadge } from '../../../constants/adminOptions'
-import { formatDate } from '../../../utils/format'
+import { formatDateTime } from '../../../utils/format'
 import { getEventsCount, getUsersCount, getTeamsCount, getRecentEvents, getRecentUsers, getRecentNotifications } from '../../../api/admin'
 import { Trophy, Users, Bell, ArrowRight } from 'lucide-react'
 import StatCard from '../../../components/StatCard'
@@ -78,8 +78,8 @@ export default function AdminDashboard() {
             result.events.map((e) => ({
               id: e.id,
               name: e.name,
-              season: e.startTime ? formatDate(e.startTime, '') : '',
-              date: e.createdAt ? formatDate(e.createdAt, '') : '',
+              season: e.startTime ? formatDateTime(e.startTime, '') : '',
+              date: e.createdAt ? formatDateTime(e.createdAt, '') : '',
               status: e.status,
               teams: 0,
               prize: '',

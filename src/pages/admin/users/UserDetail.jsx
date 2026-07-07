@@ -6,7 +6,7 @@ import {
 } from 'lucide-react'
 import { getUserDetail } from '../../../api/admin'
 import { roleBadge } from '../../../constants/adminOptions'
-import { formatDate } from '../../../utils/format'
+import { formatDateTime } from '../../../utils/format'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
 import InfoRow from '../../../components/InfoRow'
@@ -148,7 +148,7 @@ export default function UserDetail() {
               <p className="text-[14px] text-[#1f2f3a]">{user.phoneNumber || '—'}</p>
             </InfoRow>
             <InfoRow label="Date of Birth" icon={Calendar}>
-              <p className="text-[14px] text-[#1f2f3a]">{user.dateOfBirth ? formatDate(user.dateOfBirth) : '—'}</p>
+              <p className="text-[14px] text-[#1f2f3a]">{user.dateOfBirth ? formatDateTime(user.dateOfBirth) : '—'}</p>
             </InfoRow>
             <InfoRow label="Address" icon={MapPin}>
               <p className="text-[14px] text-[#1f2f3a]">{user.address || '—'}</p>
@@ -186,14 +186,14 @@ export default function UserDetail() {
             </InfoRow>
             {user.verifyEmailAt && (
               <InfoRow label="Verified At" icon={Clock}>
-                <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.verifyEmailAt)}</p>
+                <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.verifyEmailAt)}</p>
               </InfoRow>
             )}
             <InfoRow label="Member Since" icon={Calendar}>
-              <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.createdAt)}</p>
+              <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.createdAt)}</p>
             </InfoRow>
             <InfoRow label="Last Updated" icon={Clock}>
-              <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.updatedAt)}</p>
+              <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.updatedAt)}</p>
             </InfoRow>
           </div>
         </CardPanel>
@@ -208,7 +208,7 @@ export default function UserDetail() {
               )}
               {user.bannedAt && (
                 <InfoRow label="Banned At" icon={AlertTriangle}>
-                  <p className="text-[14px] text-[#1f2f3a]">{formatDate(user.bannedAt)}</p>
+                  <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.bannedAt)}</p>
                 </InfoRow>
               )}
             </div>

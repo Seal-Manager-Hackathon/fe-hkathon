@@ -4,7 +4,7 @@ import {
   Edit, Calendar, Clock, Users, CheckCircle, XCircle, Crown, User, Shield, CircleCheck, ArrowLeft, Lock,
 } from 'lucide-react'
 import { getTeamDetail } from '../../../api/admin'
-import { formatDate } from '../../../utils/format'
+import { formatDateTime } from '../../../utils/format'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
 import InfoRow from '../../../components/InfoRow'
@@ -137,7 +137,7 @@ export default function TeamDetail() {
             )}
           </div>
           <p className="mt-2 text-[12px] sm:text-[13px] text-gray-400">
-            Created {formatDate(team.createdAt)}
+            Created {formatDateTime(team.createdAt)}
           </p>
         </div>
         <Link
@@ -169,10 +169,10 @@ export default function TeamDetail() {
             )}
           </InfoRow>
           <InfoRow label="Created At" icon={Calendar}>
-            <p className="text-[14px] text-[#1f2f3a]">{formatDate(team.createdAt)}</p>
+            <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(team.createdAt)}</p>
           </InfoRow>
           <InfoRow label="Last Updated" icon={Clock}>
-            <p className="text-[14px] text-[#1f2f3a]">{formatDate(team.updatedAt)}</p>
+            <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(team.updatedAt)}</p>
           </InfoRow>
         </div>
       </CardPanel>

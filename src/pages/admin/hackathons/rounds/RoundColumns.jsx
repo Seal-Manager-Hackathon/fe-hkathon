@@ -1,7 +1,7 @@
-import { Trash2, RotateCcw, ArrowLeftRight, Edit } from 'lucide-react'
+import { Trash2, RotateCcw, ArrowLeftRight, Edit, Hash, Calendar, Play, Flag, Users, CircleCheck, MoreHorizontal } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../../components/Badge'
-import { formatDate } from '../../../../utils/format'
+import { formatDateTime } from '../../../../utils/format'
 
 const dangerBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2]'
@@ -14,15 +14,16 @@ const swapBtnClass =
 
 export function roundColumns(onSwap, onDelete, onRestore) {
   return [
-    { key: 'name', header: 'Round Name', render: (row) => <span className="text-[14px] font-semibold text-[#1f2f3a]">{row.name}</span> },
-    { key: 'roundNo', header: '#', render: (row) => <span className="text-[13px] text-gray-500">Round {row.roundNo}</span> },
-    { key: 'startTime', header: 'Start', render: (row) => <p className="text-[13px] text-gray-500">{formatDate(row.startTime)}</p> },
-    { key: 'endTime', header: 'End', render: (row) => <p className="text-[13px] text-gray-500">{formatDate(row.endTime)}</p> },
-    { key: 'limitTeam', header: 'Max Teams', render: (row) => <span className="text-[13px] text-gray-500">{row.limitTeam ?? '—'}</span> },
-    { key: 'status', header: 'Status', render: (row) => row.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
+    { key: 'roundNo', header: '#', headerIcon: Hash, render: (row) => <span className="text-[13px] text-gray-500">Round {row.roundNo}</span> },
+    { key: 'name', header: 'Round Name', headerIcon: Calendar, render: (row) => <span className="text-[14px] font-semibold text-[#1f2f3a]">{row.name}</span> },
+    { key: 'startTime', header: 'Start', headerIcon: Play, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.startTime)}</p> },
+    { key: 'endTime', header: 'End', headerIcon: Flag, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.endTime)}</p> },
+    { key: 'limitTeam', header: 'Max Teams', headerIcon: Users, render: (row) => <span className="text-[13px] text-gray-500">{row.limitTeam ?? '—'}</span> },
+    { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => row.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
     {
       key: 'actions',
       header: 'Actions',
+      headerIcon: MoreHorizontal,
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => (

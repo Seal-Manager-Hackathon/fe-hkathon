@@ -1,7 +1,7 @@
 import { Trash2, RotateCcw, Pencil, Eye } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../../components/Badge'
-import { formatDate } from '../../../../utils/format'
+import { formatDateTime } from '../../../../utils/format'
 
 const editBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] transition-colors hover:bg-[#bbdefb]'
@@ -16,7 +16,7 @@ export function trackColumns(onDelete, onRestore) {
     { key: 'description', header: 'Description', render: (row) => <p className="text-[13px] text-gray-500 max-w-[300px] truncate">{row.description || '—'}</p> },
     { key: 'maxTeam', header: 'Max Teams', render: (row) => <span className="text-[13px] text-gray-500">{row.maxTeam ?? '—'}</span> },
     { key: 'status', header: 'Status', render: (row) => row.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
-    { key: 'createdAt', header: 'Created', render: (row) => <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p> },
+    { key: 'createdAt', header: 'Created', render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p> },
     {
       key: 'actions',
       header: 'Actions',

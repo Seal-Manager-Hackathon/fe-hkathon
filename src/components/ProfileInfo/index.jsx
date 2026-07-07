@@ -4,7 +4,7 @@ import Badge from '../Badge'
 import CardPanel from '../CardPanel'
 import InfoRow from '../InfoRow'
 import Avatar from '../Avatar'
-import { formatDate } from '../../utils/format'
+import { formatDateTime } from '../../utils/format'
 import { roleBadge } from '../../constants/adminOptions'
 
 export default function ProfileInfo({ user, editTo, children }) {
@@ -57,7 +57,7 @@ export default function ProfileInfo({ user, editTo, children }) {
             )}
           </InfoRow>
           <InfoRow label="Member Since" icon={Calendar}>
-            <p className="text-[14px] text-[#1f2f3a]">{formatDate(user?.createdAt)}</p>
+            <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user?.createdAt)}</p>
           </InfoRow>
         </div>
       </CardPanel>

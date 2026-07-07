@@ -7,7 +7,7 @@ import FilterBar from '../../../components/FilterBar'
 import Badge from '../../../components/Badge'
 import TableActions from '../../../components/TableActions'
 import { hackathonFilters } from './HackathonFilters'
-import { formatDate } from '../../../utils/format'
+import { formatDateTime } from '../../../utils/format'
 
 const PAGE_SIZE = 10
 
@@ -44,7 +44,7 @@ const columns = [
     header: 'Start',
     headerIcon: Play,
     render: (row) => (
-      <p className="text-[13px] text-gray-500">{formatDate(row.startTime)}</p>
+      <p className="text-[13px] text-gray-500">{formatDateTime(row.startTime)}</p>
     ),
   },
   {
@@ -52,7 +52,7 @@ const columns = [
     header: 'End',
     headerIcon: Flag,
     render: (row) => (
-      <p className="text-[13px] text-gray-500">{formatDate(row.endTime)}</p>
+      <p className="text-[13px] text-gray-500">{formatDateTime(row.endTime)}</p>
     ),
   },
   {
@@ -60,7 +60,7 @@ const columns = [
     header: 'Created',
     headerIcon: Calendar,
     render: (row) => (
-      <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>
+      <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
     ),
   },
   {

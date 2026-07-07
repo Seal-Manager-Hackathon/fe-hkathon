@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import Badge from '../../../components/Badge'
 import NotificationTarget from '../../../components/NotificationTarget'
-import { formatDate } from '../../../utils/format'
+import { formatDateTime } from '../../../utils/format'
 import { Eye, Edit, Trash2, RotateCcw, Bell, Target, Calendar, CircleCheck, MoreHorizontal } from 'lucide-react'
 
 const actionBtnClass =
@@ -48,7 +48,7 @@ export function notificationsColumns(targetDetails = {}, onDelete, onRestore) {
       key: 'createdAt',
       header: <span className="inline-flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />Created</span>,
       render: (row) => (
-        <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>
+        <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
       ),
     },
     {
