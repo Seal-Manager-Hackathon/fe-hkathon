@@ -108,7 +108,7 @@ export async function getUserDetail(userId) {
  * @returns {Promise<{ message: string }>}
  */
 export async function updateUser(userId, formData) {
-  const { data } = await api.put(`/admin/users/${userId}`, formData, {
+  const { data } = await api.patch(`/admin/users/${userId}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
   return data
@@ -174,7 +174,7 @@ export async function getTeamDetail(teamId) {
  * @returns {Promise<{ message: string }>}
  */
 export async function updateTeam(teamId, payload) {
-  const { data } = await api.put(`/admin/teams/${teamId}`, payload)
+  const { data } = await api.patch(`/admin/teams/${teamId}`, payload)
   return data
 }
 
