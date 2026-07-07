@@ -22,6 +22,7 @@ export default function FilterBar({ filters = [], values = {}, onChange, onReset
             <SearchInput
               key={f.key}
               label={f.label}
+              icon={f.icon}
               className={f.className || 'w-full sm:w-[260px]'}
               placeholder={f.placeholder}
               value={values[f.key] || ''}
@@ -35,6 +36,7 @@ export default function FilterBar({ filters = [], values = {}, onChange, onReset
             <SelectInput
               key={f.key}
               label={f.label}
+              icon={f.icon}
               options={f.options}
               value={values[f.key] || ''}
               onChange={(v) => onChange(f.key, v)}
@@ -47,6 +49,7 @@ export default function FilterBar({ filters = [], values = {}, onChange, onReset
             <DateInput
               key={f.key}
               label={f.label}
+              icon={f.icon}
               value={values[f.key] || ''}
               onChange={(e) => onChange(f.key, e.target.value)}
               className={f.className || 'w-full sm:w-[180px]'}

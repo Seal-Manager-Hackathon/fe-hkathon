@@ -1,11 +1,12 @@
 /**
  * Styled date input for filter bars. Matches SelectInput look & feel.
  */
-export default function DateInput({ label, value, onChange, className = '' }) {
+export default function DateInput({ label, icon: Icon, value, onChange, className = '' }) {
   return (
     <div className={`relative ${className}`}>
       {label && (
-        <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-gray-400">
+        <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+          {Icon && <Icon className="h-3 w-3" />}
           {label}
         </label>
       )}

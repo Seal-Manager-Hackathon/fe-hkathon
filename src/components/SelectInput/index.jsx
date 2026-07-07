@@ -2,6 +2,7 @@ import { ChevronDown } from 'lucide-react'
 
 export default function SelectInput({
   label,
+  icon: Icon,
   options = [],
   value,
   onChange,
@@ -11,7 +12,8 @@ export default function SelectInput({
   return (
     <div className={`relative ${className}`}>
       {label && (
-        <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-gray-400">
+        <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+          {Icon && <Icon className="h-3 w-3" />}
           {label}
         </label>
       )}

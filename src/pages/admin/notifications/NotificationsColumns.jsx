@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import Badge from '../../../components/Badge'
 import NotificationTarget from '../../../components/NotificationTarget'
 import { formatDate } from '../../../utils/format'
-import { Eye, Edit, Trash2, RotateCcw } from 'lucide-react'
+import { Eye, Edit, Trash2, RotateCcw, Bell, Target, Calendar } from 'lucide-react'
 
 const actionBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
@@ -22,7 +22,7 @@ export function notificationsColumns(targetDetails = {}, onDelete, onRestore) {
   return [
     {
       key: 'title',
-      header: 'Title',
+      header: <span className="inline-flex items-center gap-1.5"><Bell className="h-3.5 w-3.5" />Title</span>,
       render: (row) => (
         <Link
           to={`/admin/notifications/${row.id}`}
@@ -34,7 +34,7 @@ export function notificationsColumns(targetDetails = {}, onDelete, onRestore) {
     },
     {
       key: 'targetType',
-      header: 'Target',
+      header: <span className="inline-flex items-center gap-1.5"><Target className="h-3.5 w-3.5" />Target</span>,
       render: (row) => (
         <NotificationTarget
           targetType={row.targetType}
@@ -45,24 +45,8 @@ export function notificationsColumns(targetDetails = {}, onDelete, onRestore) {
       ),
     },
     {
-      key: 'status',
-      header: 'Status',
-      render: (row) => {
-        if (row.isDisable) {
-          return <Badge label="Disabled" className="bg-[#fce4ec] text-[#c62828]" />
-        }
-        if (row.status === 'Unread') {
-          return <Badge label="Unread" className="bg-[#e3f2fd] text-[#1565c0]" />
-        }
-        if (row.status === 'Read') {
-          return <Badge label="Read" className="bg-[#f5f5f5] text-[#757575]" />
-        }
-        return <Badge label={row.status} className="bg-[#f5f5f5] text-[#757575]" />
-      },
-    },
-    {
       key: 'createdAt',
-      header: 'Created',
+      header: <span className="inline-flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />Created</span>,
       render: (row) => (
         <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>
       ),

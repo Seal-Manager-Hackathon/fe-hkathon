@@ -134,9 +134,6 @@ export default function NotificationsManagement() {
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Notifications</h1>
-          <p className="mt-1 text-[14px] sm:text-[15px] text-gray-500">
-            Manage all {totalCount} notifications.
-          </p>
         </div>
         <Link
           to="/admin/notifications/create"
