@@ -121,3 +121,21 @@ export const NOTIFICATION_STATUS_OPTIONS_SELECT = [
   { value: 'Draft', label: 'Save as draft' },
 ]
 
+/* ─── Notification TargetType ─── */
+export const TARGET_TYPE_OPTIONS = [
+  { value: 'Personal', label: 'Personal' },
+  { value: 'Team', label: 'Team' },
+  { value: 'System', label: 'System' },
+]
+
+export const TARGET_TYPE_OPTIONS_ALL = [
+  { value: '', label: 'All Target Types' },
+  ...TARGET_TYPE_OPTIONS,
+]
+
+export const targetTypeBadge = {
+  Personal: 'bg-[#e3f2fd] text-[#1565c0]',
+  Team: 'bg-[#e8f5e9] text-[#2e7d32]',
+  System: 'bg-[#f3e5f5] text-[#7b1fa2]',
+}
+

@@ -109,4 +109,20 @@ export async function createUser(payload) {
   return data.data
 }
 
+/**
+ * Get paginated notifications list with search and filters.
+ * @param {Object} params
+ * @param {string} [params.Title] - Search contains (case-insensitive)
+ * @param {'Personal'|'Team'|'System'} [params.TargetType]
+ * @param {string} [params.FromDate] - ISO datetime
+ * @param {string} [params.ToDate] - ISO datetime
+ * @param {number} [params.PageIndex] - default 1
+ * @param {number} [params.PageSize] - default 10
+ * @returns {Promise<{ notifications: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getNotifications(params = {}) {
+  const { data } = await api.get('/admin/notifications', { params })
+  return data.data
+}
+
 
