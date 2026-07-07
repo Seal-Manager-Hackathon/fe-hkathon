@@ -53,8 +53,8 @@ export default function NotificationTarget({ targetType, userId, teamId, details
         to={`/admin/teams/${teamId}`}
         className="inline-flex items-center gap-2 rounded-md px-1 py-0.5 transition-colors hover:bg-[#e8f5e9]/60"
       >
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#e8f5e9]">
-          <Users className="h-3.5 w-3.5 text-[#2e7d32]" />
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#eceff1]">
+          <Users className="h-3.5 w-3.5 text-[#78909c]" />
         </div>
         <span className="text-[13px] font-medium text-[#064f5d] hover:underline">
           {name}
