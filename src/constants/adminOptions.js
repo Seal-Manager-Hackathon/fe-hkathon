@@ -71,6 +71,19 @@ export const YEAR_OPTIONS_2024_2028 = [
   { value: '2028', label: '2028' },
 ]
 
+/* ─── Season ─── */
+export const SEASON_OPTIONS = [
+  { value: 'Spring', label: 'Spring' },
+  { value: 'Summer', label: 'Summer' },
+  { value: 'Autumn', label: 'Autumn' },
+  { value: 'Winter', label: 'Winter' },
+]
+
+export const SEASON_OPTIONS_SELECT = [
+  { value: '', label: 'Select season...' },
+  ...SEASON_OPTIONS,
+]
+
 /* ─── Notification ─── */
 export const NOTIFICATION_TYPE_OPTIONS = [
   { value: 'Announcement', label: 'Announcement' },

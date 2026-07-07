@@ -240,3 +240,13 @@ export async function createNotification(payload) {
   return data
 }
 
+/**
+ * Create a new event (hackathon). Defaults: Status=Draft, IsDisable=true, NumberRound=0.
+ * @param {{ name: string, startTime: string, endTime: string, description?: string, registerLimitTime?: string, limitTeam?: number, minMember?: number, maxMember?: number, season?: string }} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function createEvent(payload) {
+  const { data } = await api.post('/admin/events', payload)
+  return data
+}
+

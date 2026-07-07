@@ -3,40 +3,57 @@ import { useNavigate } from 'react-router-dom'
 import SelectInput from '../../components/SelectInput'
 import FormField from '../../components/FormField'
 import EntityFormPage from '../../components/EntityFormPage'
-import {
-  HACKATHON_STATUS_OPTIONS,
-  VISIBILITY_OPTIONS,
-  YEAR_OPTIONS_2024_2028,
-} from '../../constants/adminOptions'
+import { createEvent } from '../../api/admin'
+import { SEASON_OPTIONS_SELECT } from '../../constants/adminOptions'
+import { toast } from '../../utils/toast'
+
+const INITIAL_FORM = {
+  name: '',
+  description: '',
+  season: '',
+  startTime: '',
+  endTime: '',
+  registerLimitTime: '',
+  limitTeam: '15',
+  minMember: '3',
+  maxMember: '5',
+}
 
 export default function HackathonCreate() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({
-    name: '',
-    season: '',
-    year: '2026',
-    date: '',
-    prize: '',
-    location: '',
-    description: '',
-    status: 'Draft',
-    visibility: 'Private',
-  })
+  const [form, setForm] = useState(INITIAL_FORM)
   const [saving, setSaving] = useState(false)
 
   function updateField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  const canSave = form.name && form.season && form.date && form.prize && form.location
+  const canSave = form.name.trim() && form.startTime && form.endTime
 
-  function handleSave() {
+  async function handleSave() {
     if (!canSave) return
     setSaving(true)
-    setTimeout(() => {
-      setSaving(false)
+    try {
+      const payload = {
+        name: form.name.trim(),
+        startTime: new Date(form.startTime).toISOString(),
+        endTime: new Date(form.endTime).toISOString(),
+      }
+      if (form.description.trim()) payload.description = form.description.trim()
+      if (form.season) payload.season = form.season
+      if (form.registerLimitTime) payload.registerLimitTime = new Date(form.registerLimitTime).toISOString()
+      if (form.limitTeam !== '') payload.limitTeam = Number(form.limitTeam)
+      if (form.minMember !== '') payload.minMember = Number(form.minMember)
+      if (form.maxMember !== '') payload.maxMember = Number(form.maxMember)
+
+      await createEvent(payload)
+      toast.success('Event created successfully')
       navigate('/admin/hackathons')
-    }, 600)
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to create event.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -44,48 +61,119 @@ export default function HackathonCreate() {
       backUrl="/admin/hackathons"
       backLabel="Back to Hackathons"
       title="Create Hackathon"
-      description="Fill in the details to create a new hackathon program."
+      description=""
       saveLabel="Create Hackathon"
+      savingLabel="Creating..."
       canSave={canSave}
       onSave={handleSave}
       saving={saving}
     >
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-5 lg:grid-cols-2">
         <div className="space-y-5">
-          <FormField label="Hackathon Name" required>
-            <input type="text" value={form.name} onChange={(e) => updateField('name', e.target.value)} placeholder="e.g. SEAL Hackathon 2027 - Spring" className="field-input" />
+          <FormField label="Hackathon Name">
+            <input
+              type="text"
+              value={form.name}
+              onChange={(e) => updateField('name', e.target.value)}
+              placeholder="e.g. SEAL Hackathon 2027 - Spring"
+              className="field-input"
+            />
           </FormField>
+
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="Season" required>
-              <input type="text" value={form.season} onChange={(e) => updateField('season', e.target.value)} placeholder="e.g. Spring 2027" className="field-input" />
+            <FormField label="Season">
+              <SelectInput
+                options={SEASON_OPTIONS_SELECT}
+                value={form.season}
+                onChange={(v) => updateField('season', v)}
+              />
             </FormField>
-            <FormField label="Year" required>
-              <SelectInput options={YEAR_OPTIONS_2024_2028} value={form.year} onChange={(v) => updateField('year', v)} />
+
+            <FormField label="Max Teams">
+              <input
+                type="number"
+                min="0"
+                value={form.limitTeam}
+                onChange={(e) => updateField('limitTeam', e.target.value)}
+                placeholder="e.g. 15"
+                className="field-input"
+              />
             </FormField>
           </div>
-          <FormField label="Date" required>
-            <input type="text" value={form.date} onChange={(e) => updateField('date', e.target.value)} placeholder="e.g. Mar 15, 2027" className="field-input" />
-          </FormField>
-          <FormField label="Prize Pool" required>
-            <input type="text" value={form.prize} onChange={(e) => updateField('prize', e.target.value)} placeholder="e.g. $50,000" className="field-input" />
-          </FormField>
-          <FormField label="Location" required>
-            <input type="text" value={form.location} onChange={(e) => updateField('location', e.target.value)} placeholder="e.g. Ho Chi Minh City" className="field-input" />
-          </FormField>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <FormField label="Min Members per Team">
+              <input
+                type="number"
+                min="0"
+                value={form.minMember}
+                onChange={(e) => updateField('minMember', e.target.value)}
+                placeholder="e.g. 3"
+                className="field-input"
+              />
+            </FormField>
+
+            <FormField label="Max Members per Team">
+              <input
+                type="number"
+                min="0"
+                value={form.maxMember}
+                onChange={(e) => updateField('maxMember', e.target.value)}
+                placeholder="e.g. 5"
+                className="field-input"
+              />
+            </FormField>
+          </div>
         </div>
 
         <div className="space-y-5">
-          <FormField label="Status">
-            <SelectInput options={HACKATHON_STATUS_OPTIONS} value={form.status} onChange={(v) => updateField('status', v)} />
+          <FormField label="Start Time">
+            <input
+              type="datetime-local"
+              value={form.startTime}
+              onChange={(e) => updateField('startTime', e.target.value)}
+              className="field-input"
+            />
           </FormField>
-          <FormField label="Visibility">
-            <SelectInput options={VISIBILITY_OPTIONS} value={form.visibility} onChange={(v) => updateField('visibility', v)} />
+
+          <FormField label="Registration Deadline">
+            <input
+              type="datetime-local"
+              value={form.registerLimitTime}
+              onChange={(e) => updateField('registerLimitTime', e.target.value)}
+              className="field-input"
+            />
           </FormField>
+
+          <FormField label="End Time">
+            <input
+              type="datetime-local"
+              value={form.endTime}
+              onChange={(e) => updateField('endTime', e.target.value)}
+              className="field-input"
+            />
+          </FormField>
+
+        </div>
+
+        <div className="lg:col-span-2">
           <FormField label="Description">
-            <textarea value={form.description} onChange={(e) => updateField('description', e.target.value)} placeholder="Describe the hackathon..." rows={7} className="field-input resize-none" />
+            <textarea
+              value={form.description}
+              onChange={(e) => updateField('description', e.target.value)}
+              placeholder="Describe the hackathon..."
+              rows={6}
+              className="field-input resize-y"
+            />
           </FormField>
         </div>
+      </div>
+
+      <div className="mt-5 rounded-lg border border-[#e3f2fd] bg-[#e8f4fd] px-4 py-3 text-[13px] text-[#1565c0]">
+        Event will be created as <strong>Draft</strong> and <strong>disabled</strong> by default.
+        You can publish it later from the event detail page.
       </div>
     </EntityFormPage>
   )
 }
+
