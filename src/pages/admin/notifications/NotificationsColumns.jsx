@@ -45,13 +45,6 @@ export function notificationsColumns(targetDetails = {}, onDelete, onRestore) {
       ),
     },
     {
-      key: 'createdAt',
-      header: <span className="inline-flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />Created</span>,
-      render: (row) => (
-        <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
-      ),
-    },
-    {
       key: 'status',
       header: 'Status',
       headerIcon: CircleCheck,
@@ -61,6 +54,13 @@ export function notificationsColumns(targetDetails = {}, onDelete, onRestore) {
         }
         return <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
       },
+    },
+    {
+      key: 'createdAt',
+      header: <span className="inline-flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />Created</span>,
+      render: (row) => (
+        <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
+      ),
     },
     {
       key: 'actions',

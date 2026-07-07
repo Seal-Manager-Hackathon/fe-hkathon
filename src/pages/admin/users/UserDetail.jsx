@@ -187,7 +187,7 @@ export default function UserDetail() {
             <InfoRow label="Verified At" icon={Clock}>
                 <p className="text-[14px] text-[#1f2f3a]">{user.verifyEmailAt ? formatDateTime(user.verifyEmailAt) : '—'}</p>
               </InfoRow>
-            <InfoRow label="Member Since" icon={Calendar}>
+            <InfoRow label="Created" icon={Calendar}>
               <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.createdAt)}</p>
             </InfoRow>
             <InfoRow label="Last Updated" icon={Clock}>

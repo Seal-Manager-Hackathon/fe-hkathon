@@ -22,6 +22,7 @@ export function roundColumns(onSwap, onDelete, onRestore) {
     { key: 'endTime', header: 'End', headerIcon: Flag, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.endTime)}</p> },
     { key: 'limitTeam', header: 'Max Teams', headerIcon: Users, render: (row) => <span className="text-[13px] text-gray-500">{row.limitTeam ?? '—'}</span> },
     { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => row.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
+    { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p> },
     {
       key: 'actions',
       header: 'Actions',

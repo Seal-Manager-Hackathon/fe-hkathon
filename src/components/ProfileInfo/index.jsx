@@ -56,7 +56,7 @@ export default function ProfileInfo({ user, editTo, children }) {
               <Badge label="Not verified" className="bg-[#fff3e0] text-[#e65100]" />
             )}
           </InfoRow>
-          <InfoRow label="Member Since" icon={Calendar}>
+          <InfoRow label="Created" icon={Calendar}>
             <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user?.createdAt)}</p>
           </InfoRow>
         </div>

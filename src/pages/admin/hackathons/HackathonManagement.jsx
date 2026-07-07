@@ -57,16 +57,16 @@ function hackathonColumns(onDelete, onRestore) {
       render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.endTime)}</p>,
     },
     {
-      key: 'createdAt',
-      header: 'Created',
-      headerIcon: Calendar,
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>,
-    },
-    {
       key: 'status',
       header: 'Status',
       headerIcon: CircleDot,
       render: (row) => <Badge label={row.status} className={statusBadge[row.status] || 'bg-[#f5f5f5] text-[#757575]'} />,
+    },
+    {
+      key: 'createdAt',
+      header: 'Created',
+      headerIcon: Calendar,
+      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>,
     },
     {
       key: 'actions',

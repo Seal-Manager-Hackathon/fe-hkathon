@@ -37,12 +37,6 @@ function teamColumns(onDelete, onRestore, onLock, onUnlock) {
       ),
     },
     {
-      key: 'createdAt',
-      header: 'Created',
-      headerIcon: Calendar,
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>,
-    },
-    {
       key: 'canEdit',
       header: 'Lock',
       headerIcon: Lock,
@@ -58,6 +52,12 @@ function teamColumns(onDelete, onRestore, onLock, onUnlock) {
         if (row.isDisable) return <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />
         return <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
       },
+    },
+    {
+      key: 'createdAt',
+      header: 'Created',
+      headerIcon: Calendar,
+      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>,
     },
     {
       key: 'actions',

@@ -60,14 +60,6 @@ export function usersColumns(onDelete, onRestore, onBan, onUnban) {
       ),
     },
     {
-      key: 'createdAt',
-      header: 'Joined',
-      headerIcon: Calendar,
-      render: (row) => (
-        <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
-      ),
-    },
-    {
       key: 'verified',
       header: 'Verified',
       headerIcon: UserCheck,
@@ -99,6 +91,14 @@ export function usersColumns(onDelete, onRestore, onBan, onUnban) {
         }
         return <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
       },
+    },
+    {
+      key: 'createdAt',
+      header: 'Created',
+      headerIcon: Calendar,
+      render: (row) => (
+        <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
+      ),
     },
     {
       key: 'actions',
