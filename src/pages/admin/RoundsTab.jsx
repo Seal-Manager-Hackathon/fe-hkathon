@@ -1,11 +1,20 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import BaseTable from '../../components/BaseTable'
+import FilterBar from '../../components/FilterBar'
 import { getRounds, getMaxRoundNo, deleteRound, restoreRound, swapRounds } from '../../api/admin'
 import { roundColumns } from './RoundColumns'
 import { toast } from '../../utils/toast'
 
 const PAGE_SIZE = 10
+
+const DEFAULT_VALUES = { keyword: '', roundNo: '', isDisable: '' }
+
+const roundFilters = [
+  { key: 'keyword', label: 'Round Name', type: 'search', placeholder: 'Search round name...' },
+  { key: 'roundNo', label: 'Round #', type: 'search', inputType: 'number', placeholder: 'Enter round number' },
+  { key: 'isDisable', label: 'Deleted', type: 'select', options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
+]
 
 export default function RoundsTab({ eventId }) {
   const [rounds, setRounds] = useState([])
@@ -17,11 +26,17 @@ export default function RoundsTab({ eventId }) {
   const [swapTarget, setSwapTarget] = useState(null)
   const [swapRoundNo, setSwapRoundNo] = useState('')
   const [swapping, setSwapping] = useState(false)
+  const [filters, setFilters] = useState(DEFAULT_VALUES)
+  const hasActive = Object.entries(filters).some(([, v]) => v !== '')
 
   const fetchRounds = useCallback(async () => {
     setLoading(true); setError('')
     try {
-      const result = await getRounds(eventId, { PageIndex: pageIndex, PageSize: PAGE_SIZE })
+      const params = { PageIndex: pageIndex, PageSize: PAGE_SIZE }
+      if (filters.keyword) params.Keyword = filters.keyword
+      if (filters.roundNo !== '') params.RoundNo = Number(filters.roundNo)
+      if (filters.isDisable !== '') params.IsDisable = filters.isDisable === 'true'
+      const result = await getRounds(eventId, params)
       setRounds(result.rounds || [])
       setTotalCount(result.totalCount || 0)
     } catch (err) {
@@ -30,7 +45,7 @@ export default function RoundsTab({ eventId }) {
     } finally {
       setLoading(false)
     }
-  }, [eventId, pageIndex])
+  }, [eventId, pageIndex, filters])
 
   useEffect(() => { fetchRounds() }, [fetchRounds])
 
@@ -39,6 +54,16 @@ export default function RoundsTab({ eventId }) {
   }, [eventId])
 
   const nextRound = maxRoundNo != null ? maxRoundNo + 1 : 1
+
+  function handleFilterChange(key, value) {
+    setFilters((prev) => ({ ...prev, [key]: value }))
+    setPageIndex(1)
+  }
+
+  function handleReset() {
+    setFilters(DEFAULT_VALUES)
+    setPageIndex(1)
+  }
 
   async function handleDelete(round) {
     try {
@@ -91,10 +116,13 @@ export default function RoundsTab({ eventId }) {
           + Create Round #{nextRound}
         </Link>
       </div>
-      {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
-      <BaseTable columns={roundColumns(openSwap, handleDelete, handleRestore)} data={rounds} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText="No rounds configured for this event." keyExtractor={(row) => row.id} minWidth="780px" />
 
-      {/* Swap Modal */}
+      <FilterBar filters={roundFilters} values={filters} onChange={handleFilterChange} onReset={handleReset} hasActive={hasActive} />
+
+      {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
+
+      <BaseTable columns={roundColumns(openSwap, handleDelete, handleRestore)} data={rounds} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No rounds match the current filters.' : 'No rounds configured for this event.'} keyExtractor={(row) => row.id} minWidth="780px" />
+
       {swapTarget && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
           <div className="absolute inset-0 bg-black/30" onClick={() => setSwapTarget(null)} />

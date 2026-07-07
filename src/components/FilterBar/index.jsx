@@ -21,10 +21,12 @@ export default function FilterBar({ filters = [], values = {}, onChange, onReset
           return (
             <SearchInput
               key={f.key}
-              className={f.className || 'w-full sm:w-[300px]'}
+              label={f.label}
+              className={f.className || 'w-full sm:w-[260px]'}
               placeholder={f.placeholder}
               value={values[f.key] || ''}
               onChange={(e) => onChange(f.key, e.target.value)}
+              type={f.inputType || 'text'}
             />
           )
         }
