@@ -308,3 +308,13 @@ export async function restoreUser(userId) {
   return data
 }
 
+/**
+ * Get the highest round number in an event (null if none).
+ * @param {string} eventId
+ * @returns {Promise<number|null>}
+ */
+export async function getMaxRoundNo(eventId) {
+  const { data } = await api.get(`/admin/events/${eventId}/rounds/max-round-no`)
+  return data.data
+}
+

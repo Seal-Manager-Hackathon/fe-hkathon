@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Calendar, Clock, Users, Hash, Flag } from 'lucide-react'
 import FormField from '../../components/FormField'
 import EntityFormPage from '../../components/EntityFormPage'
-import { createRound, getEventDetail } from '../../api/admin'
+import { createRound, getEventDetail, getMaxRoundNo } from '../../api/admin'
 import { toast } from '../../utils/toast'
 import { formatDateTime } from '../../utils/format'
 import Badge from '../../components/Badge'
@@ -29,6 +29,7 @@ export default function RoundCreate() {
   const [form, setForm] = useState(INITIAL_FORM)
   const [saving, setSaving] = useState(false)
   const [event, setEvent] = useState(null)
+  const [maxRoundNo, setMaxRoundNo] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -41,6 +42,12 @@ export default function RoundCreate() {
     fetch()
     return () => { cancelled = true }
   }, [eventId])
+
+  useEffect(() => {
+    getMaxRoundNo(eventId).then(setMaxRoundNo).catch(() => setMaxRoundNo(null))
+  }, [eventId])
+
+  const nextRound = maxRoundNo != null ? maxRoundNo + 1 : 1
 
   function updateField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -75,7 +82,7 @@ export default function RoundCreate() {
     <EntityFormPage
       backUrl={`/admin/hackathons/${eventId}?tab=Rounds`}
       backLabel="Back to Event"
-      title="Create Round"
+      title={`Create Round #${nextRound}`}
       description=""
       saveLabel="Create Round"
       savingLabel="Creating..."

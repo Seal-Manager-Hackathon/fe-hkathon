@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import BaseTable from '../../components/BaseTable'
-import { getRounds } from '../../api/admin'
+import { getRounds, getMaxRoundNo } from '../../api/admin'
 import { roundColumns } from './RoundColumns'
 
 const PAGE_SIZE = 10
@@ -12,6 +12,7 @@ export default function RoundsTab({ eventId }) {
   const [pageIndex, setPageIndex] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [maxRoundNo, setMaxRoundNo] = useState(null)
 
   const fetchRounds = useCallback(async () => {
     setLoading(true); setError('')
@@ -29,12 +30,18 @@ export default function RoundsTab({ eventId }) {
 
   useEffect(() => { fetchRounds() }, [fetchRounds])
 
+  useEffect(() => {
+    getMaxRoundNo(eventId).then(setMaxRoundNo).catch(() => setMaxRoundNo(null))
+  }, [eventId])
+
+  const nextRound = maxRoundNo != null ? maxRoundNo + 1 : 1
+
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-[15px] font-bold text-[#1f2f3a]">Rounds</h3>
         <Link to={`/admin/hackathons/${eventId}/rounds/create`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#064f5d] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#05404a]">
-          + Create Round
+          + Create Round #{nextRound}
         </Link>
       </div>
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
