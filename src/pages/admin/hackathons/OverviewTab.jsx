@@ -1,4 +1,4 @@
-import { Calendar, Clock, Users, Hash, Flag, UserPlus, FileText } from 'lucide-react'
+import { Calendar, Clock, Users, Hash, Flag, UserPlus, Edit, FileText } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../components/Badge'
 import RichTextViewer from '../../../components/RichTextViewer'
