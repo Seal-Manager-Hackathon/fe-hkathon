@@ -30,6 +30,7 @@ const MyNotifications = lazy(() => import('../pages/admin/MyNotifications'))
 const AdminProfile = lazy(() => import('../pages/admin/AdminProfile'))
 const AdminProfileEdit = lazy(() => import('../pages/admin/AdminProfileEdit'))
 const RoundCreate = lazy(() => import('../pages/admin/RoundCreate'))
+const RoundEdit = lazy(() => import('../pages/admin/RoundEdit'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 export const routes = [
@@ -66,6 +67,7 @@ export const routes = [
       { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><TeamEdit /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><TeamDetail /></Suspense> },
     ]},
+    { path: 'rounds/:roundId/edit', element: <Suspense fallback={<RouteFallback />}><RoundEdit /></Suspense> },
     { path: 'my-notifications', element: <Suspense fallback={<RouteFallback />}><MyNotifications /></Suspense> },
     { path: 'profile', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><AdminProfile /></Suspense> },

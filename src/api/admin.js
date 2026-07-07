@@ -350,3 +350,24 @@ export async function swapRounds(eventId, roundId, targetRoundNo) {
   return data
 }
 
+/**
+ * Get round detail by ID.
+ * @param {string} roundId
+ * @returns {Promise<object>}
+ */
+export async function getRoundDetail(roundId) {
+  const { data } = await api.get(`/admin/rounds/${roundId}`)
+  return data.data
+}
+
+/**
+ * Update round by ID. Only included fields are updated; omitted fields remain unchanged.
+ * @param {string} roundId
+ * @param {{ name?: string, description?: string, startTime?: string, endTime?: string, startSubmission?: string, endSubmission?: string, limitTeam?: number }} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateRound(roundId, payload) {
+  const { data } = await api.patch(`/admin/rounds/${roundId}`, payload)
+  return data
+}
+
