@@ -435,3 +435,15 @@ export async function unlockTeam(teamId) {
   return data
 }
 
+// ─── Event Delete/Restore ──────────────────────────────────────────────────
+
+export async function deleteEvent(eventId) {
+  const { data } = await api.post(`/admin/events/${eventId}/delete`)
+  return data
+}
+
+export async function restoreEvent(eventId) {
+  const { data } = await api.post(`/admin/events/${eventId}/restore`)
+  return data
+}
+
