@@ -67,10 +67,10 @@ export default function NotificationTarget({ targetType, userId, teamId, details
   // System → badge with icon, non-clickable
   return (
     <div className="inline-flex items-center gap-2 rounded-md px-1 py-0.5">
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f3e5f5]">
-        <Monitor className="h-3.5 w-3.5 text-[#7b1fa2]" />
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#eceff1]">
+        <Monitor className="h-3.5 w-3.5 text-[#78909c]" />
       </div>
-      <span className="text-[13px] font-medium text-[#7b1fa2]">System</span>
+      <span className="text-[13px] font-medium text-[#1f2f3a]">System Notification</span>
       <span className={`${pillCls} ${typeColors.System}`}>System</span>
     </div>
   )
