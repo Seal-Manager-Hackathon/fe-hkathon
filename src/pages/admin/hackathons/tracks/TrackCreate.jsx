@@ -66,11 +66,11 @@ export default function TrackCreate() {
           <FormField label="Track Title" required icon={FileText}>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. AI - Artificial Intelligence" maxLength={200} className="field-input" />
           </FormField>
-          <FormField label="Description" icon={FileText}>
-            <RichTextEditor value={description} onChange={setDescription} placeholder="Track description..." />
-          </FormField>
           <FormField label="Max Teams" icon={Users}>
             <input type="number" min="0" value={maxTeam} onChange={(e) => setMaxTeam(e.target.value)} placeholder="15" className="field-input" />
+          </FormField>
+          <FormField label="Description" icon={FileText}>
+            <RichTextEditor value={description} onChange={setDescription} placeholder="Track description..." />
           </FormField>
         </div>
         <EventInfoCard event={event} />

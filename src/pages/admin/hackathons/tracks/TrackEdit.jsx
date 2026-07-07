@@ -91,11 +91,11 @@ export default function TrackEdit() {
           <FormField label="Track Title" required icon={FileText}>
             <input type="text" value={form.title} onChange={(e) => updateField('title', e.target.value)} placeholder="e.g. AI - Artificial Intelligence" maxLength={200} className="field-input" />
           </FormField>
-          <FormField label="Description" icon={FileText}>
-            <RichTextEditor value={form.description} onChange={(v) => updateField('description', v)} placeholder="Track description..." />
-          </FormField>
           <FormField label="Max Teams" icon={Users}>
             <input type="number" min="0" value={form.maxTeam} onChange={(e) => updateField('maxTeam', e.target.value)} placeholder="15" className="field-input" />
+          </FormField>
+          <FormField label="Description" icon={FileText}>
+            <RichTextEditor value={form.description} onChange={(v) => updateField('description', v)} placeholder="Track description..." />
           </FormField>
         </div>
         <EventInfoCard event={event} />

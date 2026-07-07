@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Calendar, Clock, Users, Hash, Flag, FileText, Send, CheckCircle } from 'lucide-react'
 import FormField from '../../../../components/FormField'
 import EntityFormPage from '../../../../components/EntityFormPage'
+import RichTextEditor from '../../../../components/RichTextEditor'
 import { getRoundDetail, getEventDetail, updateRound } from '../../../../api/admin'
 import { toast } from '../../../../utils/toast'
 import { formatDateTime } from '../../../../utils/format'
@@ -23,7 +24,7 @@ function toLocalDatetime(iso) {
 export default function RoundEdit() {
   const { roundId } = useParams()
   const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', startTime: '', endTime: '', startSubmission: '', endSubmission: '', limitTeam: '' })
+  const [form, setForm] = useState({ name: '', description: '', startTime: '', endTime: '', startSubmission: '', endSubmission: '', limitTeam: '' })
   const [saving, setSaving] = useState(false)
   const [event, setEvent] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -36,6 +37,7 @@ export default function RoundEdit() {
         if (!cancelled) {
           setForm({
             name: round.name || '',
+            description: round.description || '',
             startTime: toLocalDatetime(round.startTime),
             endTime: toLocalDatetime(round.endTime),
             startSubmission: toLocalDatetime(round.startSubmission),
@@ -68,6 +70,7 @@ export default function RoundEdit() {
     try {
       const payload = {}
       if (form.name.trim()) payload.name = form.name.trim()
+      if (form.description !== undefined) payload.description = form.description || null
       if (form.startTime) payload.startTime = new Date(form.startTime).toISOString()
       if (form.endTime) payload.endTime = new Date(form.endTime).toISOString()
       if (form.startSubmission) payload.startSubmission = new Date(form.startSubmission).toISOString()
@@ -124,6 +127,9 @@ export default function RoundEdit() {
           </div>
           <FormField label="Max Teams" icon={Users}>
             <input type="number" min="1" value={form.limitTeam} onChange={(e) => updateField('limitTeam', e.target.value)} placeholder="e.g. 15" className="field-input" />
+          </FormField>
+          <FormField label="Description" icon={FileText}>
+            <RichTextEditor value={form.description} onChange={(v) => updateField('description', v)} placeholder="Round description..." />
           </FormField>
         </div>
         <EventInfoCard event={event} />
