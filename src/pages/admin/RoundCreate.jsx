@@ -63,7 +63,7 @@ export default function RoundCreate() {
 
       await createRound(eventId, payload)
       toast.success('Round created successfully')
-      navigate(`/admin/hackathons/${eventId}`)
+      navigate(`/admin/hackathons/${eventId}?tab=Rounds`)
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to create round.')
     } finally {
@@ -73,7 +73,7 @@ export default function RoundCreate() {
 
   return (
     <EntityFormPage
-      backUrl={`/admin/hackathons/${eventId}`}
+      backUrl={`/admin/hackathons/${eventId}?tab=Rounds`}
       backLabel="Back to Event"
       title="Create Round"
       description=""

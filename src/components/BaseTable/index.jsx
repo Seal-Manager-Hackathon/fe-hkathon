@@ -52,11 +52,11 @@ export default function BaseTable({
       <table className="w-full" style={{ minWidth }}>
         {/* Header */}
         <thead>
-          <tr className="border-b border-[#f0f0f0] bg-[#fafbfc]">
+          <tr className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d]">
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={`px-5 py-3.5 text-left text-[12px] font-bold uppercase tracking-wider text-gray-400 ${col.headerClassName || ''}`}
+                className={`px-5 py-3 text-left text-[12px] font-bold uppercase tracking-wider text-white ${col.headerClassName || ''}`}
               >
                 {col.header}
               </th>
