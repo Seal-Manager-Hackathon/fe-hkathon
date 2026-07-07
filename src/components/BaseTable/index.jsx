@@ -39,11 +39,26 @@ export default function BaseTable({
 
   if (!loading && data.length === 0) {
     return (
-      <div className={borderless ? '' : 'overflow-hidden rounded-xl border border-[#e8ecf0] bg-white'}>
-        <div className="flex flex-col items-center justify-center py-20">
-          <Inbox className="mb-4 h-12 w-12 text-gray-300" />
-          <p className="text-[15px] font-medium text-gray-400">{emptyText}</p>
-        </div>
+      <div className={`max-w-full overflow-x-auto ${borderless ? '' : 'rounded-xl border border-[#e8ecf0] bg-white'}`}>
+        <table className="w-full" style={{ minWidth }}>
+          <thead>
+            <tr className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d]">
+              {columns.map((col) => (
+                <th key={col.key} className={`px-5 py-3 text-left text-[12px] font-bold uppercase tracking-wider text-white ${col.headerClassName || ''}`}>
+                  {col.header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colSpan={columns.length} className="px-5 py-20 text-center">
+                <Inbox className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+                <p className="text-[15px] font-medium text-gray-400">{emptyText}</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     )
   }
