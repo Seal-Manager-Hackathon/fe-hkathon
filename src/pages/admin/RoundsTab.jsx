@@ -117,11 +117,15 @@ export default function RoundsTab({ eventId }) {
         </Link>
       </div>
 
-      <FilterBar filters={roundFilters} values={filters} onChange={handleFilterChange} onReset={handleReset} hasActive={hasActive} />
-
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
 
-      <BaseTable columns={roundColumns(openSwap, handleDelete, handleRestore)} data={rounds} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No rounds match the current filters.' : 'No rounds configured for this event.'} keyExtractor={(row) => row.id} minWidth="780px" />
+      <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
+        <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
+          <FilterBar filters={roundFilters} values={filters} onChange={handleFilterChange} onReset={handleReset} hasActive={hasActive} />
+        </div>
+
+        <BaseTable borderless columns={roundColumns(openSwap, handleDelete, handleRestore)} data={rounds} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No rounds match the current filters.' : 'No rounds configured for this event.'} keyExtractor={(row) => row.id} minWidth="780px" />
+      </div>
 
       {swapTarget && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">

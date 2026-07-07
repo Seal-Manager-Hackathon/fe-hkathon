@@ -23,6 +23,7 @@ export default function BaseTable({
   loading = false,
   emptyText = 'No data found.',
   keyExtractor,
+  borderless = false,
   minWidth = '600px',
   serverSide = false,
 }) {
@@ -38,7 +39,7 @@ export default function BaseTable({
 
   if (!loading && data.length === 0) {
     return (
-      <div className="overflow-hidden rounded-xl border border-[#e8ecf0] bg-white">
+      <div className={borderless ? '' : 'overflow-hidden rounded-xl border border-[#e8ecf0] bg-white'}>
         <div className="flex flex-col items-center justify-center py-20">
           <Inbox className="mb-4 h-12 w-12 text-gray-300" />
           <p className="text-[15px] font-medium text-gray-400">{emptyText}</p>
@@ -48,7 +49,7 @@ export default function BaseTable({
   }
 
   return (
-    <div className="max-w-full overflow-x-auto rounded-xl border border-[#e8ecf0] bg-white">
+    <div className={`max-w-full overflow-x-auto ${borderless ? '' : 'rounded-xl border border-[#e8ecf0] bg-white'}`}>
       <table className="w-full" style={{ minWidth }}>
         {/* Header */}
         <thead>
