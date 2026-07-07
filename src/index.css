@@ -111,4 +111,9 @@
   padding-right: 2.5rem;
 }
 
+.field-input.input-error {
+  border-color: #f87171;
+}
+
+
 

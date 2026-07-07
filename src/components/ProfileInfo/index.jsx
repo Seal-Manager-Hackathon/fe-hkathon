@@ -5,6 +5,7 @@ import CardPanel from '../CardPanel'
 import InfoRow from '../InfoRow'
 import Avatar from '../Avatar'
 import { formatDate } from '../../utils/format'
+import { roleBadge } from '../../constants/adminOptions'
 
 export default function ProfileInfo({ user, editTo, children }) {
   const displayName = user?.firstName
@@ -19,10 +20,7 @@ export default function ProfileInfo({ user, editTo, children }) {
           <div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{displayName}</h1>
-              <Badge
-                label={user?.role || 'Student'}
-                className={user?.role === 'Admin' ? 'bg-[#f3e5f5] text-[#7b1fa2]' : 'bg-[#e3f2fd] text-[#1565c0]'}
-              />
+              <Badge label={user?.role || 'Student'} className={roleBadge[user?.role] || 'bg-[#e3f2fd] text-[#1565c0]'} />
               {user?.status && (
                 <Badge label={user.status} className="bg-[#e8f5e9] text-[#2e7d32]" />
               )}
@@ -48,10 +46,7 @@ export default function ProfileInfo({ user, editTo, children }) {
           <InfoRow label="Email" icon={Mail}><p className="text-[14px] text-[#064f5d]">{user?.email || '—'}</p></InfoRow>
           <InfoRow label="College" icon={GraduationCap}><p className="text-[14px] text-[#1f2f3a]">{user?.college || '—'}</p></InfoRow>
           <InfoRow label="Role" icon={Shield}>
-            <Badge
-              label={user?.role || 'Student'}
-              className={user?.role === 'Admin' ? 'bg-[#f3e5f5] text-[#7b1fa2]' : 'bg-[#e3f2fd] text-[#1565c0]'}
-            />
+            <Badge label={user?.role || 'Student'} className={roleBadge[user?.role] || 'bg-[#e3f2fd] text-[#1565c0]'} />
           </InfoRow>
           <InfoRow label="Status" icon={BadgeCheck}><Badge label={user?.status || 'Active'} className="bg-[#e8f5e9] text-[#2e7d32]" /></InfoRow>
           <InfoRow label="Verified" icon={Shield}>

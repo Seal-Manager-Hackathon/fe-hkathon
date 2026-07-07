@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom'
 import SidebarNavItem from './SidebarNavItem'
 import { X } from 'lucide-react'
 import { useMemo } from 'react'
+import BrandLogo from '../BrandLogo'
 
 export default function Sidebar({ navItems, open, onClose }) {
   const { pathname } = useLocation()
@@ -15,29 +16,22 @@ export default function Sidebar({ navItems, open, onClose }) {
 
   return (
     <>
-      {/* Mobile overlay */}
       {open && (
-        <div
-          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={onClose} />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`fixed left-0 top-0 z-40 flex h-screen w-[248px] flex-col bg-[#064f5d] transition-transform duration-200 lg:translate-x-0 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex items-center gap-2.5 px-5 py-5">
-          <div className="flex h-9 items-center justify-center rounded-md bg-white px-2.5 text-sm font-extrabold text-[#064f5d]">
-            SEAL
+          <div className="flex-1">
+            <BrandLogo white />
           </div>
-          <span className="text-lg font-bold text-white">Hackathon</span>
-          {/* Close button — mobile only */}
           <button
             onClick={onClose}
-            className="ml-auto cursor-pointer rounded-lg p-1.5 text-white/70 hover:bg-white/10 hover:text-white lg:hidden"
+            className="cursor-pointer rounded-lg p-1.5 text-white/70 hover:bg-white/10 hover:text-white lg:hidden"
             aria-label="Close menu"
           >
             <X className="h-5 w-5" />
