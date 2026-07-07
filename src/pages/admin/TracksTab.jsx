@@ -77,7 +77,7 @@ export default function TracksTab({ eventId }) {
     <>
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-[15px] font-bold text-[#1f2f3a]">Tracks</h3>
-        <Link to={`/admin/events/${eventId}/tracks/create`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#064f5d] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#05404a]">
+        <Link to={`/admin/hackathons/${eventId}/tracks/create`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#064f5d] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#05404a]">
           + Create Track
         </Link>
       </div>
@@ -88,7 +88,7 @@ export default function TracksTab({ eventId }) {
         <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
           <FilterBar filters={trackFilters} values={filters} onChange={handleFilterChange} onReset={handleReset} hasActive={hasActive} />
         </div>
-        <BaseTable borderless columns={trackColumns(eventId, handleDelete, handleRestore)} data={tracks} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No tracks match the current filters.' : 'No tracks configured for this event.'} keyExtractor={(row) => row.id} minWidth="700px" />
+        <BaseTable borderless columns={trackColumns(handleDelete, handleRestore)} data={tracks} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No tracks match the current filters.' : 'No tracks configured for this event.'} keyExtractor={(row) => row.id} minWidth="700px" />
       </div>
     </>
   )

@@ -1,16 +1,13 @@
-import { Trash2, RotateCcw, Edit } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Trash2, RotateCcw } from 'lucide-react'
 import Badge from '../../components/Badge'
 import { formatDate } from '../../utils/format'
 
-const actionBtnClass =
-  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
 const dangerBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2]'
 const restoreBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9]'
 
-export function trackColumns(eventId, onDelete, onRestore) {
+export function trackColumns(onDelete, onRestore) {
   return [
     { key: 'title', header: 'Track Title', render: (row) => <span className="text-[14px] font-semibold text-[#1f2f3a]">{row.title}</span> },
     { key: 'description', header: 'Description', render: (row) => <p className="text-[13px] text-gray-500 max-w-[300px] truncate">{row.description || '—'}</p> },
@@ -29,14 +26,9 @@ export function trackColumns(eventId, onDelete, onRestore) {
               <RotateCcw className="h-3.5 w-3.5" /> Restore
             </button>
           ) : (
-            <>
-              <Link to={`/admin/events/${eventId}/tracks/${row.id}/edit`} className={actionBtnClass}>
-                <Edit className="h-3.5 w-3.5" /> Edit
-              </Link>
-              <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
-                <Trash2 className="h-3.5 w-3.5" /> Delete
-              </button>
-            </>
+            <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
+              <Trash2 className="h-3.5 w-3.5" /> Delete
+            </button>
           )}
         </div>
       ),
