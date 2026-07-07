@@ -4,6 +4,8 @@ import { CheckCircle, XCircle, Loader2, ArrowLeft } from 'lucide-react'
 import { verifyEmail } from '../../api/auth'
 import { parseError } from '../../utils/error'
 
+import BrandLogo from '../../components/BrandLogo'
+
 export default function VerifyEmailPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -48,6 +50,7 @@ export default function VerifyEmailPage() {
 
     verify()
     return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
   }, [token, navigate])
 
   return (
@@ -61,13 +64,7 @@ export default function VerifyEmailPage() {
       </Link>
 
       <div className="w-full max-w-[440px] rounded-2xl bg-white p-10 shadow-sm text-center">
-        {/* Logo */}
-        <div className="mb-8 flex items-center justify-center gap-2.5">
-          <div className="flex h-10 items-center justify-center rounded-md bg-[#064f5d] px-3 text-base font-extrabold text-white">
-            SEAL
-          </div>
-          <span className="text-xl font-bold text-[#064f5d]">Hackathon</span>
-        </div>
+        <BrandLogo className="mb-8" />
 
         {/* Loading */}
         {status === 'loading' && (

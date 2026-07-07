@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import SelectInput from '../../components/SelectInput'
 import FormField from '../../components/FormField'
-import BackButton from '../../components/BackButton'
-import FormActions from '../../components/FormActions'
+import EntityFormPage from '../../components/EntityFormPage'
 
 const ROLE_OPTIONS = [
   { value: '', label: 'Select role...' },
@@ -45,14 +44,16 @@ export default function UsersCreate() {
   }
 
   return (
-    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <BackButton fallback="/admin/users" label="Back to Users" />
-
-      <div className="mb-8">
-        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Create User</h1>
-        <p className="mt-1 text-[15px] text-gray-500">Add a new user to the system.</p>
-      </div>
-
+    <EntityFormPage
+      backUrl="/admin/users"
+      backLabel="Back to Users"
+      title="Create User"
+      description="Add a new user to the system."
+      saveLabel="Create User"
+      canSave={canSave}
+      onSave={handleSave}
+      saving={saving}
+    >
       <div className="w-full max-w-[560px] space-y-5">
         <FormField label="Full Name" required>
           <input type="text" value={form.name} onChange={(e) => updateField('name', e.target.value)} placeholder="e.g. John Doe" className="field-input" />
@@ -69,8 +70,6 @@ export default function UsersCreate() {
           </FormField>
         </div>
       </div>
-
-      <FormActions onSave={handleSave} saving={saving} canSave={canSave} saveLabel="Create User" />
-    </div>
+    </EntityFormPage>
   )
 }

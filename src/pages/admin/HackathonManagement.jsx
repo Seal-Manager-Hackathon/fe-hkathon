@@ -1,14 +1,9 @@
-import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, RotateCcw } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { allHackathons, statusBadge, visibilityBadge } from '../../data/mockAdminData'
-import BaseTable from '../../components/BaseTable'
+import DataManagementPage from '../../components/DataManagementPage'
 import Badge from '../../components/Badge'
-import SearchInput from '../../components/SearchInput'
-import SelectInput from '../../components/SelectInput'
 import TableActions from '../../components/TableActions'
-
-const PAGE_SIZE = 10
 
 const YEAR_OPTIONS = [
   { value: '', label: 'All Years' },
@@ -32,168 +27,89 @@ const VISIBILITY_OPTIONS = [
   { value: 'Unlisted', label: 'Unlisted' },
 ]
 
+const columns = [
+  {
+    key: 'name',
+    header: 'Name',
+    render: (row) => (
+      <Link
+        to={`/admin/hackathons/${row.id}`}
+        className="text-[14px] font-semibold text-[#064f5d] hover:underline"
+      >
+        {row.name}
+      </Link>
+    ),
+  },
+  { key: 'year', header: 'Year' },
+  {
+    key: 'season',
+    header: 'Season',
+    render: (row) => (
+      <p className="text-[13px] text-gray-500">{row.season}</p>
+    ),
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    render: (row) => (
+      <Badge label={row.status} className={statusBadge[row.status]} />
+    ),
+  },
+  {
+    key: 'visibility',
+    header: 'Visibility',
+    render: (row) => (
+      <Badge label={row.visibility} className={visibilityBadge[row.visibility]} />
+    ),
+  },
+  {
+    key: 'prize',
+    header: 'Prize Pool',
+    render: (row) => (
+      <p className="text-[14px] font-bold text-[#064f5d]">{row.prize}</p>
+    ),
+  },
+  { key: 'teams', header: 'Teams' },
+  {
+    key: 'date',
+    header: 'Date',
+    render: (row) => (
+      <p className="text-[13px] text-gray-500">{row.date}</p>
+    ),
+  },
+  {
+    key: 'actions',
+    header: 'Actions',
+    headerClassName: 'text-right',
+    className: 'text-right',
+    render: (row) => (
+      <TableActions viewTo={`/admin/hackathons/${row.id}`} editTo={`/admin/hackathons/${row.id}/edit`} />
+    ),
+  },
+]
+
 export default function HackathonManagement() {
-  const [search, setSearch] = useState('')
-  const [yearFilter, setYearFilter] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
-  const [visibilityFilter, setVisibilityFilter] = useState('')
-  const [page, setPage] = useState(1)
-
-  const hasActiveFilters = search || yearFilter || statusFilter || visibilityFilter
-
-  function handleReset() {
-    setSearch('')
-    setYearFilter('')
-    setStatusFilter('')
-    setVisibilityFilter('')
-    setPage(1)
-  }
-
-  const filtered = useMemo(() => {
-    return allHackathons.filter((h) => {
-      if (search && !h.name.toLowerCase().includes(search.toLowerCase())) return false
-      if (yearFilter && h.year !== yearFilter) return false
-      if (statusFilter && h.status !== statusFilter) return false
-      if (visibilityFilter && h.visibility !== visibilityFilter) return false
-      return true
-    })
-  }, [search, yearFilter, statusFilter, visibilityFilter])
-
-  const columns = [
-    {
-      key: 'name',
-      header: 'Name',
-      render: (row) => (
-        <Link
-          to={`/admin/hackathons/${row.id}`}
-          className="text-[14px] font-semibold text-[#064f5d] hover:underline"
-        >
-          {row.name}
-        </Link>
-      ),
-    },
-    { key: 'year', header: 'Year' },
-    {
-      key: 'season',
-      header: 'Season',
-      render: (row) => (
-        <p className="text-[13px] text-gray-500">{row.season}</p>
-      ),
-    },
-    {
-      key: 'status',
-      header: 'Status',
-      render: (row) => (
-        <Badge label={row.status} className={statusBadge[row.status]} />
-      ),
-    },
-    {
-      key: 'visibility',
-      header: 'Visibility',
-      render: (row) => (
-        <Badge label={row.visibility} className={visibilityBadge[row.visibility]} />
-      ),
-    },
-    {
-      key: 'prize',
-      header: 'Prize Pool',
-      render: (row) => (
-        <p className="text-[14px] font-bold text-[#064f5d]">{row.prize}</p>
-      ),
-    },
-    { key: 'teams', header: 'Teams' },
-    {
-      key: 'date',
-      header: 'Date',
-      render: (row) => (
-        <p className="text-[13px] text-gray-500">{row.date}</p>
-      ),
-    },
-    {
-      key: 'actions',
-      header: 'Actions',
-      headerClassName: 'text-right',
-      className: 'text-right',
-      render: (row) => (
-        <TableActions viewTo={`/admin/hackathons/${row.id}`} editTo={`/admin/hackathons/${row.id}/edit`} />
-      ),
-    },
-  ]
-
   return (
-    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Hackathons</h1>
-          <p className="mt-1 text-[14px] sm:text-[15px] text-gray-500">
-            Manage all {filtered.length} hackathon programs.
-          </p>
-        </div>
-        <Link
-          to="/admin/hackathons/create"
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto"
-        >
-          <Plus className="h-4 w-4" />
-          Create Hackathon
-        </Link>
-      </div>
-
-      {/* Filter Row */}
-      <div className="mb-6 flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-4">
-        <SearchInput
-          className="w-full sm:w-[300px]"
-          placeholder="Search hackathons..."
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-        />
-        <SelectInput
-          label="Year"
-          options={YEAR_OPTIONS}
-          value={yearFilter}
-          onChange={(v) => { setYearFilter(v); setPage(1) }}
-          className="w-full sm:w-[160px]"
-        />
-        <SelectInput
-          label="Status"
-          options={STATUS_OPTIONS}
-          value={statusFilter}
-          onChange={(v) => { setStatusFilter(v); setPage(1) }}
-          className="w-full sm:w-[180px]"
-        />
-        <SelectInput
-          label="Visibility"
-          options={VISIBILITY_OPTIONS}
-          value={visibilityFilter}
-          onChange={(v) => { setVisibilityFilter(v); setPage(1) }}
-          className="w-full sm:w-[160px]"
-        />
-        <button
-          onClick={handleReset}
-          disabled={!hasActiveFilters}
-          className="mb-[1px] inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d8e0e6] bg-white px-4 py-2.5 text-[14px] font-medium text-[#1f2f3a] transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <RotateCcw className="h-4 w-4" />
-          Reset
-        </button>
-      </div>
-
-      {/* Table */}
-      <BaseTable
-        columns={columns}
-        data={filtered}
-        page={page}
-        pageSize={PAGE_SIZE}
-        total={filtered.length}
-        onPageChange={setPage}
-        loading={false}
-        emptyText={
-          hasActiveFilters
-            ? 'No hackathons match the current filters.'
-            : 'No hackathons yet. Create your first one!'
-        }
-        keyExtractor={(row) => row.id}
-        minWidth="1000px"
-      />
-    </div>
+    <DataManagementPage
+      entityName="Hackathons"
+      entityRouteBase="hackathons"
+      createLabel="Create Hackathon"
+      createIcon={Plus}
+      countLabel="hackathon programs."
+      searchPlaceholder="Search hackathons..."
+      searchKeys={['name']}
+      filters={[
+        { key: 'year', label: 'Year', options: YEAR_OPTIONS, className: 'w-full sm:w-[160px]' },
+        { key: 'status', label: 'Status', options: STATUS_OPTIONS, className: 'w-full sm:w-[180px]' },
+        { key: 'visibility', label: 'Visibility', options: VISIBILITY_OPTIONS, className: 'w-full sm:w-[160px]' },
+      ]}
+      data={allHackathons}
+      columns={columns}
+      pageSize={10}
+      emptyText="No hackathons match the current filters."
+      emptyFallbackText="No hackathons yet. Create your first one!"
+      keyExtractor={(row) => row.id}
+      minWidth="1000px"
+    />
   )
 }

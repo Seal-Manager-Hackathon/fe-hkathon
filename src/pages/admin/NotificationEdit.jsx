@@ -2,9 +2,8 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import SelectInput from '../../components/SelectInput'
 import FormField from '../../components/FormField'
-import BackButton from '../../components/BackButton'
 import NotFoundState from '../../components/NotFoundState'
-import FormActions from '../../components/FormActions'
+import EntityFormPage from '../../components/EntityFormPage'
 import { allNotifications } from '../../data/mockAdminData'
 
 const TYPE_OPTIONS = [
@@ -58,14 +57,16 @@ export default function NotificationEdit() {
   }
 
   return (
-    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <BackButton fallback={`/admin/notifications/${id}`} label="Back to Notification" />
-
-      <div className="mb-8">
-        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Edit Notification</h1>
-        <p className="mt-1 text-[15px] text-gray-500">Update notification content and settings.</p>
-      </div>
-
+    <EntityFormPage
+      backUrl={`/admin/notifications/${id}`}
+      backLabel="Back to Notification"
+      title="Edit Notification"
+      description="Update notification content and settings."
+      saveLabel="Save Changes"
+      canSave={canSave}
+      onSave={handleSave}
+      saving={saving}
+    >
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="space-y-5">
           <FormField label="Title" required>
@@ -88,8 +89,6 @@ export default function NotificationEdit() {
           </FormField>
         </div>
       </div>
-
-      <FormActions onSave={handleSave} saving={saving} canSave={canSave} />
-    </div>
+    </EntityFormPage>
   )
 }

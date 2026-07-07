@@ -8,6 +8,8 @@ import PasswordInput from '../../components/PasswordInput'
 
 const UNVERIFIED_MSG = 'Unverified Account Please Login To Verify'
 
+import BrandLogo from '../../components/BrandLogo'
+
 export default function RegisterPage() {
   const navigate = useNavigate()
   const [firstName, setFirstName] = useState('')
@@ -65,12 +67,7 @@ export default function RegisterPage() {
         Back to Home
       </Link>
       <div className="w-full max-w-[400px] rounded-2xl bg-white p-8 shadow-sm">
-        <div className="mb-8 flex items-center justify-center gap-2.5">
-          <div className="flex h-10 items-center justify-center rounded-md bg-[#064f5d] px-3 text-base font-extrabold text-white">
-            SEAL
-          </div>
-          <span className="text-xl font-bold text-[#064f5d]">Hackathon</span>
-        </div>
+        <BrandLogo className="mb-8" />
 
         <h2 className="mb-1 text-center text-[24px] font-bold text-[#1f2f3a]">Create an account</h2>
         <p className="mb-6 text-center text-[14px] text-gray-500">Join SEAL Hackathon and start building</p>

@@ -2,10 +2,8 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import SelectInput from '../../components/SelectInput'
 import FormField from '../../components/FormField'
-import BackButton from '../../components/BackButton'
 import NotFoundState from '../../components/NotFoundState'
-import FormActions from '../../components/FormActions'
-import AlertMessage from '../../components/AlertMessage'
+import EntityFormPage from '../../components/EntityFormPage'
 import { allUsers } from '../../data/mockAdminData'
 
 const ROLE_OPTIONS = [
@@ -53,14 +51,16 @@ export default function UserEdit() {
   }
 
   return (
-    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <BackButton fallback={`/admin/users/${id}`} label="Back to User" />
-
-      <div className="mb-8">
-        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Edit User</h1>
-        <p className="mt-1 text-[15px] text-gray-500">Update user account information and permissions.</p>
-      </div>
-
+    <EntityFormPage
+      backUrl={`/admin/users/${id}`}
+      backLabel="Back to User"
+      title="Edit User"
+      description="Update user account information and permissions."
+      saveLabel="Save Changes"
+      canSave={canSave}
+      onSave={handleSave}
+      saving={saving}
+    >
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="space-y-5">
           <FormField label="Full Name" required>
@@ -85,8 +85,6 @@ export default function UserEdit() {
           )}
         </div>
       </div>
-
-      <FormActions onSave={handleSave} saving={saving} canSave={canSave} />
-    </div>
+    </EntityFormPage>
   )
 }

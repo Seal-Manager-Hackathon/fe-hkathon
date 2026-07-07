@@ -6,6 +6,8 @@ import { getErrorMessage } from '../../utils/error'
 import { toast } from '../../utils/toast'
 import PasswordInput from '../../components/PasswordInput'
 
+import BrandLogo from '../../components/BrandLogo'
+
 export default function LoginPage() {
   const navigate = useNavigate()
   const { login } = useAuth()
@@ -39,12 +41,7 @@ export default function LoginPage() {
         Back to Home
       </Link>
       <div className="w-full max-w-[400px] rounded-2xl bg-white p-8 shadow-sm">
-        <div className="mb-8 flex items-center justify-center gap-2.5">
-          <div className="flex h-10 items-center justify-center rounded-md bg-[#064f5d] px-3 text-base font-extrabold text-white">
-            SEAL
-          </div>
-          <span className="text-xl font-bold text-[#064f5d]">Hackathon</span>
-        </div>
+        <BrandLogo className="mb-8" />
 
         <h2 className="mb-1 text-center text-[24px] font-bold text-[#1f2f3a]">Welcome back</h2>
         <p className="mb-6 text-center text-[14px] text-gray-500">Sign in to your account to continue</p>

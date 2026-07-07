@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Send } from 'lucide-react'
 import SelectInput from '../../components/SelectInput'
 import FormField from '../../components/FormField'
-import BackButton from '../../components/BackButton'
-import FormActions from '../../components/FormActions'
+import EntityFormPage from '../../components/EntityFormPage'
 
 const TYPE_OPTIONS = [
   { value: '', label: 'Select type...' },
@@ -53,14 +52,18 @@ export default function NotificationsCreate() {
   }
 
   return (
-    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <BackButton fallback="/admin/notifications" label="Back to Notifications" />
-
-      <div className="mb-8">
-        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Create Notification</h1>
-        <p className="mt-1 text-[15px] text-gray-500">Send a new notification to users across the platform.</p>
-      </div>
-
+    <EntityFormPage
+      backUrl="/admin/notifications"
+      backLabel="Back to Notifications"
+      title="Create Notification"
+      description="Send a new notification to users across the platform."
+      saveLabel={form.status === 'Sent' ? 'Send Notification' : 'Save Notification'}
+      savingLabel="Sending..."
+      canSave={canSave}
+      onSave={handleSave}
+      saving={saving}
+      saveIcon={Send}
+    >
       <div className="w-full max-w-[640px] space-y-5">
         <FormField label="Title" required>
           <input type="text" value={form.title} onChange={(e) => updateField('title', e.target.value)} placeholder="e.g. New hackathon registration is open" className="field-input" />
@@ -85,15 +88,6 @@ export default function NotificationsCreate() {
           </div>
         )}
       </div>
-
-      <FormActions
-        onSave={handleSave}
-        saving={saving}
-        canSave={canSave}
-        saveLabel={form.status === 'Sent' ? 'Send Notification' : 'Save Notification'}
-        savingLabel="Sending..."
-        saveIcon={Send}
-      />
-    </div>
+    </EntityFormPage>
   )
 }
