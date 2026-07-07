@@ -12,6 +12,20 @@ import Avatar from '../Avatar'
  * @param {Object}  [props.details] - resolved map { userId: userObj, 'team:teamId': teamObj }
  */
 export default function NotificationTarget({ targetType, userId, teamId, details = {} }) {
+  const typeLabel = {
+    Personal: 'User',
+    Team: 'Team',
+    System: 'System',
+  }[targetType] || targetType
+
+  const typeColors = {
+    User: 'bg-[#e3f2fd] text-[#0d47a1]',
+    Team: 'bg-[#e8f5e9] text-[#1b5e20]',
+    System: 'bg-[#f3e5f5] text-[#4a148c]',
+  }
+
+  const pillCls = 'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold'
+
   // Personal → user avatar + name, link to user detail
   if (targetType === 'Personal' && userId) {
     const user = details[userId]
@@ -25,6 +39,7 @@ export default function NotificationTarget({ targetType, userId, teamId, details
         <span className="text-[13px] font-medium text-[#064f5d] hover:underline">
           {name}
         </span>
+        <span className={`${pillCls} ${typeColors.User}`}>User</span>
       </Link>
     )
   }
@@ -44,6 +59,7 @@ export default function NotificationTarget({ targetType, userId, teamId, details
         <span className="text-[13px] font-medium text-[#064f5d] hover:underline">
           {name}
         </span>
+        <span className={`${pillCls} ${typeColors.Team}`}>Team</span>
       </Link>
     )
   }
@@ -55,6 +71,7 @@ export default function NotificationTarget({ targetType, userId, teamId, details
         <Monitor className="h-3.5 w-3.5 text-[#7b1fa2]" />
       </div>
       <span className="text-[13px] font-medium text-[#7b1fa2]">System</span>
+      <span className={`${pillCls} ${typeColors.System}`}>System</span>
     </div>
   )
 }
