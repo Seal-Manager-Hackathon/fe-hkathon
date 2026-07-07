@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import Badge from '../../../components/Badge'
 import NotificationTarget from '../../../components/NotificationTarget'
 import { formatDate } from '../../../utils/format'
-import { Eye, Edit, Trash2, RotateCcw, Bell, Target, Calendar } from 'lucide-react'
+import { Eye, Edit, Trash2, RotateCcw, Bell, Target, Calendar, CircleCheck } from 'lucide-react'
 
 const actionBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
@@ -50,6 +50,17 @@ export function notificationsColumns(targetDetails = {}, onDelete, onRestore) {
       render: (row) => (
         <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>
       ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      headerIcon: CircleCheck,
+      render: (row) => {
+        if (row.isDisable) {
+          return <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />
+        }
+        return <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
+      },
     },
     {
       key: 'actions',

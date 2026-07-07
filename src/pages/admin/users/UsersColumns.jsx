@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Eye, Edit, Trash2, RotateCcw, User, Shield, UserCheck, GraduationCap, Calendar, MoreHorizontal } from 'lucide-react'
+import { Eye, Edit, Trash2, RotateCcw, User, Shield, UserCheck, GraduationCap, Calendar, MoreHorizontal, CircleCheck } from 'lucide-react'
 import Badge from '../../../components/Badge'
 import Avatar from '../../../components/Avatar'
 import { roleBadge } from '../../../constants/adminOptions'
@@ -73,6 +73,17 @@ export function usersColumns(onDelete, onRestore) {
       render: (row) => (
         <p className="text-[13px] text-gray-500">{formatDate(row.createdAt)}</p>
       ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      headerIcon: CircleCheck,
+      render: (row) => {
+        if (row.isDisable) {
+          return <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />
+        }
+        return <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
+      },
     },
     {
       key: 'actions',
