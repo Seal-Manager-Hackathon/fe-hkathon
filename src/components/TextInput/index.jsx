@@ -15,7 +15,6 @@ export default function TextInput({ label, value, onChange, placeholder, require
     <div>
       <label className="mb-1.5 block text-[13px] font-semibold text-[#1f2f3a]">
         {label}
-        {required && <span className="ml-1 text-red-400">*</span>}
       </label>
       <div className="relative">
         {Icon && <Icon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 pointer-events-none text-gray-400" />}
