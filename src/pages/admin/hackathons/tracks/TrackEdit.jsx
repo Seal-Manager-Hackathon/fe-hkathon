@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Calendar, Clock, Users, Hash, Flag } from 'lucide-react'
+import { Calendar, Clock, Users, Hash, Flag, FileText } from 'lucide-react'
 import FormField from '../../../../components/FormField'
 import EntityFormPage from '../../../../components/EntityFormPage'
 import { getTrackDetail, getEventDetail, updateTrack } from '../../../../api/admin'
@@ -87,13 +87,13 @@ export default function TrackEdit() {
     >
       <div className="grid grid-cols-1 gap-x-10 gap-y-5 lg:grid-cols-[1fr_320px]">
         <div className="space-y-5">
-          <FormField label="Track Title" required>
+          <FormField label="Track Title" required icon={FileText}>
             <input type="text" value={form.title} onChange={(e) => updateField('title', e.target.value)} placeholder="e.g. AI - Artificial Intelligence" maxLength={200} className="field-input" />
           </FormField>
-          <FormField label="Description">
+          <FormField label="Description" icon={FileText}>
             <textarea rows={4} value={form.description} onChange={(e) => updateField('description', e.target.value)} placeholder="Track description..." className="field-input" />
           </FormField>
-          <FormField label="Max Teams">
+          <FormField label="Max Teams" icon={Users}>
             <input type="number" min="0" value={form.maxTeam} onChange={(e) => updateField('maxTeam', e.target.value)} placeholder="15" className="field-input" />
           </FormField>
         </div>
