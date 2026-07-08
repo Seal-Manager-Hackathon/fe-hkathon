@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Tag, Hash, CircleCheck, Edit, Target, AlertCircle, Pencil, X, Save, AlignLeft, Trash2, RotateCcw, Eye } from 'lucide-react'
-import { getCriteriaTemplateDetail, getRoundDetail, updateCriteriaItem, deleteCriteriaItem, restoreCriteriaItem, getCriteriaItemDetail } from '../../../../api/admin'
+import { ArrowLeft, FileText, Calendar, Clock, Tag, Hash, CircleCheck, Edit, Target, AlertCircle, Pencil, X, Save, AlignLeft, Trash2, RotateCcw, Eye, Plus } from 'lucide-react'
+import { getCriteriaTemplateDetail, getRoundDetail, updateCriteriaItem, deleteCriteriaItem, restoreCriteriaItem, getCriteriaItemDetail, createCriteriaItem } from '../../../../api/admin'
 import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
 import RichTextEditor from '../../../../components/RichTextEditor'
@@ -23,6 +23,9 @@ export default function CriteriaTemplateDetail() {
   const [itemSaving, setItemSaving] = useState(false)
   const [viewingItem, setViewingItem] = useState(null)
   const [viewLoading, setViewLoading] = useState(false)
+  const [creatingItem, setCreatingItem] = useState(false)
+  const [newItem, setNewItem] = useState({ name: '', description: '', score: 0 })
+  const [itemCreating, setItemCreating] = useState(false)
 
   useEffect(() => {
     if (tabParam === 'items' || tabParam === 'description') {
@@ -131,6 +134,33 @@ export default function CriteriaTemplateDetail() {
     }
   }
 
+  async function handleCreateItem() {
+    if (!newItem.name.trim()) return
+    setItemCreating(true)
+    try {
+      await createCriteriaItem(templateId, {
+        name: newItem.name.trim(),
+        description: newItem.description || undefined,
+        score: newItem.score,
+      })
+      toast.success('Criteria item created!')
+      // Reload template to get fresh items list with proper IDs
+      const data = await getCriteriaTemplateDetail(templateId)
+      setTemplate(data)
+      setCreatingItem(false)
+      setNewItem({ name: '', description: '', score: 0 })
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to create item.')
+    } finally {
+      setItemCreating(false)
+    }
+  }
+
+  function openCreateItem() {
+    setNewItem({ name: '', description: '', score: 0 })
+    setCreatingItem(true)
+  }
+
   if (loading) {
     return (
       <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -224,6 +254,15 @@ export default function CriteriaTemplateDetail() {
 
         {activeTab === 'items' && (
           <div className="px-5 py-5">
+            <div className="mb-4 flex items-center justify-between">
+              <span className="text-[13px] font-semibold text-slate-400">{items.length} item{items.length !== 1 ? 's' : ''}</span>
+              <button
+                onClick={openCreateItem}
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#064f5d] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#05404a]"
+              >
+                <Plus className="h-3.5 w-3.5" />Add Item
+              </button>
+            </div>
             {items.length === 0 ? (
               <div className="flex flex-col items-center py-10 text-center">
                 <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100"><Tag className="h-7 w-7 text-slate-300" /></div>
@@ -323,6 +362,40 @@ export default function CriteriaTemplateDetail() {
             </div>
             <div className="mt-6 flex justify-end">
               <button onClick={() => setViewingItem(null)} className="cursor-pointer rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-[#05404a]">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {creatingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setCreatingItem(false)} />
+          <div className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="mb-5 flex items-center justify-between">
+              <h3 className="text-[16px] font-bold text-slate-800">Create Criteria Item</h3>
+              <button onClick={() => setCreatingItem(false)} className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"><X className="h-5 w-5" /></button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1.5 block text-[13px] font-semibold text-slate-500">Name *</label>
+                <input type="text" value={newItem.name} onChange={(e) => setNewItem((p) => ({ ...p, name: e.target.value }))} className="field-input" placeholder="e.g. Creativity" maxLength={200} />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-[13px] font-semibold text-slate-500">Description</label>
+                <div className="max-h-[220px] overflow-y-auto rounded-lg border border-[#d8e0e6]">
+                  <RichTextEditor value={newItem.description} onChange={(v) => setNewItem((p) => ({ ...p, description: v }))} placeholder="Item description..." />
+                </div>
+              </div>
+              <div>
+                <label className="mb-2 flex items-center gap-1.5 text-[13px] font-semibold text-slate-500">Score (0-100)</label>
+                <ScoreSlider value={newItem.score} onChange={(v) => setNewItem((p) => ({ ...p, score: v }))} />
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <button onClick={() => setCreatingItem(false)} className="cursor-pointer rounded-lg border border-slate-200 px-4 py-2.5 text-[14px] font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
+              <button onClick={handleCreateItem} disabled={itemCreating || !newItem.name.trim()} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2.5 text-[14px] font-semibold text-white hover:bg-[#05404a] disabled:cursor-not-allowed disabled:opacity-50">
+                <Plus className="h-4 w-4" />{itemCreating ? 'Creating...' : 'Create'}
+              </button>
             </div>
           </div>
         </div>
