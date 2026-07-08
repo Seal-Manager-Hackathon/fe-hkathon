@@ -18,6 +18,7 @@ export default function CriteriaTemplateDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState(tabParam === 'items' ? 'items' : 'description')
+  const [itemsCounts, setItemsCounts] = useState({ active: 0, total: 0 })
 
   useEffect(() => {
     if (tabParam === 'items' || tabParam === 'description') setActiveTab(tabParam)
@@ -106,8 +107,8 @@ export default function CriteriaTemplateDetail() {
 
       {/* Stats */}
       <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatCard icon={<CircleCheck className="h-5 w-5" />} label="Total Score" value={totalScore} color="text-emerald-500" bg="bg-emerald-50" border="border-emerald-100" />
-        <StatCard icon={<Eye className="h-5 w-5" />} label="Criteria Items" value={templateItems.length} color="text-violet-500" bg="bg-violet-50" border="border-violet-100" />
+        <StatCard icon={<CircleCheck className="h-5 w-5" />} label="Total Score" value={itemsCounts.total > 0 ? `${itemsCounts.activeScore ?? totalScore}/${itemsCounts.maxScore}` : totalScore} color="text-emerald-500" bg="bg-emerald-50" border="border-emerald-100" />
+        <StatCard icon={<Eye className="h-5 w-5" />} label="Criteria Items" value={itemsCounts.total > 0 ? `${itemsCounts.active}/${itemsCounts.total}` : templateItems.length} color="text-violet-500" bg="bg-violet-50" border="border-violet-100" />
         <StatCard icon={<Calendar className="h-5 w-5" />} label="Created" value={formatDate(template.createdAt)} color="text-blue-500" bg="bg-blue-50" border="border-blue-100" mono />
         <StatCard icon={<Clock className="h-5 w-5" />} label="Updated" value={formatDate(template.updatedAt)} color="text-orange-500" bg="bg-orange-50" border="border-orange-100" mono />
       </div>
@@ -116,13 +117,13 @@ export default function CriteriaTemplateDetail() {
       <div className="rounded-2xl border border-[#e8ecf0] bg-white shadow-sm overflow-hidden">
         <div className="flex border-b border-slate-100 bg-[#fafbfc]">
           <TabBtn active={activeTab === 'description'} onClick={() => setTab('description')} icon={FileText} label="Description" />
-          <TabBtn active={activeTab === 'items'} onClick={() => setTab('items')} icon={Eye} label={`Items (${templateItems.length})`} />
+          <TabBtn active={activeTab === 'items'} onClick={() => setTab('items')} icon={Eye} label={`Items (${itemsCounts.total > 0 ? `${itemsCounts.active}/${itemsCounts.total}` : templateItems.length})`} />
         </div>
         <div className="p-5 sm:p-6">
           {activeTab === 'description' ? (
             <RichTextViewer content={template.description || 'No description provided.'} />
           ) : (
-            <CriteriaItemsPanel templateId={templateId} />
+            <CriteriaItemsPanel templateId={templateId} onCountsChange={setItemsCounts} />
           )}
         </div>
       </div>

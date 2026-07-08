@@ -28,7 +28,7 @@ function ItemModal({ title, onClose, children }) {
   )
 }
 
-export default function CriteriaItemsPanel({ templateId }) {
+export default function CriteriaItemsPanel({ templateId, onCountsChange }) {
   const [items, setItems] = useState([])
   const [itemsTotal, setItemsTotal] = useState(0)
   const [itemsLoading, setItemsLoading] = useState(false)
@@ -60,7 +60,39 @@ export default function CriteriaItemsPanel({ templateId }) {
     } finally { setItemsLoading(false) }
   }, [templateId, itemPage, itemKeyword, itemIsDisable])
 
+  // Fetch both active & total counts (unfiltered) to report to parent
+  const fetchCounts = useCallback(async () => {
+    if (!templateId || !onCountsChange) return
+    try {
+      const [activeRes, totalRes] = await Promise.all([
+        getCriteriaItems(templateId, { pageIndex: 1, pageSize: 1, isDisable: false }),
+        getCriteriaItems(templateId, { pageIndex: 1, pageSize: 1 }),
+      ])
+      const totalCount = totalRes.totalCount || 0
+      const activeCount = activeRes.totalCount || 0
+
+      // Fetch all items (including disabled) to compute scores
+      let maxScore = 0
+      let activeScore = 0
+      if (totalCount > 0) {
+        const allRes = await getCriteriaItems(templateId, { pageIndex: 1, pageSize: totalCount })
+        const allItems = allRes.items || []
+        for (const item of allItems) {
+          const s = Number(item.score) || 0
+          maxScore += s
+          if (!item.isDisable) activeScore += s
+        }
+      }
+      onCountsChange({ active: activeCount, total: totalCount, maxScore, activeScore })
+    } catch { /* ignore */ }
+  }, [templateId, onCountsChange])
+
   useEffect(() => { fetchItems() }, [fetchItems])
+
+  // Refresh counts after any mutation (create/delete/restore etc)
+  useEffect(() => {
+    fetchCounts()
+  }, [fetchCounts])
 
   async function handleSaveItem() {
     if (!editingItem) return
@@ -73,6 +105,7 @@ export default function CriteriaItemsPanel({ templateId }) {
       toast.success('Criteria item updated!')
       setEditingItem(null)
       fetchItems()
+      fetchCounts()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to update item.')
     } finally { setItemSaving(false) }
@@ -81,14 +114,14 @@ export default function CriteriaItemsPanel({ templateId }) {
   async function handleDeleteItem(item) {
     const ok = await confirm('Delete Item', `Delete "${item.name}"?`)
     if (!ok) return
-    try { await deleteCriteriaItem(item.id); toast.success('Deleted'); fetchItems() }
+    try { await deleteCriteriaItem(item.id); toast.success('Deleted'); fetchItems(); fetchCounts() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed.') }
   }
 
   async function handleRestoreItem(item) {
     const ok = await confirm('Restore Item', `Restore "${item.name}"?`)
     if (!ok) return
-    try { await restoreCriteriaItem(item.id); toast.success('Restored'); fetchItems() }
+    try { await restoreCriteriaItem(item.id); toast.success('Restored'); fetchItems(); fetchCounts() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed.') }
   }
 
@@ -108,6 +141,7 @@ export default function CriteriaItemsPanel({ templateId }) {
       setCreatingItem(false)
       setNewItem({ name: '', description: '', score: 20 })
       fetchItems()
+      fetchCounts()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to create item.')
     } finally { setItemCreating(false) }
