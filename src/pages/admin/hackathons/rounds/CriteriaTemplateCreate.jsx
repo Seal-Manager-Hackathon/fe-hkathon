@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Plus, Trash2, FileText, GripVertical, Tag, AlignLeft, Hash } from 'lucide-react'
 import FormField from '../../../../components/FormField'
 import EntityFormPage from '../../../../components/EntityFormPage'
+import RichTextEditor from '../../../../components/RichTextEditor'
 import { createCriteriaTemplate, getRoundDetail } from '../../../../api/admin'
 import { toast } from '../../../../utils/toast'
 
@@ -159,7 +160,7 @@ export default function CriteriaTemplateCreate() {
         </FormField>
 
         <FormField label="Description" icon={FileText}>
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Template description..." rows={3} className="field-input" />
+          <RichTextEditor value={description} onChange={setDescription} placeholder="Template description..." />
         </FormField>
 
         <div>
@@ -190,7 +191,7 @@ export default function CriteriaTemplateCreate() {
                   </div>
                   <div>
                     <label className="mb-1 flex items-center gap-1.5 text-[12px] font-semibold text-gray-500"><AlignLeft className="h-3 w-3" />Description (optional)</label>
-                    <input type="text" value={item.description} onChange={(e) => updateItem(i, 'description', e.target.value)} placeholder="Item description..." className="field-input" />
+                    <RichTextEditor value={item.description} onChange={(v) => updateItem(i, 'description', v)} placeholder="Item description..." />
                   </div>
                   <div>
                     <label className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold text-gray-500"><Hash className="h-3 w-3" />Score</label>

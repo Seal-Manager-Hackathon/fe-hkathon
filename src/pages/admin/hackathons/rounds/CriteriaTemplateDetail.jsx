@@ -4,6 +4,7 @@ import { ArrowLeft, FileText, Calendar, Clock, Tag, Hash, AlignLeft, CircleCheck
 import { getCriteriaTemplateDetail, getRoundDetail } from '../../../../api/admin'
 import Badge from '../../../../components/Badge'
 import BaseTable from '../../../../components/BaseTable'
+import RichTextViewer from '../../../../components/RichTextViewer'
 import { formatDateTime } from '../../../../utils/format'
 
 export default function CriteriaTemplateDetail() {
@@ -42,7 +43,7 @@ export default function CriteriaTemplateDetail() {
 
   const itemColumns = [
     { key: 'name', header: 'Name', headerIcon: Tag, render: (row) => <span className="text-[14px] font-semibold text-[#064f5d]">{row.name}</span> },
-    { key: 'description', header: 'Description', headerIcon: AlignLeft, render: (row) => <span className="text-[13px] text-gray-500">{row.description || '—'}</span> },
+    { key: 'description', header: 'Description', headerIcon: AlignLeft, render: (row) => row.description ? <RichTextViewer content={row.description} /> : <span className="text-[13px] text-gray-400">—</span> },
     { key: 'score', header: 'Score', headerIcon: Hash, render: (row) => <span className="text-[14px] font-bold text-[#2e7d32]">{row.score}</span> },
   ]
 
@@ -84,7 +85,7 @@ export default function CriteriaTemplateDetail() {
             </h3>
           </div>
           <div className="px-5 py-5">
-            <p className="text-[14px] text-gray-600 leading-relaxed whitespace-pre-wrap">{template.description}</p>
+            <RichTextViewer content={template.description} />
           </div>
         </div>
       )}
