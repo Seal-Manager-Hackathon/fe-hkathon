@@ -810,4 +810,14 @@ export async function getEventSubmissions(eventId, params = {}) {
   return data.data
 }
 
+/**
+ * Get single submission detail with scores.
+ * GET /admin/submissions/{submissionId}
+ * @param {string} submissionId
+ */
+export async function getSubmissionDetail(submissionId) {
+  const { data } = await api.get(`/admin/submissions/${submissionId}`)
+  return data.data
+}
+
 

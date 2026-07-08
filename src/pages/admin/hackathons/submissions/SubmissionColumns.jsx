@@ -83,8 +83,8 @@ export function useSubmissionColumns(eventId) {
         headerClassName: 'text-right', className: 'text-right',
         render: (row) => (
           <div className="flex items-center justify-end gap-2">
-            <Link to={`/admin/hackathons/${eventId}/register-teams/${row.registerTeamId}`} className={S.viewBtn}>
-              <Eye className="h-3.5 w-3.5" />Detail
+            <Link to={`/admin/submissions/${row.lastSubmission?.id || row.id}`} className={S.viewBtn}>
+              <Eye className="h-3.5 w-3.5" />View
             </Link>
           </div>
         ),
