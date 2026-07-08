@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Tag, Hash, CircleCheck, Edit, Target, AlertCircle, Pencil, X, Save, AlignLeft, Trash2, RotateCcw, Eye, Plus, Search, Ban, MoreHorizontal } from 'lucide-react'
-import { getCriteriaTemplateDetail, getRoundDetail, updateCriteriaItem, deleteCriteriaItem, restoreCriteriaItem, getCriteriaItemDetail, createCriteriaItem } from '../../../../api/admin'
+import { ArrowLeft, FileText, Calendar, Clock, Tag, Hash, CircleCheck, Edit, Target, AlertCircle, Pencil, X, Save, AlignLeft, Trash2, RotateCcw, Eye, Plus, Search, MoreHorizontal } from 'lucide-react'
+import { getCriteriaTemplateDetail, getRoundDetail, updateCriteriaItem, deleteCriteriaItem, restoreCriteriaItem, getCriteriaItemDetail, createCriteriaItem, getCriteriaItems } from '../../../../api/admin'
 import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
 import RichTextEditor from '../../../../components/RichTextEditor'
@@ -28,7 +28,11 @@ export default function CriteriaTemplateDetail() {
   const [creatingItem, setCreatingItem] = useState(false)
   const [newItem, setNewItem] = useState({ name: '', description: '', score: 0 })
   const [itemCreating, setItemCreating] = useState(false)
-  // Items filter (client-side)
+
+  // Items: server-side pagination, search, filter
+  const [items, setItems] = useState([])
+  const [itemsTotal, setItemsTotal] = useState(0)
+  const [itemsLoading, setItemsLoading] = useState(false)
   const [itemKeyword, setItemKeyword] = useState('')
   const [itemIsDisable, setItemIsDisable] = useState('')
   const [itemPage, setItemPage] = useState(1)
@@ -68,6 +72,27 @@ export default function CriteriaTemplateDetail() {
     return () => { cancelled = true }
   }, [roundId, templateId])
 
+  // Fetch items server-side
+  const fetchItems = useCallback(async () => {
+    setItemsLoading(true)
+    try {
+      const params = { pageIndex: itemPage, pageSize: ITEMS_PER_PAGE }
+      if (itemKeyword) params.keyword = itemKeyword
+      if (itemIsDisable !== '') params.isDisable = itemIsDisable === 'true'
+      const result = await getCriteriaItems(templateId, params)
+      setItems(result.items || [])
+      setItemsTotal(result.totalCount || 0)
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to load items.')
+    } finally {
+      setItemsLoading(false)
+    }
+  }, [templateId, itemPage, itemKeyword, itemIsDisable])
+
+  useEffect(() => {
+    if (activeTab === 'items' && template) fetchItems()
+  }, [fetchItems, activeTab, template])
+
   async function handleSaveItem() {
     if (!editingItem) return
     setItemSaving(true)
@@ -79,14 +104,9 @@ export default function CriteriaTemplateDetail() {
         isDisable: editingItem.isDisable,
       }
       await updateCriteriaItem(editingItem.id, payload)
-      setTemplate((prev) => ({
-        ...prev,
-        items: prev.items.map((it) =>
-          it.id === editingItem.id ? { ...it, ...payload } : it
-        ),
-      }))
       toast.success('Criteria item updated!')
       setEditingItem(null)
+      fetchItems()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to update item.')
     } finally {
@@ -100,12 +120,7 @@ export default function CriteriaTemplateDetail() {
     try {
       await deleteCriteriaItem(item.id)
       toast.success('Criteria item deleted')
-      setTemplate((prev) => ({
-        ...prev,
-        items: prev.items.map((it) =>
-          it.id === item.id ? { ...it, isDisable: true } : it
-        ),
-      }))
+      fetchItems()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to delete item.')
     }
@@ -117,12 +132,7 @@ export default function CriteriaTemplateDetail() {
     try {
       await restoreCriteriaItem(item.id)
       toast.success('Criteria item restored')
-      setTemplate((prev) => ({
-        ...prev,
-        items: prev.items.map((it) =>
-          it.id === item.id ? { ...it, isDisable: false } : it
-        ),
-      }))
+      fetchItems()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to restore item.')
     }
@@ -150,10 +160,9 @@ export default function CriteriaTemplateDetail() {
         score: newItem.score,
       })
       toast.success('Criteria item created!')
-      const data = await getCriteriaTemplateDetail(templateId)
-      setTemplate(data)
       setCreatingItem(false)
       setNewItem({ name: '', description: '', score: 0 })
+      fetchItems()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to create item.')
     } finally {
@@ -196,24 +205,14 @@ export default function CriteriaTemplateDetail() {
     )
   }
 
-  const items = template.items || []
-  const totalScore = items.reduce((sum, i) => sum + (Number(i.score) || 0), 0)
+  const templateItems = template.items || []
+  const totalScore = templateItems.reduce((sum, i) => sum + (Number(i.score) || 0), 0)
   const isDeleted = template.isDisable
-
-  // Client-side filter items
-  let filteredItems = items
-  if (itemKeyword) {
-    const kw = itemKeyword.toLowerCase()
-    filteredItems = filteredItems.filter((it) => it.name.toLowerCase().includes(kw))
-  }
-  if (itemIsDisable !== '') {
-    filteredItems = filteredItems.filter((it) => it.isDisable === (itemIsDisable === 'true'))
-  }
 
   const itemHasActive = itemKeyword !== '' || itemIsDisable !== ''
   const itemFilters = [
     { type: 'search', key: 'keyword', label: 'Name', icon: Search, placeholder: 'Search item name...' },
-    { type: 'select', key: 'isDisable', label: 'Disabled', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
+    { type: 'select', key: 'isDisable', label: 'Deleted', icon: Trash2, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
   ]
 
   function handleItemFilterChange(key, value) {
@@ -240,7 +239,7 @@ export default function CriteriaTemplateDetail() {
       render: (row) => (
         <div className="flex items-center gap-2">
           <span className="text-[14px] font-semibold text-[#064f5d]">{row.name}</span>
-          <Badge label={row.isDisable ? 'Disabled' : 'Active'} className={row.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
+          <Badge label={row.isDisable ? 'Deleted' : 'Active'} className={row.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
         </div>
       ),
     },
@@ -330,7 +329,7 @@ export default function CriteriaTemplateDetail() {
 
       <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatCard icon={<CircleCheck className="h-5 w-5" />} label="Total Score" value={totalScore} color="text-emerald-500" bg="bg-emerald-50" border="border-emerald-100" />
-        <StatCard icon={<Hash className="h-5 w-5" />} label="Criteria Items" value={items.length} color="text-violet-500" bg="bg-violet-50" border="border-violet-100" />
+        <StatCard icon={<Hash className="h-5 w-5" />} label="Criteria Items" value={templateItems.length} color="text-violet-500" bg="bg-violet-50" border="border-violet-100" />
         <StatCard icon={<Calendar className="h-5 w-5" />} label="Created" value={formatDateTime(template.createdAt)} color="text-amber-500" bg="bg-amber-50" border="border-amber-100" mono />
         <StatCard icon={<Clock className="h-5 w-5" />} label="Last Updated" value={formatDateTime(template.updatedAt)} color="text-blue-500" bg="bg-blue-50" border="border-blue-100" mono />
       </div>
@@ -373,13 +372,13 @@ export default function CriteriaTemplateDetail() {
             </div>
             <BaseTable
               columns={itemColumns}
-              data={filteredItems}
+              data={items}
               page={itemPage}
               pageSize={ITEMS_PER_PAGE}
-              total={filteredItems.length}
+              total={itemsTotal}
               onPageChange={setItemPage}
-              loading={false}
-              serverSide={false}
+              loading={itemsLoading}
+              serverSide
               emptyText={itemHasActive ? 'No criteria items match the current filters.' : 'No criteria items yet.'}
               keyExtractor={(row) => row.id}
               minWidth="600px"
@@ -433,7 +432,7 @@ export default function CriteriaTemplateDetail() {
                 </div>
                 <div>
                   <h3 className="text-[16px] font-bold text-slate-800">{viewingItem.name}</h3>
-                  <Badge label={viewingItem.isDisable ? 'Disabled' : 'Active'} className={viewingItem.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
+                  <Badge label={viewingItem.isDisable ? 'Deleted' : 'Active'} className={viewingItem.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
                 </div>
               </div>
               <button onClick={() => setViewingItem(null)} className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"><X className="h-5 w-5" /></button>

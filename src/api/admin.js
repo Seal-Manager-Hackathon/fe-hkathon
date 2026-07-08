@@ -464,6 +464,11 @@ export async function createCriteriaItem(templateId, payload) {
   return data
 }
 
+export async function getCriteriaItems(templateId, params = {}) {
+  const { data } = await api.get(`/admin/criteria-templates/${templateId}/criteria-items`, { params })
+  return data.data
+}
+
 // ─── Tracks ─────────────────────────────────────────────────────────────────────
 
 export async function getTracks(eventId, params = {}) {
