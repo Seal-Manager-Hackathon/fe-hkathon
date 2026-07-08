@@ -70,7 +70,7 @@ export default function TrackSelectModal({ open, onClose, eventId, selectedTrack
       defaultFilterValues={DEFAULT_FILTER_VALUES}
       buildQuery={buildQuery}
       getName={(row) => row.title}
-      allLabel="All Tracks"
+      allLabel="All"
     />
   )
 }

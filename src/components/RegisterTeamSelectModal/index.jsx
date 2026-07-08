@@ -62,7 +62,7 @@ export default function RegisterTeamSelectModal({ open, onClose, eventId, select
       defaultFilterValues={DEFAULT_FILTER_VALUES}
       buildQuery={buildQuery}
       getName={(row) => row.teamName}
-      allLabel="All Register Teams"
+      allLabel="All"
     />
   )
 }

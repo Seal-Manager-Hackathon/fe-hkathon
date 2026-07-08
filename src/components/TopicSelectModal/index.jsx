@@ -63,7 +63,7 @@ export default function TopicSelectModal({ open, onClose, trackId, selectedTopic
       defaultFilterValues={DEFAULT_FILTER_VALUES}
       buildQuery={buildQuery}
       getName={(row) => row.title}
-      allLabel="All Topics"
+      allLabel="All"
     />
   )
 }

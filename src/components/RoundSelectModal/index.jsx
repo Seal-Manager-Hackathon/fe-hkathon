@@ -80,7 +80,7 @@ export default function RoundSelectModal({ open, onClose, eventId, selectedRound
       defaultFilterValues={DEFAULT_FILTER_VALUES}
       buildQuery={buildQuery}
       getName={(row) => row.name}
-      allLabel="All Rounds"
+      allLabel="All"
     />
   )
 }
