@@ -6,6 +6,7 @@ import Badge from '../../../../components/Badge'
 import { getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import { toast, confirm } from '../../../../utils/toast'
+import PromptReason from '../../../../components/PromptReason'
 import { Search, Ban, Users, Eye, FileText, Trophy, Calendar, MoreHorizontal, CircleCheck, CheckCircle, XCircle } from 'lucide-react'
 
 const PAGE_SIZE = 10
@@ -32,7 +33,6 @@ export default function RegisterTeamsTab({ eventId }) {
   const hasActive = Object.entries(filters).some(([, v]) => v !== '')
 
   const [rejectTarget, setRejectTarget] = useState(null)
-  const [rejectionReason, setRejectionReason] = useState('')
   const [rejecting, setRejecting] = useState(false)
 
   const fetchTeams = useCallback(async () => {
@@ -64,15 +64,16 @@ export default function RegisterTeamsTab({ eventId }) {
     catch (err) { toast.error(err?.response?.data?.message || 'Failed to approve') }
   }
 
-  function openReject(row) { setRejectTarget(row); setRejectionReason('') }
+  function openReject(row) { setRejectTarget(row) }
 
-  async function handleRejectSubmit() {
-    if (!rejectTarget) return
+  async function handleRejectSubmit(reason) {
+    const target = rejectTarget
+    setRejectTarget(null)
+    if (!target) return
     setRejecting(true)
     try {
-      await rejectRegisterTeam(rejectTarget.id, { rejectionReason: rejectionReason || undefined })
+      await rejectRegisterTeam(target.id, { rejectionReason: reason || undefined })
       toast.success('Registration rejected')
-      setRejectTarget(null)
       fetchTeams()
     } catch (err) { toast.error(err?.response?.data?.message || 'Failed to reject') }
     finally { setRejecting(false) }
@@ -103,23 +104,17 @@ export default function RegisterTeamsTab({ eventId }) {
       </div>
       <BaseTable borderless columns={columns} data={teams} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No results match.' : 'No registered teams for this event.'} keyExtractor={(row) => row.id} minWidth="950px" />
     </div>
-    {rejectTarget && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-black/40" onClick={() => !rejecting && setRejectTarget(null)} />
-        <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-          <h3 className="text-[16px] font-bold text-slate-800">Reject Registration</h3>
-          <p className="mt-1 text-[13px] text-gray-500">Reject <strong>{rejectTarget.teamName}</strong> from this event.</p>
-          <div className="mt-4">
-            <label className="block text-[13px] font-semibold text-slate-500">Reason (optional)</label>
-            <textarea value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} className="field-input mt-1.5 min-h-[80px] w-full resize-none" placeholder="Why is this team being rejected?" />
-          </div>
-          <div className="mt-6 flex justify-end gap-3">
-            <button onClick={() => setRejectTarget(null)} disabled={rejecting} className="cursor-pointer rounded-lg border border-slate-200 px-4 py-2.5 text-[14px] font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-            <button onClick={handleRejectSubmit} disabled={rejecting} className="cursor-pointer rounded-lg bg-[#c62828] px-4 py-2.5 text-[14px] font-semibold text-white hover:bg-[#b71c1c]">{rejecting ? 'Rejecting...' : 'Reject'}</button>
-          </div>
-        </div>
-      </div>
-    )}
+
+    <PromptReason
+      open={!!rejectTarget}
+      onClose={() => { if (!rejecting) setRejectTarget(null) }}
+      onSubmit={handleRejectSubmit}
+      title="Reject Registration"
+      description={`Reject "${rejectTarget?.teamName}" from this event.`}
+      confirmText="Reject"
+      placeholder="Why is this team being rejected?"
+      submitting={rejecting}
+      confirmVariant="danger"
+    />
   </>)
 }
-

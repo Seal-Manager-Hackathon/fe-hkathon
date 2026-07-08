@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { UserPlus } from 'lucide-react'
 import { getUsers, deleteUser, restoreUser, banUser, unbanUser } from '../../../api/admin'
@@ -7,7 +7,8 @@ import FilterBar from '../../../components/FilterBar'
 import { usersColumns } from './UsersColumns'
 import { usersFilters } from './UsersFilters'
 import { useServerPagination } from '../../../hooks/useServerPagination'
-import { toast, confirm, promptReason } from '../../../utils/toast'
+import { toast, confirm } from '../../../utils/toast'
+import PromptReason from '../../../components/PromptReason'
 
 const PAGE_SIZE = 10
 
@@ -52,6 +53,9 @@ export default function UsersManagement() {
     buildParams,
   })
 
+  const [banTarget, setBanTarget] = useState(null)
+  const [banning, setBanning] = useState(false)
+
   async function handleDelete(user) {
     const ok = await confirm('Delete User', `Are you sure you want to delete "${user.firstName} ${user.lastName}"?`)
     if (!ok) return
@@ -66,11 +70,18 @@ export default function UsersManagement() {
     catch (err) { toast.error(err?.response?.data?.message || 'Failed to restore user.') }
   }
 
-  async function handleBan(user) {
-    const reason = await promptReason('Ban User', 'Ban Reason', `Why are you banning ${user.firstName} ${user.lastName}?`, 'Ban')
-    if (!reason) return
+  function handleBan(user) {
+    setBanTarget(user)
+  }
+
+  async function handleBanSubmit(reason) {
+    const user = banTarget
+    setBanTarget(null)
+    if (!user) return
+    setBanning(true)
     try { await banUser(user.id, reason); toast.success('User banned'); refetch() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed to ban user.') }
+    finally { setBanning(false) }
   }
 
   async function handleUnban(user) {
@@ -89,6 +100,18 @@ export default function UsersManagement() {
       <FilterBar filters={usersFilters} values={filters} onChange={handleFilterChange} onReset={handleReset} hasActive={hasActive} />
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
       <BaseTable columns={usersColumns(handleDelete, handleRestore, handleBan, handleUnban)} data={users} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No users match the current filters.' : 'No users in the system yet.'} keyExtractor={(row) => row.id} minWidth="900px" />
+
+      <PromptReason
+        open={!!banTarget}
+        onClose={() => { if (!banning) setBanTarget(null) }}
+        onSubmit={handleBanSubmit}
+        title="Ban User"
+        description={`Ban "${banTarget?.firstName} ${banTarget?.lastName}"?`}
+        confirmText="Ban"
+        placeholder="Enter ban reason..."
+        submitting={banning}
+        confirmVariant="danger"
+      />
     </div>
   )
 }
