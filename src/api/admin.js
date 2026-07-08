@@ -83,6 +83,15 @@ export async function getRecentNotifications() {
 }
 
 /**
+ * Get 5 most recent reports.
+ * @returns {Promise<{ reports: Array<{ id: string, title: string, description: string, status: string, typeReport: string, createdAt: string }> }>}
+ */
+export async function getRecentReports() {
+  const { data } = await api.get('/admin/reports/recent')
+  return data.data
+}
+
+/**
  * Get paginated users list with search and filters.
  * @param {Object} params
  * @param {string} [params.Keyword] - Search email, firstName, lastName, fullName

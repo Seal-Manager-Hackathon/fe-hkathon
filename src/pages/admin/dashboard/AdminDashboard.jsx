@@ -6,8 +6,8 @@ import {
 } from '../../../data/mockAdminData'
 import { roleBadge } from '../../../constants/adminOptions'
 import { formatDateTime } from '../../../utils/format'
-import { getEventsCount, getUsersCount, getTeamsCount, getRecentEvents, getRecentUsers, getRecentNotifications } from '../../../api/admin'
-import { Trophy, Users, Bell, ArrowRight } from 'lucide-react'
+import { getEventsCount, getUsersCount, getTeamsCount, getRecentEvents, getRecentUsers, getRecentNotifications, getRecentReports } from '../../../api/admin'
+import { Trophy, Users, Bell, FileText, ArrowRight } from 'lucide-react'
 import StatCard from '../../../components/StatCard'
 import SectionTitle from '../../../components/SectionTitle'
 import ViewButton from '../../../components/ViewButton'
@@ -34,6 +34,7 @@ export default function AdminDashboard() {
   const [recentEvents, setRecentEvents] = useState([])
   const [dashboardUsers, setDashboardUsers] = useState([])
   const [dashboardNotifications, setDashboardNotifications] = useState([])
+  const [dashboardReports, setDashboardReports] = useState([])
 
   useEffect(() => {
     async function fetchCounts() {
@@ -127,10 +128,30 @@ export default function AdminDashboard() {
         // keep mock defaults
       }
     }
+    async function fetchRecentReports() {
+      try {
+        const result = await getRecentReports()
+        if (result?.reports?.length > 0) {
+          setDashboardReports(
+            result.reports.map((r) => ({
+              id: r.id,
+              title: r.title,
+              description: r.description,
+              status: r.status,
+              typeReport: r.typeReport,
+              date: r.createdAt ? formatDateTime(r.createdAt, '') : '',
+            }))
+          )
+        }
+      } catch {
+        // keep mock defaults
+      }
+    }
     fetchCounts()
     fetchRecent()
     fetchRecentUsers()
     fetchRecentNotifications()
+    fetchRecentReports()
   }, [])
 
   // Merge real API counts into statSections
@@ -202,15 +223,15 @@ export default function AdminDashboard() {
             { key: 'hackathons', label: 'Hackathons', icon: Trophy, viewAll: '/admin/hackathons' },
             { key: 'users', label: 'Users', icon: Users, viewAll: '/admin/users' },
             { key: 'notifications', label: 'Notifications', icon: Bell, viewAll: '/admin/notifications' },
+            { key: 'reports', label: 'Reports', icon: FileText, viewAll: '/admin/reports' },
           ].map((tab) => (
             <button
               key={tab.key}
               onClick={() => setRecentTab(tab.key)}
-              className={`cursor-pointer px-5 py-3 text-[13px] font-semibold transition-colors inline-flex items-center gap-1.5 ${
-                recentTab === tab.key
+              className={`cursor-pointer px-5 py-3 text-[13px] font-semibold transition-colors inline-flex items-center gap-1.5 ${recentTab === tab.key
                   ? 'border-b-2 border-white text-white'
                   : 'text-white/60 hover:text-white'
-              }`}
+                }`}
             >
               <tab.icon className="h-3.5 w-3.5" />
               {tab.label}
@@ -218,7 +239,7 @@ export default function AdminDashboard() {
           ))}
           <div className="ml-auto flex items-center pr-4">
             <Link
-              to={({ hackathons: '/admin/hackathons', users: '/admin/users', notifications: '/admin/notifications' })[recentTab]}
+              to={({ hackathons: '/admin/hackathons', users: '/admin/users', notifications: '/admin/notifications', reports: '/admin/reports' })[recentTab]}
               className="inline-flex items-center gap-1 text-[12px] font-semibold text-white/70 hover:text-white hover:underline"
             >
               View All <ArrowRight className="h-3 w-3" />
@@ -264,9 +285,24 @@ export default function AdminDashboard() {
             </div>
           ))}
 
+          {recentTab === 'reports' && dashboardReports.map((r) => (
+            <div key={r.id} className="flex items-center justify-between px-5 py-3 gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{r.title}</p>
+                  <Badge label={r.status} className={statusBadge[r.status] || 'bg-[#f5f5f5] text-[#757575]'} />
+                  <Badge label={r.typeReport} className="bg-[#e3f2fd] text-[#1565c0]" />
+                </div>
+                <p className="mt-0.5 text-[11px] text-gray-300">{r.date}</p>
+              </div>
+              <ViewButton to={`/admin/reports/${r.id}`} />
+            </div>
+          ))}
+
           {(recentTab === 'hackathons' && recentEvents.length === 0) ||
             (recentTab === 'users' && dashboardUsers.length === 0) ||
-            (recentTab === 'notifications' && dashboardNotifications.length === 0) ? (
+            (recentTab === 'notifications' && dashboardNotifications.length === 0) ||
+            (recentTab === 'reports' && dashboardReports.length === 0) ? (
             <div className="px-5 py-8 text-center text-[13px] text-gray-400">No data available.</div>
           ) : null}
         </div>
