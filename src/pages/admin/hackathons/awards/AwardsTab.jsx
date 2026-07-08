@@ -50,8 +50,8 @@ function awardColumns() {
       header: 'Prize',
       headerIcon: DollarSign,
       render: (row) => {
-        const usd = Number(row.prize || 0) / 25000
-        return <span className="text-[13px] font-semibold text-emerald-600">${usd.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+        const usd = Number(row.prize || 0)
+        return <span className="text-[13px] font-semibold text-emerald-600">${usd.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
       },
     },
     {

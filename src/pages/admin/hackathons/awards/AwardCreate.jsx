@@ -60,17 +60,17 @@ export default function AwardCreate() {
       canSave={canSave}
       onSave={handleSave}
       saving={saving}
-      saveIcon={<Trophy className="h-4 w-4" />}
+      saveIcon={Trophy}
     >
       <div className="grid grid-cols-1 gap-x-10 gap-y-5 lg:grid-cols-[1fr_320px]">
         <div className="space-y-5">
           <FormField label="Award Name" required icon={Trophy}>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Giải Nhất" maxLength={200} className="field-input" />
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. First Prize" maxLength={200} className="field-input" />
           </FormField>
-          <FormField label="Prize (VND)" required icon={DollarSign}>
-            <input type="number" min="1" value={prize} onChange={(e) => setPrize(e.target.value)} placeholder="10000000" className="field-input" />
+          <FormField label="Prize (USD)" required icon={DollarSign}>
+            <input type="number" min="1" value={prize} onChange={(e) => setPrize(e.target.value)} placeholder="e.g. 1000" className="field-input" />
           </FormField>
-          <FormField label="Number Of Awards" icon={Hash}>
+          <FormField label="Number of Awards" icon={Hash}>
             <input type="number" min="1" value={numberOfAward} onChange={(e) => setNumberOfAward(e.target.value)} placeholder="1" className="field-input" />
           </FormField>
           <FormField label="Description" icon={FileText}>
