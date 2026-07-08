@@ -113,7 +113,7 @@ function AssignRoleModal({ open, user, userRole, onClose, onSubmit, submitting }
           <div>
             <h3 className="text-[16px] font-bold text-slate-800">Assign Role</h3>
             <p className="mt-1 text-[13px] text-gray-500">
-              Assign <span className="font-semibold text-[#1f2f3a]">{user?.firstName} {user?.lastName}</span> as
+              Select a role for <span className="font-semibold text-[#1f2f3a]">{user?.firstName} {user?.lastName}</span>
             </p>
           </div>
           {!submitting && (
@@ -188,8 +188,6 @@ export default function AssignTab({ eventId }) {
   const [staffKeyword, setStaffKeyword] = useState('')
 
   const [assigning, setAssigning] = useState(false)
-
-  // Assign modal state
   const [assignTarget, setAssignTarget] = useState(null)
   const [assignUserRole, setAssignUserRole] = useState('')
 
@@ -255,6 +253,8 @@ export default function AssignTab({ eventId }) {
 
   async function handleAssignRole(role) {
     if (!assignTarget) return
+    const ok = await confirm('Confirm Assignment', `Assign ${assignTarget.firstName} ${assignTarget.lastName} as ${role} in this event?`)
+    if (!ok) return
     setAssigning(true)
     try {
       await assignUserToEvent(eventId, { UserId: assignTarget.id, EventRole: role })
@@ -273,7 +273,6 @@ export default function AssignTab({ eventId }) {
 
   return (
     <div>
-      {/* Sub-tabs */}
       <div className="mb-5 flex gap-1 overflow-x-auto border-b border-[#e8ecf0]">
         {SUB_TABS.map((t) => (
           <button key={t.key} onClick={() => setSubTab(t.key)} className={`cursor-pointer shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-semibold transition-colors ${subTab === t.key ? 'border-b-2 border-[#064f5d] text-[#064f5d]' : 'text-gray-400 hover:text-[#1f2f3a]'}`}>
@@ -282,7 +281,6 @@ export default function AssignTab({ eventId }) {
         ))}
       </div>
 
-      {/* Assigned */}
       {subTab === 'assigned' && (
         <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
           <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
@@ -292,7 +290,6 @@ export default function AssignTab({ eventId }) {
         </div>
       )}
 
-      {/* Available Lecturers */}
       {subTab === 'lecturers' && (
         <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
           <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
@@ -302,7 +299,6 @@ export default function AssignTab({ eventId }) {
         </div>
       )}
 
-      {/* Available Staff */}
       {subTab === 'staff' && (
         <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
           <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
@@ -312,7 +308,6 @@ export default function AssignTab({ eventId }) {
         </div>
       )}
 
-      {/* Assign Role Modal */}
       <AssignRoleModal
         open={!!assignTarget}
         user={assignTarget}
