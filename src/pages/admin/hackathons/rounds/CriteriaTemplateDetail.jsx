@@ -166,7 +166,7 @@ export default function CriteriaTemplateDetail() {
             active={activeTab === 'items'}
             onClick={() => setActiveTab('items')}
             icon={Tag}
-            label={`Criteria Items (${items.length})`}
+            label="Criteria Items"
           />
         </div>
 
