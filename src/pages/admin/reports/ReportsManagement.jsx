@@ -4,6 +4,7 @@ import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import { reportsFilters } from './ReportsFilters'
 import { reportsColumns } from './ReportsColumns'
+import { useServerPagination } from '../../../hooks/useServerPagination'
 
 const PAGE_SIZE = 10
 
@@ -15,17 +16,9 @@ const DEFAULT_VALUES = {
 }
 
 export default function ReportsManagement() {
-  const [filters, setFilters] = useState(DEFAULT_VALUES)
-  const [pageIndex, setPageIndex] = useState(1)
-  const [reports, setReports] = useState([])
-  const [totalCount, setTotalCount] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
   const [userDetails, setUserDetails] = useState({})
 
-  const hasActive = Object.entries(filters).some(([, v]) => v !== '')
-
-  const buildParams = useCallback(() => {
+  const buildParams = useCallback((filters, pageIndex) => {
     const params = { pageIndex, pageSize: PAGE_SIZE }
     const { keyword, status, fromDate, toDate } = filters
     if (keyword) params.keyword = keyword
@@ -33,69 +26,53 @@ export default function ReportsManagement() {
     if (fromDate) params.fromDate = new Date(fromDate).toISOString()
     if (toDate) params.toDate = new Date(toDate).toISOString()
     return params
-  }, [filters, pageIndex])
+  }, [])
 
-  const resolveUsers = useCallback(async (list) => {
-    const details = { ...userDetails }
-    const promises = []
+  const {
+    data: reports,
+    totalCount,
+    loading,
+    error,
+    filters,
+    pageIndex,
+    hasActive,
+    setPageIndex,
+    handleFilterChange,
+    handleReset,
+  } = useServerPagination({
+    fetchFn: getReports,
+    defaultFilters: DEFAULT_VALUES,
+    pageSize: PAGE_SIZE,
+    buildParams,
+  })
 
-    for (const item of list) {
-      if (item.userId && !details[item.userId]) {
-        promises.push(
-          getUserDetail(item.userId)
-            .then((user) => { details[item.userId] = user })
-            .catch(() => { details[item.userId] = null }),
-        )
+  // Resolve user details for the "Reported By" column
+  useEffect(() => {
+    if (reports.length === 0) return
+    let cancelled = false
+    async function resolve() {
+      const details = { ...userDetails }
+      const promises = []
+      for (const item of reports) {
+        if (item.userId && !details[item.userId]) {
+          promises.push(
+            getUserDetail(item.userId)
+              .then((u) => { details[item.userId] = u })
+              .catch(() => { details[item.userId] = null }),
+          )
+        }
+      }
+      if (promises.length > 0) {
+        await Promise.all(promises)
+        if (!cancelled) setUserDetails({ ...details })
       }
     }
+    resolve()
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reports])
 
-    if (promises.length > 0) {
-      await Promise.all(promises)
-      setUserDetails({ ...details })
-    }
-  }, [userDetails])
-
-  const fetchReports = useCallback(async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const result = await getReports(buildParams())
-      const list = result.items || []
-      setReports(list)
-      setTotalCount(result.totalCount || 0)
-      await resolveUsers(list)
-    } catch (err) {
-      const msg = err?.response?.data?.message || 'Failed to load reports.'
-      if (err?.response?.status === 400) {
-        setError('Invalid filter value. Please check your filters and try again.')
-      } else {
-        setError(msg)
-      }
-      setReports([])
-      setTotalCount(0)
-    } finally {
-      setLoading(false)
-    }
-  }, [buildParams, resolveUsers])
-
-  useEffect(() => { fetchReports() }, [fetchReports])
-
-  function handleFilterChange(key, value) {
-    setFilters((prev) => ({ ...prev, [key]: value }))
-    setPageIndex(1)
-    setUserDetails({})
-  }
-
-  function handleReset() {
-    setFilters(DEFAULT_VALUES)
-    setPageIndex(1)
-    setUserDetails({})
-  }
-
-  const columns = useMemo(
-    () => reportsColumns(userDetails),
-    [userDetails],
-  )
+  const columns = useMemo(() => reportsColumns(userDetails), [userDetails])
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -112,9 +89,7 @@ export default function ReportsManagement() {
       />
 
       {error && (
-        <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">
-          {error}
-        </div>
+        <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>
       )}
 
       <BaseTable

@@ -6,6 +6,7 @@ import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import { notificationsFilters } from './NotificationsFilters'
 import { notificationsColumns } from './NotificationsColumns'
+import { useServerPagination } from '../../../hooks/useServerPagination'
 import { toast, confirm } from '../../../utils/toast'
 
 const PAGE_SIZE = 10
@@ -19,17 +20,9 @@ const DEFAULT_VALUES = {
 }
 
 export default function NotificationsManagement() {
-  const [filters, setFilters] = useState(DEFAULT_VALUES)
-  const [pageIndex, setPageIndex] = useState(1)
-  const [notifications, setNotifications] = useState([])
-  const [totalCount, setTotalCount] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
   const [targetDetails, setTargetDetails] = useState({})
 
-  const hasActive = Object.entries(filters).some(([, v]) => v !== '')
-
-  const buildParams = useCallback(() => {
+  const buildParams = useCallback((filters, pageIndex) => {
     const params = { PageIndex: pageIndex, PageSize: PAGE_SIZE }
     const { title, targetType, isDisable, fromDate, toDate } = filters
     if (title) params.Title = title
@@ -38,91 +31,79 @@ export default function NotificationsManagement() {
     if (fromDate) params.FromDate = new Date(fromDate).toISOString()
     if (toDate) params.ToDate = new Date(toDate).toISOString()
     return params
-  }, [filters, pageIndex])
+  }, [])
 
-  const resolveTargets = useCallback(async (list) => {
-    const details = { ...targetDetails }
-    const promises = []
+  const {
+    data: notifications,
+    totalCount,
+    loading,
+    error,
+    filters,
+    pageIndex,
+    hasActive,
+    setPageIndex,
+    handleFilterChange,
+    handleReset,
+    refetch,
+  } = useServerPagination({
+    fetchFn: getNotifications,
+    defaultFilters: DEFAULT_VALUES,
+    pageSize: PAGE_SIZE,
+    buildParams,
+  })
 
-    for (const item of list) {
-      if (item.targetType === 'Personal' && item.userId && !details[item.userId]) {
-        promises.push(
-          getUserDetail(item.userId)
-            .then((user) => { details[item.userId] = user })
-            .catch(() => { details[item.userId] = null }),
-        )
+  // Resolve target names (User/Team) for display columns
+  useEffect(() => {
+    if (notifications.length === 0) return
+    let cancelled = false
+    async function resolve() {
+      const details = { ...targetDetails }
+      const promises = []
+      for (const item of notifications) {
+        if (item.targetType === 'Personal' && item.userId && !details[item.userId]) {
+          promises.push(
+            getUserDetail(item.userId)
+              .then((u) => { details[item.userId] = u })
+              .catch(() => { details[item.userId] = null }),
+          )
+        }
+        if (item.targetType === 'Team' && item.teamId && !details[`team:${item.teamId}`]) {
+          promises.push(
+            getTeamDetail(item.teamId)
+              .then((t) => { details[`team:${item.teamId}`] = t })
+              .catch(() => { details[`team:${item.teamId}`] = null }),
+          )
+        }
       }
-      if (item.targetType === 'Team' && item.teamId && !details[`team:${item.teamId}`]) {
-        promises.push(
-          getTeamDetail(item.teamId)
-            .then((team) => { details[`team:${item.teamId}`] = team })
-            .catch(() => { details[`team:${item.teamId}`] = null }),
-        )
+      if (promises.length > 0) {
+        await Promise.all(promises)
+        if (!cancelled) setTargetDetails({ ...details })
       }
     }
+    resolve()
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notifications])
 
-    if (promises.length > 0) {
-      await Promise.all(promises)
-      setTargetDetails({ ...details })
-    }
-  }, [targetDetails])
-
-  const fetchNotifications = useCallback(async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const result = await getNotifications(buildParams())
-      const list = result.notifications || []
-      setNotifications(list)
-      setTotalCount(result.totalCount || 0)
-      await resolveTargets(list)
-    } catch (err) {
-      const msg = err?.response?.data?.message || 'Failed to load notifications.'
-      if (err?.response?.status === 400 && msg.includes('TargetType')) {
-        setError('Invalid notification target type')
-      } else {
-        setError(msg)
-      }
-      setNotifications([])
-      setTotalCount(0)
-    } finally {
-      setLoading(false)
-    }
-  }, [buildParams, resolveTargets])
-
-  useEffect(() => { fetchNotifications() }, [fetchNotifications])
-
-  function handleFilterChange(key, value) {
-    setFilters((prev) => ({ ...prev, [key]: value }))
-    setPageIndex(1)
-    setTargetDetails({})
-  }
-
-  function handleReset() {
-    setFilters(DEFAULT_VALUES)
-    setPageIndex(1)
-    setTargetDetails({})
-  }
-
-  async function handleDelete(notification) {
-    const ok = await confirm('Delete Notification', `Are you sure you want to delete "${notification.title}"?`)
+  async function handleDelete(n) {
+    const ok = await confirm('Delete Notification', `Are you sure you want to delete "${n.title}"?`)
     if (!ok) return
     try {
-      await deleteNotification(notification.id)
+      await deleteNotification(n.id)
       toast.success('Notification disabled')
-      fetchNotifications()
+      refetch()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to delete notification.')
     }
   }
 
-  async function handleRestore(notification) {
-    const ok = await confirm('Restore Notification', `Are you sure you want to restore "${notification.title}"?`)
+  async function handleRestore(n) {
+    const ok = await confirm('Restore Notification', `Are you sure you want to restore "${n.title}"?`)
     if (!ok) return
     try {
-      await restoreNotification(notification.id)
+      await restoreNotification(n.id)
       toast.success('Notification restored')
-      fetchNotifications()
+      refetch()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to restore notification.')
     }
@@ -156,9 +137,7 @@ export default function NotificationsManagement() {
       />
 
       {error && (
-        <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">
-          {error}
-        </div>
+        <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>
       )}
 
       <BaseTable

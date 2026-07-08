@@ -3,29 +3,16 @@ import SidebarNavItem from './SidebarNavItem'
 import { X } from 'lucide-react'
 import { useMemo } from 'react'
 import BrandLogo from '../BrandLogo'
-
-/**
- * Maps URL patterns to sidebar active keys.
- * Checked in order — first match wins.
- * Extend this whenever new shortcut routes (like /admin/rounds/...) are added
- * that belong to an existing parent nav item.
- */
-const URL_TO_ACTIVE_KEY = [
-  { match: (p) => p.startsWith('/admin/hackathons') || p.startsWith('/admin/rounds'), key: 'hackathons' },
-  { match: (p) => p.startsWith('/admin/teams'), key: 'teams' },
-  { match: (p) => p.startsWith('/admin/users'), key: 'users' },
-  { match: (p) => p.startsWith('/admin/notifications'), key: 'notifications' },
-  { match: (p) => p.startsWith('/admin/reports'), key: 'reports' },
-  { match: (p) => p === '/admin' || p === '/admin/', key: 'dashboard' },
-]
+import URL_TO_ACTIVE_KEY from './sidebarRoutes'
 
 export default function Sidebar({ navItems, open, onClose }) {
   const { pathname } = useLocation()
 
   const activeKey = useMemo(() => {
     // Special pages that should not highlight any sidebar item
-    if (pathname === '/admin/my-notifications' || pathname.startsWith('/admin/profile')) return ''
-
+    if (pathname === '/admin/my-notifications' || pathname.startsWith('/admin/profile')) {
+      return ''
+    }
     const entry = URL_TO_ACTIVE_KEY.find((m) => m.match(pathname))
     return entry?.key || navItems[0]?.key || ''
   }, [pathname, navItems])
@@ -33,7 +20,10 @@ export default function Sidebar({ navItems, open, onClose }) {
   return (
     <>
       {open && (
-        <div className="fixed inset-0 z-40 bg-black/30 lg:hidden" onClick={onClose} />
+        <div
+          className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+          onClick={onClose}
+        />
       )}
 
       <aside
