@@ -39,14 +39,14 @@ export function roundColumns(eventId, onSwap, onDelete, onRestore) {
               <ClipboardList className="h-3.5 w-3.5" /> Criteria
             </Link>
           )}
-          <Link to={`/admin/rounds/${row.id}`} className={viewBtnClass}>
-            <Eye className="h-3.5 w-3.5" /> View
-          </Link>
           {!row.isDisable && (
             <button onClick={() => onSwap?.(row)} className={swapBtnClass}>
               <ArrowLeftRight className="h-3.5 w-3.5" /> Swap
             </button>
           )}
+          <Link to={`/admin/rounds/${row.id}`} className={viewBtnClass}>
+            <Eye className="h-3.5 w-3.5" /> View
+          </Link>
           {row.isDisable ? (
             <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
               <RotateCcw className="h-3.5 w-3.5" /> Restore
