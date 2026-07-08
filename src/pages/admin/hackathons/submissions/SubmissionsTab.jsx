@@ -38,7 +38,7 @@ export default function SubmissionsTab({ eventId }) {
   useEffect(() => {
     let c = false
     setLoadingOpts(true)
-    Promise.all([getRounds(eventId, { PageSize: 5 }), getTracks(eventId, { PageSize: 999 })])
+    Promise.all([getRounds(eventId, { PageSize: 5 }), getTracks(eventId, { PageSize: 10 })])
       .then(([, tr]) => { if (!c) setTracks(tr.tracks || []) })
       .catch(() => { if (!c) setTracks([]) })
       .finally(() => { if (!c) setLoadingOpts(false) })
@@ -49,7 +49,7 @@ export default function SubmissionsTab({ eventId }) {
   useEffect(() => {
     if (!filters.trackId) { setTopics([]); return }
     let c = false
-    getTopics(filters.trackId, { PageSize: 999 })
+    getTopics(filters.trackId, { PageSize: 10 })
       .then((r) => { if (!c) setTopics(r.topics || []) })
       .catch(() => { if (!c) setTopics([]) })
     return () => { c = true }
