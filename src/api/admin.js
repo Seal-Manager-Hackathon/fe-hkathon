@@ -737,3 +737,15 @@ export async function removeAssign(eventId, assignEventId) {
   return data
 }
 
+/**
+ * Assign an assign event to a track.
+ * POST /admin/assign/event-assigns/{assignEventId}/tracks
+ * @param {string} assignEventId
+ * @param {Object} payload { trackId: string }
+ */
+export async function assignTrackToEventAssign(assignEventId, payload) {
+  const { data } = await api.post(`/admin/assign/event-assigns/${assignEventId}/tracks`, payload)
+  return data
+}
+
+

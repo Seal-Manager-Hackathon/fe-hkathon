@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Avatar from '../../../../components/Avatar'
-import { getAssignedUsers, getAvailableLecturers, getAvailableStaff, assignUserToEvent, removeAssign } from '../../../../api/admin'
+import { getAssignedUsers, getAvailableLecturers, getAvailableStaff, assignUserToEvent, removeAssign, getTracks, assignTrackToEventAssign } from '../../../../api/admin'
 import { toast, confirm } from '../../../../utils/toast'
-import { Search, UserPlus, User, Shield, GraduationCap, MoreHorizontal, UserMinus, UserCheck, ClipboardList, Eye, Phone, X } from 'lucide-react'
+import { Search, UserPlus, User, Shield, GraduationCap, MoreHorizontal, UserMinus, UserCheck, ClipboardList, Eye, Phone, X, FolderKanban, Ban } from 'lucide-react'
 
 const PAGE_SIZE = 10
 
@@ -27,10 +27,11 @@ const assignedFilters = [
 ]
 
 const viewBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2.5 py-1.5 text-[13px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]'
+const trackBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#ede7f6] px-2.5 py-1.5 text-[13px] font-semibold text-[#5e35b1] hover:bg-[#d1c4e9]'
 const assignBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#e8f5e9] px-2.5 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9]'
 const removeBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2] w-[110px]'
 
-function assignedColumns(handleRemove) {
+function assignedColumns(handleRemove, handleTrack) {
   return [
     { key: 'user', header: 'User', headerIcon: User, render: (row) => (
       <Link to={`/admin/users/${row.userId}`} className="flex items-center gap-3 hover:opacity-80">
@@ -60,6 +61,9 @@ function assignedColumns(handleRemove) {
     }},
     { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
       <div className="flex items-center justify-end gap-2">
+        {(row.eventRole === 'Mentor' || row.eventRole === 'Judge') && (
+          <button onClick={() => handleTrack(row)} className={trackBtnClass}><FolderKanban className="h-3.5 w-3.5" />Track</button>
+        )}
         <Link to={`/admin/users/${row.userId}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
         <button onClick={() => handleRemove(row)} className={removeBtnClass}><UserMinus className="h-3.5 w-3.5" />Remove</button>
       </div>
@@ -162,6 +166,128 @@ function AssignRoleModal({ open, user, userRole, onClose, onSubmit, submitting }
   )
 }
 
+// ---- Assign Track Modal ----
+function AssignTrackModal({ open, user, eventId, onClose, onAssign, submitting }) {
+  const TRACK_PAGE_SIZE = 5
+  const [tracks, setTracks] = useState([])
+  const [trackTotal, setTrackTotal] = useState(0)
+  const [trackPage, setTrackPage] = useState(1)
+  const [trackLoading, setTrackLoading] = useState(false)
+  const [tkFilters, setTkFilters] = useState({ keyword: '', isDisable: '' })
+  const tkHasActive = Object.values(tkFilters).some(v => v !== '')
+
+  const fetchTracks = useCallback(async () => {
+    setTrackLoading(true)
+    try {
+      const params = { PageIndex: trackPage, PageSize: TRACK_PAGE_SIZE }
+      if (tkFilters.keyword) params.Keyword = tkFilters.keyword
+      if (tkFilters.isDisable !== '') params.IsDisable = tkFilters.isDisable === 'true'
+      const result = await getTracks(eventId, params)
+      setTracks(result.tracks || [])
+      setTrackTotal(result.totalCount || 0)
+    } catch (err) {
+      setTracks([])
+      setTrackTotal(0)
+    } finally {
+      setTrackLoading(false)
+    }
+  }, [eventId, trackPage, tkFilters])
+
+  useEffect(() => { if (open) { setTrackPage(1); setTkFilters({ keyword: '', isDisable: '' }); fetchTracks() } }, [open])
+  useEffect(() => { if (open) fetchTracks() }, [fetchTracks])
+
+  function handleTkFilterChange(key, value) {
+    setTkFilters(prev => ({ ...prev, [key]: value }))
+    setTrackPage(1)
+  }
+  function handleTkReset() {
+    setTkFilters({ keyword: '', isDisable: '' })
+    setTrackPage(1)
+  }
+
+  if (!open) return null
+
+  const alreadyAssigned = user?.assignTracks?.map(t => t.trackId) || []
+
+  const trackFilters = [
+    { type: 'search', key: 'keyword', label: 'Track Name', icon: Search, placeholder: 'Search track name...' },
+    { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
+  ]
+
+  const trackColumns = [
+    { key: 'title', header: 'Track', render: (row) => (
+      <span className="text-[13px] font-semibold text-[#064f5d]">{row.title}</span>
+    )},
+    { key: 'maxTeam', header: 'Max Teams', render: (row) => (
+      <span className="text-[13px] text-gray-500">{row.maxTeam ?? '—'}</span>
+    )},
+    { key: 'status', header: 'Status', render: (row) => (
+      row.isDisable
+        ? <span className="inline-flex rounded-full bg-[#fce4ec] px-2.5 py-0.5 text-[12px] font-semibold text-[#c62828]">Deleted</span>
+        : <span className="inline-flex rounded-full bg-[#e8f5e9] px-2.5 py-0.5 text-[12px] font-semibold text-[#2e7d32]">Active</span>
+    )},
+    { key: 'createdAt', header: 'Created', render: (row) => (
+      <p className="text-[13px] text-gray-500">{row.createdAt ? new Date(row.createdAt).toLocaleString() : '—'}</p>
+    )},
+    { key: 'actions', header: 'Action', headerClassName: 'text-right', className: 'text-right', render: (row) => {
+      const isAssigned = alreadyAssigned.includes(row.id)
+      return (
+        <button
+          onClick={() => !isAssigned && onAssign(row.id)}
+          disabled={submitting || isAssigned}
+          className={`inline-flex cursor-pointer items-center gap-1 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${
+            isAssigned
+              ? 'bg-[#f5f5f5] text-gray-400 cursor-not-allowed'
+              : 'bg-[#e8f5e9] text-[#2e7d32] hover:bg-[#c8e6c9]'
+          }`}
+        >
+          {isAssigned ? 'Assigned' : 'Assign'}
+        </button>
+      )
+    }},
+  ]
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/40" onClick={!submitting ? onClose : undefined} />
+      <div className="relative z-10 w-full max-w-3xl rounded-2xl bg-white shadow-2xl overflow-hidden">
+        <div className="flex items-start justify-between border-b border-[#f0f0f0] px-6 py-4">
+          <div>
+            <h3 className="text-[16px] font-bold text-slate-800">Assign to Track</h3>
+            <p className="mt-0.5 text-[13px] text-gray-500">
+              Select a track for <span className="font-semibold text-[#1f2f3a]">{user?.firstName} {user?.lastName}</span>
+            </p>
+          </div>
+          {!submitting && (
+            <button onClick={onClose} className="cursor-pointer rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600">
+              <X className="h-5 w-5" />
+            </button>
+          )}
+        </div>
+        <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-6 py-3">
+          <FilterBar filters={trackFilters} values={tkFilters} onChange={handleTkFilterChange} onReset={handleTkReset} hasActive={tkHasActive} />
+        </div>
+        <div className="py-4">
+          <BaseTable
+            borderless
+            columns={trackColumns}
+            data={tracks}
+            page={trackPage}
+            pageSize={TRACK_PAGE_SIZE}
+            total={trackTotal}
+            onPageChange={setTrackPage}
+            loading={trackLoading}
+            serverSide
+            emptyText={tkHasActive ? 'No tracks match the current filters.' : 'No tracks found for this event.'}
+            keyExtractor={(row) => row.id}
+            minWidth="500px"
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function AssignTab({ eventId }) {
   const [subTab, setSubTab] = useState('assigned')
 
@@ -190,6 +316,10 @@ export default function AssignTab({ eventId }) {
   const [assigning, setAssigning] = useState(false)
   const [assignTarget, setAssignTarget] = useState(null)
   const [assignUserRole, setAssignUserRole] = useState('')
+
+  // Track assignment
+  const [trackTarget, setTrackTarget] = useState(null)
+  const [trackAssigning, setTrackAssigning] = useState(false)
 
   const fetchAssigned = useCallback(async () => {
     setAssignedLoading(true)
@@ -271,6 +401,21 @@ export default function AssignTab({ eventId }) {
   function handleAsFilterChange(key, value) { setAsFilters(prev => ({ ...prev, [key]: value })); setAssignedPage(1) }
   function handleAsReset() { setAsFilters({ keyword: '', eventRole: '' }); setAssignedPage(1) }
 
+  function openTrackModal(user) { setTrackTarget(user) }
+
+  async function handleAssignTrack(trackId) {
+    if (!trackTarget) return
+    setTrackAssigning(true)
+    try {
+      await assignTrackToEventAssign(trackTarget.assignEventId, { trackId })
+      toast.success(`${trackTarget.firstName} ${trackTarget.lastName} assigned to track successfully`)
+      setTrackTarget(null)
+      fetchAssigned()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to assign track.')
+    } finally { setTrackAssigning(false) }
+  }
+
   return (
     <div>
       <div className="mb-5 flex gap-1 overflow-x-auto border-b border-[#e8ecf0]">
@@ -286,7 +431,7 @@ export default function AssignTab({ eventId }) {
           <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
             <FilterBar filters={assignedFilters} values={asFilters} onChange={handleAsFilterChange} onReset={handleAsReset} hasActive={asHasActive} />
           </div>
-          <BaseTable borderless columns={assignedColumns(handleRemove)} data={assigned} page={assignedPage} pageSize={PAGE_SIZE} total={assignedTotal} onPageChange={setAssignedPage} loading={assignedLoading} serverSide emptyText={asHasActive ? 'No results match.' : 'No users assigned to this event yet.'} keyExtractor={(row) => row.assignEventId} minWidth="800px" />
+          <BaseTable borderless columns={assignedColumns(handleRemove, openTrackModal)} data={assigned} page={assignedPage} pageSize={PAGE_SIZE} total={assignedTotal} onPageChange={setAssignedPage} loading={assignedLoading} serverSide emptyText={asHasActive ? 'No results match.' : 'No users assigned to this event yet.'} keyExtractor={(row) => row.assignEventId} minWidth="800px" />
         </div>
       )}
 
@@ -315,6 +460,15 @@ export default function AssignTab({ eventId }) {
         onClose={() => { if (!assigning) setAssignTarget(null) }}
         onSubmit={handleAssignRole}
         submitting={assigning}
+      />
+
+      <AssignTrackModal
+        open={!!trackTarget}
+        user={trackTarget}
+        eventId={eventId}
+        onClose={() => { if (!trackAssigning) setTrackTarget(null) }}
+        onAssign={handleAssignTrack}
+        submitting={trackAssigning}
       />
     </div>
   )
