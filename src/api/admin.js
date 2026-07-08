@@ -120,6 +120,17 @@ export async function getUserDetail(userId) {
 }
 
 /**
+ * Get events that a user has participated in (approved registrations).
+ * @param {string} userId
+ * @param {object} params - { Keyword, PageIndex, PageSize }
+ * @returns {Promise<object>} { events, totalCount, pageIndex, pageSize }
+ */
+export async function getUserEvents(userId, params = {}) {
+  const { data } = await api.get(`/admin/users/${userId}/events`, { params })
+  return data.data
+}
+
+/**
  * Update user by ID. Sends multipart/form-data.
  * Only included fields are updated; omitted fields remain unchanged.
  * @param {string} userId

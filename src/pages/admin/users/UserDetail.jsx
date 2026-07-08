@@ -1,22 +1,82 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
   Edit, Mail, Shield, Calendar, Hash, GraduationCap, BadgeCheck,
-  Phone, MapPin, AlertTriangle, Clock, FileText,
+  Phone, MapPin, AlertTriangle, Clock, FileText, Trophy, Search, Ban,
+  CircleCheck, Users, ExternalLink,
 } from 'lucide-react'
-import { getUserDetail } from '../../../api/admin'
+import { getUserDetail, getUserEvents } from '../../../api/admin'
 import { roleBadge } from '../../../constants/adminOptions'
 import { formatDateTime } from '../../../utils/format'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
 import InfoRow from '../../../components/InfoRow'
 import Avatar from '../../../components/Avatar'
+import BaseTable from '../../../components/BaseTable'
+import FilterBar from '../../../components/FilterBar'
+
+const eventStatusBadge = {
+  Draft: 'bg-[#f5f5f5] text-[#757575]',
+  Published: 'bg-[#e8f5e9] text-[#2e7d32]',
+  Closed: 'bg-[#e0f2f1] text-[#00695c]',
+}
+
+const eventColumns = [
+  { key: 'eventName', header: 'Event', headerIcon: Trophy, render: (row) => (
+    <Link to={`/admin/hackathons/${row.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.eventName}</Link>
+  )},
+  { key: 'teamName', header: 'Team', headerIcon: Users, render: (row) => (
+    row.teamId ? <Link to={`/admin/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName}</Link> : <span className="text-[14px] text-gray-400">—</span>
+  )},
+  { key: 'trackTitle', header: 'Track', headerIcon: FileText, render: (row) => (
+    row.trackTitle ? <span className="text-[13px] text-[#1f2f3a]">{row.trackTitle}</span> : <span className="text-[13px] text-gray-400">—</span>
+  )},
+  { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => (
+    row.topicTitle ? <span className="text-[13px] text-[#7b1fa2]">{row.topicTitle}</span> : <span className="text-[13px] text-gray-400">—</span>
+  )},
+  { key: 'isBanned', header: 'Banned', headerIcon: Ban, render: (row) => (
+    row.isBanned ? <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" />
+  )},
+  { key: 'eventStatus', header: 'Status', headerIcon: CircleCheck, render: (row) => (
+    <Badge label={row.eventStatus} className={eventStatusBadge[row.eventStatus] || 'bg-gray-50 text-gray-600'} />
+  )},
+  { key: 'status', header: 'Registration', headerIcon: Shield, render: (row) => (
+    <div className="flex items-center gap-2">
+      <Badge label={row.status} className={row.status === 'Approved' ? 'bg-[#e8f5e9] text-[#2e7d32]' : 'bg-gray-50 text-gray-600'} />
+    </div>
+  )},
+  { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => (
+    <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
+  )},
+]
+
+const PAGE_SIZE = 10
 
 export default function UserDetail() {
   const { id } = useParams()
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  // Event history
+  const [events, setEvents] = useState([])
+  const [eventsTotal, setEventsTotal] = useState(0)
+  const [eventsLoading, setEventsLoading] = useState(false)
+  const [eventPage, setEventPage] = useState(1)
+  const [eventKeyword, setEventKeyword] = useState('')
+
+  const fetchEvents = useCallback(async () => {
+    setEventsLoading(true)
+    try {
+      const params = { PageIndex: eventPage, PageSize: PAGE_SIZE }
+      if (eventKeyword) params.Keyword = eventKeyword
+      const result = await getUserEvents(id, params)
+      setEvents(result.events || [])
+      setEventsTotal(result.totalCount || 0)
+    } catch (err) {
+      // silently fail - events section is supplementary
+    } finally { setEventsLoading(false) }
+  }, [id, eventPage, eventKeyword])
 
   useEffect(() => {
     let cancelled = false
@@ -39,7 +99,10 @@ export default function UserDetail() {
     return () => { cancelled = true }
   }, [id])
 
-  // Loading
+  useEffect(() => {
+    if (user) fetchEvents()
+  }, [fetchEvents, user])
+
   if (loading) {
     return (
       <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -56,7 +119,6 @@ export default function UserDetail() {
     )
   }
 
-  // Error
   if (error) {
     const isNotFound = error === 'User Not Found' || error.includes('Not Found')
     return (
@@ -85,123 +147,81 @@ export default function UserDetail() {
   const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email
   const isDisabled = user.isDisable
 
+  const eventHasActive = eventKeyword !== ''
+  const eventFilters = [
+    { type: 'search', key: 'keyword', label: 'Event', icon: Search, placeholder: 'Search event name...' },
+  ]
+
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6">
-        <Link
-          to="/admin/users"
-          className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
-        >
+        <Link to="/admin/users" className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
           &larr; Back to Users
         </Link>
       </div>
 
-      {/* === Profile-style header === */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex flex-wrap items-center gap-5">
-          <Avatar
-            src={user.avatarUrl}
-            name={fullName}
-            size="h-16 w-16 sm:h-20 sm:w-20"
-            textSize="text-[20px] sm:text-[28px]"
-          />
+        <div className="flex items-center gap-5">
+          <Avatar src={user.avatarUrl} name={fullName} size="h-20 w-20" textSize="text-[24px]" />
           <div>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">
-                {fullName}
-              </h1>
+            <h1 className="text-[24px] font-bold text-[#1f2f3a] leading-tight sm:text-[28px]">{fullName}</h1>
+            <p className="mt-1 text-[14px] text-gray-400">{user.email}</p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
               <Badge label={user.role} className={roleBadge[user.role] || ''} />
-              {isDisabled ? (
-                <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" />
+              {isDisabled && <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" />}
+              {user.isVerified ? (
+                <Badge label="Verified" className="bg-[#e8f5e9] text-[#2e7d32]" />
               ) : (
-                <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
+                <Badge label="Not verified" className="bg-[#fce4ec] text-[#c62828]" />
               )}
             </div>
-            {user.bio && (
-              <p className="mt-1 sm:mt-2 text-[13px] sm:text-[14px] text-gray-400">
-                {user.bio}
-              </p>
-            )}
           </div>
         </div>
-
-        <Link
-          to={`/admin/users/${id}/edit`}
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto"
-        >
-          <Edit className="h-4 w-4" />
-          Edit User
+        <Link to={`/admin/users/${id}/edit`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-[#05404a] shrink-0 self-start">
+          <Edit className="h-4 w-4" />Edit User
         </Link>
       </div>
 
-      {/* === Section cards === */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <CardPanel title="Personal Information">
           <div className="divide-y divide-[#f5f5f5]">
-            <InfoRow label="Full Name" icon={BadgeCheck}>
-              <p className="text-[14px] font-medium text-[#1f2f3a]">{fullName}</p>
-            </InfoRow>
-            <InfoRow label="Email" icon={Mail}>
-              <p className="text-[14px] text-[#064f5d]">{user.email}</p>
-            </InfoRow>
-            <InfoRow label="Phone" icon={Phone}>
-              <p className="text-[14px] text-[#1f2f3a]">{user.phoneNumber || '—'}</p>
-            </InfoRow>
-            <InfoRow label="Date of Birth" icon={Calendar}>
-              <p className="text-[14px] text-[#1f2f3a]">{user.dateOfBirth ? formatDateTime(user.dateOfBirth) : '—'}</p>
-            </InfoRow>
-            <InfoRow label="Address" icon={MapPin}>
-              <p className="text-[14px] text-[#1f2f3a]">{user.address || '—'}</p>
-            </InfoRow>
-            <InfoRow label="Bio" icon={FileText}>
-              <p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{user.bio || '—'}</p>
-            </InfoRow>
-            <InfoRow label="College" icon={GraduationCap}>
-              <p className="text-[14px] text-[#1f2f3a]">{user.college || '—'}</p>
-            </InfoRow>
-            <InfoRow label="Student ID" icon={Hash}>
-              <p className="text-[14px] font-mono text-[13px] text-gray-500">{user.studentId || '—'}</p>
-            </InfoRow>
-            <InfoRow label="Role" icon={Shield}>
-              <Badge label={user.role} className={roleBadge[user.role] || ''} />
-            </InfoRow>
+            <InfoRow label="Full Name" icon={BadgeCheck}><p className="text-[14px] font-medium text-[#1f2f3a]">{fullName}</p></InfoRow>
+            <InfoRow label="Email" icon={Mail}><p className="text-[14px] text-[#064f5d]">{user.email}</p></InfoRow>
+            <InfoRow label="Phone" icon={Phone}><p className="text-[14px] text-[#1f2f3a]">{user.phoneNumber || '—'}</p></InfoRow>
+            <InfoRow label="Date of Birth" icon={Calendar}><p className="text-[14px] text-[#1f2f3a]">{user.dateOfBirth ? formatDateTime(user.dateOfBirth) : '—'}</p></InfoRow>
+            <InfoRow label="Address" icon={MapPin}><p className="text-[14px] text-[#1f2f3a]">{user.address || '—'}</p></InfoRow>
+            <InfoRow label="Bio" icon={FileText}><p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{user.bio || '—'}</p></InfoRow>
+            <InfoRow label="College" icon={GraduationCap}><p className="text-[14px] text-[#1f2f3a]">{user.college || '—'}</p></InfoRow>
+            <InfoRow label="Student ID" icon={Hash}><p className="text-[14px] font-mono text-[13px] text-gray-500">{user.studentId || '—'}</p></InfoRow>
+            <InfoRow label="Role" icon={Shield}><Badge label={user.role} className={roleBadge[user.role] || ''} /></InfoRow>
           </div>
         </CardPanel>
 
         <CardPanel title="Account Status">
           <div className="divide-y divide-[#f5f5f5]">
             <InfoRow label="Status" icon={BadgeCheck}>
-              {isDisabled ? (
-                <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" />
-              ) : (
-                <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
-              )}
+              {isDisabled ? <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
             </InfoRow>
             <InfoRow label="Verified" icon={Shield}>
-              {user.isVerified ? (
-                <Badge label="Verified" className="bg-[#e8f5e9] text-[#2e7d32]" />
-              ) : (
-                <Badge label="Not verified" className="bg-[#fce4ec] text-[#c62828]" />
-              )}
+              {user.isVerified ? <Badge label="Verified" className="bg-[#e8f5e9] text-[#2e7d32]" /> : <Badge label="Not verified" className="bg-[#fce4ec] text-[#c62828]" />}
             </InfoRow>
-            <InfoRow label="Verified At" icon={Clock}>
-                <p className="text-[14px] text-[#1f2f3a]">{user.verifyEmailAt ? formatDateTime(user.verifyEmailAt) : '—'}</p>
-              </InfoRow>
-            <InfoRow label="Ban Reason" icon={AlertTriangle}>
-              <p className="text-[14px] text-[#c62828]">{user.banReason || '—'}</p>
-            </InfoRow>
-            <InfoRow label="Banned At" icon={AlertTriangle}>
-              <p className="text-[14px] text-[#1f2f3a]">{user.bannedAt ? formatDateTime(user.bannedAt) : '—'}</p>
-            </InfoRow>
-            <InfoRow label="Created" icon={Calendar}>
-              <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.createdAt)}</p>
-            </InfoRow>
-            <InfoRow label="Last Updated" icon={Clock}>
-              <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.updatedAt)}</p>
-            </InfoRow>
+            <InfoRow label="Verified At" icon={Clock}><p className="text-[14px] text-[#1f2f3a]">{user.verifyEmailAt ? formatDateTime(user.verifyEmailAt) : '—'}</p></InfoRow>
+            <InfoRow label="Ban Reason" icon={AlertTriangle}><p className="text-[14px] text-[#c62828]">{user.banReason || '—'}</p></InfoRow>
+            <InfoRow label="Banned At" icon={AlertTriangle}><p className="text-[14px] text-[#1f2f3a]">{user.bannedAt ? formatDateTime(user.bannedAt) : '—'}</p></InfoRow>
+            <InfoRow label="Created" icon={Calendar}><p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.createdAt)}</p></InfoRow>
+            <InfoRow label="Last Updated" icon={Clock}><p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.updatedAt)}</p></InfoRow>
           </div>
         </CardPanel>
+      </div>
 
+      {/* Event History - Full Width */}
+      <div className="mt-5">
+        <CardPanel title={`Event History (${eventsTotal})`}>
+          <div className="mb-4">
+            <FilterBar filters={eventFilters} values={{ keyword: eventKeyword }} onChange={(key, val) => { setEventKeyword(val); setEventPage(1) }} onReset={() => { setEventKeyword(''); setEventPage(1) }} hasActive={eventHasActive} />
+          </div>
+          <BaseTable columns={eventColumns} data={events} page={eventPage} pageSize={PAGE_SIZE} total={eventsTotal} onPageChange={setEventPage} loading={eventsLoading} emptyText="No event history found." keyExtractor={(row) => row.registerTeamId || row.eventId} />
+        </CardPanel>
       </div>
     </div>
   )
