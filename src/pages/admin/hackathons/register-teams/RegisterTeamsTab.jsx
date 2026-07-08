@@ -7,7 +7,7 @@ import { getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam, banRegi
 import { formatDateTime } from '../../../../utils/format'
 import { toast, confirm } from '../../../../utils/toast'
 import PromptReason from '../../../../components/PromptReason'
-import { Search, Ban, Users, Eye, FileText, Trophy, Calendar, MoreHorizontal, CircleCheck, CheckCircle, XCircle, ShieldOff } from 'lucide-react'
+import { Search, Ban, Users, Eye, FileText, Trophy, Calendar, MoreHorizontal, CircleCheck, CheckCircle, XCircle, ShieldOff, Edit3 } from 'lucide-react'
 
 const PAGE_SIZE = 10
 const DEFAULT_VALUES = { keyword: '', status: '', isBanned: '', isDisable: '' }
@@ -111,6 +111,7 @@ export default function RegisterTeamsTab({ eventId }) {
           : <button onClick={() => handleBan(row)} className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#fce4ec] px-2.5 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2] w-[92px]"><ShieldOff className="h-3.5 w-3.5" />Ban</button>
         }
         <Link to={`/admin/register-teams/${row.id}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
+        <Link to={`/admin/register-teams/${row.id}/edit`} className={viewBtnClass}><Edit3 className="h-3.5 w-3.5" />Edit</Link>
       </div>
     ) },
   ]

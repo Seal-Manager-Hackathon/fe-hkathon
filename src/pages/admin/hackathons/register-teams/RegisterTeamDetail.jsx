@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, BadgeCheck, Ban, Hash, ExternalLink } from 'lucide-react'
+import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, Ban, ExternalLink } from 'lucide-react'
 import { getRegisterTeamDetail } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import Badge from '../../../../components/Badge'
@@ -47,6 +47,7 @@ export default function RegisterTeamDetail() {
   if (!data) return null
 
   const members = data.members || []
+  const editUrl = `/admin/register-teams/${registerTeamId}/edit`
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -78,6 +79,7 @@ export default function RegisterTeamDetail() {
               {data.isBanned && (
                 <Badge label="Banned" className="bg-[#fce4ec] text-[#c62828]" />
               )}
+              <Link to={editUrl} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-white/30">Edit</Link>
             </div>
           </div>
         </div>
@@ -104,11 +106,9 @@ export default function RegisterTeamDetail() {
                   <p className="text-[14px] text-rose-600">{data.rejectionReason}</p>
                 </InfoRow>
               )}
-              {data.description && (
-                <InfoRow label="Description" icon={FileText}>
-                  <p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{data.description}</p>
-                </InfoRow>
-              )}
+              <InfoRow label="Description" icon={FileText}>
+                <p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{data.description || '—'}</p>
+              </InfoRow>
               <InfoRow label="Banned" icon={Ban}>
                 {data.isBanned ? <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" />}
               </InfoRow>
@@ -130,7 +130,6 @@ export default function RegisterTeamDetail() {
 
         {/* Right sidebar */}
         <div className="space-y-5">
-          {/* Event card */}
           <CardPanel title="Event" viewAllTo={data.eventId ? `/admin/hackathons/${data.eventId}` : null}>
             <div className="divide-y divide-[#f5f5f5]">
               <InfoRow label="Event" icon={Trophy}>
@@ -143,7 +142,6 @@ export default function RegisterTeamDetail() {
             </div>
           </CardPanel>
 
-          {/* Team card */}
           <CardPanel title="Team">
             <div className="divide-y divide-[#f5f5f5]">
               <InfoRow label="Team" icon={Users}>
@@ -161,7 +159,6 @@ export default function RegisterTeamDetail() {
             </div>
           </CardPanel>
 
-          {/* Timestamps */}
           <CardPanel title="Timestamps">
             <div className="divide-y divide-[#f5f5f5]">
               <InfoRow label="Registered" icon={Calendar}><span className="text-[14px] text-[#1f2f3a]">{formatDateTime(data.createdAt)}</span></InfoRow>

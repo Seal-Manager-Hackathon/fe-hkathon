@@ -656,3 +656,8 @@ export async function unbanRegisterTeam(registerTeamId) {
   const { data } = await api.post(`/admin/register-teams/${registerTeamId}/unban`)
   return data
 }
+
+export async function updateRegisterTeam(registerTeamId, payload) {
+  const { data } = await api.patch(`/admin/register-teams/${registerTeamId}`, payload)
+  return data
+}
