@@ -593,3 +593,18 @@ export async function createAward(eventId, payload) {
   return data
 }
 
+export async function updateAward(eventId, awardId, payload) {
+  const { data } = await api.patch(`/admin/events/${eventId}/awards/${awardId}`, payload)
+  return data
+}
+
+export async function deleteAward(eventId, awardId) {
+  const { data } = await api.patch(`/admin/events/${eventId}/awards/${awardId}/delete`)
+  return data
+}
+
+export async function restoreAward(eventId, awardId) {
+  const { data } = await api.patch(`/admin/events/${eventId}/awards/${awardId}/restore`)
+  return data
+}
+

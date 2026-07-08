@@ -3,30 +3,30 @@ import { useParams, Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
-import { getAwards } from '../../../../api/admin'
+import { getAwards, deleteAward, restoreAward } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
-import { Search, Trash2, Trophy, Hash, DollarSign, Calendar, CircleCheck, Plus } from 'lucide-react'
+import { Search, Trash2, Trophy, Hash, DollarSign, Calendar, Plus, Edit, RotateCcw, MoreHorizontal, CircleCheck } from 'lucide-react'
+import { toast, confirm } from '../../../../utils/toast'
 
 const PAGE_SIZE = 10
 const DEFAULT_VALUES = { keyword: '', isDisable: '' }
+
+const actionBtnClass = 'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
+const dangerBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2] w-[92px]'
+const restoreBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[92px]'
 
 const awardFilters = [
   { type: 'search', key: 'keyword', label: 'Name', icon: Search, placeholder: 'Search award name...' },
   { type: 'select', key: 'isDisable', label: 'Deleted', icon: Trash2, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
 ]
 
-function awardColumns() {
+function awardColumns(eventId, onDelete, onRestore) {
   return [
     {
       key: 'name',
       header: 'Award Name',
       headerIcon: Trophy,
-      render: (row) => (
-        <div className="flex items-center gap-2">
-          <span className="text-[14px] font-semibold text-[#064f5d]">{row.name}</span>
-          <Badge label={row.isDisable ? 'Deleted' : 'Active'} className={row.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
-        </div>
-      ),
+      render: (row) => <span className="text-[14px] font-semibold text-[#064f5d]">{row.name}</span>,
     },
     {
       key: 'levelAward',
@@ -55,10 +55,43 @@ function awardColumns() {
       },
     },
     {
+      key: 'status',
+      header: 'Status',
+      headerIcon: CircleCheck,
+      render: (row) => (
+        <Badge label={row.isDisable ? 'Deleted' : 'Active'} className={row.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
+      ),
+    },
+    {
       key: 'createdAt',
       header: 'Created',
       headerIcon: Calendar,
       render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>,
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      headerIcon: MoreHorizontal,
+      headerClassName: 'text-right',
+      className: 'text-right',
+      render: (row) => (
+        <div className="flex items-center justify-end gap-2">
+          {!row.isDisable && (
+            <Link to={`/admin/hackathons/${eventId}/awards/${row.id}/edit`} className={actionBtnClass}>
+              <Edit className="h-3.5 w-3.5" /> Edit
+            </Link>
+          )}
+          {row.isDisable ? (
+            <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
+              <RotateCcw className="h-3.5 w-3.5" /> Restore
+            </button>
+          ) : (
+            <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
+              <Trash2 className="h-3.5 w-3.5" /> Delete
+            </button>
+          )}
+        </div>
+      ),
     },
   ]
 }
@@ -101,6 +134,30 @@ export default function AwardsTab({ eventId }) {
     setPageIndex(1)
   }
 
+  async function handleDelete(award) {
+    const ok = await confirm('Delete Award', `Are you sure you want to delete "${award.name}"?`)
+    if (!ok) return
+    try {
+      await deleteAward(eventId, award.id)
+      toast.success('Award deleted')
+      fetchAwards()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to delete award.')
+    }
+  }
+
+  async function handleRestore(award) {
+    const ok = await confirm('Restore Award', `Are you sure you want to restore "${award.name}"?`)
+    if (!ok) return
+    try {
+      await restoreAward(eventId, award.id)
+      toast.success('Award restored')
+      fetchAwards()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to restore award.')
+    }
+  }
+
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
@@ -118,7 +175,7 @@ export default function AwardsTab({ eventId }) {
         </div>
         <BaseTable
           borderless
-          columns={awardColumns()}
+          columns={awardColumns(eventId, handleDelete, handleRestore)}
           data={awards}
           page={pageIndex}
           pageSize={PAGE_SIZE}
@@ -128,7 +185,7 @@ export default function AwardsTab({ eventId }) {
           serverSide
           emptyText={hasActive ? 'No awards match the current filters.' : 'No awards configured for this event.'}
           keyExtractor={(row) => row.id}
-          minWidth="700px"
+          minWidth="850px"
         />
       </div>
     </>
