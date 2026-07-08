@@ -236,12 +236,7 @@ export default function CriteriaTemplateDetail() {
       key: 'name',
       header: 'Name',
       headerIcon: FileText,
-      render: (row) => (
-        <div className="flex items-center gap-2">
-          <span className="text-[14px] font-semibold text-[#064f5d]">{row.name}</span>
-          <Badge label={row.isDisable ? 'Deleted' : 'Active'} className={row.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
-        </div>
-      ),
+      render: (row) => <span className="text-[14px] font-semibold text-[#064f5d]">{row.name}</span>,
     },
     {
       key: 'score',
@@ -261,6 +256,14 @@ export default function CriteriaTemplateDetail() {
           </div>
         )
       },
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      headerIcon: CircleCheck,
+      render: (row) => (
+        <Badge label={row.isDisable ? 'Deleted' : 'Active'} className={row.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
+      ),
     },
     {
       key: 'createdAt',
