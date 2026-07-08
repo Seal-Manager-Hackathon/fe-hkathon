@@ -56,6 +56,9 @@ export default function FilterBar({ filters = [], values = {}, onChange, onReset
             />
           )
         }
+        if (f.type === 'custom') {
+          return <f.render key={f.key} />
+        }
         return null
       })}
       {children}

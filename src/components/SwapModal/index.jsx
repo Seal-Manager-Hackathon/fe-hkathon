@@ -4,7 +4,7 @@ import BaseTable from '../BaseTable'
 import FilterBar from '../FilterBar'
 import { toast, confirm } from '../../utils/toast'
 
-const PAGE_SIZE = 8
+const PAGE_SIZE = 5
 
 const DEFAULT_FILTERS = [
   { type: 'search', key: 'keyword', label: 'Search', icon: Search, placeholder: 'Search by name...' },
