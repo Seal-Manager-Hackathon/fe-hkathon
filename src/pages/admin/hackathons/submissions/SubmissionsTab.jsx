@@ -2,13 +2,16 @@ import { useState, useEffect } from 'react'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import RoundSelectModal from '../../../../components/RoundSelectModal'
+import TrackSelectModal from '../../../../components/TrackSelectModal'
+import TopicSelectModal from '../../../../components/TopicSelectModal'
+import RegisterTeamSelectModal from '../../../../components/RegisterTeamSelectModal'
 import { getRounds, getTracks, getTopics } from '../../../../api/admin'
 import { useSubmissionColumns } from './SubmissionColumns'
 import { useSubmissionFilters, PAGE_SIZE } from './useSubmissionFilters'
 import { useSubmissions } from './useSubmissions'
 
 export default function SubmissionsTab({ eventId }) {
-  // ── Dropdown options ──
+  // ── Dropdown options (tracks/topics still needed for SubmissionColumns links) ──
   const [tracks, setTracks] = useState([])
   const [topics, setTopics] = useState([])
   const [loadingOpts, setLoadingOpts] = useState(false)
@@ -16,8 +19,13 @@ export default function SubmissionsTab({ eventId }) {
   // ── Filters ──
   const {
     filters, setFilter, resetFilters, active,
-    roundName, handleRoundSelect, filterConfigs,
+    roundName, setRoundName, trackName, setTrackName, topicName, setTopicName, regTeamName, setRegTeamName,
     roundModalOpen, setRoundModalOpen,
+    trackModalOpen, setTrackModalOpen,
+    topicModalOpen, setTopicModalOpen,
+    regTeamModalOpen, setRegTeamModalOpen,
+    handleSelect,
+    filterConfigs,
   } = useSubmissionFilters(tracks, topics)
 
   // ── Data ──
@@ -26,7 +34,7 @@ export default function SubmissionsTab({ eventId }) {
   // ── Columns ──
   const columns = useSubmissionColumns(eventId)
 
-  // Load tracks
+  // Load tracks (for the dropdowns inside modals we don't need preload, but columns reference tracks)
   useEffect(() => {
     let c = false
     setLoadingOpts(true)
@@ -47,7 +55,6 @@ export default function SubmissionsTab({ eventId }) {
     return () => { c = true }
   }, [filters.trackId])
 
-  // ── Render ──
   return (
     <>
       {error && (
@@ -83,12 +90,44 @@ export default function SubmissionsTab({ eventId }) {
         />
       </div>
 
+      {/* ── Select Modals ── */}
       <RoundSelectModal
         open={roundModalOpen}
         onClose={() => setRoundModalOpen(false)}
         eventId={eventId}
         selectedRoundId={filters.roundId}
-        onSelect={handleRoundSelect}
+        onSelect={handleSelect('roundId', setRoundName)}
+      />
+
+      <TrackSelectModal
+        open={trackModalOpen}
+        onClose={() => setTrackModalOpen(false)}
+        eventId={eventId}
+        selectedTrackId={filters.trackId}
+        onSelect={(id, name) => {
+          handleSelect('trackId', setTrackName)(id, name)
+          if (id !== filters.trackId) {
+            setFilter('topicId', '')
+            setTopicName('')
+            setTopics([])
+          }
+        }}
+      />
+
+      <TopicSelectModal
+        open={topicModalOpen}
+        onClose={() => setTopicModalOpen(false)}
+        trackId={filters.trackId}
+        selectedTopicId={filters.topicId}
+        onSelect={handleSelect('topicId', setTopicName)}
+      />
+
+      <RegisterTeamSelectModal
+        open={regTeamModalOpen}
+        onClose={() => setRegTeamModalOpen(false)}
+        eventId={eventId}
+        selectedRegisterTeamId={filters.registerTeamId}
+        onSelect={handleSelect('registerTeamId', setRegTeamName)}
       />
     </>
   )
