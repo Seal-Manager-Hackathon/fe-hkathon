@@ -1,20 +1,26 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Calendar, Clock, User, Flag, FileText, AlertCircle, Link2, ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { getReportDetail, getUserDetail } from '../../../api/admin'
-import Badge from '../../../components/Badge'
-import CardPanel from '../../../components/CardPanel'
-import InfoRow from '../../../components/InfoRow'
-import NotificationTarget from '../../../components/NotificationTarget'
-import { reportStatusBadge, reportTypeBadge } from '../../../constants/adminOptions'
-import { formatDateTime } from '../../../utils/format'
+import { confirm, promptReason, toast } from '../../../utils/toast'
+import { STATUS_META } from './ReportDetail/statusMeta'
+import HeroCard from './ReportDetail/HeroCard'
+import LoadingSkeleton, { ErrorState } from './ReportDetail/LoadingSkeleton'
+import ReportContentTabs from './ReportDetail/ReportContentTabs'
+import ReportDetailSidebar from './ReportDetail/ReportDetailSidebar'
 
+/* ================================================================== */
+/*  ReportDetail                                                       */
+/* ================================================================== */
 export default function ReportDetail() {
   const { id } = useParams()
   const [report, setReport] = useState(null)
   const [userDetails, setUserDetails] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [activeTab, setActiveTab] = useState('description')
+  const [acting, setActing] = useState(false)
+  const [actionError, setActionError] = useState('')
 
   useEffect(() => {
     let cancelled = false
@@ -23,7 +29,14 @@ export default function ReportDetail() {
       setError('')
       try {
         const data = await getReportDetail(id)
-        if (!cancelled) setReport(data)
+        if (!cancelled) {
+          setReport(data)
+          if (data?.description) {
+            setActiveTab('description')
+          } else if (data?.reason) {
+            setActiveTab('reason')
+          }
+        }
 
         if (data?.userId) {
           const details = {}
@@ -48,87 +61,93 @@ export default function ReportDetail() {
     return () => { cancelled = true }
   }, [id])
 
-  if (loading) {
-    return (
-      <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-        <div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" />
-        <div className="mb-6 space-y-2">
-          <div className="h-7 w-96 animate-pulse rounded bg-gray-200" />
-          <div className="h-4 w-72 animate-pulse rounded bg-gray-200" />
-        </div>
-        <div className="h-60 animate-pulse rounded-xl bg-gray-100" />
-        <div className="mt-5 h-40 animate-pulse rounded-xl bg-gray-100" />
-      </div>
-    )
-  }
+  const handleResolve = useCallback(async () => {
+    const ok = await confirm('Resolve Report', 'Are you sure you want to mark this report as resolved?')
+    if (!ok) return
+    setActing(true)
+    setActionError('')
+    try {
+      // TODO: replace with real API call when available
+      setReport((prev) => (prev ? { ...prev, status: 'Resolved', updatedAt: new Date().toISOString() } : prev))
+      toast.success('Report has been resolved.')
+    } catch (err) {
+      setActionError(err?.response?.data?.message || 'Failed to resolve report.')
+    } finally {
+      setActing(false)
+    }
+  }, [id])
 
-  if (error || !report) {
-    const isNotFound = error && (error.includes('Not Found') || error === 'Resource Not Found')
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">
-          {isNotFound ? 'Report not found' : error || 'Report not found.'}
-        </p>
-        <Link to="/admin/reports" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
-          &larr; Back to Reports
-        </Link>
-      </div>
+  const handleReject = useCallback(async () => {
+    const reason = await promptReason(
+      'Reject Report',
+      'Please provide a reason for rejection:',
+      'e.g. Insufficient evidence, duplicate report...',
+      'Reject Report',
     )
-  }
+    if (!reason) return
+    setActing(true)
+    setActionError('')
+    try {
+      // TODO: replace with real API call when available
+      setReport((prev) => (prev ? { ...prev, status: 'Rejected', updatedAt: new Date().toISOString() } : prev))
+      toast.success('Report has been rejected.')
+    } catch (err) {
+      setActionError(err?.response?.data?.message || 'Failed to reject report.')
+    } finally {
+      setActing(false)
+    }
+  }, [id])
+
+  // ── render ──
+  if (loading) return <LoadingSkeleton />
+  if (error || !report) return <ErrorState isNotFound={error?.includes('Not Found') || error === 'Resource Not Found'} message={error} />
+
+  const meta = STATUS_META[report.status] || STATUS_META.Pending
+  const isPending = report.status === 'Pending'
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <div className="mb-6">
+      {/* ── Back link ── */}
+      <nav className="mb-5">
         <Link
           to="/admin/reports"
-          className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"
+          className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] transition-colors hover:text-[#05404a] hover:underline"
         >
-          <ArrowLeft className="h-4 w-4" />Back to Reports
+          <ArrowLeft className="h-4 w-4" />
+          Back to Reports
         </Link>
+      </nav>
+
+      {/* ── Hero card ── */}
+      <HeroCard
+        report={report}
+        meta={meta}
+        isPending={isPending}
+        acting={acting}
+        onResolve={handleResolve}
+        onReject={handleReject}
+        actionError={actionError}
+      />
+
+      {/* ── Two-column content ── */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Left: tabbed content */}
+        <div className="lg:col-span-2">
+          <ReportContentTabs
+            description={report.description}
+            reason={report.reason}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+        </div>
+
+        {/* Right: sidebar */}
+        <ReportDetailSidebar
+          report={report}
+          userDetails={userDetails}
+          statusIcon={meta.icon}
+        />
       </div>
-
-      <div className="mb-6">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{report.title}</h1>
-          <Badge label={report.typeReport} className={reportTypeBadge[report.typeReport] || 'bg-[#f5f5f5] text-[#757575]'} />
-          <Badge label={report.status} className={reportStatusBadge[report.status] || ''} />
-        </div>
-      </div>
-
-      <CardPanel title="Details">
-        <div className="divide-y divide-[#f5f5f5]">
-          <InfoRow label="Reported By" icon={User}>
-            <NotificationTarget targetType="Personal" userId={report.userId} details={userDetails} />
-          </InfoRow>
-          <InfoRow label="Type" icon={FileText}>
-            <Badge label={report.typeReport} className={reportTypeBadge[report.typeReport] || 'bg-[#f5f5f5] text-[#757575]'} />
-          </InfoRow>
-          <InfoRow label="Status" icon={Flag}>
-            <Badge label={report.status} className={reportStatusBadge[report.status] || ''} />
-          </InfoRow>
-          {report.reason && (
-            <InfoRow label="Reason" icon={AlertCircle}>
-              <p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{report.reason}</p>
-            </InfoRow>
-          )}
-          <InfoRow label="Created At" icon={Calendar}>
-            <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(report.createdAt)}</p>
-          </InfoRow>
-          <InfoRow label="Updated At" icon={Clock}>
-            <p className="text-[14px] text-[#1f2f3a]">{report.updatedAt ? formatDateTime(report.updatedAt) : '—'}</p>
-          </InfoRow>
-        </div>
-      </CardPanel>
-
-      {report.description && (
-        <div className="mt-5">
-          <CardPanel title="Description">
-            <div className="px-5 py-5">
-              <p className="text-[14px] leading-relaxed text-[#1f2f3a] whitespace-pre-wrap">{report.description}</p>
-            </div>
-          </CardPanel>
-        </div>
-      )}
     </div>
   )
 }

@@ -33,7 +33,7 @@ export default function NotificationTarget({ targetType, userId, teamId, details
     return (
       <Link
         to={`/admin/users/${userId}`}
-        className="inline-flex items-center gap-2 rounded-md px-1 py-0.5 transition-colors hover:bg-[#e3f2fd]/60"
+        className="inline-flex cursor-pointer items-center gap-2 rounded-md px-1 py-0.5 transition-colors hover:bg-[#e3f2fd]/60"
       >
         <Avatar src={user?.avatarUrl} name={name} size="h-7 w-7" textSize="text-[10px]" />
         <span className="text-[13px] font-medium text-[#064f5d] hover:underline">
@@ -51,7 +51,7 @@ export default function NotificationTarget({ targetType, userId, teamId, details
     return (
       <Link
         to={`/admin/teams/${teamId}`}
-        className="inline-flex items-center gap-2 rounded-md px-1 py-0.5 transition-colors hover:bg-[#e8f5e9]/60"
+        className="inline-flex cursor-pointer items-center gap-2 rounded-md px-1 py-0.5 transition-colors hover:bg-[#e8f5e9]/60"
       >
         <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#eceff1]">
           <Users className="h-3.5 w-3.5 text-[#78909c]" />
