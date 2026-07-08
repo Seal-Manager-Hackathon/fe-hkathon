@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
@@ -45,7 +45,7 @@ export default function RegisterTeamsTab({ eventId }) {
   const [assigning, setAssigning] = useState(false)
   const [trackModalOpen, setTrackModalOpen] = useState(false)
   const [topicModalOpen, setTopicModalOpen] = useState(false)
-  const [selectedTrackId, setSelectedTrackId] = useState(null)
+  const selectedTrackIdRef = useRef(null)
 
   const fetchTeams = useCallback(async () => {
     setLoading(true); setError('')
@@ -116,52 +116,48 @@ export default function RegisterTeamsTab({ eventId }) {
   // ── Track/Topic assignment handlers ──
   function openAssign(row) {
     setAssignTarget(row)
-    setSelectedTrackId(null)
+    selectedTrackIdRef.current = null
     setTrackModalOpen(true)
   }
 
   function handleTrackSelect(trackId) {
-    // Must select a track (not "All")
     if (!trackId) {
       toast.error('Please select a track')
       return
     }
-    setSelectedTrackId(trackId)
+    selectedTrackIdRef.current = trackId
     setTrackModalOpen(false)
     setTopicModalOpen(true)
   }
 
   function handleTopicSelect(topicId) {
     setTopicModalOpen(false)
-    submitAssign(selectedTrackId, topicId || undefined)
+    doAssign(selectedTrackIdRef.current, topicId || undefined)
   }
 
   function handleTopicModalClose() {
     setTopicModalOpen(false)
-    // Still submit with track only if user closes without selecting topic
-    submitAssign(selectedTrackId, undefined)
-  }
-
-  async function submitAssign(trackId, topicId) {
-    if (!assignTarget) return
-    setAssigning(true)
-    try {
-      const payload = { trackId }
-      if (topicId) payload.topicId = topicId
-      await assignTrackTopicToRegisterTeam(assignTarget.id, payload)
-      toast.success('Track/Topic assigned successfully')
-      fetchTeams()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to assign track/topic')
-    } finally {
-      setAssigning(false)
-      setAssignTarget(null)
-      setSelectedTrackId(null)
+    // If user already confirmed via handleTopicSelect, assignTarget was already cleared.
+    // Only submit if user closed without selecting (Cancel / X).
+    if (assignTarget) {
+      doAssign(selectedTrackIdRef.current, undefined)
     }
   }
 
+  function doAssign(trackId, topicId) {
+    const target = assignTarget
+    if (!target || !trackId) return
+    setAssigning(true)
+    setAssignTarget(null)
+    selectedTrackIdRef.current = null
+    assignTrackTopicToRegisterTeam(target.id, { trackId, ...(topicId && { topicId }) })
+      .then(() => { toast.success('Track/Topic assigned successfully'); fetchTeams() })
+      .catch((err) => { toast.error(err?.response?.data?.message || 'Failed to assign track/topic') })
+      .finally(() => { setAssigning(false) })
+  }
+
   async function handleRemoveAssign(row) {
-    const ok = await confirm('Remove Track/Topic', `Remove track and topic assignment from "${row.teamName}"?`)
+    const ok = await confirm('Remove Track & Topic', `Remove track and topic assignment from "${row.teamName}"?`)
     if (!ok) return
     try {
       await removeTrackTopicFromRegisterTeam(row.id)
@@ -213,7 +209,7 @@ export default function RegisterTeamsTab({ eventId }) {
     {/* Track Select Modal */}
     <TrackSelectModal
       open={trackModalOpen}
-      onClose={() => { setTrackModalOpen(false); setAssignTarget(null) }}
+      onClose={() => { setTrackModalOpen(false) }}
       eventId={eventId}
       selectedTrackId={assignTarget?.trackId || null}
       onSelect={handleTrackSelect}
@@ -223,7 +219,7 @@ export default function RegisterTeamsTab({ eventId }) {
     <TopicSelectModal
       open={topicModalOpen}
       onClose={handleTopicModalClose}
-      trackId={selectedTrackId}
+      trackId={selectedTrackIdRef.current}
       selectedTopicId={assignTarget?.topicId || null}
       onSelect={handleTopicSelect}
     />
