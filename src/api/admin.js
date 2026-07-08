@@ -672,3 +672,68 @@ export async function updateRegisterTeam(registerTeamId, payload) {
   const { data } = await api.patch(`/admin/register-teams/${registerTeamId}`, payload)
   return data
 }
+
+// ========== Assign APIs ==========
+
+/**
+ * Get users assigned to an event (Mentor/Judge/Staff).
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @param {string} [params.Keyword] - Search by email or fullname
+ * @param {'Mentor'|'Judge'|'Staff'} [params.EventRole]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ */
+export async function getAssignedUsers(eventId, params = {}) {
+  const { data } = await api.get(`/admin/assign/events/${eventId}/assigned`, { params })
+  return data.data
+}
+
+/**
+ * Get lecturers available to be assigned to an event.
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @param {string} [params.Keyword]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ */
+export async function getAvailableLecturers(eventId, params = {}) {
+  const { data } = await api.get(`/admin/assign/events/${eventId}/lecturers/available`, { params })
+  return data.data
+}
+
+/**
+ * Get staff available to be assigned to an event.
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @param {string} [params.Keyword]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ */
+export async function getAvailableStaff(eventId, params = {}) {
+  const { data } = await api.get(`/admin/assign/events/${eventId}/staff/available`, { params })
+  return data.data
+}
+
+/**
+ * Assign a user to an event.
+ * @param {string} eventId
+ * @param {Object} payload
+ * @param {string} payload.userId
+ * @param {string} payload.eventRole - Mentor/Judge/Staff
+ */
+export async function assignUserToEvent(eventId, payload) {
+  const { data } = await api.post(`/admin/assign/events/${eventId}/assign/users`, payload)
+  return data
+}
+
+/**
+ * Remove a user assignment from an event.
+ * @param {string} eventId
+ * @param {string} assignEventId
+ */
+export async function removeAssign(eventId, assignEventId) {
+  const { data } = await api.delete(`/admin/assign/events/${eventId}/${assignEventId}`)
+  return data
+}
+
