@@ -171,7 +171,6 @@ export default function SubmissionDetail() {
     try {
       const result = await getSubmissionDetail(submissionId)
       setData(result)
-      // Fetch team and register team in parallel
       if (result.teamId || result.registerTeamId) {
         const promises = []
         if (result.teamId) promises.push(getTeamDetail(result.teamId).then(setTeam).catch(() => {}))
@@ -220,10 +219,12 @@ export default function SubmissionDetail() {
               <Send className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-[20px] font-bold text-white sm:text-[26px]">Submission Detail</h1>
-              <p className="mt-0.5 flex items-center gap-2 text-[13px] text-white/70">
+              <h1 className="text-[20px] font-bold text-white sm:text-[26px]">
+                Submission Detail
+                <Badge label={data.status} className="ml-3 align-middle inline-flex bg-white/15 text-white border border-white/20" />
+              </h1>
+              <p className="mt-0.5 text-[13px] text-white/70">
                 <span>Submitted {formatDateTime(data.submittedAt || data.createdAt)}</span>
-                <Badge label={data.status} className={statusBadge[data.status] || 'bg-white/15 text-white border border-white/20'} />
               </p>
             </div>
           </div>
@@ -255,44 +256,48 @@ export default function SubmissionDetail() {
             </div>
           </CardPanel>
 
-          {/* Team Info */}
-          <SidebarCard icon={Users} title="Team Info" viewTo={data.teamId ? `/admin/teams/${data.teamId}` : null}>
+          {/* Team & Registration (merged) */}
+          <SidebarCard icon={Users} title="Team & Registration">
             <div className="px-5 py-3.5">
-              {data.teamId ? (
-                <Link to={`/admin/teams/${data.teamId}`} className="text-[14px] font-bold text-[#064f5d] leading-snug hover:underline">{data.teamName || '—'}</Link>
-              ) : <span className="text-[14px] font-bold text-[#1f2f3a]">{data.teamName || '—'}</span>}
-              <div className="mt-1.5 flex items-center gap-2">
-                {team ? (team.isDisable ? <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />) : null}
-                {team && team.canEdit === false && <Badge label="Locked" className="bg-[#ffcdd2] text-[#e65100]" />}
+              <div className="flex items-center gap-2 text-[13px]">
+                <Users className="h-3.5 w-3.5 text-[#2e7d32]" /><span className="text-gray-400">Team</span>
+                {data.teamId ? (
+                  <Link to={`/admin/teams/${data.teamId}`} className="font-semibold text-[#064f5d] hover:underline">{data.teamName || '—'}</Link>
+                ) : <span className="font-semibold text-[#1f2f3a]">{data.teamName || '—'}</span>}
+                {team && (
+                  <span className="ml-auto flex items-center gap-1.5">
+                    {team.isDisable ? <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
+                    {team.canEdit === false && <Badge label="Locked" className="bg-[#ffcdd2] text-[#e65100]" />}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="px-5 py-3.5">
+              <div className="flex items-center gap-2 text-[13px]">
+                <FileText className="h-3.5 w-3.5 text-[#6a1b9a]" /><span className="text-gray-400">Register Team</span>
+                {data.registerTeamId ? (
+                  <Link to={`/admin/register-teams/${data.registerTeamId}`} className="font-semibold text-[#064f5d] hover:underline">{data.teamName || '—'}</Link>
+                ) : <span className="font-semibold text-gray-400">—</span>}
+                {regTeam && (
+                  <span className="ml-auto flex items-center gap-1.5">
+                    <Badge label={regTeam.status} className={regStatusBadge[regTeam.status] || 'bg-gray-50 text-gray-600'} />
+                    {regTeam.isBanned && <Badge label="Banned" className="bg-[#fce4ec] text-[#c62828]" />}
+                  </span>
+                )}
               </div>
             </div>
             <div className="px-5 py-3 space-y-2">
+              <p className="flex items-center gap-2 text-[13px]"><Trophy className="h-3.5 w-3.5 text-[#ef6c00]" /><span className="text-gray-400">Event</span>
+                {regTeam?.eventId ? (
+                  <Link to={`/admin/hackathons/${regTeam.eventId}`} className="ml-auto font-semibold text-[#064f5d] hover:underline">{regTeam.eventName || '—'}</Link>
+                ) : <span className="ml-auto font-semibold text-[#1f2f3a]">{regTeam?.eventName || '—'}</span>}
+              </p>
               <p className="flex items-center gap-2 text-[13px]"><Users className="h-3.5 w-3.5 text-[#2e7d32]" /><span className="text-gray-400">Members</span><span className="ml-auto font-semibold text-[#2e7d32]">{team ? members.length : '—'}</span></p>
               <p className="flex items-center gap-2 text-[13px]"><Lock className="h-3.5 w-3.5 text-[#e65100]" /><span className="text-gray-400">Lock</span><span className="ml-auto font-semibold text-[#e65100]">{team ? (team.canEdit ? 'No' : 'Yes') : '—'}</span></p>
-              <p className="flex items-center gap-2 text-[13px]"><Calendar className="h-3.5 w-3.5 text-[#1565c0]" /><span className="text-gray-400">Created</span><span className="ml-auto font-semibold text-[#1f2f3a]">{team ? formatDateTime(team.createdAt) : '—'}</span></p>
-              <p className="flex items-center gap-2 text-[13px]"><Clock className="h-3.5 w-3.5 text-[#ef6c00]" /><span className="text-gray-400">Updated</span><span className="ml-auto font-semibold text-[#1f2f3a]">{team ? formatDateTime(team.updatedAt) : '—'}</span></p>
+              <p className="flex items-center gap-2 text-[13px]"><Calendar className="h-3.5 w-3.5 text-[#1565c0]" /><span className="text-gray-400">Team Created</span><span className="ml-auto font-semibold text-[#1f2f3a]">{team ? formatDateTime(team.createdAt) : '—'}</span></p>
+              <p className="flex items-center gap-2 text-[13px]"><Calendar className="h-3.5 w-3.5 text-[#1565c0]" /><span className="text-gray-400">Registered Hackathon</span><span className="ml-auto font-semibold text-[#1f2f3a]">{regTeam ? formatDateTime(regTeam.createdAt) : '—'}</span></p>
             </div>
           </SidebarCard>
-
-          {/* Register Team Info */}
-          {regTeam && (
-            <SidebarCard icon={FileText} title="Register Team Info" viewTo={`/admin/register-teams/${regTeam.id}`}>
-              <div className="px-5 py-3.5">
-                <div className="flex items-center gap-2">
-                  <Badge label={regTeam.status} className={regStatusBadge[regTeam.status] || 'bg-gray-50 text-gray-600'} />
-                  {regTeam.isBanned && <Badge label="Banned" className="bg-[#fce4ec] text-[#c62828]" />}
-                </div>
-              </div>
-              <div className="px-5 py-3 space-y-2">
-                <p className="flex items-center gap-2 text-[13px]"><Trophy className="h-3.5 w-3.5 text-[#ef6c00]" /><span className="text-gray-400">Event</span>
-                  {regTeam.eventId ? (
-                    <Link to={`/admin/hackathons/${regTeam.eventId}`} className="ml-auto font-semibold text-[#064f5d] hover:underline">{regTeam.eventName || '—'}</Link>
-                  ) : <span className="ml-auto font-semibold text-[#1f2f3a]">{regTeam.eventName || '—'}</span>}
-                </p>
-                <p className="flex items-center gap-2 text-[13px]"><Calendar className="h-3.5 w-3.5 text-[#1565c0]" /><span className="text-gray-400">Created</span><span className="ml-auto font-semibold text-[#1f2f3a]">{formatDateTime(regTeam.createdAt)}</span></p>
-              </div>
-            </SidebarCard>
-          )}
 
           {/* Context */}
           <SidebarCard icon={Layers} title="Context">
