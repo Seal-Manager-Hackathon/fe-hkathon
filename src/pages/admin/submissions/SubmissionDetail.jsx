@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Users, User, CircleCheck, Send, ExternalLink, FolderKanban, Layers, Hash, Star, ChevronDown, ChevronUp } from 'lucide-react'
-import { getSubmissionDetail } from '../../../api/admin'
+import { ArrowLeft, FileText, Calendar, Clock, Users, User, CircleCheck, Send, ExternalLink, FolderKanban, Layers, Star, Eye, Info, Lock, ChevronRight, Trophy } from 'lucide-react'
+import { getSubmissionDetail, getTeamDetail, getSubmissionGraderScores, getRegisterTeamDetail } from '../../../api/admin'
 import { formatDateTime } from '../../../utils/format'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
 import InfoRow from '../../../components/InfoRow'
 import Avatar from '../../../components/Avatar'
+import RichTextViewer from '../../../components/RichTextViewer'
+import BaseTable from '../../../components/BaseTable'
 
 const statusBadge = {
   Submitted: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
@@ -14,65 +16,13 @@ const statusBadge = {
   Graded: 'bg-blue-50 text-blue-700 border border-blue-200',
 }
 
-function ScoreCard({ score }) {
-  const [openItems, setOpenItems] = useState({})
-
-  function toggleItem(id) {
-    setOpenItems((prev) => ({ ...prev, [id]: !prev[id] }))
-  }
-
-  return (
-    <div className="rounded-xl border border-[#e8ecf0] overflow-hidden">
-      <div className="flex items-center justify-between bg-[#fafbfc] px-5 py-3 border-b border-[#f0f0f0]">
-        <div className="flex items-center gap-3">
-          <span className="text-[14px] font-semibold text-[#1f2f3a]">{score.trackTitle || 'Score'}</span>
-          {score.isRetake && <Badge label="Retake" className="bg-[#fce4ec] text-[#c62828]" />}
-          {score.isMock && <Badge label="Mock" className="bg-[#fff3e0] text-[#e65100]" />}
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[13px] text-gray-400">Total</span>
-          <span className="text-[16px] font-bold text-[#064f5d]">{score.totalScore}</span>
-        </div>
-      </div>
-      <div>
-        {(score.items || []).map((item) => {
-          const isOpen = !!openItems[item.scoreItemId]
-          return (
-            <div key={item.scoreItemId} className="border-b border-[#f0f0f0] last:border-b-0">
-              <button onClick={() => toggleItem(item.scoreItemId)} className="flex w-full cursor-pointer items-center justify-between px-5 py-3.5 text-left hover:bg-gray-50/50 transition-colors">
-                <div className="flex items-center gap-3">
-                  <span className="text-[14px] font-semibold text-[#1f2f3a]">{item.criteriaName}</span>
-                  <Badge label={`${item.score} pts`} className="bg-[#e3f2fd] text-[#1565c0]" />
-                </div>
-                {isOpen ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
-              </button>
-              {isOpen && (
-                <div className="space-y-2 bg-[#fafbfc] px-5 pb-4">
-                  {item.comment && (
-                    <p className="text-[13px] text-gray-600"><span className="font-semibold">Comment:</span> {item.comment}</p>
-                  )}
-                  {item.gradedBy && (
-                    <div className="flex items-center gap-2 text-[13px] text-gray-500">
-                      <span className="font-medium">Graded by</span>
-                      <Link to={`/admin/users/${item.gradedBy.userId}`} className="inline-flex items-center gap-1.5 font-semibold text-[#064f5d] hover:underline">
-                        <Avatar src={item.gradedBy.avatarUrl} name={`${item.gradedBy.firstName} ${item.gradedBy.lastName}`} size="h-6 w-6" textSize="text-[10px]" />
-                        {item.gradedBy.firstName} {item.gradedBy.lastName}
-                      </Link>
-                    </div>
-                  )}
-                  <p className="text-[12px] text-gray-400">Last updated {formatDateTime(item.updatedAt || item.createdAt)}</p>
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-      <div className="border-t border-[#f0f0f0] bg-[#fafbfc] px-5 py-2 text-[12px] text-gray-400">
-        Graded {formatDateTime(score.createdAt)}
-      </div>
-    </div>
-  )
+const regStatusBadge = {
+  Pending: 'bg-amber-50 text-amber-700 border border-amber-200',
+  Approved: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  Rejected: 'bg-rose-50 text-rose-700 border border-rose-200',
 }
+
+const GRADER_PAGE_SIZE = 5
 
 function LoadingSkeleton() {
   return (
@@ -94,31 +44,166 @@ function ErrorState({ message, nf }) {
   )
 }
 
+function TabBtn({ active, icon: Icon, label, color, onClick }) {
+  const c = {
+    blue:   { bg: 'from-blue-50 to-white', text: 'text-blue-700', bar: 'bg-blue-500', icon: 'text-blue-500' },
+    amber:  { bg: 'from-amber-50 to-white', text: 'text-amber-700', bar: 'bg-amber-500', icon: 'text-amber-500' },
+    green:  { bg: 'from-emerald-50 to-white', text: 'text-emerald-700', bar: 'bg-emerald-500', icon: 'text-emerald-500' },
+  }[color] || { bg: 'from-blue-50 to-white', text: 'text-blue-700', bar: 'bg-blue-500', icon: 'text-blue-500' }
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`relative flex-1 cursor-pointer px-4 py-3.5 text-[13px] font-semibold transition-all duration-200 ${active ? `bg-gradient-to-r ${c.bg} ${c.text}` : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
+    >
+      <span className="inline-flex items-center gap-2 whitespace-nowrap"><Icon className={`h-4 w-4 ${active ? c.icon : 'text-slate-400'}`} />{label}</span>
+      {active && <span className={`absolute bottom-0 left-3 right-3 h-0.5 rounded-full ${c.bar}`} />}
+    </button>
+  )
+}
+
+const graderColumns = [
+  { key: 'trackTitle', header: 'Track', headerIcon: FolderKanban, render: (row) => <span className="text-[14px] font-semibold text-[#1f2f3a]">{row.trackTitle || '—'}</span> },
+  { key: 'totalScore', header: 'Score', headerIcon: Star, render: (row) => <span className="text-[15px] font-bold text-[#064f5d]">{row.totalScore}</span> },
+  { key: 'flags', header: '', render: (row) => <div className="flex items-center gap-1.5">{row.isRetake && <Badge label="Retake" className="bg-[#fce4ec] text-[#c62828]" />}{row.isMock && <Badge label="Mock" className="bg-[#fff3e0] text-[#e65100]" />}</div> },
+  { key: 'createdAt', header: 'Graded At', headerIcon: Calendar, render: (row) => <span className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</span> },
+]
+
+function SidebarCard({ icon: Icon, title, viewTo, children }) {
+  return (
+    <div className="rounded-xl border border-[#e8ecf0] bg-white shadow-sm self-start overflow-hidden">
+      <div className="flex items-center justify-between bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-5 py-4">
+        <h4 className="text-[14px] font-bold text-white flex items-center gap-2"><Icon className="h-4 w-4 text-[#80deea]" />{title}</h4>
+        {viewTo && (
+          <Link to={viewTo} className="inline-flex cursor-pointer items-center gap-1 text-[12px] font-medium text-white/80 hover:text-white hover:underline">
+            View <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
+        )}
+      </div>
+      <div className="divide-y divide-[#f5f5f5]">{children}</div>
+    </div>
+  )
+}
+
+function SubmissionTabs({ data, graderScores, graderTotal, graderPage, graderLoading, onGraderPageChange, eventId }) {
+  const [tab, setTab] = useState('content')
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-sm">
+      <div className="flex bg-gradient-to-r from-slate-50 to-white">
+        <TabBtn active={tab === 'content'} icon={Eye} label="Content" color="blue" onClick={() => setTab('content')} />
+        <TabBtn active={tab === 'info'} icon={Info} label="Information" color="amber" onClick={() => setTab('info')} />
+        <TabBtn active={tab === 'score'} icon={Star} label="Score" color="green" onClick={() => setTab('score')} />
+      </div>
+
+      {tab === 'content' && (
+        <div className="divide-y divide-[#f5f5f5]">
+          <div className="px-5 py-4">
+            <span className="text-[13px] font-semibold text-gray-400">URL</span>
+            <div className="mt-1">
+              {data.url ? (
+                <a href={data.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
+                  <ExternalLink className="h-3.5 w-3.5" /> Open Submission
+                </a>
+              ) : <span className="text-[14px] text-gray-400">—</span>}
+            </div>
+          </div>
+          <div className="px-5 py-4">
+            <span className="text-[13px] font-semibold text-gray-400">Description</span>
+            <div className="mt-2"><RichTextViewer content={data.description} /></div>
+          </div>
+        </div>
+      )}
+
+      {tab === 'info' && (
+        <div className="divide-y divide-[#f5f5f5]">
+          <InfoRow label="Status" icon={CircleCheck}>
+            <Badge label={data.status} className={statusBadge[data.status] || 'bg-gray-50 text-gray-600'} />
+          </InfoRow>
+          {data.isRegrade && (
+            <InfoRow label="Regrade" icon={Star}><Badge label="Yes" className="bg-[#fff3e0] text-[#e65100]" /></InfoRow>
+          )}
+          {data.totalScore != null && (
+            <InfoRow label="Total Score" icon={Star}><span className="text-[16px] font-bold text-[#064f5d]">{data.totalScore}</span></InfoRow>
+          )}
+          {data.judgeCount != null && (
+            <InfoRow label="Judges Graded" icon={Users}><span className="text-[14px] font-semibold text-[#2e7d32]">{data.judgeCount}</span></InfoRow>
+          )}
+          <InfoRow label="Submitted At" icon={Calendar}>
+            <span className="text-[14px] text-[#1f2f3a]">{formatDateTime(data.submittedAt || data.createdAt)}</span>
+          </InfoRow>
+          <InfoRow label="Last Updated" icon={Clock}>
+            <span className="text-[14px] text-[#1f2f3a]">{formatDateTime(data.updatedAt)}</span>
+          </InfoRow>
+        </div>
+      )}
+
+      {tab === 'score' && (
+        graderTotal === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12">
+            <Star className="mb-3 h-10 w-10 text-gray-300" />
+            <p className="text-[14px] text-gray-400">No judge scores yet.</p>
+          </div>
+        ) : (
+          <BaseTable borderless columns={graderColumns} data={graderScores} page={graderPage} pageSize={GRADER_PAGE_SIZE}
+            total={graderTotal} onPageChange={onGraderPageChange} loading={graderLoading}
+            serverSide emptyText="No scores." keyExtractor={(row) => row.scoreId} minWidth="500px" />
+        )
+      )}
+    </div>
+  )
+}
+
 export default function SubmissionDetail() {
   const { submissionId } = useParams()
   const [data, setData] = useState(null)
+  const [team, setTeam] = useState(null)
+  const [regTeam, setRegTeam] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [graderScores, setGraderScores] = useState([])
+  const [graderTotal, setGraderTotal] = useState(0)
+  const [graderPage, setGraderPage] = useState(1)
+  const [graderLoading, setGraderLoading] = useState(false)
 
   async function fetchData() {
     setLoading(true); setError('')
-    try { const result = await getSubmissionDetail(submissionId); setData(result) }
-    catch (err) { setError(err?.response?.data?.message || 'Failed to load submission.') }
-    finally { setLoading(false) }
+    try {
+      const result = await getSubmissionDetail(submissionId)
+      setData(result)
+      // Fetch team and register team in parallel
+      if (result.teamId || result.registerTeamId) {
+        const promises = []
+        if (result.teamId) promises.push(getTeamDetail(result.teamId).then(setTeam).catch(() => {}))
+        if (result.registerTeamId) promises.push(getRegisterTeamDetail(result.registerTeamId).then(setRegTeam).catch(() => {}))
+        await Promise.allSettled(promises)
+      }
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Failed to load submission.')
+    } finally { setLoading(false) }
   }
 
+  const fetchGraderScores = useCallback(async () => {
+    setGraderLoading(true)
+    try {
+      const r = await getSubmissionGraderScores(submissionId, { pageIndex: graderPage, pageSize: GRADER_PAGE_SIZE })
+      setGraderScores(r.scores || [])
+      setGraderTotal(r.totalCount || 0)
+    } catch {} finally { setGraderLoading(false) }
+  }, [submissionId, graderPage])
+
   useEffect(() => { fetchData() }, [submissionId])
+  useEffect(() => { if (data) fetchGraderScores() }, [fetchGraderScores, data])
 
   if (loading) return <LoadingSkeleton />
-
   if (error) {
     const nf = error.includes('Not Found')
     return <ErrorState message={error} nf={nf} />
   }
-
   if (!data) return null
 
-  const scores = data.scores || []
+  const members = team?.members || []
+  const eventId = regTeam?.eventId
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -128,73 +213,33 @@ export default function SubmissionDetail() {
         </button>
       </div>
 
-      {/* Hero */}
       <div className="mb-6 overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-sm">
         <div className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-6 py-5 sm:px-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/15 shadow-inner">
-                <Send className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-[20px] font-bold text-white sm:text-[26px]">Submission Detail</h1>
-                <p className="mt-0.5 flex items-center gap-2 text-[13px] text-white/70">
-                  <span>Submitted {formatDateTime(data.submittedAt || data.createdAt)}</span>
-                  <Badge label={data.status} className={statusBadge[data.status] || 'bg-white/15 text-white border border-white/20'} />
-                </p>
-              </div>
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/15 shadow-inner">
+              <Send className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-[20px] font-bold text-white sm:text-[26px]">Submission Detail</h1>
+              <p className="mt-0.5 flex items-center gap-2 text-[13px] text-white/70">
+                <span>Submitted {formatDateTime(data.submittedAt || data.createdAt)}</span>
+                <Badge label={data.status} className={statusBadge[data.status] || 'bg-white/15 text-white border border-white/20'} />
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        {/* Main content */}
         <div className="space-y-5 lg:col-span-2">
-          <CardPanel title="Submission Details">
-            <div className="divide-y divide-[#f5f5f5]">
-              <InfoRow label="Status" icon={CircleCheck}>
-                <Badge label={data.status} className={statusBadge[data.status] || 'bg-gray-50 text-gray-600'} />
-              </InfoRow>
-              {data.isRegrade && (
-                <InfoRow label="Regrade" icon={Star}>
-                  <Badge label="Yes" className="bg-[#fff3e0] text-[#e65100]" />
-                </InfoRow>
-              )}
-              <InfoRow label="Description" icon={FileText}>
-                <p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{data.description || '—'}</p>
-              </InfoRow>
-              {data.url && (
-                <InfoRow label="File" icon={ExternalLink}>
-                  <a href={data.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
-                    <ExternalLink className="h-3.5 w-3.5" /> Open Submission
-                  </a>
-                </InfoRow>
-              )}
-              <InfoRow label="Submitted At" icon={Calendar}>
-                <span className="text-[14px] text-[#1f2f3a]">{formatDateTime(data.submittedAt || data.createdAt)}</span>
-              </InfoRow>
-              <InfoRow label="Last Updated" icon={Clock}>
-                <span className="text-[14px] text-[#1f2f3a]">{formatDateTime(data.updatedAt)}</span>
-              </InfoRow>
-            </div>
-          </CardPanel>
-
-          <CardPanel title={`Judging Scores (${scores.length})`}>
-            {scores.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10">
-                <Star className="mb-3 h-10 w-10 text-gray-300" />
-                <p className="text-[14px] text-gray-400">No judge scores yet.</p>
-              </div>
-            ) : (
-              <div className="space-y-4 p-5">
-                {scores.map((s) => <ScoreCard key={s.scoreId} score={s} />)}
-              </div>
-            )}
-          </CardPanel>
+          <SubmissionTabs
+            data={data}
+            graderScores={graderScores} graderTotal={graderTotal} graderPage={graderPage}
+            graderLoading={graderLoading} onGraderPageChange={setGraderPage}
+            eventId={eventId}
+          />
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-5">
           <CardPanel title="Submitted By">
             <div className="p-5">
@@ -210,32 +255,63 @@ export default function SubmissionDetail() {
             </div>
           </CardPanel>
 
-          <CardPanel title="Team">
-            <div className="divide-y divide-[#f5f5f5]">
-              <InfoRow label="Team" icon={Users}>
-                {data.teamId ? (
-                  <Link to={`/admin/teams/${data.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.teamName || '—'}</Link>
-                ) : <span className="text-[14px] text-[#1f2f3a]">{data.teamName || '—'}</span>}
-              </InfoRow>
+          {/* Team Info */}
+          <SidebarCard icon={Users} title="Team Info" viewTo={data.teamId ? `/admin/teams/${data.teamId}` : null}>
+            <div className="px-5 py-3.5">
+              {data.teamId ? (
+                <Link to={`/admin/teams/${data.teamId}`} className="text-[14px] font-bold text-[#064f5d] leading-snug hover:underline">{data.teamName || '—'}</Link>
+              ) : <span className="text-[14px] font-bold text-[#1f2f3a]">{data.teamName || '—'}</span>}
+              <div className="mt-1.5 flex items-center gap-2">
+                {team ? (team.isDisable ? <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />) : null}
+                {team && team.canEdit === false && <Badge label="Locked" className="bg-[#ffcdd2] text-[#e65100]" />}
+              </div>
             </div>
-          </CardPanel>
+            <div className="px-5 py-3 space-y-2">
+              <p className="flex items-center gap-2 text-[13px]"><Users className="h-3.5 w-3.5 text-[#2e7d32]" /><span className="text-gray-400">Members</span><span className="ml-auto font-semibold text-[#2e7d32]">{team ? members.length : '—'}</span></p>
+              <p className="flex items-center gap-2 text-[13px]"><Lock className="h-3.5 w-3.5 text-[#e65100]" /><span className="text-gray-400">Lock</span><span className="ml-auto font-semibold text-[#e65100]">{team ? (team.canEdit ? 'No' : 'Yes') : '—'}</span></p>
+              <p className="flex items-center gap-2 text-[13px]"><Calendar className="h-3.5 w-3.5 text-[#1565c0]" /><span className="text-gray-400">Created</span><span className="ml-auto font-semibold text-[#1f2f3a]">{team ? formatDateTime(team.createdAt) : '—'}</span></p>
+              <p className="flex items-center gap-2 text-[13px]"><Clock className="h-3.5 w-3.5 text-[#ef6c00]" /><span className="text-gray-400">Updated</span><span className="ml-auto font-semibold text-[#1f2f3a]">{team ? formatDateTime(team.updatedAt) : '—'}</span></p>
+            </div>
+          </SidebarCard>
 
-          <CardPanel title="Context">
-            <div className="divide-y divide-[#f5f5f5]">
-              <InfoRow label="Round" icon={Layers}>
-                {data.roundName ? <span className="text-[14px] text-[#1f2f3a]">{data.roundName}</span> : <span className="text-[14px] text-gray-400">—</span>}
-              </InfoRow>
-              <InfoRow label="Track" icon={FolderKanban}>
-                {data.trackTitle ? <span className="text-[14px] text-[#1f2f3a]">{data.trackTitle}</span> : <span className="text-[14px] text-gray-400">—</span>}
-              </InfoRow>
-              <InfoRow label="Topic" icon={FileText}>
-                {data.topicTitle ? <span className="text-[14px] text-[#1f2f3a]">{data.topicTitle}</span> : <span className="text-[14px] text-gray-400">—</span>}
-              </InfoRow>
-              <InfoRow label="ID" icon={Hash}>
-                <span className="text-[12px] text-gray-400 font-mono">{data.id}</span>
-              </InfoRow>
-            </div>
-          </CardPanel>
+          {/* Register Team Info */}
+          {regTeam && (
+            <SidebarCard icon={FileText} title="Register Team Info" viewTo={`/admin/register-teams/${regTeam.id}`}>
+              <div className="px-5 py-3.5">
+                <div className="flex items-center gap-2">
+                  <Badge label={regTeam.status} className={regStatusBadge[regTeam.status] || 'bg-gray-50 text-gray-600'} />
+                  {regTeam.isBanned && <Badge label="Banned" className="bg-[#fce4ec] text-[#c62828]" />}
+                </div>
+              </div>
+              <div className="px-5 py-3 space-y-2">
+                <p className="flex items-center gap-2 text-[13px]"><Trophy className="h-3.5 w-3.5 text-[#ef6c00]" /><span className="text-gray-400">Event</span>
+                  {regTeam.eventId ? (
+                    <Link to={`/admin/hackathons/${regTeam.eventId}`} className="ml-auto font-semibold text-[#064f5d] hover:underline">{regTeam.eventName || '—'}</Link>
+                  ) : <span className="ml-auto font-semibold text-[#1f2f3a]">{regTeam.eventName || '—'}</span>}
+                </p>
+                <p className="flex items-center gap-2 text-[13px]"><Calendar className="h-3.5 w-3.5 text-[#1565c0]" /><span className="text-gray-400">Created</span><span className="ml-auto font-semibold text-[#1f2f3a]">{formatDateTime(regTeam.createdAt)}</span></p>
+              </div>
+            </SidebarCard>
+          )}
+
+          {/* Context */}
+          <SidebarCard icon={Layers} title="Context">
+            <InfoRow label="Round" icon={Layers}>
+              {data.roundId && eventId ? (
+                <Link to={`/admin/hackathons/${eventId}?tab=Rounds`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.roundName || '—'}</Link>
+              ) : <span className="text-[14px] text-[#1f2f3a]">{data.roundName || <span className="text-gray-400">—</span>}</span>}
+            </InfoRow>
+            <InfoRow label="Track" icon={FolderKanban}>
+              {data.trackId && eventId ? (
+                <Link to={`/admin/hackathons/${eventId}/tracks/${data.trackId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.trackTitle || '—'}</Link>
+              ) : <span className="text-[14px] text-gray-400">—</span>}
+            </InfoRow>
+            <InfoRow label="Topic" icon={FileText}>
+              {data.topicId && data.trackId && eventId ? (
+                <Link to={`/admin/hackathons/${eventId}/tracks/${data.trackId}/topics`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.topicTitle || '—'}</Link>
+              ) : <span className="text-[14px] text-gray-400">—</span>}
+            </InfoRow>
+          </SidebarCard>
         </div>
       </div>
     </div>

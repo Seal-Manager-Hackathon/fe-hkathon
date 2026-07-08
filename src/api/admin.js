@@ -820,4 +820,15 @@ export async function getSubmissionDetail(submissionId) {
   return data.data
 }
 
+/**
+ * Get grader scores for a submission (paginated).
+ * GET /admin/submissions/{submissionId}/grader-scores
+ * @param {string} submissionId
+ * @param {Object} [params] - { pageIndex, pageSize }
+ */
+export async function getSubmissionGraderScores(submissionId, params = {}) {
+  const { data } = await api.get(`/admin/submissions/${submissionId}/grader-scores`, { params })
+  return data.data
+}
+
 
