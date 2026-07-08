@@ -743,9 +743,35 @@ export async function removeAssign(eventId, assignEventId) {
  * @param {string} assignEventId
  * @param {Object} payload { trackId: string }
  */
+/**
+ * Assign an assign event to a track.
+ * POST /admin/assign/event-assigns/{assignEventId}/tracks
+ * @param {string} assignEventId
+ * @param {Object} payload { trackId: string }
+ */
 export async function assignTrackToEventAssign(assignEventId, payload) {
   const { data } = await api.post(`/admin/assign/event-assigns/${assignEventId}/tracks`, payload)
   return data
+}
+
+// ========== Submissions APIs ==========
+
+/**
+ * Get submissions for an event, paginated, with filters.
+ * GET /admin/events/{eventId}/submissions
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @param {string} [params.roundId]
+ * @param {string} [params.trackId]
+ * @param {string} [params.topicId]
+ * @param {string} [params.registerTeamId]
+ * @param {string} [params.keyword] - search by team name
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ */
+export async function getEventSubmissions(eventId, params = {}) {
+  const { data } = await api.get(`/admin/events/${eventId}/submissions`, { params })
+  return data.data
 }
 
 

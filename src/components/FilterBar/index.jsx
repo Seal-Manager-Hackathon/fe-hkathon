@@ -13,7 +13,7 @@ import DateInput from '../DateInput'
  * @param {function} onReset  - resets all filters
  * @param {boolean}  hasActive - whether any filter is active (controls Reset disabled state)
  */
-export default function FilterBar({ filters = [], values = {}, onChange, onReset, hasActive = false }) {
+export default function FilterBar({ filters = [], values = {}, onChange, onReset, hasActive = false, children }) {
   return (
     <div className="mb-6 flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-4">
       {filters.map((f) => {
@@ -58,6 +58,7 @@ export default function FilterBar({ filters = [], values = {}, onChange, onReset
         }
         return null
       })}
+      {children}
       <button
         onClick={onReset}
         disabled={!hasActive}

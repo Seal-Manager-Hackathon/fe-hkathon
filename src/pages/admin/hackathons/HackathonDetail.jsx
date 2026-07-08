@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { Info, Layers, FolderKanban, Trophy, Users, UserCheck } from 'lucide-react'
+import { Info, Layers, FolderKanban, Trophy, Users, UserCheck, Send } from 'lucide-react'
 import { getEventDetail } from '../../../api/admin'
 import OverviewTab from './OverviewTab'
 import RoundsTab from './rounds/RoundsTab'
@@ -8,6 +8,7 @@ import TracksTab from './tracks/TracksTab'
 import AwardsTab from './awards/AwardsTab'
 import AssignTab from './assign/AssignTab'
 import RegisterTeamsTab from './register-teams/RegisterTeamsTab'
+import SubmissionsTab from './submissions/SubmissionsTab'
 
 const TABS = [
   { key: 'Overview', icon: <Info className="h-4 w-4" /> },
@@ -16,6 +17,7 @@ const TABS = [
   { key: 'Awards', icon: <Trophy className="h-4 w-4" /> },
   { key: 'Assign', icon: <UserCheck className="h-4 w-4" /> },
   { key: 'Register Teams', icon: <Users className="h-4 w-4" /> },
+  { key: 'Submissions', icon: <Send className="h-4 w-4" /> },
 ]
 
 export default function HackathonDetail() {
@@ -96,6 +98,7 @@ export default function HackathonDetail() {
       {tab === 'Awards' && <AwardsTab eventId={id} />}
       {tab === 'Assign' && <AssignTab eventId={id} />}
       {tab === 'Register Teams' && <RegisterTeamsTab eventId={id} />}
+      {tab === 'Submissions' && <SubmissionsTab eventId={id} />}
     </div>
   )
 }

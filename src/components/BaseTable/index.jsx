@@ -26,6 +26,8 @@ export default function BaseTable({
   borderless = false,
   minWidth = '600px',
   serverSide = false,
+  onRowClick,
+  rowClassName,
 }) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
   const isFirstPage = page <= 1
@@ -95,7 +97,8 @@ export default function BaseTable({
             : rows.map((row, rowIdx) => (
                 <tr
                   key={keyExtractor ? keyExtractor(row, rowIdx) : row.id ?? rowIdx}
-                  className="border-b border-[#f5f5f5] transition-colors hover:bg-[#fafbfc] last:border-0"
+                  className={`border-b border-[#f5f5f5] transition-colors hover:bg-[#fafbfc] last:border-0 ${rowClassName ? rowClassName(row) : ''}`}
+                  onClick={() => onRowClick?.(row)}
                 >
                   {columns.map((col) => (
                     <td
