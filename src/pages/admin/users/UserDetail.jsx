@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import {
   Edit, Mail, Shield, Calendar, Hash, GraduationCap, BadgeCheck,
   Phone, MapPin, AlertTriangle, Clock, FileText, Trophy, Search, Ban,
-  CircleCheck, Users, ExternalLink,
+  CircleCheck, Users, Eye, MoreHorizontal,
 } from 'lucide-react'
 import { getUserDetail, getUserEvents } from '../../../api/admin'
 import { roleBadge } from '../../../constants/adminOptions'
@@ -20,6 +20,8 @@ const eventStatusBadge = {
   Published: 'bg-[#e8f5e9] text-[#2e7d32]',
   Closed: 'bg-[#e0f2f1] text-[#00695c]',
 }
+
+const viewBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2 py-1.5 text-[12px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]'
 
 const eventColumns = [
   { key: 'eventName', header: 'Event', headerIcon: Trophy, render: (row) => (
@@ -41,12 +43,13 @@ const eventColumns = [
     <Badge label={row.eventStatus} className={eventStatusBadge[row.eventStatus] || 'bg-gray-50 text-gray-600'} />
   )},
   { key: 'status', header: 'Registration', headerIcon: Shield, render: (row) => (
-    <div className="flex items-center gap-2">
-      <Badge label={row.status} className={row.status === 'Approved' ? 'bg-[#e8f5e9] text-[#2e7d32]' : 'bg-gray-50 text-gray-600'} />
-    </div>
+    <Badge label={row.status} className={row.status === 'Approved' ? 'bg-[#e8f5e9] text-[#2e7d32]' : 'bg-gray-50 text-gray-600'} />
   )},
   { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => (
     <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
+  )},
+  { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
+    <Link to={`/admin/register-teams/${row.registerTeamId}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
   )},
 ]
 
@@ -58,7 +61,6 @@ export default function UserDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  // Event history
   const [events, setEvents] = useState([])
   const [eventsTotal, setEventsTotal] = useState(0)
   const [eventsLoading, setEventsLoading] = useState(false)
@@ -73,62 +75,42 @@ export default function UserDetail() {
       const result = await getUserEvents(id, params)
       setEvents(result.events || [])
       setEventsTotal(result.totalCount || 0)
-    } catch (err) {
-      // silently fail - events section is supplementary
-    } finally { setEventsLoading(false) }
+    } catch {}
+    finally { setEventsLoading(false) }
   }, [id, eventPage, eventKeyword])
 
   useEffect(() => {
     let cancelled = false
     async function fetch() {
-      setLoading(true)
-      setError('')
+      setLoading(true); setError('')
       try {
         const data = await getUserDetail(id)
         if (!cancelled) setUser(data)
       } catch (err) {
-        if (!cancelled) {
-          const msg = err?.response?.data?.message || 'Failed to load user detail.'
-          setError(msg)
-        }
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
+        if (!cancelled) setError(err?.response?.data?.message || 'Failed to load user detail.')
+      } finally { if (!cancelled) setLoading(false) }
     }
-    fetch()
-    return () => { cancelled = true }
+    fetch(); return () => { cancelled = true }
   }, [id])
 
-  useEffect(() => {
-    if (user) fetchEvents()
-  }, [fetchEvents, user])
+  useEffect(() => { if (user) fetchEvents() }, [fetchEvents, user])
 
   if (loading) {
     return (
       <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
         <div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" />
-        <div className="mb-6 flex items-center gap-5">
-          <div className="h-20 w-20 shrink-0 animate-pulse rounded-full bg-gray-200" />
-          <div className="space-y-2">
-            <div className="h-7 w-48 animate-pulse rounded bg-gray-200" />
-            <div className="h-4 w-72 animate-pulse rounded bg-gray-200" />
-          </div>
-        </div>
+        <div className="mb-6 flex items-center gap-5"><div className="h-20 w-20 shrink-0 animate-pulse rounded-full bg-gray-200" /><div className="space-y-2"><div className="h-7 w-48 animate-pulse rounded bg-gray-200" /><div className="h-4 w-72 animate-pulse rounded bg-gray-200" /></div></div>
         <div className="h-80 animate-pulse rounded-xl bg-gray-100" />
       </div>
     )
   }
 
   if (error) {
-    const isNotFound = error === 'User Not Found' || error.includes('Not Found')
+    const nf = error.includes('Not Found')
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">
-          {isNotFound ? 'User not found' : error}
-        </p>
-        <Link to="/admin/users" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
-          &larr; Back to Users
-        </Link>
+        <p className="text-[18px] font-semibold text-gray-500">{nf ? 'User not found' : error}</p>
+        <Link to="/admin/users" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Users</Link>
       </div>
     )
   }
@@ -137,27 +119,20 @@ export default function UserDetail() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center">
         <p className="text-[18px] font-semibold text-gray-500">User not found.</p>
-        <Link to="/admin/users" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
-          &larr; Back to Users
-        </Link>
+        <Link to="/admin/users" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Users</Link>
       </div>
     )
   }
 
   const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email
   const isDisabled = user.isDisable
-
   const eventHasActive = eventKeyword !== ''
-  const eventFilters = [
-    { type: 'search', key: 'keyword', label: 'Event', icon: Search, placeholder: 'Search event name...' },
-  ]
+  const eventFilters = [{ type: 'search', key: 'keyword', label: 'Event', icon: Search, placeholder: 'Search event name...' }]
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6">
-        <Link to="/admin/users" className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
-          &larr; Back to Users
-        </Link>
+        <Link to="/admin/users" className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Users</Link>
       </div>
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -169,17 +144,11 @@ export default function UserDetail() {
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <Badge label={user.role} className={roleBadge[user.role] || ''} />
               {isDisabled && <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" />}
-              {user.isVerified ? (
-                <Badge label="Verified" className="bg-[#e8f5e9] text-[#2e7d32]" />
-              ) : (
-                <Badge label="Not verified" className="bg-[#fce4ec] text-[#c62828]" />
-              )}
+              {user.isVerified ? <Badge label="Verified" className="bg-[#e8f5e9] text-[#2e7d32]" /> : <Badge label="Not verified" className="bg-[#fce4ec] text-[#c62828]" />}
             </div>
           </div>
         </div>
-        <Link to={`/admin/users/${id}/edit`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-[#05404a] shrink-0 self-start">
-          <Edit className="h-4 w-4" />Edit User
-        </Link>
+        <Link to={`/admin/users/${id}/edit`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-[#05404a] shrink-0 self-start"><Edit className="h-4 w-4" />Edit User</Link>
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
@@ -214,7 +183,6 @@ export default function UserDetail() {
         </CardPanel>
       </div>
 
-      {/* Event History - Full Width */}
       <div className="mt-5">
         <CardPanel title={`Event History (${eventsTotal})`}>
           <div className="mb-4">
