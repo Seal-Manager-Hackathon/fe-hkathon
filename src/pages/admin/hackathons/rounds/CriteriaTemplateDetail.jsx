@@ -26,7 +26,7 @@ export default function CriteriaTemplateDetail() {
   const [viewingItem, setViewingItem] = useState(null)
   const [viewLoading, setViewLoading] = useState(false)
   const [creatingItem, setCreatingItem] = useState(false)
-  const [newItem, setNewItem] = useState({ name: '', description: '', score: 0 })
+  const [newItem, setNewItem] = useState({ name: '', description: '', score: 20 })
   const [itemCreating, setItemCreating] = useState(false)
 
   // Items: server-side pagination, search, filter
@@ -161,7 +161,7 @@ export default function CriteriaTemplateDetail() {
       })
       toast.success('Criteria item created!')
       setCreatingItem(false)
-      setNewItem({ name: '', description: '', score: 0 })
+      setNewItem({ name: '', description: '', score: 20 })
       fetchItems()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to create item.')
@@ -171,7 +171,7 @@ export default function CriteriaTemplateDetail() {
   }
 
   function openCreateItem() {
-    setNewItem({ name: '', description: '', score: 0 })
+    setNewItem({ name: '', description: '', score: 20 })
     setCreatingItem(true)
   }
 
