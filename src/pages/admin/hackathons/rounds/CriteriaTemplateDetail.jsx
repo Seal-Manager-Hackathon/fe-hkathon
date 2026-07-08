@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Tag, Hash, CircleCheck, Edit, Target, AlertCircle, Pencil, X, Save, AlignLeft, Trash2, RotateCcw, Eye, Plus } from 'lucide-react'
+import { ArrowLeft, FileText, Calendar, Clock, Tag, Hash, CircleCheck, Edit, Target, AlertCircle, Pencil, X, Save, AlignLeft, Trash2, RotateCcw, Eye, Plus, Search, Ban, MoreHorizontal } from 'lucide-react'
 import { getCriteriaTemplateDetail, getRoundDetail, updateCriteriaItem, deleteCriteriaItem, restoreCriteriaItem, getCriteriaItemDetail, createCriteriaItem } from '../../../../api/admin'
 import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
 import RichTextEditor from '../../../../components/RichTextEditor'
 import ScoreSlider from '../../../../components/ScoreSlider'
+import BaseTable from '../../../../components/BaseTable'
+import FilterBar from '../../../../components/FilterBar'
 import { formatDateTime, formatDate } from '../../../../utils/format'
 import { cn } from '../../../../utils/cn'
 import { toast, confirm } from '../../../../utils/toast'
@@ -26,14 +28,19 @@ export default function CriteriaTemplateDetail() {
   const [creatingItem, setCreatingItem] = useState(false)
   const [newItem, setNewItem] = useState({ name: '', description: '', score: 0 })
   const [itemCreating, setItemCreating] = useState(false)
+  // Items filter (client-side)
+  const [itemKeyword, setItemKeyword] = useState('')
+  const [itemIsDisable, setItemIsDisable] = useState('')
+  const [itemPage, setItemPage] = useState(1)
+  const ITEMS_PER_PAGE = 10
+
+  const [activeTab, setActiveTab] = useState(tabParam === 'items' ? 'items' : 'description')
 
   useEffect(() => {
     if (tabParam === 'items' || tabParam === 'description') {
       setActiveTab(tabParam)
     }
   }, [tabParam])
-
-  const [activeTab, setActiveTab] = useState(tabParam === 'items' ? 'items' : 'description')
 
   const setTab = useCallback((tab) => {
     setActiveTab(tab)
@@ -104,7 +111,6 @@ export default function CriteriaTemplateDetail() {
     }
   }
 
-
   async function handleRestoreItem(item) {
     const ok = await confirm('Restore Item', `Are you sure you want to restore "${item.name}"?`)
     if (!ok) return
@@ -144,7 +150,6 @@ export default function CriteriaTemplateDetail() {
         score: newItem.score,
       })
       toast.success('Criteria item created!')
-      // Reload template to get fresh items list with proper IDs
       const data = await getCriteriaTemplateDetail(templateId)
       setTemplate(data)
       setCreatingItem(false)
@@ -194,6 +199,103 @@ export default function CriteriaTemplateDetail() {
   const items = template.items || []
   const totalScore = items.reduce((sum, i) => sum + (Number(i.score) || 0), 0)
   const isDeleted = template.isDisable
+
+  // Client-side filter items
+  let filteredItems = items
+  if (itemKeyword) {
+    const kw = itemKeyword.toLowerCase()
+    filteredItems = filteredItems.filter((it) => it.name.toLowerCase().includes(kw))
+  }
+  if (itemIsDisable !== '') {
+    filteredItems = filteredItems.filter((it) => it.isDisable === (itemIsDisable === 'true'))
+  }
+
+  const itemHasActive = itemKeyword !== '' || itemIsDisable !== ''
+  const itemFilters = [
+    { type: 'search', key: 'keyword', label: 'Name', icon: Search, placeholder: 'Search item name...' },
+    { type: 'select', key: 'isDisable', label: 'Disabled', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
+  ]
+
+  function handleItemFilterChange(key, value) {
+    if (key === 'keyword') setItemKeyword(value)
+    if (key === 'isDisable') setItemIsDisable(value)
+    setItemPage(1)
+  }
+
+  function handleItemFilterReset() {
+    setItemKeyword('')
+    setItemIsDisable('')
+    setItemPage(1)
+  }
+
+  const actionBtnClass = 'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
+  const restoreBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[92px]'
+  const dangerBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2] w-[92px]'
+
+  const itemColumns = [
+    {
+      key: 'name',
+      header: 'Name',
+      headerIcon: FileText,
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <span className="text-[14px] font-semibold text-[#064f5d]">{row.name}</span>
+          <Badge label={row.isDisable ? 'Disabled' : 'Active'} className={row.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
+        </div>
+      ),
+    },
+    {
+      key: 'score',
+      header: 'Score',
+      headerIcon: Hash,
+      render: (row) => {
+        const s = Number(row.score) || 0
+        const pct = Math.round((s / 100) * 100)
+        const barColor = pct <= 30 ? 'bg-rose-400' : pct <= 60 ? 'bg-amber-400' : 'bg-emerald-400'
+        const textColor = pct <= 30 ? 'text-rose-600' : pct <= 60 ? 'text-amber-600' : 'text-emerald-600'
+        return (
+          <div className="min-w-[120px] space-y-1">
+            <span className={`text-[13px] font-bold ${textColor}`}>{s}/100 <span className="font-normal text-slate-300">({pct}%)</span></span>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+              <div className={`h-full rounded-full transition-all ${barColor}`} style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+        )
+      },
+    },
+    {
+      key: 'createdAt',
+      header: 'Created',
+      headerIcon: Calendar,
+      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>,
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      headerIcon: MoreHorizontal,
+      headerClassName: 'text-right',
+      className: 'text-right',
+      render: (row) => (
+        <div className="flex items-center justify-end gap-2">
+          <button onClick={() => handleViewItem(row)} className={actionBtnClass}>
+            <Eye className="h-3.5 w-3.5" /> View
+          </button>
+          <button onClick={() => setEditingItem({ ...row })} className={actionBtnClass}>
+            <Pencil className="h-3.5 w-3.5" /> Edit
+          </button>
+          {row.isDisable ? (
+            <button onClick={() => handleRestoreItem(row)} className={restoreBtnClass}>
+              <RotateCcw className="h-3.5 w-3.5" /> Restore
+            </button>
+          ) : (
+            <button onClick={() => handleDeleteItem(row)} className={dangerBtnClass}>
+              <Trash2 className="h-3.5 w-3.5" /> Delete
+            </button>
+          )}
+        </div>
+      ),
+    },
+  ]
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -253,28 +355,35 @@ export default function CriteriaTemplateDetail() {
         )}
 
         {activeTab === 'items' && (
-          <div className="px-5 py-5">
+          <div className="px-5 py-4">
             <div className="mb-4 flex items-center justify-between">
-              <span className="text-[13px] font-semibold text-slate-400">{items.length} item{items.length !== 1 ? 's' : ''}</span>
+              <FilterBar
+                filters={itemFilters}
+                values={{ keyword: itemKeyword, isDisable: itemIsDisable }}
+                onChange={handleItemFilterChange}
+                onReset={handleItemFilterReset}
+                hasActive={itemHasActive}
+              />
               <button
                 onClick={openCreateItem}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#064f5d] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#05404a]"
+                className="ml-4 inline-flex cursor-pointer shrink-0 items-center gap-1.5 rounded-lg bg-[#064f5d] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#05404a]"
               >
                 <Plus className="h-3.5 w-3.5" />Add Item
               </button>
             </div>
-            {items.length === 0 ? (
-              <div className="flex flex-col items-center py-10 text-center">
-                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100"><Tag className="h-7 w-7 text-slate-300" /></div>
-                <p className="text-[14px] font-medium text-slate-400">No criteria items</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {items.map((item, idx) => (
-                  <CriteriaItemCard key={item.id} index={idx + 1} item={item} maxScore={100} onView={handleViewItem} onEdit={() => setEditingItem({ ...item })} onDelete={handleDeleteItem} onRestore={handleRestoreItem} />
-                ))}
-              </div>
-            )}
+            <BaseTable
+              columns={itemColumns}
+              data={filteredItems}
+              page={itemPage}
+              pageSize={ITEMS_PER_PAGE}
+              total={filteredItems.length}
+              onPageChange={setItemPage}
+              loading={false}
+              serverSide={false}
+              emptyText={itemHasActive ? 'No criteria items match the current filters.' : 'No criteria items yet.'}
+              keyExtractor={(row) => row.id}
+              minWidth="600px"
+            />
           </div>
         )}
       </div>
@@ -418,87 +527,6 @@ function StatCard({ icon, label, value, color, bg, border, mono = false }) {
     <div className={`rounded-2xl border ${border} ${bg} p-4 sm:p-5 flex flex-col gap-1.5 transition-shadow hover:shadow-sm`}>
       <div className="flex items-center gap-2"><span className={color}>{icon}</span><span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{label}</span></div>
       <p className={`font-bold text-slate-800 ${mono ? 'text-[12px] sm:text-[13px]' : 'text-[18px] sm:text-[22px]'}`}>{value}</p>
-    </div>
-  )
-}
-
-function CriteriaItemCard({ index, item, maxScore, onView, onEdit, onDelete, onRestore }) {
-  const score = Number(item.score) || 0
-  const pct = Math.round((score / maxScore) * 100)
-  const isDisabled = item.isDisable
-
-  const getScoreColor = (p) => {
-    if (p <= 30) return { bar: 'bg-rose-400', bg: 'bg-rose-50', text: 'text-rose-600' }
-    if (p <= 60) return { bar: 'bg-amber-400', bg: 'bg-amber-50', text: 'text-amber-600' }
-    return { bar: 'bg-emerald-400', bg: 'bg-emerald-50', text: 'text-emerald-600' }
-  }
-  const c = getScoreColor(pct)
-
-  return (
-    <div className="overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-sm transition-shadow hover:shadow-md">
-      <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:gap-6">
-        <div className="flex shrink-0 items-start gap-3">
-          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#064f5d] text-[13px] font-bold text-white shadow-sm">{index}</span>
-          <div className="min-w-0 flex-1 sm:hidden">
-            <div className="flex flex-wrap items-center gap-2">
-              <h4 className="text-[15px] font-bold text-slate-800">{item.name}</h4>
-              <Badge label={isDisabled ? 'Disabled' : 'Active'} className={isDisabled ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
-            </div>
-          </div>
-        </div>
-
-        <div className="min-w-0 flex-1 space-y-3">
-          <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-2">
-            <h4 className="text-[15px] font-bold text-slate-800">{item.name}</h4>
-            <Badge label={isDisabled ? 'Disabled' : 'Active'} className={isDisabled ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-[12px]">
-              <span className="font-semibold text-slate-500">Score</span>
-              <span className={`font-bold ${c.text}`}>{score} / {maxScore} <span className="text-slate-300 font-normal">({pct}%)</span></span>
-            </div>
-            <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
-              <div className={`absolute inset-y-0 left-0 rounded-full transition-all duration-500 ${c.bar}`} style={{ width: `${pct}%` }} />
-              {[25, 50, 75].map((m) => (<span key={m} className="absolute top-0 bottom-0 w-px bg-white/70" style={{ left: `${m}%` }} />))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => onView?.(item)}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-[13px] font-semibold text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 active:scale-[0.97]"
-            >
-              <Eye className="h-3.5 w-3.5" />
-              View
-            </button>
-            <button
-              onClick={onEdit}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-[13px] font-semibold text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 active:scale-[0.97]"
-            >
-              <Pencil className="h-3.5 w-3.5" />
-              Edit
-            </button>
-            {isDisabled ? (
-              <button
-                onClick={() => onRestore?.(item)}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-[13px] font-semibold text-emerald-600 transition-colors hover:bg-emerald-100 active:scale-[0.97]"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-                Restore
-              </button>
-            ) : (
-              <button
-                onClick={() => onDelete?.(item)}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-[13px] font-semibold text-rose-600 transition-colors hover:bg-rose-100 active:scale-[0.97]"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                Delete
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
