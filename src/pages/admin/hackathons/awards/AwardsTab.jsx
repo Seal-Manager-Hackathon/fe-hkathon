@@ -32,12 +32,16 @@ function awardColumns(eventId, onDelete, onRestore) {
       key: 'levelAward',
       header: 'Level',
       headerIcon: Hash,
-      render: (row) => (
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e3f2fd] px-2.5 py-0.5 text-[12px] font-semibold text-[#1565c0]">
-          <Trophy className="h-3 w-3" />
-          {row.levelAward}
-        </span>
-      ),
+      render: (row) => {
+        const ordinals = { 1: '1st', 2: '2nd', 3: '3rd' }
+        const label = ordinals[row.levelAward] || `${row.levelAward}th`
+        return (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e3f2fd] px-2.5 py-0.5 text-[12px] font-semibold text-[#1565c0]">
+            <Trophy className="h-3 w-3" />
+            {label} Place
+          </span>
+        )
+      },
     },
     {
       key: 'numberOfAward',

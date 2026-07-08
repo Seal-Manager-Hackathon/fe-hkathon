@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { Trophy, DollarSign, FileText, Clock, Users, Flag } from 'lucide-react'
+import { Trophy, DollarSign, Hash, FileText } from 'lucide-react'
 import FormField from '../../../../components/FormField'
 import EntityFormPage from '../../../../components/EntityFormPage'
 import RichTextEditor from '../../../../components/RichTextEditor'

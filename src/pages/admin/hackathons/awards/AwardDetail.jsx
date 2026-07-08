@@ -78,9 +78,15 @@ export default function AwardDetail() {
           <CardPanel title="Award Information">
             <div className="divide-y divide-[#f5f5f5]">
               <InfoRow label="Level" icon={Trophy}>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e3f2fd] px-2.5 py-0.5 text-[12px] font-semibold text-[#1565c0]">
-                  <Trophy className="h-3 w-3" />{award.levelAward}
-                </span>
+                {(() => {
+                  const ordinals = { 1: '1st', 2: '2nd', 3: '3rd' }
+                  const label = ordinals[award.levelAward] || `${award.levelAward}th`
+                  return (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e3f2fd] px-2.5 py-0.5 text-[12px] font-semibold text-[#1565c0]">
+                      <Trophy className="h-3 w-3" />{label} Place
+                    </span>
+                  )
+                })()}
               </InfoRow>
               <InfoRow label="Quantity" icon={Hash}><p className="text-[14px] font-semibold text-slate-600">{award.numberOfAward}</p></InfoRow>
               <InfoRow label="Prize" icon={DollarSign}><p className="text-[14px] font-semibold text-emerald-600">${usd.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</p></InfoRow>
