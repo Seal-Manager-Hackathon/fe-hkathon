@@ -626,3 +626,13 @@ export async function getRegisterTeamDetail(registerTeamId) {
   const { data } = await api.get(`/admin/register-teams/${registerTeamId}`)
   return data.data
 }
+
+export async function approveRegisterTeam(registerTeamId) {
+  const { data } = await api.post(`/admin/register-teams/${registerTeamId}/approve`)
+  return data
+}
+
+export async function rejectRegisterTeam(registerTeamId, payload = {}) {
+  const { data } = await api.post(`/admin/register-teams/${registerTeamId}/reject`, payload)
+  return data
+}
