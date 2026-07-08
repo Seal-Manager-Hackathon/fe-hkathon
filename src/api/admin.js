@@ -507,6 +507,16 @@ export async function getReports(params = {}) {
   return data.data
 }
 
+/**
+ * Get report detail by ID.
+ * @param {string} reportId
+ * @returns {Promise<Object>}
+ */
+export async function getReportDetail(reportId) {
+  const { data } = await api.get(`/admin/reports/${reportId}`)
+  return data.data
+}
+
 // ─── Event Delete/Restore ──────────────────────────────────────────────────
 
 export async function deleteEvent(eventId) {
