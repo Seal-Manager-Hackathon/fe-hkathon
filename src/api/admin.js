@@ -581,3 +581,10 @@ export async function restoreEvent(eventId) {
   return data
 }
 
+// ─── Awards ─────────────────────────────────────────────────────────────────────
+
+export async function getAwards(eventId, params = {}) {
+  const { data } = await api.get(`/admin/events/${eventId}/awards`, { params })
+  return data.data
+}
+
