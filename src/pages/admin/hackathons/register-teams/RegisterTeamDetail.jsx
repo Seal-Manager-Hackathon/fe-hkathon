@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, Ban, ExternalLink, CheckCircle as CheckCircleIcon, XCircle } from 'lucide-react'
-import { getRegisterTeamDetail, approveRegisterTeam, rejectRegisterTeam } from '../../../../api/admin'
+import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, Ban, ExternalLink, CheckCircle as ApproveIcon, XCircle, ShieldOff } from 'lucide-react'
+import { getRegisterTeamDetail, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import Badge from '../../../../components/Badge'
 import CardPanel from '../../../../components/CardPanel'
@@ -30,48 +30,54 @@ export default function RegisterTeamDetail() {
 
   async function fetchData() {
     setLoading(true); setError('')
-    try {
-      const result = await getRegisterTeamDetail(registerTeamId)
-      setData(result)
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to load.')
-    } finally { setLoading(false) }
+    try { const result = await getRegisterTeamDetail(registerTeamId); setData(result) }
+    catch (err) { setError(err?.response?.data?.message || 'Failed to load.') }
+    finally { setLoading(false) }
   }
 
   useEffect(() => { fetchData() }, [registerTeamId])
 
   async function handleApprove() {
-    const ok = await confirm('Approve Registration', `Approve "${data.teamName}"?`)
+    const ok = await confirm('Approve', `Approve "${data.teamName}"?`)
     if (!ok) return
     setActing(true)
-    try {
-      await approveRegisterTeam(registerTeamId)
-      toast.success('Registration approved')
-      fetchData()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to approve.')
-    } finally { setActing(false) }
+    try { await approveRegisterTeam(registerTeamId); toast.success('Approved'); fetchData() }
+    catch (err) { toast.error(err?.response?.data?.message || 'Failed') }
+    finally { setActing(false) }
   }
 
   function openReject() { setRejectTarget(data) }
 
   async function handleRejectSubmit(reason) {
     setRejecting(true)
-    try {
-      await rejectRegisterTeam(registerTeamId, { reason })
-      toast.success('Registration rejected')
-      setRejectTarget(null)
-      fetchData()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to reject.')
-    } finally { setRejecting(false) }
+    try { await rejectRegisterTeam(registerTeamId, { reason }); toast.success('Rejected'); setRejectTarget(null); fetchData() }
+    catch (err) { toast.error(err?.response?.data?.message || 'Failed') }
+    finally { setRejecting(false) }
   }
 
-  if (loading) return (<div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" /><div className="mb-6 flex items-center gap-5"><div className="h-14 w-14 shrink-0 animate-pulse rounded-xl bg-gray-200" /><div className="space-y-2"><div className="h-7 w-48 animate-pulse rounded bg-gray-200" /><div className="h-4 w-72 animate-pulse rounded bg-gray-200" /></div></div><div className="h-80 animate-pulse rounded-xl bg-gray-100" /></div>)
+  async function handleBan() {
+    const ok = await confirm('Ban', `Ban "${data.teamName}" from this event?`)
+    if (!ok) return
+    setActing(true)
+    try { await banRegisterTeam(registerTeamId); toast.success('Banned'); fetchData() }
+    catch (err) { toast.error(err?.response?.data?.message || 'Failed') }
+    finally { setActing(false) }
+  }
+
+  async function handleUnban() {
+    const ok = await confirm('Unban', `Unban "${data.teamName}"?`)
+    if (!ok) return
+    setActing(true)
+    try { await unbanRegisterTeam(registerTeamId); toast.success('Unbanned'); fetchData() }
+    catch (err) { toast.error(err?.response?.data?.message || 'Failed') }
+    finally { setActing(false) }
+  }
+
+  if (loading) return <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" /><div className="mb-6 flex items-center gap-5"><div className="h-14 w-14 shrink-0 animate-pulse rounded-xl bg-gray-200" /><div className="space-y-2"><div className="h-7 w-48 animate-pulse rounded bg-gray-200" /><div className="h-4 w-72 animate-pulse rounded bg-gray-200" /></div></div><div className="h-80 animate-pulse rounded-xl bg-gray-100" /></div>
 
   if (error) {
     const nf = error.includes('Not Found')
-    return (<div className="flex min-h-[60vh] flex-col items-center justify-center"><div className="mb-4 rounded-full bg-rose-50 p-4"><Shield className="h-8 w-8 text-rose-400" /></div><p className="text-[18px] font-semibold text-gray-500">{nf ? 'Register team not found' : error}</p><Link to="/admin/hackathons" className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"><ArrowLeft className="h-4 w-4" /> Back to Hackathons</Link></div>)
+    return <div className="flex min-h-[60vh] flex-col items-center justify-center"><div className="mb-4 rounded-full bg-rose-50 p-4"><Shield className="h-8 w-8 text-rose-400" /></div><p className="text-[18px] font-semibold text-gray-500">{nf ? 'Register team not found' : error}</p><Link to="/admin/hackathons" className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"><ArrowLeft className="h-4 w-4" /> Back to Hackathons</Link></div>
   }
 
   if (!data) return null
@@ -101,25 +107,29 @@ export default function RegisterTeamDetail() {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-[12px] font-semibold text-white">
-                {statusIcon[data.status] || null}
-                {data.status}
+                {statusIcon[data.status]}{data.status}
               </span>
-              {data.isBanned && (
-                <Badge label="Banned" className="bg-[#fce4ec] text-[#c62828]" />
-              )}
+              {data.isBanned && <Badge label="Banned" className="bg-[#fce4ec] text-[#c62828]" />}
               {showApproval && (
                 <>
                   <button onClick={handleApprove} disabled={acting} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-emerald-600 disabled:opacity-50">
-                    <CheckCircleIcon className="h-3.5 w-3.5" />{acting ? '...' : 'Approve'}
+                    <ApproveIcon className="h-3.5 w-3.5" />{acting ? '...' : 'Approve'}
                   </button>
                   <button onClick={openReject} disabled={acting} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-rose-500 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-rose-600 disabled:opacity-50">
                     <XCircle className="h-3.5 w-3.5" />Reject
                   </button>
                 </>
               )}
-              <Link to={`/admin/register-teams/${registerTeamId}/edit`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-white/30">
-                Edit
-              </Link>
+              {data.isBanned ? (
+                <button onClick={handleUnban} disabled={acting} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-emerald-600 disabled:opacity-50">
+                  <ShieldOff className="h-3.5 w-3.5" />{acting ? '...' : 'Unban'}
+                </button>
+              ) : (
+                <button onClick={handleBan} disabled={acting} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-rose-500 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-rose-600 disabled:opacity-50">
+                  <ShieldOff className="h-3.5 w-3.5" />{acting ? '...' : 'Ban'}
+                </button>
+              )}
+              <Link to={`/admin/register-teams/${registerTeamId}/edit`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-white/30">Edit</Link>
             </div>
           </div>
         </div>
@@ -156,7 +166,7 @@ export default function RegisterTeamDetail() {
             {members.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10">
                 <Users className="mb-3 h-10 w-10 text-gray-300" />
-                <p className="text-[14px] text-gray-400">No members yet.</p>
+                <p className="text-[14px] text-gray-400">No members.</p>
               </div>
             ) : (
               <BaseTable borderless columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="400px" />
