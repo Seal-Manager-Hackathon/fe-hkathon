@@ -8,7 +8,7 @@ import RichTextEditor from '../../../../components/RichTextEditor'
 import ScoreSlider from '../../../../components/ScoreSlider'
 import { formatDateTime, formatDate } from '../../../../utils/format'
 import { cn } from '../../../../utils/cn'
-import { toast } from '../../../../utils/toast'
+import { toast, confirm } from '../../../../utils/toast'
 
 export default function CriteriaTemplateDetail() {
   const { roundId, templateId } = useParams()
@@ -85,6 +85,8 @@ export default function CriteriaTemplateDetail() {
   }
 
   async function handleDeleteItem(item) {
+    const ok = await confirm('Delete Item', `Are you sure you want to delete "${item.name}"?`)
+    if (!ok) return
     try {
       await deleteCriteriaItem(item.id)
       toast.success('Criteria item deleted')
@@ -99,7 +101,10 @@ export default function CriteriaTemplateDetail() {
     }
   }
 
+
   async function handleRestoreItem(item) {
+    const ok = await confirm('Restore Item', `Are you sure you want to restore "${item.name}"?`)
+    if (!ok) return
     try {
       await restoreCriteriaItem(item.id)
       toast.success('Criteria item restored')
