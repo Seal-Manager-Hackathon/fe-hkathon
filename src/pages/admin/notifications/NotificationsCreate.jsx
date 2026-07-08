@@ -36,9 +36,9 @@ export default function NotificationsCreate() {
     })
   }
 
-  const fetchUsers = useCallback(async (keyword) => {
-    const result = await getUsers({ Keyword: keyword, PageSize: 20 })
-    return (result.users || []).map((u) => {
+  const fetchUsers = useCallback(async (keyword, pageIndex = 1, pageSize) => {
+    const result = await getUsers({ Keyword: keyword, PageIndex: pageIndex, PageSize: pageSize || 20 })
+    const data = (result.users || []).map((u) => {
       const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim()
       return {
         value: u.id,
@@ -48,15 +48,17 @@ export default function NotificationsCreate() {
         avatarLetter: fullName ? fullName.charAt(0).toUpperCase() : (u.email || '?').charAt(0).toUpperCase(),
       }
     })
+    return { data, totalCount: result.totalCount || 0 }
   }, [])
 
-  const fetchTeams = useCallback(async (keyword) => {
-    const result = await getTeams({ Keyword: keyword, PageSize: 20 })
-    return (result.teams || []).map((t) => ({
+  const fetchTeams = useCallback(async (keyword, pageIndex = 1, pageSize) => {
+    const result = await getTeams({ Keyword: keyword, PageIndex: pageIndex, PageSize: pageSize || 20 })
+    const data = (result.teams || []).map((t) => ({
       value: t.id,
       label: t.name,
       avatarLetter: (t.name || 'T').charAt(0).toUpperCase(),
     }))
+    return { data, totalCount: result.totalCount || 0 }
   }, [])
 
   const canSave = form.title.trim()
@@ -145,6 +147,7 @@ export default function NotificationsCreate() {
               onChange={(v) => updateField('userId', v)}
               placeholder="Search user by name or email..."
               emptyText="No users found."
+              pageSize={5}
             />
           </FormField>
         )}
@@ -157,6 +160,7 @@ export default function NotificationsCreate() {
               onChange={(v) => updateField('teamId', v)}
               placeholder="Search team by name..."
               emptyText="No teams found."
+              pageSize={5}
             />
           </FormField>
         )}

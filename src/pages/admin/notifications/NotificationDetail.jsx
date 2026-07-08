@@ -117,7 +117,7 @@ export default function NotificationDetail() {
           </div>
           <div className="mt-2 inline-flex items-center gap-2">
             <Badge
-              label={notification.targetType}
+              label={notification.targetType === 'Personal' ? 'User' : notification.targetType}
               className={targetTypeBadge[notification.targetType] || ''}
             />
           </div>

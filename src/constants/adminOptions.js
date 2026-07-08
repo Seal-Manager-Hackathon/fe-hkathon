@@ -140,7 +140,7 @@ export const NOTIFICATION_STATUS_OPTIONS_SELECT = [
 
 /* ─── Notification TargetType ─── */
 export const TARGET_TYPE_OPTIONS = [
-  { value: 'Personal', label: 'Personal' },
+  { value: 'Personal', label: 'User' },
   { value: 'Team', label: 'Team' },
   { value: 'System', label: 'System' },
 ]
