@@ -233,7 +233,7 @@ function AssignTrackModal({ open, user, eventId, onClose, onAssign, submitting }
       const isAssigned = alreadyAssigned.includes(row.id)
       return (
         <button
-          onClick={() => !isAssigned && onAssign(row.id)}
+          onClick={() => !isAssigned && onAssign(row)}
           disabled={submitting || isAssigned}
           className={`inline-flex cursor-pointer items-center gap-1 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${
             isAssigned
@@ -403,11 +403,13 @@ export default function AssignTab({ eventId }) {
 
   function openTrackModal(user) { setTrackTarget(user) }
 
-  async function handleAssignTrack(trackId) {
+  async function handleAssignTrack(trackRow) {
     if (!trackTarget) return
+    const ok = await confirm('Assign to Track', `Assign "${trackTarget.firstName} ${trackTarget.lastName}" to track "${trackRow.title}"?`)
+    if (!ok) return
     setTrackAssigning(true)
     try {
-      await assignTrackToEventAssign(trackTarget.assignEventId, { trackId })
+      await assignTrackToEventAssign(trackTarget.assignEventId, { trackId: trackRow.id })
       toast.success(`${trackTarget.firstName} ${trackTarget.lastName} assigned to track successfully`)
       setTrackTarget(null)
       fetchAssigned()
