@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
-import { getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam } from '../../../../api/admin'
+import { getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import { toast, confirm } from '../../../../utils/toast'
 import PromptReason from '../../../../components/PromptReason'
-import { Search, Ban, Users, Eye, FileText, Trophy, Calendar, MoreHorizontal, CircleCheck, CheckCircle, XCircle } from 'lucide-react'
+import { Search, Ban, Users, Eye, FileText, Trophy, Calendar, MoreHorizontal, CircleCheck, CheckCircle, XCircle, ShieldOff } from 'lucide-react'
 
 const PAGE_SIZE = 10
 const DEFAULT_VALUES = { keyword: '', status: '', isBanned: '', isDisable: '' }
@@ -79,6 +79,20 @@ export default function RegisterTeamsTab({ eventId }) {
     finally { setRejecting(false) }
   }
 
+  async function handleBan(row) {
+    const ok = await confirm('Ban Register Team', `Ban "${row.teamName}" from participating in this event?`)
+    if (!ok) return
+    try { await banRegisterTeam(row.id); toast.success('Team banned from event'); fetchTeams() }
+    catch (err) { toast.error(err?.response?.data?.message || 'Failed to ban team') }
+  }
+
+  async function handleUnban(row) {
+    const ok = await confirm('Unban Register Team', `Unban "${row.teamName}" so they can participate again?`)
+    if (!ok) return
+    try { await unbanRegisterTeam(row.id); toast.success('Team unbanned from event'); fetchTeams() }
+    catch (err) { toast.error(err?.response?.data?.message || 'Failed to unban team') }
+  }
+
   const columns = [
     { key: 'teamName', header: 'Team', headerIcon: Users, render: (row) => <Link to={`/admin/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName || '—'}</Link> },
     { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => row.trackId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
@@ -92,6 +106,10 @@ export default function RegisterTeamsTab({ eventId }) {
           <button onClick={() => handleApprove(row)} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#e8f5e9] px-2.5 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9]"><CheckCircle className="h-3.5 w-3.5" />Approve</button>
           <button onClick={() => openReject(row)} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#fce4ec] px-2.5 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2]"><XCircle className="h-3.5 w-3.5" />Reject</button>
         </>)}
+        {row.isBanned
+          ? <button onClick={() => handleUnban(row)} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#e8f5e9] px-2.5 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9]"><ShieldOff className="h-3.5 w-3.5" />Unban</button>
+          : <button onClick={() => handleBan(row)} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#fce4ec] px-2.5 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2]"><ShieldOff className="h-3.5 w-3.5" />Ban</button>
+        }
         <Link to={`/admin/register-teams/${row.id}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
       </div>
     ) },

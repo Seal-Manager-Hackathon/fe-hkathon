@@ -636,3 +636,13 @@ export async function rejectRegisterTeam(registerTeamId, payload = {}) {
   const { data } = await api.post(`/admin/register-teams/${registerTeamId}/reject`, payload)
   return data
 }
+
+export async function banRegisterTeam(registerTeamId) {
+  const { data } = await api.post(`/admin/register-teams/${registerTeamId}/ban`)
+  return data
+}
+
+export async function unbanRegisterTeam(registerTeamId) {
+  const { data } = await api.post(`/admin/register-teams/${registerTeamId}/unban`)
+  return data
+}
