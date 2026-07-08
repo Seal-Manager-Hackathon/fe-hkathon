@@ -17,6 +17,20 @@ const roundFilters = [
   { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
 ]
 
+// Swap modal filters
+const roundSwapFilters = [
+  { type: 'search', key: 'keyword', label: 'Round Name', icon: Search, placeholder: 'Search round name...' },
+  { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
+]
+
+function buildRoundSwapQuery(filters, page) {
+  const q = { PageIndex: page, PageSize: 8, pageIndex: page, pageSize: 8 }
+  if (filters.keyword) q.Keyword = filters.keyword
+  if (filters.isDisable !== '') q.IsDisable = filters.isDisable === 'true'
+  else q.IsDisable = false
+  return q
+}
+
 export default function RoundsTab({ eventId }) {
   const [rounds, setRounds] = useState([])
   const [totalCount, setTotalCount] = useState(0)
@@ -104,6 +118,8 @@ export default function RoundsTab({ eventId }) {
         eventId={eventId}
         fetchFn={getRounds}
         swapFn={(target) => swapRounds(eventId, swapSource.id, target.roundNo)}
+        filters={roundSwapFilters}
+        buildQueryParams={buildRoundSwapQuery}
         columns={({ handleSwap, swappingId }) => [
           {
             key: 'roundNo',

@@ -22,6 +22,20 @@ const awardFilters = [
   { type: 'select', key: 'isDisable', label: 'Deleted', icon: Trash2, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
 ]
 
+// Swap modal filters — same structure as the main page filters, passed to SwapModal
+const awardSwapFilters = [
+  { type: 'search', key: 'keyword', label: 'Name', icon: Search, placeholder: 'Search award name...' },
+  { type: 'select', key: 'isDisable', label: 'Deleted', icon: Trash2, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
+]
+
+function buildAwardSwapQuery(filters, page) {
+  const q = { PageIndex: page, PageSize: 8, pageIndex: page, pageSize: 8 }
+  if (filters.keyword) q.Keyword = filters.keyword
+  if (filters.isDisable !== '') q.IsDisable = filters.isDisable === 'true'
+  else q.IsDisable = false
+  return q
+}
+
 function levelOrdinal(lv) {
   if (!lv) return '—'
   const o = { 1: '1st', 2: '2nd', 3: '3rd' }
@@ -43,7 +57,7 @@ function awardColumns(eventId, onSwap, onDelete, onRestore) {
         {!row.isDisable && <Link to={`/admin/hackathons/${eventId}/awards/${row.id}/edit`} className={actionBtnClass}><Edit className="h-3.5 w-3.5" /> Edit</Link>}
         {row.isDisable ? <button onClick={() => onRestore?.(row)} className={restoreBtnClass}><RotateCcw className="h-3.5 w-3.5" /> Restore</button> : <button onClick={() => onDelete?.(row)} className={dangerBtnClass}><Trash2 className="h-3.5 w-3.5" /> Delete</button>}
       </div>
-    )},
+    ) },
   ]
 }
 
@@ -60,9 +74,9 @@ export default function AwardsTab({ eventId }) {
   const fetchAwards = useCallback(async () => {
     setLoading(true); setError('')
     try {
-      const params = { pageIndex, pageSize: PAGE_SIZE }
-      if (filters.keyword) params.keyword = filters.keyword
-      if (filters.isDisable !== '') params.isDisable = filters.isDisable === 'true'
+      const params = { PageIndex: pageIndex, PageSize: PAGE_SIZE }
+      if (filters.keyword) params.Keyword = filters.keyword
+      if (filters.isDisable !== '') params.IsDisable = filters.isDisable === 'true'
       const result = await getAwards(eventId, params)
       setAwards(result.awards || []); setTotalCount(result.totalCount || 0)
     } catch (err) {
@@ -129,6 +143,8 @@ export default function AwardsTab({ eventId }) {
         eventId={eventId}
         fetchFn={getAwards}
         swapFn={(target) => swapAward(eventId, swapSource.id, target.levelAward)}
+        filters={awardSwapFilters}
+        buildQueryParams={buildAwardSwapQuery}
         columns={({ handleSwap, swappingId }) => [
           {
             key: 'name',

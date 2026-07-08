@@ -6,9 +6,25 @@ import { toast, confirm } from '../../utils/toast'
 
 const PAGE_SIZE = 8
 
-const FILTERS = [
+const DEFAULT_FILTERS = [
   { type: 'search', key: 'keyword', label: 'Search', icon: Search, placeholder: 'Search by name...' },
 ]
+
+/**
+ * @param {Object}   filters  - current filter values { keyword, ...extraKeys }
+ * @param {number}   page     - current page number
+ * @returns {Object} default API query params
+ */
+function defaultBuildQuery(filters, page) {
+  return {
+    PageIndex: page,
+    PageSize: PAGE_SIZE,
+    pageIndex: page,
+    pageSize: PAGE_SIZE,
+    IsDisable: false,
+    ...(filters.keyword ? { Keyword: filters.keyword } : {}),
+  }
+}
 
 export default function SwapModal({
   open,
@@ -21,26 +37,32 @@ export default function SwapModal({
   fetchFn,
   swapFn,
   columns,
+  filters: customFilters,
+  buildQueryParams,
 }) {
+  const filterConfigs = customFilters || DEFAULT_FILTERS
+  const defaultFilterValues = Object.fromEntries(filterConfigs.map((f) => [f.key, '']))
+
   const [items, setItems] = useState([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [filters, setFilters] = useState({ keyword: '' })
+  const [filters, setFilters] = useState(defaultFilterValues)
   const [swappingId, setSwappingId] = useState(null)
 
   const fetchRef = useRef(fetchFn)
   fetchRef.current = fetchFn
+  const buildQueryRef = useRef(buildQueryParams || defaultBuildQuery)
+  buildQueryRef.current = buildQueryParams || defaultBuildQuery
 
-  const hasFilter = filters.keyword !== ''
+  const hasFilter = Object.values(filters).some((v) => v !== '')
 
-  const doFetch = useCallback(async (pg = page, kw = filters.keyword) => {
+  const doFetch = useCallback(async (pg = page, currentFilters = filters) => {
     setLoading(true)
     setError('')
     try {
-      const q = { PageIndex: pg, PageSize: PAGE_SIZE, pageIndex: pg, pageSize: PAGE_SIZE, IsDisable: false }
-      if (kw) q.Keyword = kw
+      const q = buildQueryRef.current(currentFilters, pg)
       const result = await fetchRef.current(eventId, q)
       setItems(result.awards || result.rounds || [])
       setTotal(result.totalCount || 0)
@@ -55,8 +77,8 @@ export default function SwapModal({
 
   // Fetch on open + page/filter changes
   useEffect(() => {
-    if (open) doFetch(page, filters.keyword)
-  }, [open, page, filters.keyword, doFetch])
+    if (open) doFetch(page, filters)
+  }, [open, page, filters, doFetch])
 
   function handleFilterChange(key, value) {
     setFilters((p) => ({ ...p, [key]: value }))
@@ -64,7 +86,7 @@ export default function SwapModal({
   }
 
   function handleReset() {
-    setFilters({ keyword: '' })
+    setFilters(defaultFilterValues)
     setPage(1)
   }
 
@@ -118,7 +140,7 @@ export default function SwapModal({
           {/* ── Filter ── */}
           <div className="shrink-0 border-b border-[#f0f0f0] bg-[#fafbfc] px-6 py-3 sticky top-0 z-[1]">
             <FilterBar
-              filters={FILTERS}
+              filters={filterConfigs}
               values={filters}
               onChange={handleFilterChange}
               onReset={handleReset}
