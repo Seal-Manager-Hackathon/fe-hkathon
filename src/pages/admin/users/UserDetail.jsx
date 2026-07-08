@@ -184,7 +184,7 @@ export default function UserDetail() {
       </div>
 
       <div className="mt-5">
-        <CardPanel title={`Event History (${eventsTotal})`}>
+        <CardPanel title="Event History">
           <div className="mb-4">
             <FilterBar filters={eventFilters} values={{ keyword: eventKeyword }} onChange={(key, val) => { setEventKeyword(val); setEventPage(1) }} onReset={() => { setEventKeyword(''); setEventPage(1) }} hasActive={eventHasActive} />
           </div>
