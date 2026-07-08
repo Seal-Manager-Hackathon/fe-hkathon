@@ -493,6 +493,20 @@ export async function unlockTeam(teamId) {
   return data
 }
 
+/**
+ * Get paginated reports list with search and filters.
+ * @param {Object} params
+ * @param {string} [params.keyword] - Search on email, fullName, title
+ * @param {'Pending'|'Resolved'|'Rejected'} [params.status]
+ * @param {number} [params.pageIndex] - default 1
+ * @param {number} [params.pageSize] - default 10, max 100
+ * @returns {Promise<{ items: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getReports(params = {}) {
+  const { data } = await api.get('/admin/reports', { params })
+  return data.data
+}
+
 // ─── Event Delete/Restore ──────────────────────────────────────────────────
 
 export async function deleteEvent(eventId) {

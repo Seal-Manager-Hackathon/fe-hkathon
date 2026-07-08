@@ -39,6 +39,7 @@ const NotificationEdit = lazy(() => import('../pages/admin/notifications/Notific
 const TeamsManagement = lazy(() => import('../pages/admin/teams/TeamsManagement'))
 const TeamDetail = lazy(() => import('../pages/admin/teams/TeamDetail'))
 const TeamEdit = lazy(() => import('../pages/admin/teams/TeamEdit'))
+const ReportsManagement = lazy(() => import('../pages/admin/reports/ReportsManagement'))
 const MyNotifications = lazy(() => import('../pages/admin/notifications/MyNotifications'))
 const AdminProfile = lazy(() => import('../pages/admin/profile/AdminProfile'))
 const AdminProfileEdit = lazy(() => import('../pages/admin/profile/AdminProfileEdit'))
@@ -84,6 +85,10 @@ export const routes = [
       { index: true, element: <Suspense fallback={<RouteFallback />}><TeamsManagement /></Suspense> },
       { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><TeamEdit /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><TeamDetail /></Suspense> },
+    ]},
+    { path: 'reports', children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><ReportsManagement /></Suspense> },
+      { path: ':id', element: <Suspense fallback={<RouteFallback />}><ReportsManagement /></Suspense> },
     ]},
     { path: 'rounds/:roundId/edit', element: <Suspense fallback={<RouteFallback />}><RoundEdit /></Suspense> },
     { path: 'rounds/:roundId/criteria-templates/create', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplateCreate /></Suspense> },

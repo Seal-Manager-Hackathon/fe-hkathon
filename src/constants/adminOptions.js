@@ -157,6 +157,28 @@ export const targetTypeBadge = {
 }
 
 /* ─── Team filters ─── */
+export const REPORT_STATUS_OPTIONS = [
+  { value: 'Pending', label: 'Pending' },
+  { value: 'Resolved', label: 'Resolved' },
+  { value: 'Rejected', label: 'Rejected' },
+]
+
+export const REPORT_STATUS_OPTIONS_ALL = [
+  { value: '', label: 'All Statuses' },
+  ...REPORT_STATUS_OPTIONS,
+]
+
+export const reportStatusBadge = {
+  Pending: 'bg-[#fff3e0] text-[#e65100]',
+  Resolved: 'bg-[#e8f5e9] text-[#2e7d32]',
+  Rejected: 'bg-[#fce4ec] text-[#c62828]',
+}
+
+export const reportTypeBadge = {
+  Other: 'bg-[#e3f2fd] text-[#1565c0]',
+}
+
+/* ─── Team filters ─── */
 export const LOCK_OPTIONS = [
   { value: '', label: 'All' },
   { value: 'false', label: 'Locked' },

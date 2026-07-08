@@ -11,6 +11,7 @@ export const mockAdminNavItems = [
   { key: 'teams', label: 'Teams', icon: 'UserRound', to: '/admin/teams' },
   { key: 'users', label: 'Users', icon: 'Users', to: '/admin/users' },
   { key: 'notifications', label: 'Notifications', icon: 'Bell', to: '/admin/notifications' },
+  { key: 'reports', label: 'Reports', icon: 'FileText', to: '/admin/reports' },
 ]
 
 export const mockAdminUser = {
