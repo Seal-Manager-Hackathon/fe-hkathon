@@ -613,6 +613,11 @@ export async function getAwardDetail(eventId, awardId) {
   return data.data
 }
 
+export async function swapAward(eventId, awardId, targetLevel) {
+  const { data } = await api.post(`/admin/events/${eventId}/awards/${awardId}/swap`, { targetLevel })
+  return data
+}
+
 // ─── Team Register History ─────────────────────────────────────────────────────
 
 export async function getTeamRegisterHistory(teamId, params = {}) {
