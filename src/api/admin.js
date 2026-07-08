@@ -444,6 +444,16 @@ export async function updateCriteriaItem(itemId, payload) {
   return data
 }
 
+export async function deleteCriteriaItem(itemId) {
+  const { data } = await api.post(`/admin/criteria-items/${itemId}/delete`)
+  return data
+}
+
+export async function restoreCriteriaItem(itemId) {
+  const { data } = await api.post(`/admin/criteria-items/${itemId}/restore`)
+  return data
+}
+
 // ─── Tracks ─────────────────────────────────────────────────────────────────────
 
 export async function getTracks(eventId, params = {}) {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Tag, Hash, CircleCheck, Edit, Target, AlertCircle, Pencil, X, Save, AlignLeft } from 'lucide-react'
-import { getCriteriaTemplateDetail, getRoundDetail, updateCriteriaItem } from '../../../../api/admin'
+import { ArrowLeft, FileText, Calendar, Clock, Tag, Hash, CircleCheck, Edit, Target, AlertCircle, Pencil, X, Save, AlignLeft, Trash2, RotateCcw } from 'lucide-react'
+import { getCriteriaTemplateDetail, getRoundDetail, updateCriteriaItem, deleteCriteriaItem, restoreCriteriaItem } from '../../../../api/admin'
 import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
 import RichTextEditor from '../../../../components/RichTextEditor'
@@ -79,6 +79,36 @@ export default function CriteriaTemplateDetail() {
       toast.error(err?.response?.data?.message || 'Failed to update item.')
     } finally {
       setItemSaving(false)
+    }
+  }
+
+  async function handleDeleteItem(item) {
+    try {
+      await deleteCriteriaItem(item.id)
+      toast.success('Criteria item deleted')
+      setTemplate((prev) => ({
+        ...prev,
+        items: prev.items.map((it) =>
+          it.id === item.id ? { ...it, isDisable: true } : it
+        ),
+      }))
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to delete item.')
+    }
+  }
+
+  async function handleRestoreItem(item) {
+    try {
+      await restoreCriteriaItem(item.id)
+      toast.success('Criteria item restored')
+      setTemplate((prev) => ({
+        ...prev,
+        items: prev.items.map((it) =>
+          it.id === item.id ? { ...it, isDisable: false } : it
+        ),
+      }))
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to restore item.')
     }
   }
 
@@ -183,7 +213,7 @@ export default function CriteriaTemplateDetail() {
             ) : (
               <div className="space-y-3">
                 {items.map((item, idx) => (
-                  <CriteriaItemCard key={item.id} index={idx + 1} item={item} maxScore={100} onEdit={() => setEditingItem({ ...item })} />
+                  <CriteriaItemCard key={item.id} index={idx + 1} item={item} maxScore={100} onEdit={() => setEditingItem({ ...item })} onDelete={handleDeleteItem} onRestore={handleRestoreItem} />
                 ))}
               </div>
             )}
@@ -244,7 +274,7 @@ function StatCard({ icon, label, value, color, bg, border, mono = false }) {
   )
 }
 
-function CriteriaItemCard({ index, item, maxScore, onEdit }) {
+function CriteriaItemCard({ index, item, maxScore, onEdit, onDelete, onRestore }) {
   const score = Number(item.score) || 0
   const pct = Math.round((score / maxScore) * 100)
   const isDisabled = item.isDisable
@@ -257,14 +287,14 @@ function CriteriaItemCard({ index, item, maxScore, onEdit }) {
   const c = getScoreColor(pct)
 
   return (
-    <div className={`overflow-hidden rounded-2xl border bg-white shadow-sm transition-shadow hover:shadow-md ${isDisabled ? 'border-slate-200 opacity-60' : 'border-[#e8ecf0]'}`}>
+    <div className="overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-sm transition-shadow hover:shadow-md">
       <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:gap-6">
         <div className="flex shrink-0 items-start gap-3">
           <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#064f5d] text-[13px] font-bold text-white shadow-sm">{index}</span>
           <div className="min-w-0 flex-1 sm:hidden">
             <div className="flex flex-wrap items-center gap-2">
               <h4 className="text-[15px] font-bold text-slate-800">{item.name}</h4>
-              {isDisabled && <Badge label="Disabled" className="bg-slate-100 text-slate-500 text-[10px]" />}
+              <Badge label={isDisabled ? 'Disabled' : 'Active'} className={isDisabled ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
             </div>
           </div>
         </div>
@@ -272,17 +302,8 @@ function CriteriaItemCard({ index, item, maxScore, onEdit }) {
         <div className="min-w-0 flex-1 space-y-3">
           <div className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-2">
             <h4 className="text-[15px] font-bold text-slate-800">{item.name}</h4>
-            {isDisabled && <Badge label="Disabled" className="bg-slate-100 text-slate-500 text-[10px]" />}
+            <Badge label={isDisabled ? 'Disabled' : 'Active'} className={isDisabled ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
           </div>
-
-          {item.description ? (
-            <div className="rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-white p-4">
-              <span className="mb-2 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400"><AlignLeft className="h-3 w-3" />Description</span>
-              <div className="text-[13px] leading-relaxed text-slate-600"><RichTextViewer content={item.description} /></div>
-            </div>
-          ) : (
-            <p className="text-[13px] italic text-slate-300">No description</p>
-          )}
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-[12px]">
@@ -295,13 +316,32 @@ function CriteriaItemCard({ index, item, maxScore, onEdit }) {
             </div>
           </div>
 
-          <button
-            onClick={onEdit}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-[13px] font-semibold text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 active:scale-[0.97]"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-            Edit
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onEdit}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-[13px] font-semibold text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 active:scale-[0.97]"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              Edit
+            </button>
+            {isDisabled ? (
+              <button
+                onClick={() => onRestore?.(item)}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-[13px] font-semibold text-emerald-600 transition-colors hover:bg-emerald-100 active:scale-[0.97]"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Restore
+              </button>
+            ) : (
+              <button
+                onClick={() => onDelete?.(item)}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-[13px] font-semibold text-rose-600 transition-colors hover:bg-rose-100 active:scale-[0.97]"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Delete
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
