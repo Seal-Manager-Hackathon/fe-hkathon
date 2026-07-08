@@ -90,8 +90,8 @@ export default function TeamsManagement() {
       render: (row) => (<div className="flex items-center justify-end gap-2">
         <Link to={`/admin/teams/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] hover:bg-[#e8e8e8]"><Eye className="h-3.5 w-3.5" /> View</Link>
         {!row.isDisable && <><Link to={`/admin/teams/${row.id}/edit`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] hover:bg-[#bbdefb]"><Edit className="h-3.5 w-3.5" /> Edit</Link>
-        {row.canEdit ? <button onClick={() => handleLock(row)} className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] hover:bg-[#ffe0b2] w-[88px]"><Lock className="h-3.5 w-3.5" /> Lock</button>
-        : <button onClick={() => handleUnlock(row)} className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9] w-[88px]"><LockOpen className="h-3.5 w-3.5" /> Unlock</button>}
+        {row.canEdit ? <button onClick={() => handleLock(row)} className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] hover:bg-[#ffe0b2] w-[92px]"><Lock className="h-3.5 w-3.5" /> Lock</button>
+        : <button onClick={() => handleUnlock(row)} className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9] w-[92px]"><LockOpen className="h-3.5 w-3.5" /> Unlock</button>}
         <button onClick={() => handleDelete(row)} className={dangerBtnClass}><Trash2 className="h-3.5 w-3.5" /> Delete</button></>}
         {row.isDisable && <button onClick={() => handleRestore(row)} className={restoreBtnClass}><RotateCcw className="h-3.5 w-3.5" /> Restore</button>}
       </div>),
