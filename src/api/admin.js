@@ -417,6 +417,11 @@ export async function getCriteriaTemplateDetail(templateId) {
   return data.data
 }
 
+export async function updateCriteriaTemplate(templateId, payload) {
+  const { data } = await api.patch(`/admin/criteria-templates/${templateId}`, payload)
+  return data
+}
+
 // ─── Tracks ─────────────────────────────────────────────────────────────────────
 
 export async function getTracks(eventId, params = {}) {

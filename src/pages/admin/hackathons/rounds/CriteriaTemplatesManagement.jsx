@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Plus, Eye, FileText, Calendar, CircleCheck, MoreHorizontal, Search, Ban, ArrowLeft } from 'lucide-react'
+import { Plus, Eye, Edit, FileText, Calendar, CircleCheck, MoreHorizontal, Search, Ban, ArrowLeft } from 'lucide-react'
 import { getCriteriaTemplates, getRoundDetail } from '../../../../api/admin'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
@@ -49,6 +49,9 @@ function criteriaColumns(roundId) {
         <div className="flex items-center justify-end gap-2">
           <Link to={`/admin/rounds/${roundId}/criteria-templates/${row.id}`} className={viewBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
+          </Link>
+          <Link to={`/admin/rounds/${roundId}/criteria-templates/${row.id}/edit`} className={viewBtnClass}>
+            <Edit className="h-3.5 w-3.5" /> Edit
           </Link>
         </div>
       ),
