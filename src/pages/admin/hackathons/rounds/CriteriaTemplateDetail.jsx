@@ -425,51 +425,49 @@ export default function CriteriaTemplateDetail() {
       {viewingItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40" onClick={() => setViewingItem(null)} />
-          <div className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
-            <div className="mb-5 flex items-center justify-between">
-              <h3 className="text-[16px] font-bold text-slate-800">Criteria Item Detail</h3>
-              <button onClick={() => setViewingItem(null)} className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"><X className="h-5 w-5" /></button>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Name</label>
-                <p className="text-[15px] font-bold text-slate-800">{viewingItem.name}</p>
-              </div>
+          <div className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
               <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#064f5d]/10">
+                  <FileText className="h-5 w-5 text-[#064f5d]" />
+                </div>
                 <div>
-                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Status</label>
+                  <h3 className="text-[16px] font-bold text-slate-800">{viewingItem.name}</h3>
                   <Badge label={viewingItem.isDisable ? 'Disabled' : 'Active'} className={viewingItem.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
                 </div>
-                <div>
-                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Score</label>
-                  <p className="text-[15px] font-semibold text-[#064f5d]">{viewingItem.score}/100</p>
-                </div>
               </div>
-              {viewingItem.description ? (
-                <div>
-                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Description</label>
-                  <div className="max-h-48 overflow-y-auto rounded-xl border border-slate-100 bg-slate-50 p-4 text-[14px] leading-relaxed text-slate-600">
+              <button onClick={() => setViewingItem(null)} className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"><X className="h-5 w-5" /></button>
+            </div>
+            <div className="space-y-6 px-6 py-5">
+              <div>
+                <label className="mb-3 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Score</label>
+                <ScoreSlider value={viewingItem.score} onChange={() => {}} />
+              </div>
+              <div>
+                <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Description</label>
+                {viewingItem.description ? (
+                  <div className="max-h-48 overflow-y-auto rounded-xl border border-slate-100 bg-slate-50/50 p-4 text-[14px] leading-relaxed text-slate-600">
                     <RichTextViewer content={viewingItem.description} />
                   </div>
-                </div>
-              ) : (
-                <div>
-                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Description</label>
-                  <p className="text-[14px] italic text-slate-300">No description</p>
-                </div>
-              )}
+                ) : (
+                  <div className="flex flex-col items-center rounded-xl border border-dashed border-slate-200 bg-slate-50/30 py-8">
+                    <AlignLeft className="mb-2 h-8 w-8 text-slate-200" />
+                    <p className="text-[14px] font-medium text-slate-300">No description</p>
+                  </div>
+                )}
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Created</label>
-                  <p className="text-[13px] text-slate-500">{formatDateTime(viewingItem.createdAt)}</p>
+                  <p className="text-[11px] font-medium uppercase text-slate-400">Created</p>
+                  <p className="mt-0.5 text-[13px] font-medium text-slate-600">{formatDateTime(viewingItem.createdAt)}</p>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Updated</label>
-                  <p className="text-[13px] text-slate-500">{formatDateTime(viewingItem.updatedAt)}</p>
+                  <p className="text-[11px] font-medium uppercase text-slate-400">Updated</p>
+                  <p className="mt-0.5 text-[13px] font-medium text-slate-600">{formatDateTime(viewingItem.updatedAt)}</p>
                 </div>
               </div>
             </div>
-            <div className="mt-6 flex justify-end">
+            <div className="flex justify-end border-t border-slate-100 px-6 py-4">
               <button onClick={() => setViewingItem(null)} className="cursor-pointer rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-[#05404a]">Close</button>
             </div>
           </div>
