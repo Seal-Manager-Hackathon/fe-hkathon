@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { getReportDetail, getUserDetail } from '../../../api/admin'
+import { getReportDetail, getUserDetail, updateReportStatus } from '../../../api/admin'
 import { toast } from '../../../utils/toast'
 import { STATUS_META } from './ReportDetail/statusMeta'
 import HeroCard from './ReportDetail/HeroCard'
@@ -61,8 +61,8 @@ export default function ReportDetail() {
     setActing(true)
     setActionError('')
     try {
-      // TODO: replace with real API call — await updateReportStatus(id, newStatus, { resolutionReason: reasonHtml })
-      setReport((prev) => (prev ? { ...prev, status: newStatus, resolutionReason: reasonHtml, updatedAt: new Date().toISOString() } : prev))
+      await updateReportStatus(id, newStatus, reasonHtml)
+      setReport((prev) => (prev ? { ...prev, status: newStatus, reason: reasonHtml, updatedAt: new Date().toISOString() } : prev))
       toast.success(`Report has been ${newStatus.toLowerCase()}.`)
     } catch (err) {
       setActionError(err?.response?.data?.message || `Failed to ${newStatus.toLowerCase()} report.`)

@@ -580,6 +580,21 @@ export async function getReportDetail(reportId) {
   return data.data
 }
 
+/**
+ * Update report status (Resolve / Reject).
+ * PATCH /api/v1/admin/reports/{reportId}/status
+ * @param {string} reportId
+ * @param {'Pending'|'Resolved'|'Rejected'} status
+ * @param {string} [reason]
+ * @returns {Promise<{ data: null, message: string, status: number }>}
+ */
+export async function updateReportStatus(reportId, status, reason) {
+  const payload = { status }
+  if (reason) payload.reason = reason
+  const { data } = await api.patch(`/admin/reports/${reportId}/status`, payload)
+  return data
+}
+
 // ─── Event Delete/Restore ──────────────────────────────────────────────────
 
 export async function deleteEvent(eventId) {

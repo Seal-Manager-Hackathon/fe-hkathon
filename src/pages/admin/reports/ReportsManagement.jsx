@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { getReports, getUserDetail } from '../../../api/admin'
+import { getReports, getUserDetail, updateReportStatus } from '../../../api/admin'
 import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import { reportsFilters } from './ReportsFilters'
 import { reportsColumns } from './ReportsColumns'
 import { useServerPagination } from '../../../hooks/useServerPagination'
+import { toast } from '../../../utils/toast'
+import ResolveModal from './ReportDetail/ResolveModal'
 
 const PAGE_SIZE = 10
 
@@ -17,6 +19,8 @@ const DEFAULT_VALUES = {
 
 export default function ReportsManagement() {
   const [userDetails, setUserDetails] = useState({})
+  const [modal, setModal] = useState({ open: false, action: 'resolve', reportId: null })
+  const [acting, setActing] = useState(false)
 
   const buildParams = useCallback((filters, pageIndex) => {
     const params = { pageIndex, pageSize: PAGE_SIZE }
@@ -72,7 +76,27 @@ export default function ReportsManagement() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reports])
 
-  const columns = useMemo(() => reportsColumns(userDetails), [userDetails])
+  const columns = useMemo(() => reportsColumns(userDetails, {
+    onResolve: (reportId) => setModal({ open: true, action: 'resolve', reportId }),
+    onReject: (reportId) => setModal({ open: true, action: 'reject', reportId }),
+  }), [userDetails])
+
+  const handleModalSubmit = useCallback(async (reasonHtml) => {
+    const reportId = modal.reportId
+    const newStatus = modal.action === 'resolve' ? 'Resolved' : 'Rejected'
+    setModal({ open: false, action: 'resolve', reportId: null })
+    setActing(true)
+    try {
+      await updateReportStatus(reportId, newStatus, reasonHtml)
+      toast.success(`Report has been ${newStatus.toLowerCase()}.`)
+      // Refresh the list to reflect status change
+      handleReset()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || `Failed to ${newStatus.toLowerCase()} report.`)
+    } finally {
+      setActing(false)
+    }
+  }, [modal.reportId, modal.action, handleReset])
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -104,6 +128,14 @@ export default function ReportsManagement() {
         emptyText={hasActive ? 'No reports match the current filters.' : 'No reports in the system yet.'}
         keyExtractor={(row) => row.id}
         minWidth="800px"
+      />
+
+      <ResolveModal
+        action={modal.action}
+        open={modal.open}
+        onClose={() => setModal({ open: false, action: 'resolve', reportId: null })}
+        onSubmit={handleModalSubmit}
+        submitting={acting}
       />
     </div>
   )
