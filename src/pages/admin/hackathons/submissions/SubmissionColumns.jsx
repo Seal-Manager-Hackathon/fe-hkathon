@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Users, Layers, FolderKanban, FileText, Eye, Send, MoreHorizontal, User } from 'lucide-react'
 import { formatDateTime } from '../../../../utils/format'
+import Avatar from '../../../../components/Avatar'
 
 const S = {
   viewBtn:
@@ -45,21 +46,27 @@ export function useSubmissionColumns(eventId) {
         key: 'topicTitle', header: 'Topic', headerIcon: FileText,
         render: (row) =>
           row.topicId ? (
-            <span className="text-[13px] text-gray-500">{row.topicTitle || '—'}</span>
+            <span className="text-[13px] font-medium text-[#064f5d]">{row.topicTitle || '—'}</span>
           ) : (
             <span className="text-[13px] text-gray-400">—</span>
           ),
       },
       {
         key: 'submittedBy', header: 'Submitted By', headerIcon: User,
-        render: (row) =>
-          row.submittedBy ? (
-            <Link to={`/admin/users/${row.submittedBy.userId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">
-              {row.submittedBy.firstName} {row.submittedBy.lastName}
+        render: (row) => {
+          const s = row.submittedBy
+          if (!s) return <span className="text-[13px] text-gray-400">—</span>
+          const fullName = `${s.firstName} ${s.lastName}`.trim()
+          return (
+            <Link to={`/admin/users/${s.userId}`} className="flex items-center gap-3 hover:opacity-80">
+              <Avatar src={s.avatarUrl} name={fullName} size="h-9 w-9" textSize="text-[13px]" />
+              <div>
+                <p className="text-[14px] font-semibold text-[#064f5d] hover:underline">{fullName}</p>
+                <p className="text-[12px] text-gray-500">{s.email}</p>
+              </div>
             </Link>
-          ) : (
-            <span className="text-[13px] text-gray-400">—</span>
-          ),
+          )
+        },
       },
       {
         key: 'lastSubmission', header: 'Last Submission', headerIcon: Send,
@@ -73,10 +80,6 @@ export function useSubmissionColumns(eventId) {
             </div>
           )
         },
-      },
-      {
-        key: 'submissions', header: 'Submissions', headerIcon: FileText,
-        render: (row) => <span className="text-[13px] font-semibold text-[#064f5d]">{row.records?.length || 0}</span>,
       },
       {
         key: 'actions', header: 'Actions', headerIcon: MoreHorizontal,
