@@ -6,46 +6,13 @@ import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
 import CardPanel from '../../../../components/CardPanel'
 import InfoRow from '../../../../components/InfoRow'
+import EventInfoCard from '../../../../components/EventInfoCard'
 import { formatDateTime } from '../../../../utils/format'
 
 const statusBadge = {
   Draft: 'bg-[#f5f5f5] text-[#757575]',
   Published: 'bg-[#e8f5e9] text-[#2e7d32]',
   Closed: 'bg-[#e0f2f1] text-[#00695c]',
-}
-
-function R({ icon, label, value, cls = '', mono = false }) {
-  return <p className="flex items-center gap-2 text-[13px]">{icon}<span className="text-gray-400">{label}</span><span className={`ml-auto font-semibold ${cls} ${mono ? 'text-[12px] font-medium' : ''}`}>{value}</span></p>
-}
-
-function EventInfoCard({ event }) {
-  return (
-    <div className="rounded-xl border border-[#e8ecf0] bg-white shadow-sm self-start overflow-hidden">
-      <div className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-5 py-4">
-        <h4 className="text-[14px] font-bold text-white flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-[#80deea]" /> Event Info
-        </h4>
-      </div>
-      <div className="divide-y divide-[#f5f5f5]">
-        <div className="px-5 py-3.5">
-          <Link to={`/admin/hackathons/${event.id}`} className="text-[14px] font-bold text-[#064f5d] leading-snug hover:underline">{event.name}</Link>
-          <div className="mt-1.5 flex items-center gap-2">
-            <Badge label={event.status} className={statusBadge[event.status] || 'bg-[#f5f5f5] text-[#757575]'} />
-            {event.isDisable && <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />}
-          </div>
-        </div>
-        <div className="px-5 py-3 space-y-2">
-          <R icon={<Flag className="h-3.5 w-3.5 text-[#ef6c00]" />} label="Season" value={event.season || '—'} cls="text-[#ef6c00]" />
-          <R icon={<Clock className="h-3.5 w-3.5 text-[#1565c0]" />} label="Start" value={formatDateTime(event.startTime)} mono />
-          <R icon={<Clock className="h-3.5 w-3.5 text-[#e65100]" />} label="Reg Deadline" value={event.registerLimitTime ? formatDateTime(event.registerLimitTime) : '—'} mono />
-          <R icon={<Clock className="h-3.5 w-3.5 text-[#c62828]" />} label="End" value={formatDateTime(event.endTime)} mono />
-          <R icon={<Users className="h-3.5 w-3.5 text-[#2e7d32]" />} label="Teams" value={event.limitTeam ?? '—'} cls="text-[#2e7d32]" />
-          <R icon={<Users className="h-3.5 w-3.5 text-[#6a1b9a]" />} label="Members" value={`${event.minMember ?? '—'} – ${event.maxMember ?? '—'}`} cls="text-[#6a1b9a]" />
-          <R icon={<Hash className="h-3.5 w-3.5 text-[#37474f]" />} label="Rounds" value={event.numberRound ?? 0} cls="text-[#37474f]" />
-        </div>
-      </div>
-    </div>
-  )
 }
 
 export default function RoundDetail() {
@@ -80,14 +47,10 @@ export default function RoundDetail() {
   if (loading) return <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="h-7 w-96 animate-pulse rounded bg-gray-200 mb-2" /><div className="h-60 animate-pulse rounded-xl bg-gray-100" /></div>
   if (error || !round) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{error || 'Round not found.'}</p><Link to="/admin/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Hackathons</Link></div>
 
-  const backUrl = event ? `/admin/hackathons/${event.id}?tab=Rounds` : '/admin/hackathons'
-
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <div className="mb-6">
-        <Link to={backUrl} className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
-          &larr; Back to Hackathons
-        </Link>
+      <div className="mb-4">
+        <Link to={event ? `/admin/hackathons/${event.id}?tab=Rounds` : '/admin/hackathons'} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] hover:underline">&larr; Back to Event</Link>
       </div>
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">

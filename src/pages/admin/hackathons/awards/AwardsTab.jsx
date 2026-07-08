@@ -5,7 +5,7 @@ import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
 import { getAwards, deleteAward, restoreAward } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
-import { Search, Trash2, Trophy, Hash, DollarSign, Calendar, Plus, Edit, RotateCcw, MoreHorizontal, CircleCheck } from 'lucide-react'
+import { Search, Trash2, Trophy, Hash, DollarSign, Calendar, Plus, Edit, RotateCcw, MoreHorizontal, CircleCheck, Eye } from 'lucide-react'
 import { toast, confirm } from '../../../../utils/toast'
 
 const PAGE_SIZE = 10
@@ -76,6 +76,7 @@ function awardColumns(eventId, onDelete, onRestore) {
       className: 'text-right',
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
+          <Link to={`/admin/hackathons/${eventId}/awards/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] hover:bg-[#e8e8e8]"><Eye className="h-3.5 w-3.5" />View</Link>
           {!row.isDisable && (
             <Link to={`/admin/hackathons/${eventId}/awards/${row.id}/edit`} className={actionBtnClass}>
               <Edit className="h-3.5 w-3.5" /> Edit

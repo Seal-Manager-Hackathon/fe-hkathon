@@ -31,6 +31,7 @@ const TopicDetail = lazy(() => import('../pages/admin/hackathons/tracks/TopicDet
 const TopicEdit = lazy(() => import('../pages/admin/hackathons/tracks/TopicEdit'))
 const AwardCreate = lazy(() => import('../pages/admin/hackathons/awards/AwardCreate'))
 const AwardEdit = lazy(() => import('../pages/admin/hackathons/awards/AwardEdit'))
+const AwardDetail = lazy(() => import('../pages/admin/hackathons/awards/AwardDetail'))
 const RegisterTeamDetail = lazy(() => import('../pages/admin/hackathons/register-teams/RegisterTeamDetail'))
 const UsersManagement = lazy(() => import('../pages/admin/users/UsersManagement'))
 const UsersCreate = lazy(() => import('../pages/admin/users/UsersCreate'))
@@ -75,6 +76,7 @@ export const routes = [
       { path: ':eventId/tracks/:trackId', element: <Suspense fallback={<RouteFallback />}><TrackDetail /></Suspense> },
       { path: ':eventId/awards/create', element: <Suspense fallback={<RouteFallback />}><AwardCreate /></Suspense> },
       { path: ':eventId/awards/:awardId/edit', element: <Suspense fallback={<RouteFallback />}><AwardEdit /></Suspense> },
+      { path: ':eventId/awards/:awardId', element: <Suspense fallback={<RouteFallback />}><AwardDetail /></Suspense> },
     ]},
     { path: 'users', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><UsersManagement /></Suspense> },
