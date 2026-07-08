@@ -608,3 +608,10 @@ export async function restoreAward(eventId, awardId) {
   return data
 }
 
+// ─── Team Register History ─────────────────────────────────────────────────────
+
+export async function getTeamRegisterHistory(teamId, params = {}) {
+  const { data } = await api.get(`/admin/teams/${teamId}/register-teams`, { params })
+  return data.data
+}
+
