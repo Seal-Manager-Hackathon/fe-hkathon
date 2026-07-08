@@ -422,6 +422,16 @@ export async function updateCriteriaTemplate(templateId, payload) {
   return data
 }
 
+export async function deleteCriteriaTemplate(templateId) {
+  const { data } = await api.post(`/admin/criteria-templates/${templateId}/delete`)
+  return data
+}
+
+export async function restoreCriteriaTemplate(templateId) {
+  const { data } = await api.post(`/admin/criteria-templates/${templateId}/restore`)
+  return data
+}
+
 // ─── Criteria Items ──────────────────────────────────────────────────────────
 
 export async function getCriteriaItemDetail(itemId) {
