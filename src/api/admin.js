@@ -673,6 +673,27 @@ export async function updateRegisterTeam(registerTeamId, payload) {
   return data
 }
 
+/**
+ * Assign track and topic to a register team.
+ * POST /admin/register-teams/{registerTeamId}/assign-track-topic
+ * @param {string} registerTeamId
+ * @param {{ trackId: string, topicId?: string }} payload
+ */
+export async function assignTrackTopicToRegisterTeam(registerTeamId, payload) {
+  const { data } = await api.post(`/admin/register-teams/${registerTeamId}/assign-track-topic`, payload)
+  return data
+}
+
+/**
+ * Remove track and topic from a register team.
+ * POST /admin/register-teams/{registerTeamId}/remove-track-topic
+ * @param {string} registerTeamId
+ */
+export async function removeTrackTopicFromRegisterTeam(registerTeamId) {
+  const { data } = await api.post(`/admin/register-teams/${registerTeamId}/remove-track-topic`)
+  return data
+}
+
 // ========== Assign APIs ==========
 
 /**

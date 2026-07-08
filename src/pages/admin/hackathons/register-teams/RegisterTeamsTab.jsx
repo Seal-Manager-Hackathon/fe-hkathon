@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
-import { getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam } from '../../../../api/admin'
+import TrackSelectModal from '../../../../components/TrackSelectModal'
+import TopicSelectModal from '../../../../components/TopicSelectModal'
+import { getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam, assignTrackTopicToRegisterTeam, removeTrackTopicFromRegisterTeam } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import { toast, confirm } from '../../../../utils/toast'
 import PromptReason from '../../../../components/PromptReason'
-import { Search, Ban, Users, Eye, FileText, Trophy, Calendar, MoreHorizontal, CircleCheck, CheckCircle, XCircle, ShieldOff, Edit3 } from 'lucide-react'
+import { Search, Ban, Users, Eye, FileText, Trophy, Calendar, MoreHorizontal, CircleCheck, CheckCircle, XCircle, ShieldOff, Edit3, FolderKanban } from 'lucide-react'
 
 const PAGE_SIZE = 10
 const DEFAULT_VALUES = { keyword: '', status: '', isBanned: '', isDisable: '' }
@@ -37,6 +39,13 @@ export default function RegisterTeamsTab({ eventId }) {
 
   const [banTarget, setBanTarget] = useState(null)
   const [banning, setBanning] = useState(false)
+
+  // Track/Topic assignment state
+  const [assignTarget, setAssignTarget] = useState(null)
+  const [assigning, setAssigning] = useState(false)
+  const [trackModalOpen, setTrackModalOpen] = useState(false)
+  const [topicModalOpen, setTopicModalOpen] = useState(false)
+  const [selectedTrackId, setSelectedTrackId] = useState(null)
 
   const fetchTeams = useCallback(async () => {
     setLoading(true); setError('')
@@ -104,10 +113,69 @@ export default function RegisterTeamsTab({ eventId }) {
     catch (err) { toast.error(err?.response?.data?.message || 'Failed to unban team') }
   }
 
+  // ── Track/Topic assignment handlers ──
+  function openAssign(row) {
+    setAssignTarget(row)
+    setSelectedTrackId(null)
+    setTrackModalOpen(true)
+  }
+
+  function handleTrackSelect(trackId) {
+    // Must select a track (not "All")
+    if (!trackId) {
+      toast.error('Please select a track')
+      return
+    }
+    setSelectedTrackId(trackId)
+    setTrackModalOpen(false)
+    setTopicModalOpen(true)
+  }
+
+  function handleTopicSelect(topicId) {
+    setTopicModalOpen(false)
+    submitAssign(selectedTrackId, topicId || undefined)
+  }
+
+  function handleTopicModalClose() {
+    setTopicModalOpen(false)
+    // Still submit with track only if user closes without selecting topic
+    submitAssign(selectedTrackId, undefined)
+  }
+
+  async function submitAssign(trackId, topicId) {
+    if (!assignTarget) return
+    setAssigning(true)
+    try {
+      const payload = { trackId }
+      if (topicId) payload.topicId = topicId
+      await assignTrackTopicToRegisterTeam(assignTarget.id, payload)
+      toast.success('Track/Topic assigned successfully')
+      fetchTeams()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to assign track/topic')
+    } finally {
+      setAssigning(false)
+      setAssignTarget(null)
+      setSelectedTrackId(null)
+    }
+  }
+
+  async function handleRemoveAssign(row) {
+    const ok = await confirm('Remove Track/Topic', `Remove track and topic assignment from "${row.teamName}"?`)
+    if (!ok) return
+    try {
+      await removeTrackTopicFromRegisterTeam(row.id)
+      toast.success('Track/Topic removed')
+      fetchTeams()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to remove track/topic')
+    }
+  }
+
   const columns = [
     { key: 'teamName', header: 'Team', headerIcon: Users, render: (row) => <Link to={`/admin/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName || '—'}</Link> },
     { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => row.trackId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
-    { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => row.topicId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}/topics`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.topicTitle || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
+    { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => row.topicId && row.trackId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}/topics`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.topicTitle || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
     { key: 'isBanned', header: 'Banned', headerIcon: Ban, render: (row) => row.isBanned ? <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
     { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => <Badge label={row.status} className={statusBadge[row.status] || 'bg-gray-50 text-gray-600'} /> },
     { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p> },
@@ -117,6 +185,12 @@ export default function RegisterTeamsTab({ eventId }) {
           <button onClick={() => handleApprove(row)} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#e8f5e9] px-2.5 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9]"><CheckCircle className="h-3.5 w-3.5" />Approve</button>
           <button onClick={() => openReject(row)} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#fce4ec] px-2.5 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2]"><XCircle className="h-3.5 w-3.5" />Reject</button>
         </>)}
+        {/* Assign/Remove Track — only when Approved & not Banned */}
+        {row.status === 'Approved' && !row.isBanned && (
+          row.trackId
+            ? <button onClick={() => handleRemoveAssign(row)} disabled={assigning} className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#fff3cd] px-2.5 py-1.5 text-[13px] font-semibold text-[#856404] hover:bg-[#ffe8a1] disabled:opacity-50 w-[185px]"><FolderKanban className="h-3.5 w-3.5 shrink-0" />{assigning && assignTarget?.id === row.id ? '...' : 'Remove Track & Topic'}</button>
+            : <button onClick={() => openAssign(row)} disabled={assigning} className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#e0f2f1] px-2.5 py-1.5 text-[13px] font-semibold text-[#064f5d] hover:bg-[#b2dfdb] disabled:opacity-50 w-[185px]"><FolderKanban className="h-3.5 w-3.5 shrink-0" />Assign Track & Topic</button>
+        )}
         {row.isBanned
           ? <button onClick={() => handleUnban(row)} className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#e8f5e9] px-2.5 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9] w-[92px]"><ShieldOff className="h-3.5 w-3.5" />Unban</button>
           : <button onClick={() => openBan(row)} className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#fce4ec] px-2.5 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2] w-[92px]"><ShieldOff className="h-3.5 w-3.5" />Ban</button>
@@ -135,6 +209,24 @@ export default function RegisterTeamsTab({ eventId }) {
       </div>
       <BaseTable borderless columns={columns} data={teams} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No results match.' : 'No registered teams for this event.'} keyExtractor={(row) => row.id} minWidth="950px" />
     </div>
+
+    {/* Track Select Modal */}
+    <TrackSelectModal
+      open={trackModalOpen}
+      onClose={() => { setTrackModalOpen(false); setAssignTarget(null) }}
+      eventId={eventId}
+      selectedTrackId={assignTarget?.trackId || null}
+      onSelect={handleTrackSelect}
+    />
+
+    {/* Topic Select Modal (appears after track is chosen) */}
+    <TopicSelectModal
+      open={topicModalOpen}
+      onClose={handleTopicModalClose}
+      trackId={selectedTrackId}
+      selectedTopicId={assignTarget?.topicId || null}
+      onSelect={handleTopicSelect}
+    />
 
     <PromptReason
       open={!!rejectTarget}

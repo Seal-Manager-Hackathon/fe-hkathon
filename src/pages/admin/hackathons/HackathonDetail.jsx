@@ -15,7 +15,7 @@ const TABS = [
   { key: 'Rounds', icon: <Layers className="h-4 w-4" /> },
   { key: 'Tracks', icon: <FolderKanban className="h-4 w-4" /> },
   { key: 'Awards', icon: <Trophy className="h-4 w-4" /> },
-  { key: 'Assign', icon: <UserCheck className="h-4 w-4" /> },
+  { key: 'Assignments', icon: <UserCheck className="h-4 w-4" /> },
   { key: 'Register Teams', icon: <Users className="h-4 w-4" /> },
   { key: 'Submissions', icon: <Send className="h-4 w-4" /> },
 ]
@@ -96,7 +96,7 @@ export default function HackathonDetail() {
       {tab === 'Rounds' && <RoundsTab eventId={id} />}
       {tab === 'Tracks' && <TracksTab eventId={id} />}
       {tab === 'Awards' && <AwardsTab eventId={id} />}
-      {tab === 'Assign' && <AssignTab eventId={id} />}
+      {tab === 'Assignments' && <AssignTab eventId={id} />}
       {tab === 'Register Teams' && <RegisterTeamsTab eventId={id} />}
       {tab === 'Submissions' && <SubmissionsTab eventId={id} />}
     </div>
