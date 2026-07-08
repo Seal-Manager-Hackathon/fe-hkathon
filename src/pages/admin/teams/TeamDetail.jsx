@@ -186,7 +186,7 @@ export default function TeamDetail() {
               <Users className="mb-3 h-10 w-10 text-gray-300" /><p className="text-[14px] text-gray-400">No members in this team.</p>
             </div>
           ) : (
-            <BaseTable columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="500px" />
+            <BaseTable borderless columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="500px" />
           )}
         </CardPanel>
       </div>
@@ -196,7 +196,7 @@ export default function TeamDetail() {
           <div className="px-5 pt-4">
             <FilterBar filters={regFilters} values={{ status: regStatus }} onChange={handleRegFilterChange} onReset={handleRegReset} hasActive={regHasActive} />
           </div>
-          <BaseTable columns={registerColumns()} data={registers} page={regPage} pageSize={REG_PAGE_SIZE} total={regTotal} onPageChange={setRegPage} loading={regLoading} serverSide emptyText={regHasActive ? 'No results match the current filter.' : 'No registration history.'} keyExtractor={(row) => row.id} minWidth="600px" />
+          <BaseTable borderless columns={registerColumns()} data={registers} page={regPage} pageSize={REG_PAGE_SIZE} total={regTotal} onPageChange={setRegPage} loading={regLoading} serverSide emptyText={regHasActive ? 'No results match the current filter.' : 'No registration history.'} keyExtractor={(row) => row.id} minWidth="600px" />
         </CardPanel>
       </div>
     </div>

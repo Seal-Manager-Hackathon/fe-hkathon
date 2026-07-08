@@ -374,6 +374,7 @@ export default function CriteriaTemplateDetail() {
               </button>
             </div>
             <BaseTable
+              borderless
               columns={itemColumns}
               data={items}
               page={itemPage}

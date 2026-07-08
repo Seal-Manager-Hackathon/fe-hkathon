@@ -104,7 +104,7 @@ export default function RegisterTeamDetail() {
           {members.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12"><Users className="mb-3 h-10 w-10 text-gray-300" /><p className="text-[14px] text-gray-400">No members.</p></div>
           ) : (
-            <BaseTable columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="400px" />
+            <BaseTable borderless columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="400px" />
           )}
         </CardPanel>
       </div>
