@@ -63,9 +63,9 @@ const registerStatusBadge = {
 
 function registerColumns() {
   return [
-    { key: 'eventName', header: 'Event', headerIcon: Trophy, render: (row) => <span className="text-[14px] font-semibold text-[#064f5d]">{row.eventName || '—'}</span> },
-    { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => <span className="text-[13px] text-gray-600">{row.trackName || '—'}</span> },
-    { key: 'topicName', header: 'Topic', headerIcon: FileText, render: (row) => <span className="text-[13px] text-gray-600">{row.topicName || '—'}</span> },
+    { key: 'eventName', header: 'Hackathon', headerIcon: Trophy, render: (row) => row.eventId ? <Link to={`/admin/hackathons/${row.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.eventName || '—'}</Link> : <span className="text-[14px] text-gray-400">—</span> },
+    { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => row.trackId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
+    { key: 'topicName', header: 'Topic', headerIcon: FileText, render: (row) => row.topicId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}/topics/${row.topicId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.topicName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
     { key: 'status', header: 'Status', headerIcon: BadgeCheck, render: (row) => <Badge label={row.status} className={registerStatusBadge[row.status] || 'bg-gray-50 text-gray-600'} /> },
     { key: 'createdAt', header: 'Registered At', headerIcon: Clock4, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p> },
   ]

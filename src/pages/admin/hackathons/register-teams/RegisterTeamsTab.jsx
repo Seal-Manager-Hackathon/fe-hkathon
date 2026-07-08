@@ -24,7 +24,7 @@ const viewBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg b
 function regColumns() {
   return [
     { key: 'teamName', header: 'Team', headerIcon: Users, render: (row) => <Link to={`/admin/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName || '—'}</Link> },
-    { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => <span className="text-[13px] text-gray-600">{row.trackName || '—'}</span> },
+    { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => row.trackId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
     { key: 'isBanned', header: 'Banned', headerIcon: Ban, render: (row) => row.isBanned ? <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
     { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => <Badge label={row.status} className={statusBadge[row.status] || 'bg-gray-50 text-gray-600'} /> },
     { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p> },
