@@ -4,7 +4,7 @@ import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import { getTracks, deleteTrack, restoreTrack } from '../../../../api/admin'
 import { trackColumns } from './TrackColumns'
-import { toast } from '../../../../utils/toast'
+import { toast, confirm } from '../../../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -56,6 +56,8 @@ export default function TracksTab({ eventId }) {
   }
 
   async function handleDelete(track) {
+    const ok = await confirm('Delete Track', `Are you sure you want to delete "${track.name}"?`)
+    if (!ok) return
     try {
       await deleteTrack(track.id)
       toast.success('Track deleted')
@@ -66,6 +68,8 @@ export default function TracksTab({ eventId }) {
   }
 
   async function handleRestore(track) {
+    const ok = await confirm('Restore Track', `Are you sure you want to restore "${track.name}"?`)
+    if (!ok) return
     try {
       await restoreTrack(track.id)
       toast.success('Track restored')

@@ -4,7 +4,7 @@ import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import { getRounds, getMaxRoundNo, deleteRound, restoreRound, swapRounds } from '../../../../api/admin'
 import { roundColumns } from './RoundColumns'
-import { toast } from '../../../../utils/toast'
+import { toast, confirm } from '../../../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -68,6 +68,8 @@ export default function RoundsTab({ eventId }) {
   }
 
   async function handleDelete(round) {
+    const ok = await confirm('Delete Round', `Are you sure you want to delete round #${round.roundNo} "${round.name}"?`)
+    if (!ok) return
     try {
       await deleteRound(round.id)
       toast.success('Round deleted')
@@ -79,6 +81,8 @@ export default function RoundsTab({ eventId }) {
   }
 
   async function handleRestore(round) {
+    const ok = await confirm('Restore Round', `Are you sure you want to restore round #${round.roundNo} "${round.name}"?`)
+    if (!ok) return
     try {
       await restoreRound(round.id)
       toast.success('Round restored')
