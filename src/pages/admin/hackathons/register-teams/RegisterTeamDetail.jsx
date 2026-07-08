@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, BadgeCheck } from 'lucide-react'
+import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, BadgeCheck, Ban, Hash, ExternalLink } from 'lucide-react'
 import { getRegisterTeamDetail } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import Badge from '../../../../components/Badge'
@@ -10,10 +10,11 @@ import Avatar from '../../../../components/Avatar'
 import BaseTable from '../../../../components/BaseTable'
 
 const statusBadge = { Pending: 'bg-amber-50 text-amber-700 border border-amber-200', Approved: 'bg-emerald-50 text-emerald-700 border border-emerald-200', Rejected: 'bg-rose-50 text-rose-700 border border-rose-200' }
+const statusIcon = { Pending: <Clock className="h-4 w-4 text-amber-600" />, Approved: <CircleCheck className="h-4 w-4 text-emerald-600" />, Rejected: <Shield className="h-4 w-4 text-rose-600" /> }
 
 const memberColumns = [
   { key: 'member', header: 'Member', headerIcon: User, render: (row) => (<div className="flex items-center gap-3"><Avatar src={row.avatarUrl} name={`${row.firstName} ${row.lastName}`} size="h-9 w-9" textSize="text-[13px]" /><div><p className="text-[14px] font-semibold text-[#1f2f3a]">{row.firstName} {row.lastName}</p><p className="text-[12px] text-gray-400">{row.email}</p></div></div>) },
-  { key: 'role', header: 'Role', headerIcon: Shield, render: (row) => row.isLeader ? (<div className="inline-flex items-center gap-1.5"><Crown className="h-4 w-4 text-[#ffca28]" /><span className="text-[13px] font-semibold text-[#e65100]">Leader</span></div>) : <span className="text-[13px] text-gray-500">Member</span> },
+  { key: 'role', header: 'Role', headerIcon: Shield, render: (row) => row.isLeader ? (<div className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-0.5"><Crown className="h-3.5 w-3.5 text-[#ffca28]" /><span className="text-[12px] font-semibold text-[#e65100]">Leader</span></div>) : <span className="text-[13px] text-gray-400">Member</span> },
 ]
 
 export default function RegisterTeamDetail() {
@@ -36,11 +37,11 @@ export default function RegisterTeamDetail() {
     fetch(); return () => { cancelled = true }
   }, [registerTeamId])
 
-  if (loading) return (<div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" /><div className="h-80 animate-pulse rounded-xl bg-gray-100" /></div>)
+  if (loading) return (<div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" /><div className="mb-6 flex items-center gap-5"><div className="h-14 w-14 shrink-0 animate-pulse rounded-xl bg-gray-200" /><div className="space-y-2"><div className="h-7 w-48 animate-pulse rounded bg-gray-200" /><div className="h-4 w-72 animate-pulse rounded bg-gray-200" /></div></div><div className="h-80 animate-pulse rounded-xl bg-gray-100" /></div>)
 
   if (error) {
     const nf = error.includes('Not Found')
-    return (<div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{nf ? 'Register team not found' : error}</p><Link to="/admin/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Hackathons</Link></div>)
+    return (<div className="flex min-h-[60vh] flex-col items-center justify-center"><div className="mb-4 rounded-full bg-rose-50 p-4"><Shield className="h-8 w-8 text-rose-400" /></div><p className="text-[18px] font-semibold text-gray-500">{nf ? 'Register team not found' : error}</p><Link to="/admin/hackathons" className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"><ArrowLeft className="h-4 w-4" /> Back to Hackathons</Link></div>)
   }
 
   if (!data) return null
@@ -49,66 +50,138 @@ export default function RegisterTeamDetail() {
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <div className="mb-4">
-        <Link to={eventBackUrl} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] hover:underline">
+      {/* Back link */}
+      <div className="mb-5">
+        <Link to={`/admin/hackathons/${data.eventId}?tab=Register+Teams`} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] transition-colors hover:text-[#05404a] hover:underline">
           <ArrowLeft className="h-4 w-4" /> Back to Event
         </Link>
       </div>
 
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{data.teamName}</h1>
-            <Badge label={data.status} className={statusBadge[data.status] || 'bg-gray-50 text-gray-600'} />
+      {/* Hero header */}
+      <div className="mb-6 overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-sm">
+        <div className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-6 py-5 sm:px-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/15 text-xl font-bold text-white shadow-inner">
+                {data.teamName?.charAt(0) || '?'}
+              </div>
+              <div>
+                <h1 className="text-[20px] font-bold text-white sm:text-[26px]">{data.teamName}</h1>
+                <p className="mt-0.5 text-[13px] text-white/70">Registered {formatDateTime(data.createdAt)}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-[12px] font-semibold text-white">
+                {statusIcon[data.status] || null}
+                {data.status}
+              </span>
+              {data.isBanned && (
+                <Badge label="Banned" className="bg-[#fce4ec] text-[#c62828]" />
+              )}
+            </div>
           </div>
-          <p className="mt-2 text-[12px] sm:text-[13px] text-gray-400">Registered {formatDateTime(data.createdAt)}</p>
+        </div>
+        {/* Quick stats bar */}
+        <div className="flex flex-wrap gap-4 border-t border-[#e8ecf0] bg-[#fafbfc] px-6 py-3 sm:px-8">
+          <QuickStat icon={Trophy} label="Event" value={data.eventName || '—'} href={data.eventId ? `/admin/hackathons/${data.eventId}` : null} />
+          <QuickStat icon={FileText} label="Track" value={data.trackTitle || '—'} href={data.trackId ? `/admin/hackathons/${data.eventId}/tracks/${data.trackId}` : null} />
+          <QuickStat icon={FileText} label="Topic" value={data.topicTitle || '—'} href={data.topicId && data.trackId ? `/admin/hackathons/${data.eventId}/tracks/${data.trackId}/topics` : null} />
+          <QuickStat icon={Users} label="Team" value={data.teamName || '—'} href={data.teamId ? `/admin/teams/${data.teamId}` : null} />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <CardPanel title="Registration Info">
-          <div className="divide-y divide-[#f5f5f5]">
-            <InfoRow label="Status" icon={BadgeCheck}><Badge label={data.status} className={statusBadge[data.status] || 'bg-gray-50 text-gray-600'} /></InfoRow>
-            {data.status === 'Rejected' && data.rejectionReason && <InfoRow label="Rejection Reason" icon={FileText}><p className="text-[14px] text-rose-600">{data.rejectionReason}</p></InfoRow>}
-            <InfoRow label="Description" icon={FileText}><p className="text-[14px] text-[#1f2f3a]">{data.description || '—'}</p></InfoRow>
-            <InfoRow label="Banned" icon={CircleCheck}>{data.isBanned ? <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" />}</InfoRow>
-            <InfoRow label="Registered At" icon={Calendar}><p className="text-[14px] text-[#1f2f3a]">{formatDateTime(data.createdAt)}</p></InfoRow>
-            <InfoRow label="Last Updated" icon={Clock}><p className="text-[14px] text-[#1f2f3a]">{formatDateTime(data.updatedAt)}</p></InfoRow>
-          </div>
-        </CardPanel>
+      {/* Main content grid */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        {/* Left — Registration Info + Timestamps */}
+        <div className="space-y-5 lg:col-span-2">
+          <CardPanel title="Registration Details">
+            <div className="divide-y divide-[#f5f5f5]">
+              <InfoRow label="Status" icon={CircleCheck}>
+                <Badge label={data.status} className={statusBadge[data.status] || 'bg-gray-50 text-gray-600'} />
+              </InfoRow>
+              {data.status === 'Rejected' && data.rejectionReason && (
+                <InfoRow label="Rejection Reason" icon={Shield}>
+                  <p className="text-[14px] text-rose-600">{data.rejectionReason}</p>
+                </InfoRow>
+              )}
+              {data.description && (
+                <InfoRow label="Description" icon={FileText}>
+                  <p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{data.description}</p>
+                </InfoRow>
+              )}
+              <InfoRow label="Banned" icon={Ban}>
+                {data.isBanned ? <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" />}
+              </InfoRow>
+            </div>
+          </CardPanel>
 
-        <CardPanel title="Event & Track">
-          <div className="divide-y divide-[#f5f5f5]">
-            <InfoRow label="Event" icon={Trophy}>
-              {data.eventId ? <Link to={`/admin/hackathons/${data.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.eventName}</Link> : <span className="text-[14px] text-gray-400">—</span>}
-            </InfoRow>
-            <InfoRow label="Track" icon={FileText}><p className="text-[14px] text-[#1f2f3a]">{data.trackTitle || '—'}</p></InfoRow>
-            <InfoRow label="Topic" icon={FileText}><p className="text-[14px] text-[#1f2f3a]">{data.topicTitle || '—'}</p></InfoRow>
-          </div>
-        </CardPanel>
-      </div>
+          {/* Members */}
+          <CardPanel title={`Members (${members.length})`}>
+            {members.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-10">
+                <Users className="mb-3 h-10 w-10 text-gray-300" />
+                <p className="text-[14px] text-gray-400">No members yet.</p>
+              </div>
+            ) : (
+              <BaseTable borderless columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="400px" />
+            )}
+          </CardPanel>
+        </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <CardPanel title="Team Info">
-          <div className="divide-y divide-[#f5f5f5]">
-            <InfoRow label="Team Name" icon={Users}>
-              {data.teamId ? <Link to={`/admin/teams/${data.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.teamName}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.teamName || '—'}</span>}
-            </InfoRow>
-            <InfoRow label="Locked" icon={CircleCheck}>{data.teamCanEdit ? <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" /> : <Badge label="Yes" className="bg-[#ffcdd2] text-[#e65100]" />}</InfoRow>
-            <InfoRow label="Team Status" icon={CircleCheck}>{data.teamIsDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}</InfoRow>
-            <InfoRow label="Team Created" icon={Calendar}><p className="text-[14px] text-[#1f2f3a]">{data.teamCreatedAt ? formatDateTime(data.teamCreatedAt) : '—'}</p></InfoRow>
-          </div>
-        </CardPanel>
+        {/* Right sidebar */}
+        <div className="space-y-5">
+          {/* Event card */}
+          <CardPanel title="Event" viewAllTo={data.eventId ? `/admin/hackathons/${data.eventId}` : null}>
+            <div className="divide-y divide-[#f5f5f5]">
+              <InfoRow label="Event" icon={Trophy}>
+                {data.eventId ? <Link to={`/admin/hackathons/${data.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.eventName}</Link> : <span className="text-[14px] text-gray-400">—</span>}
+              </InfoRow>
+              <InfoRow label="Track" icon={FileText}><span className="text-[14px] text-[#1f2f3a]">{data.trackTitle || '—'}</span></InfoRow>
+              <InfoRow label="Topic" icon={FileText}>
+                {data.topicId && data.trackId ? <Link to={`/admin/hackathons/${data.eventId}/tracks/${data.trackId}/topics`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.topicTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.topicTitle || '—'}</span>}
+              </InfoRow>
+            </div>
+          </CardPanel>
 
-        <CardPanel title="Members">
-          {members.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12"><Users className="mb-3 h-10 w-10 text-gray-300" /><p className="text-[14px] text-gray-400">No members.</p></div>
-          ) : (
-            <BaseTable borderless columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="400px" />
-          )}
-        </CardPanel>
+          {/* Team card */}
+          <CardPanel title="Team">
+            <div className="divide-y divide-[#f5f5f5]">
+              <InfoRow label="Team" icon={Users}>
+                {data.teamId ? <Link to={`/admin/teams/${data.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.teamName}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.teamName || '—'}</span>}
+              </InfoRow>
+              <InfoRow label="Locked" icon={CircleCheck}>
+                {data.teamCanEdit ? <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" /> : <Badge label="Yes" className="bg-[#ffcdd2] text-[#e65100]" />}
+              </InfoRow>
+              <InfoRow label="Status" icon={CircleCheck}>
+                {data.teamIsDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
+              </InfoRow>
+              <InfoRow label="Created" icon={Calendar}>
+                <span className="text-[14px] text-[#1f2f3a]">{data.teamCreatedAt ? formatDateTime(data.teamCreatedAt) : '—'}</span>
+              </InfoRow>
+            </div>
+          </CardPanel>
+
+          {/* Timestamps */}
+          <CardPanel title="Timestamps">
+            <div className="divide-y divide-[#f5f5f5]">
+              <InfoRow label="Registered" icon={Calendar}><span className="text-[14px] text-[#1f2f3a]">{formatDateTime(data.createdAt)}</span></InfoRow>
+              <InfoRow label="Last Updated" icon={Clock}><span className="text-[14px] text-[#1f2f3a]">{data.updatedAt ? formatDateTime(data.updatedAt) : '—'}</span></InfoRow>
+            </div>
+          </CardPanel>
+        </div>
       </div>
     </div>
   )
 }
 
+function QuickStat({ icon: Icon, label, value, href }) {
+  const content = (
+    <div className={`flex items-center gap-2 ${href ? 'cursor-pointer' : ''}`}>
+      <Icon className="h-3.5 w-3.5 text-[#064f5d] shrink-0" />
+      <span className="text-[12px] text-gray-400">{label}:</span>
+      <span className={`text-[12px] font-semibold ${href ? 'text-[#064f5d] hover:underline' : 'text-[#1f2f3a]'}`}>{value}</span>
+      {href && <ExternalLink className="h-3 w-3 text-gray-300" />}
+    </div>
+  )
+  return href ? <Link to={href}>{content}</Link> : content
+}
