@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Tag, Hash, CircleCheck, Edit, Target, AlertCircle, Pencil, X, Save, AlignLeft, Trash2, RotateCcw } from 'lucide-react'
-import { getCriteriaTemplateDetail, getRoundDetail, updateCriteriaItem, deleteCriteriaItem, restoreCriteriaItem } from '../../../../api/admin'
+import { ArrowLeft, FileText, Calendar, Clock, Tag, Hash, CircleCheck, Edit, Target, AlertCircle, Pencil, X, Save, AlignLeft, Trash2, RotateCcw, Eye } from 'lucide-react'
+import { getCriteriaTemplateDetail, getRoundDetail, updateCriteriaItem, deleteCriteriaItem, restoreCriteriaItem, getCriteriaItemDetail } from '../../../../api/admin'
 import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
 import RichTextEditor from '../../../../components/RichTextEditor'
@@ -21,6 +21,8 @@ export default function CriteriaTemplateDetail() {
   const [error, setError] = useState('')
   const [editingItem, setEditingItem] = useState(null)
   const [itemSaving, setItemSaving] = useState(false)
+  const [viewingItem, setViewingItem] = useState(null)
+  const [viewLoading, setViewLoading] = useState(false)
 
   useEffect(() => {
     if (tabParam === 'items' || tabParam === 'description') {
@@ -109,6 +111,18 @@ export default function CriteriaTemplateDetail() {
       }))
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to restore item.')
+    }
+  }
+
+  async function handleViewItem(item) {
+    setViewLoading(true)
+    try {
+      const detail = await getCriteriaItemDetail(item.id)
+      setViewingItem(detail)
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to load item detail.')
+    } finally {
+      setViewLoading(false)
     }
   }
 
@@ -213,7 +227,7 @@ export default function CriteriaTemplateDetail() {
             ) : (
               <div className="space-y-3">
                 {items.map((item, idx) => (
-                  <CriteriaItemCard key={item.id} index={idx + 1} item={item} maxScore={100} onEdit={() => setEditingItem({ ...item })} onDelete={handleDeleteItem} onRestore={handleRestoreItem} />
+                  <CriteriaItemCard key={item.id} index={idx + 1} item={item} maxScore={100} onView={handleViewItem} onEdit={() => setEditingItem({ ...item })} onDelete={handleDeleteItem} onRestore={handleRestoreItem} />
                 ))}
               </div>
             )}
@@ -236,7 +250,9 @@ export default function CriteriaTemplateDetail() {
               </div>
               <div>
                 <label className="mb-1.5 block text-[13px] font-semibold text-slate-500">Description</label>
-                <RichTextEditor value={editingItem.description || ''} onChange={(v) => setEditingItem((p) => ({ ...p, description: v }))} placeholder="Item description..." />
+                <div className="max-h-[220px] overflow-y-auto rounded-lg border border-[#d8e0e6]">
+                  <RichTextEditor value={editingItem.description || ''} onChange={(v) => setEditingItem((p) => ({ ...p, description: v }))} placeholder="Item description..." />
+                </div>
               </div>
               <div>
                 <label className="mb-2 flex items-center gap-1.5 text-[13px] font-semibold text-slate-500">Score (0-100)</label>
@@ -248,6 +264,60 @@ export default function CriteriaTemplateDetail() {
               <button onClick={handleSaveItem} disabled={itemSaving || !editingItem.name.trim()} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2.5 text-[14px] font-semibold text-white hover:bg-[#05404a] disabled:cursor-not-allowed disabled:opacity-50">
                 <Save className="h-4 w-4" />{itemSaving ? 'Saving...' : 'Save'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewingItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setViewingItem(null)} />
+          <div className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="mb-5 flex items-center justify-between">
+              <h3 className="text-[16px] font-bold text-slate-800">Criteria Item Detail</h3>
+              <button onClick={() => setViewingItem(null)} className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"><X className="h-5 w-5" /></button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Name</label>
+                <p className="text-[15px] font-bold text-slate-800">{viewingItem.name}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Status</label>
+                  <Badge label={viewingItem.isDisable ? 'Disabled' : 'Active'} className={viewingItem.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Score</label>
+                  <p className="text-[15px] font-semibold text-[#064f5d]">{viewingItem.score}/100</p>
+                </div>
+              </div>
+              {viewingItem.description ? (
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Description</label>
+                  <div className="max-h-48 overflow-y-auto rounded-xl border border-slate-100 bg-slate-50 p-4 text-[14px] leading-relaxed text-slate-600">
+                    <RichTextViewer content={viewingItem.description} />
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Description</label>
+                  <p className="text-[14px] italic text-slate-300">No description</p>
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Created</label>
+                  <p className="text-[13px] text-slate-500">{formatDateTime(viewingItem.createdAt)}</p>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Updated</label>
+                  <p className="text-[13px] text-slate-500">{formatDateTime(viewingItem.updatedAt)}</p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button onClick={() => setViewingItem(null)} className="cursor-pointer rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-[#05404a]">Close</button>
             </div>
           </div>
         </div>
@@ -274,7 +344,7 @@ function StatCard({ icon, label, value, color, bg, border, mono = false }) {
   )
 }
 
-function CriteriaItemCard({ index, item, maxScore, onEdit, onDelete, onRestore }) {
+function CriteriaItemCard({ index, item, maxScore, onView, onEdit, onDelete, onRestore }) {
   const score = Number(item.score) || 0
   const pct = Math.round((score / maxScore) * 100)
   const isDisabled = item.isDisable
@@ -317,6 +387,13 @@ function CriteriaItemCard({ index, item, maxScore, onEdit, onDelete, onRestore }
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => onView?.(item)}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-[13px] font-semibold text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 active:scale-[0.97]"
+            >
+              <Eye className="h-3.5 w-3.5" />
+              View
+            </button>
             <button
               onClick={onEdit}
               className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-[13px] font-semibold text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 active:scale-[0.97]"
