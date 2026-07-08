@@ -588,3 +588,8 @@ export async function getAwards(eventId, params = {}) {
   return data.data
 }
 
+export async function createAward(eventId, payload) {
+  const { data } = await api.post(`/admin/events/${eventId}/awards`, payload)
+  return data
+}
+

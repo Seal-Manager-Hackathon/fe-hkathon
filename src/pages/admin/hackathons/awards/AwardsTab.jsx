@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useParams, Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
 import { getAwards } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
-import { Search, Trash2, Trophy, Hash, DollarSign, Calendar, CircleCheck } from 'lucide-react'
+import { Search, Trash2, Trophy, Hash, DollarSign, Calendar, CircleCheck, Plus } from 'lucide-react'
 
 const PAGE_SIZE = 10
 const DEFAULT_VALUES = { keyword: '', isDisable: '' }
@@ -102,6 +103,13 @@ export default function AwardsTab({ eventId }) {
 
   return (
     <>
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-[15px] font-bold text-[#1f2f3a]">Awards</h3>
+        <Link to={`/admin/hackathons/${eventId}/awards/create`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#064f5d] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#05404a]">
+          <Plus className="h-3.5 w-3.5" />Create Award
+        </Link>
+      </div>
+
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
 
       <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
