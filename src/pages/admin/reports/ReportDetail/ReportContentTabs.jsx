@@ -1,5 +1,6 @@
 import { cn } from '../../../../utils/cn'
 import { MessageSquare, AlertCircle } from 'lucide-react'
+import RichTextViewer from '../../../../components/RichTextViewer'
 
 export default function ReportContentTabs({ description, reason, activeTab, onTabChange }) {
   const hasContent = description || reason
@@ -96,9 +97,7 @@ function TabPanel({ content, emptyIcon: EmptyIcon, emptyTitle, emptyDescription,
   return (
     <div className="px-5 py-5">
       {content ? (
-        <p className="text-[14px] leading-relaxed text-slate-700 whitespace-pre-wrap">
-          {content}
-        </p>
+        <RichTextViewer content={content} />
       ) : (
         <div className="flex flex-col items-center py-8 text-center">
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-slate-100 to-slate-200">

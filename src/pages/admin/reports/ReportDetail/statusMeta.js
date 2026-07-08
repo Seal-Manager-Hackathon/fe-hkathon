@@ -47,11 +47,14 @@ export const STATUS_STEPPER_STEPS = (status) => {
   const isResolved = status === 'Resolved'
   const isRejected = status === 'Rejected'
   return [
-    { key: 'submitted', label: 'Submitted', done: true },
-    { key: 'review', label: 'Under Review', done: isDone },
+    {
+      key: 'pending',
+      label: 'Pending',
+      done: isDone,
+    },
     {
       key: 'outcome',
-      label: isResolved ? 'Resolved' : isRejected ? 'Rejected' : 'Outcome',
+      label: isDone ? (isResolved ? 'Resolved' : 'Rejected') : 'Outcome',
       done: isDone,
       rejected: isRejected,
     },
