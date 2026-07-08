@@ -35,14 +35,20 @@ function criteriaColumns(roundId, onDelete, onRestore, onActivate) {
       render: (row) => <span className="text-[14px] font-semibold text-[#064f5d]">{row.title}</span>,
     },
     {
+      key: 'isActive',
+      header: 'Active',
+      headerIcon: Play,
+      render: (row) => row.isActive
+        ? <Badge label="Yes" className="bg-[#e8f5e9] text-[#2e7d32]" />
+        : <Badge label="No" className="bg-[#f5f5f5] text-[#9e9e9e]" />,
+    },
+    {
       key: 'status',
       header: 'Status',
       headerIcon: CircleCheck,
-      render: (row) => {
-        if (row.isDisable) return <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />
-        if (row.isActive) return <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
-        return <Badge label="Inactive" className="bg-[#fff8e1] text-[#f9a825]" />
-      },
+      render: (row) => row.isDisable
+        ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />
+        : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />,
     },
     {
       key: 'createdAt',
