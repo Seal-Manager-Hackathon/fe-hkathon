@@ -1,16 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Tag, Hash, CircleCheck, Edit, Target, AlertCircle, Pencil, X, Save, AlignLeft, Trash2, RotateCcw, Eye, Plus, Search, MoreHorizontal } from 'lucide-react'
-import { getCriteriaTemplateDetail, getRoundDetail, updateCriteriaItem, deleteCriteriaItem, restoreCriteriaItem, getCriteriaItemDetail, createCriteriaItem, getCriteriaItems } from '../../../../api/admin'
+import { ArrowLeft, Eye, EyeOff, FileText, Calendar, Clock, CircleCheck, Edit, Target } from 'lucide-react'
+import { getCriteriaTemplateDetail, getRoundDetail } from '../../../../api/admin'
 import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
-import RichTextEditor from '../../../../components/RichTextEditor'
-import ScoreSlider from '../../../../components/ScoreSlider'
-import BaseTable from '../../../../components/BaseTable'
-import FilterBar from '../../../../components/FilterBar'
+import CriteriaItemsPanel from '../../../../components/CriteriaItemsPanel'
 import { formatDateTime, formatDate } from '../../../../utils/format'
 import { cn } from '../../../../utils/cn'
-import { toast, confirm } from '../../../../utils/toast'
 
 export default function CriteriaTemplateDetail() {
   const { roundId, templateId } = useParams()
@@ -21,29 +17,10 @@ export default function CriteriaTemplateDetail() {
   const [round, setRound] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [editingItem, setEditingItem] = useState(null)
-  const [itemSaving, setItemSaving] = useState(false)
-  const [viewingItem, setViewingItem] = useState(null)
-  const [viewLoading, setViewLoading] = useState(false)
-  const [creatingItem, setCreatingItem] = useState(false)
-  const [newItem, setNewItem] = useState({ name: '', description: '', score: 20 })
-  const [itemCreating, setItemCreating] = useState(false)
-
-  // Items: server-side pagination, search, filter
-  const [items, setItems] = useState([])
-  const [itemsTotal, setItemsTotal] = useState(0)
-  const [itemsLoading, setItemsLoading] = useState(false)
-  const [itemKeyword, setItemKeyword] = useState('')
-  const [itemIsDisable, setItemIsDisable] = useState('')
-  const [itemPage, setItemPage] = useState(1)
-  const ITEMS_PER_PAGE = 10
-
   const [activeTab, setActiveTab] = useState(tabParam === 'items' ? 'items' : 'description')
 
   useEffect(() => {
-    if (tabParam === 'items' || tabParam === 'description') {
-      setActiveTab(tabParam)
-    }
+    if (tabParam === 'items' || tabParam === 'description') setActiveTab(tabParam)
   }, [tabParam])
 
   const setTab = useCallback((tab) => {
@@ -58,146 +35,32 @@ export default function CriteriaTemplateDetail() {
         const data = await getCriteriaTemplateDetail(templateId)
         if (cancelled) return
         setTemplate(data)
-        try {
-          const r = await getRoundDetail(roundId)
-          if (!cancelled) setRound(r)
-        } catch {}
+        try { const r = await getRoundDetail(roundId); if (!cancelled) setRound(r) } catch {}
       } catch (err) {
         if (!cancelled) setError(err?.response?.data?.message || 'Failed to load template.')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
+      } finally { if (!cancelled) setLoading(false) }
     }
     fetch()
     return () => { cancelled = true }
   }, [roundId, templateId])
 
-  // Fetch items server-side
-  const fetchItems = useCallback(async () => {
-    setItemsLoading(true)
-    try {
-      const params = { pageIndex: itemPage, pageSize: ITEMS_PER_PAGE }
-      if (itemKeyword) params.keyword = itemKeyword
-      if (itemIsDisable !== '') params.isDisable = itemIsDisable === 'true'
-      const result = await getCriteriaItems(templateId, params)
-      setItems(result.items || [])
-      setItemsTotal(result.totalCount || 0)
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to load items.')
-    } finally {
-      setItemsLoading(false)
-    }
-  }, [templateId, itemPage, itemKeyword, itemIsDisable])
-
-  useEffect(() => {
-    if (activeTab === 'items' && template) fetchItems()
-  }, [fetchItems, activeTab, template])
-
-  async function handleSaveItem() {
-    if (!editingItem) return
-    setItemSaving(true)
-    try {
-      const payload = {
-        name: editingItem.name,
-        description: editingItem.description,
-        score: editingItem.score,
-        isDisable: editingItem.isDisable,
-      }
-      await updateCriteriaItem(editingItem.id, payload)
-      toast.success('Criteria item updated!')
-      setEditingItem(null)
-      fetchItems()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to update item.')
-    } finally {
-      setItemSaving(false)
-    }
-  }
-
-  async function handleDeleteItem(item) {
-    const ok = await confirm('Delete Item', `Are you sure you want to delete "${item.name}"?`)
-    if (!ok) return
-    try {
-      await deleteCriteriaItem(item.id)
-      toast.success('Criteria item deleted')
-      fetchItems()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to delete item.')
-    }
-  }
-
-  async function handleRestoreItem(item) {
-    const ok = await confirm('Restore Item', `Are you sure you want to restore "${item.name}"?`)
-    if (!ok) return
-    try {
-      await restoreCriteriaItem(item.id)
-      toast.success('Criteria item restored')
-      fetchItems()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to restore item.')
-    }
-  }
-
-  async function handleViewItem(item) {
-    setViewLoading(true)
-    try {
-      const detail = await getCriteriaItemDetail(item.id)
-      setViewingItem(detail)
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to load item detail.')
-    } finally {
-      setViewLoading(false)
-    }
-  }
-
-  async function handleCreateItem() {
-    if (!newItem.name.trim()) return
-    setItemCreating(true)
-    try {
-      await createCriteriaItem(templateId, {
-        name: newItem.name.trim(),
-        description: newItem.description || undefined,
-        score: newItem.score,
-      })
-      toast.success('Criteria item created!')
-      setCreatingItem(false)
-      setNewItem({ name: '', description: '', score: 20 })
-      fetchItems()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to create item.')
-    } finally {
-      setItemCreating(false)
-    }
-  }
-
-  function openCreateItem() {
-    setNewItem({ name: '', description: '', score: 20 })
-    setCreatingItem(true)
-  }
-
   if (loading) {
     return (
       <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
         <div className="mb-5 h-4 w-36 animate-pulse rounded bg-slate-200" />
-        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-6">
-          <div className="h-8 w-72 animate-pulse rounded bg-slate-200" />
-        </div>
+        <div className="mb-6 h-40 animate-pulse rounded-2xl bg-slate-100" />
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (<div key={i} className="h-24 animate-pulse rounded-xl bg-slate-100" />))}
+          {[1,2,3,4].map(i => <div key={i} className="h-24 animate-pulse rounded-2xl bg-slate-100" />)}
         </div>
       </div>
     )
   }
 
-  if (error || !template) {
-    const isNotFound = error?.includes('Not Found') || error === 'Resource Not Found'
+  if (error) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
-        <div className={`mb-5 flex h-20 w-20 items-center justify-center rounded-2xl ${isNotFound ? 'bg-amber-50 text-amber-400' : 'bg-rose-50 text-rose-400'}`}>
-          {isNotFound ? <FileText className="h-10 w-10" /> : <AlertCircle className="h-10 w-10" />}
-        </div>
-        <h2 className="text-[20px] font-bold text-slate-700">{isNotFound ? 'Template Not Found' : 'Something went wrong'}</h2>
-        <p className="mt-2 max-w-md text-[14px] text-slate-500">{isNotFound ? 'The criteria template does not exist.' : error}</p>
+        <div className="mb-4 rounded-full bg-rose-50 p-4"><EyeOff className="h-8 w-8 text-rose-400" /></div>
+        <p className="text-[18px] font-semibold text-gray-500">{error.includes('Not Found') ? 'Template not found' : error}</p>
         <Link to={`/admin/rounds/${roundId}/criteria-templates`} className="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-[#05404a]">
           <ArrowLeft className="h-4 w-4" /> Back to Templates
         </Link>
@@ -209,96 +72,6 @@ export default function CriteriaTemplateDetail() {
   const totalScore = templateItems.reduce((sum, i) => sum + (Number(i.score) || 0), 0)
   const isDeleted = template.isDisable
 
-  const itemHasActive = itemKeyword !== '' || itemIsDisable !== ''
-  const itemFilters = [
-    { type: 'search', key: 'keyword', label: 'Name', icon: Search, placeholder: 'Search item name...' },
-    { type: 'select', key: 'isDisable', label: 'Deleted', icon: Trash2, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
-  ]
-
-  function handleItemFilterChange(key, value) {
-    if (key === 'keyword') setItemKeyword(value)
-    if (key === 'isDisable') setItemIsDisable(value)
-    setItemPage(1)
-  }
-
-  function handleItemFilterReset() {
-    setItemKeyword('')
-    setItemIsDisable('')
-    setItemPage(1)
-  }
-
-  const actionBtnClass = 'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
-  const restoreBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[92px]'
-  const dangerBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2] w-[92px]'
-
-  const itemColumns = [
-    {
-      key: 'name',
-      header: 'Name',
-      headerIcon: FileText,
-      render: (row) => <span className="text-[14px] font-semibold text-[#064f5d]">{row.name}</span>,
-    },
-    {
-      key: 'score',
-      header: 'Score',
-      headerIcon: Hash,
-      render: (row) => {
-        const s = Number(row.score) || 0
-        const pct = Math.round((s / 100) * 100)
-        const barColor = pct <= 30 ? 'bg-rose-400' : pct <= 60 ? 'bg-amber-400' : 'bg-emerald-400'
-        const textColor = pct <= 30 ? 'text-rose-600' : pct <= 60 ? 'text-amber-600' : 'text-emerald-600'
-        return (
-          <div className="min-w-[120px] space-y-1">
-            <span className={`text-[13px] font-bold ${textColor}`}>{s}/100 <span className="font-normal text-slate-300">({pct}%)</span></span>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
-              <div className={`h-full rounded-full transition-all ${barColor}`} style={{ width: `${pct}%` }} />
-            </div>
-          </div>
-        )
-      },
-    },
-    {
-      key: 'status',
-      header: 'Status',
-      headerIcon: CircleCheck,
-      render: (row) => (
-        <Badge label={row.isDisable ? 'Deleted' : 'Active'} className={row.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
-      ),
-    },
-    {
-      key: 'createdAt',
-      header: 'Created',
-      headerIcon: Calendar,
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>,
-    },
-    {
-      key: 'actions',
-      header: 'Actions',
-      headerIcon: MoreHorizontal,
-      headerClassName: 'text-right',
-      className: 'text-right',
-      render: (row) => (
-        <div className="flex items-center justify-end gap-2">
-          <button onClick={() => handleViewItem(row)} className={actionBtnClass}>
-            <Eye className="h-3.5 w-3.5" /> View
-          </button>
-          <button onClick={() => setEditingItem({ ...row })} className={actionBtnClass}>
-            <Pencil className="h-3.5 w-3.5" /> Edit
-          </button>
-          {row.isDisable ? (
-            <button onClick={() => handleRestoreItem(row)} className={restoreBtnClass}>
-              <RotateCcw className="h-3.5 w-3.5" /> Restore
-            </button>
-          ) : (
-            <button onClick={() => handleDeleteItem(row)} className={dangerBtnClass}>
-              <Trash2 className="h-3.5 w-3.5" /> Delete
-            </button>
-          )}
-        </div>
-      ),
-    },
-  ]
-
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <nav className="mb-5">
@@ -307,6 +80,7 @@ export default function CriteriaTemplateDetail() {
         </Link>
       </nav>
 
+      {/* Hero */}
       <div className="relative mb-6 overflow-hidden rounded-2xl border border-[#064f5d]/15 bg-gradient-to-br from-[#064f5d] via-[#0a6e7d] to-[#0d8a96] p-6 text-white shadow-lg shadow-[#064f5d]/10 sm:p-7">
         <div className="absolute top-0 right-0 h-32 w-32 rounded-bl-full bg-white/5" />
         <div className="absolute bottom-0 right-16 h-24 w-24 rounded-tl-full bg-white/5" />
@@ -314,7 +88,7 @@ export default function CriteriaTemplateDetail() {
           <div className="min-w-0 flex-1">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <Badge label={isDeleted ? 'Deleted' : 'Active'} className={isDeleted ? 'bg-white/15 text-white border border-white/20' : 'bg-emerald-400/20 text-emerald-100 border border-emerald-400/30'} />
-              {round && (<span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-medium text-white/80"><Target className="h-3 w-3" />{round.name}</span>)}
+              {round && <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-medium text-white/80"><Target className="h-3 w-3" />{round.name}</span>}
             </div>
             <h1 className="text-[24px] font-bold leading-tight break-words text-white sm:text-[30px]">{template.title}</h1>
             <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-[12px] text-white/70">
@@ -330,186 +104,28 @@ export default function CriteriaTemplateDetail() {
         </div>
       </div>
 
+      {/* Stats */}
       <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatCard icon={<CircleCheck className="h-5 w-5" />} label="Total Score" value={totalScore} color="text-emerald-500" bg="bg-emerald-50" border="border-emerald-100" />
-        <StatCard icon={<Hash className="h-5 w-5" />} label="Criteria Items" value={templateItems.length} color="text-violet-500" bg="bg-violet-50" border="border-violet-100" />
-        <StatCard icon={<Calendar className="h-5 w-5" />} label="Created" value={formatDateTime(template.createdAt)} color="text-amber-500" bg="bg-amber-50" border="border-amber-100" mono />
-        <StatCard icon={<Clock className="h-5 w-5" />} label="Last Updated" value={formatDateTime(template.updatedAt)} color="text-blue-500" bg="bg-blue-50" border="border-blue-100" mono />
+        <StatCard icon={<Eye className="h-5 w-5" />} label="Criteria Items" value={templateItems.length} color="text-violet-500" bg="bg-violet-50" border="border-violet-100" />
+        <StatCard icon={<Calendar className="h-5 w-5" />} label="Created" value={formatDate(template.createdAt)} color="text-blue-500" bg="bg-blue-50" border="border-blue-100" mono />
+        <StatCard icon={<Clock className="h-5 w-5" />} label="Updated" value={formatDate(template.updatedAt)} color="text-orange-500" bg="bg-orange-50" border="border-orange-100" mono />
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-sm">
-        <div className="flex bg-gradient-to-r from-slate-50 to-white border-b border-slate-100">
-          <TabBtn active={activeTab === 'description'} onClick={() => setTab('description')} icon={FileText} label="Template Description" />
-          <TabBtn active={activeTab === 'items'} onClick={() => setTab('items')} icon={Tag} label="Criteria Items" />
+      {/* Tabs */}
+      <div className="rounded-2xl border border-[#e8ecf0] bg-white shadow-sm overflow-hidden">
+        <div className="flex border-b border-slate-100 bg-[#fafbfc]">
+          <TabBtn active={activeTab === 'description'} onClick={() => setTab('description')} icon={FileText} label="Description" />
+          <TabBtn active={activeTab === 'items'} onClick={() => setTab('items')} icon={Eye} label={`Items (${templateItems.length})`} />
         </div>
-
-        {activeTab === 'description' && (
-          <div className="px-6 py-5">
-            {template.description ? (
-              <RichTextViewer content={template.description} />
-            ) : (
-              <div className="flex flex-col items-center py-10 text-center">
-                <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100"><FileText className="h-7 w-7 text-slate-300" /></div>
-                <p className="text-[14px] font-medium text-slate-400">No description provided</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'items' && (
-          <div className="px-5 py-4">
-            <div className="mb-4 flex items-center justify-between">
-              <FilterBar
-                filters={itemFilters}
-                values={{ keyword: itemKeyword, isDisable: itemIsDisable }}
-                onChange={handleItemFilterChange}
-                onReset={handleItemFilterReset}
-                hasActive={itemHasActive}
-              />
-              <button
-                onClick={openCreateItem}
-                className="ml-4 inline-flex cursor-pointer shrink-0 items-center gap-1.5 rounded-lg bg-[#064f5d] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#05404a]"
-              >
-                <Plus className="h-3.5 w-3.5" />Add Item
-              </button>
-            </div>
-            <BaseTable
-              borderless
-              columns={itemColumns}
-              data={items}
-              page={itemPage}
-              pageSize={ITEMS_PER_PAGE}
-              total={itemsTotal}
-              onPageChange={setItemPage}
-              loading={itemsLoading}
-              serverSide
-              emptyText={itemHasActive ? 'No criteria items match the current filters.' : 'No criteria items yet.'}
-              keyExtractor={(row) => row.id}
-              minWidth="600px"
-            />
-          </div>
-        )}
+        <div className="p-5 sm:p-6">
+          {activeTab === 'description' ? (
+            <RichTextViewer content={template.description || 'No description provided.'} />
+          ) : (
+            <CriteriaItemsPanel templateId={templateId} />
+          )}
+        </div>
       </div>
-
-      {editingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setEditingItem(null)} />
-          <div className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
-            <div className="mb-5 flex items-center justify-between">
-              <h3 className="text-[16px] font-bold text-slate-800">Edit Criteria Item</h3>
-              <button onClick={() => setEditingItem(null)} className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"><X className="h-5 w-5" /></button>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="mb-1.5 block text-[13px] font-semibold text-slate-500">Name</label>
-                <input type="text" value={editingItem.name} onChange={(e) => setEditingItem((p) => ({ ...p, name: e.target.value }))} className="field-input" />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-[13px] font-semibold text-slate-500">Description</label>
-                <div className="max-h-[220px] overflow-y-auto rounded-lg border border-[#d8e0e6]">
-                  <RichTextEditor value={editingItem.description || ''} onChange={(v) => setEditingItem((p) => ({ ...p, description: v }))} placeholder="Item description..." />
-                </div>
-              </div>
-              <div>
-                <label className="mb-2 flex items-center gap-1.5 text-[13px] font-semibold text-slate-500">Score (0-100)</label>
-                <ScoreSlider value={editingItem.score} onChange={(v) => setEditingItem((p) => ({ ...p, score: v }))} />
-              </div>
-            </div>
-            <div className="mt-6 flex justify-end gap-3">
-              <button onClick={() => setEditingItem(null)} className="cursor-pointer rounded-lg border border-slate-200 px-4 py-2.5 text-[14px] font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-              <button onClick={handleSaveItem} disabled={itemSaving || !editingItem.name.trim()} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2.5 text-[14px] font-semibold text-white hover:bg-[#05404a] disabled:cursor-not-allowed disabled:opacity-50">
-                <Save className="h-4 w-4" />{itemSaving ? 'Saving...' : 'Save'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {viewingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setViewingItem(null)} />
-          <div className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#064f5d]/10">
-                  <FileText className="h-5 w-5 text-[#064f5d]" />
-                </div>
-                <div>
-                  <h3 className="text-[16px] font-bold text-slate-800">{viewingItem.name}</h3>
-                  <Badge label={viewingItem.isDisable ? 'Deleted' : 'Active'} className={viewingItem.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} />
-                </div>
-              </div>
-              <button onClick={() => setViewingItem(null)} className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"><X className="h-5 w-5" /></button>
-            </div>
-            <div className="space-y-6 px-6 py-5">
-              <div>
-                <label className="mb-3 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Score</label>
-                <ScoreSlider value={viewingItem.score} onChange={() => {}} />
-              </div>
-              <div>
-                <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Description</label>
-                {viewingItem.description ? (
-                  <div className="max-h-48 overflow-y-auto rounded-xl border border-slate-100 bg-slate-50/50 p-4 text-[14px] leading-relaxed text-slate-600">
-                    <RichTextViewer content={viewingItem.description} />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center rounded-xl border border-dashed border-slate-200 bg-slate-50/30 py-8">
-                    <AlignLeft className="mb-2 h-8 w-8 text-slate-200" />
-                    <p className="text-[14px] font-medium text-slate-300">No description</p>
-                  </div>
-                )}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[11px] font-medium uppercase text-slate-400">Created</p>
-                  <p className="mt-0.5 text-[13px] font-medium text-slate-600">{formatDateTime(viewingItem.createdAt)}</p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-medium uppercase text-slate-400">Updated</p>
-                  <p className="mt-0.5 text-[13px] font-medium text-slate-600">{formatDateTime(viewingItem.updatedAt)}</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-end border-t border-slate-100 px-6 py-4">
-              <button onClick={() => setViewingItem(null)} className="cursor-pointer rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-[#05404a]">Close</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {creatingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setCreatingItem(false)} />
-          <div className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
-            <div className="mb-5 flex items-center justify-between">
-              <h3 className="text-[16px] font-bold text-slate-800">Create Criteria Item</h3>
-              <button onClick={() => setCreatingItem(false)} className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"><X className="h-5 w-5" /></button>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="mb-1.5 block text-[13px] font-semibold text-slate-500">Name *</label>
-                <input type="text" value={newItem.name} onChange={(e) => setNewItem((p) => ({ ...p, name: e.target.value }))} className="field-input" placeholder="e.g. Creativity" maxLength={200} />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-[13px] font-semibold text-slate-500">Description</label>
-                <div className="max-h-[220px] overflow-y-auto rounded-lg border border-[#d8e0e6]">
-                  <RichTextEditor value={newItem.description} onChange={(v) => setNewItem((p) => ({ ...p, description: v }))} placeholder="Item description..." />
-                </div>
-              </div>
-              <div>
-                <label className="mb-2 flex items-center gap-1.5 text-[13px] font-semibold text-slate-500">Score (0-100)</label>
-                <ScoreSlider value={newItem.score} onChange={(v) => setNewItem((p) => ({ ...p, score: v }))} />
-              </div>
-            </div>
-            <div className="mt-6 flex justify-end gap-3">
-              <button onClick={() => setCreatingItem(false)} className="cursor-pointer rounded-lg border border-slate-200 px-4 py-2.5 text-[14px] font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-              <button onClick={handleCreateItem} disabled={itemCreating || !newItem.name.trim()} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2.5 text-[14px] font-semibold text-white hover:bg-[#05404a] disabled:cursor-not-allowed disabled:opacity-50">
-                <Plus className="h-4 w-4" />{itemCreating ? 'Creating...' : 'Create'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
