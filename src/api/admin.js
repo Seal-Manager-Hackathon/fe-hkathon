@@ -432,6 +432,11 @@ export async function restoreCriteriaTemplate(templateId) {
   return data
 }
 
+export async function activateCriteriaTemplate(templateId) {
+  const { data } = await api.post(`/admin/criteria-templates/${templateId}/activate`)
+  return data
+}
+
 // ─── Criteria Items ──────────────────────────────────────────────────────────
 
 export async function getCriteriaItemDetail(itemId) {

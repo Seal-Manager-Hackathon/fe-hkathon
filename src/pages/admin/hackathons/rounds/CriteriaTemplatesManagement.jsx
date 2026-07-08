@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Plus, Eye, Edit, FileText, Calendar, CircleCheck, MoreHorizontal, Search, Ban, ArrowLeft, Trash2, RotateCcw } from 'lucide-react'
-import { getCriteriaTemplates, getRoundDetail, deleteCriteriaTemplate, restoreCriteriaTemplate } from '../../../../api/admin'
+import { Plus, Eye, Edit, FileText, Calendar, CircleCheck, MoreHorizontal, Search, Ban, ArrowLeft, Trash2, RotateCcw, Play } from 'lucide-react'
+import { getCriteriaTemplates, getRoundDetail, deleteCriteriaTemplate, restoreCriteriaTemplate, activateCriteriaTemplate } from '../../../../api/admin'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
@@ -23,8 +23,10 @@ const dangerBtnClass =
   'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2] w-[92px]'
 const restoreBtnClass =
   'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[92px]'
+const activateBtnClass =
+  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] transition-colors hover:bg-[#bbdefb] w-[92px]'
 
-function criteriaColumns(roundId, onDelete, onRestore) {
+function criteriaColumns(roundId, onDelete, onRestore, onActivate) {
   return [
     {
       key: 'title',
@@ -36,7 +38,11 @@ function criteriaColumns(roundId, onDelete, onRestore) {
       key: 'status',
       header: 'Status',
       headerIcon: CircleCheck,
-      render: (row) => row.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />,
+      render: (row) => {
+        if (row.isDisable) return <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />
+        if (row.isActive) return <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
+        return <Badge label="Inactive" className="bg-[#fff8e1] text-[#f9a825]" />
+      },
     },
     {
       key: 'createdAt',
@@ -63,6 +69,11 @@ function criteriaColumns(roundId, onDelete, onRestore) {
               <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
                 <Trash2 className="h-3.5 w-3.5" /> Delete
               </button>
+              {!row.isActive && (
+                <button onClick={() => onActivate?.(row)} className={activateBtnClass}>
+                  <Play className="h-3.5 w-3.5" /> Activate
+                </button>
+              )}
             </>
           )}
           {row.isDisable && (
@@ -145,6 +156,20 @@ export default function CriteriaTemplatesManagement() {
     }
   }
 
+  async function handleActivate(template) {
+    try {
+      await activateCriteriaTemplate(template.id)
+      toast.success('Template activated')
+      // Optimistic update: set this one as active, all others as inactive
+      setTemplates((prev) => prev.map((t) => ({
+        ...t,
+        isActive: t.id === template.id,
+      })))
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to activate template.')
+    }
+  }
+
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-4">
@@ -168,7 +193,7 @@ export default function CriteriaTemplatesManagement() {
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
 
       <BaseTable
-        columns={criteriaColumns(roundId, handleDelete, handleRestore)}
+        columns={criteriaColumns(roundId, handleDelete, handleRestore, handleActivate)}
         data={templates}
         page={pageIndex}
         pageSize={PAGE_SIZE}
