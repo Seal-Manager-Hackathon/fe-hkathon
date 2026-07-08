@@ -187,6 +187,12 @@ export default function UserDetail() {
             <InfoRow label="Verified At" icon={Clock}>
                 <p className="text-[14px] text-[#1f2f3a]">{user.verifyEmailAt ? formatDateTime(user.verifyEmailAt) : '—'}</p>
               </InfoRow>
+            <InfoRow label="Ban Reason" icon={AlertTriangle}>
+              <p className="text-[14px] text-[#c62828]">{user.banReason || '—'}</p>
+            </InfoRow>
+            <InfoRow label="Banned At" icon={AlertTriangle}>
+              <p className="text-[14px] text-[#1f2f3a]">{user.bannedAt ? formatDateTime(user.bannedAt) : '—'}</p>
+            </InfoRow>
             <InfoRow label="Created" icon={Calendar}>
               <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user.createdAt)}</p>
             </InfoRow>
@@ -196,16 +202,6 @@ export default function UserDetail() {
           </div>
         </CardPanel>
 
-        <CardPanel title="Ban Information">
-            <div className="divide-y divide-[#f5f5f5]">
-              <InfoRow label="Ban Reason" icon={AlertTriangle}>
-                <p className="text-[14px] text-[#c62828]">{user.banReason || '—'}</p>
-              </InfoRow>
-              <InfoRow label="Banned At" icon={AlertTriangle}>
-                <p className="text-[14px] text-[#1f2f3a]">{user.bannedAt ? formatDateTime(user.bannedAt) : '—'}</p>
-              </InfoRow>
-            </div>
-          </CardPanel>
       </div>
     </div>
   )
