@@ -35,6 +35,9 @@ export default function RegisterTeamsTab({ eventId }) {
   const [rejectTarget, setRejectTarget] = useState(null)
   const [rejecting, setRejecting] = useState(false)
 
+  const [banTarget, setBanTarget] = useState(null)
+  const [banning, setBanning] = useState(false)
+
   const fetchTeams = useCallback(async () => {
     setLoading(true); setError('')
     try {
@@ -79,11 +82,19 @@ export default function RegisterTeamsTab({ eventId }) {
     finally { setRejecting(false) }
   }
 
-  async function handleBan(row) {
-    const ok = await confirm('Ban Register Team', `Ban "${row.teamName}" from participating in this event?`)
-    if (!ok) return
-    try { await banRegisterTeam(row.id); toast.success('Team banned from event'); fetchTeams() }
-    catch (err) { toast.error(err?.response?.data?.message || 'Failed to ban team') }
+  function openBan(row) { setBanTarget(row) }
+
+  async function handleBanSubmit(reason) {
+    const target = banTarget
+    setBanTarget(null)
+    if (!target) return
+    setBanning(true)
+    try {
+      await banRegisterTeam(target.id, { rejectionReason: reason || undefined })
+      toast.success('Team banned from event')
+      fetchTeams()
+    } catch (err) { toast.error(err?.response?.data?.message || 'Failed to ban team') }
+    finally { setBanning(false) }
   }
 
   async function handleUnban(row) {
@@ -108,7 +119,7 @@ export default function RegisterTeamsTab({ eventId }) {
         </>)}
         {row.isBanned
           ? <button onClick={() => handleUnban(row)} className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#e8f5e9] px-2.5 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9] w-[92px]"><ShieldOff className="h-3.5 w-3.5" />Unban</button>
-          : <button onClick={() => handleBan(row)} className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#fce4ec] px-2.5 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2] w-[92px]"><ShieldOff className="h-3.5 w-3.5" />Ban</button>
+          : <button onClick={() => openBan(row)} className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#fce4ec] px-2.5 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2] w-[92px]"><ShieldOff className="h-3.5 w-3.5" />Ban</button>
         }
         <Link to={`/admin/register-teams/${row.id}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
         <Link to={`/admin/register-teams/${row.id}/edit`} className={viewBtnClass}><Edit3 className="h-3.5 w-3.5" />Edit</Link>
@@ -134,6 +145,18 @@ export default function RegisterTeamsTab({ eventId }) {
       confirmText="Reject"
       placeholder="Why is this team being rejected?"
       submitting={rejecting}
+      confirmVariant="danger"
+    />
+
+    <PromptReason
+      open={!!banTarget}
+      onClose={() => { if (!banning) setBanTarget(null) }}
+      onSubmit={handleBanSubmit}
+      title="Ban Team"
+      description={`Ban "${banTarget?.teamName}" from participating in this event.`}
+      confirmText="Ban"
+      placeholder="Why is this team being banned?"
+      submitting={banning}
       confirmVariant="danger"
     />
   </>)

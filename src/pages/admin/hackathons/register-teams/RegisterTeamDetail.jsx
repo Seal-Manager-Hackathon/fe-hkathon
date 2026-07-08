@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, Ban, ExternalLink, CheckCircle as ApproveIcon, XCircle, ShieldOff } from 'lucide-react'
+import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, Ban, ExternalLink, Eye, CheckCircle as ApproveIcon, XCircle, ShieldOff, MoreHorizontal } from 'lucide-react'
 import { getRegisterTeamDetail, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import Badge from '../../../../components/Badge'
@@ -29,6 +29,8 @@ export default function RegisterTeamDetail() {
   const [error, setError] = useState('')
   const [rejectTarget, setRejectTarget] = useState(null)
   const [rejecting, setRejecting] = useState(false)
+  const [banTarget, setBanTarget] = useState(null)
+  const [banning, setBanning] = useState(false)
   const [acting, setActing] = useState(false)
 
   async function fetchData() {
@@ -58,13 +60,14 @@ export default function RegisterTeamDetail() {
     finally { setRejecting(false) }
   }
 
-  async function handleBan() {
-    const ok = await confirm('Ban', `Ban "${data.teamName}" from this event?`)
-    if (!ok) return
-    setActing(true)
-    try { await banRegisterTeam(registerTeamId); toast.success('Banned'); fetchData() }
+  function openBan() { setBanTarget(data) }
+
+  async function handleBanSubmit(reason) {
+    setBanTarget(null)
+    setBanning(true)
+    try { await banRegisterTeam(registerTeamId, { rejectionReason: reason || undefined }); toast.success('Banned'); fetchData() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed') }
-    finally { setActing(false) }
+    finally { setBanning(false) }
   }
 
   async function handleUnban() {
@@ -128,8 +131,8 @@ export default function RegisterTeamDetail() {
                   <ShieldOff className="h-3.5 w-3.5" />{acting ? '...' : 'Unban'}
                 </button>
               ) : (
-                <button onClick={handleBan} disabled={acting} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-rose-500 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-rose-600 disabled:opacity-50">
-                  <ShieldOff className="h-3.5 w-3.5" />{acting ? '...' : 'Ban'}
+                <button onClick={openBan} disabled={banning || acting} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-rose-500 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-rose-600 disabled:opacity-50">
+                  <ShieldOff className="h-3.5 w-3.5" />{banning ? '...' : 'Ban'}
                 </button>
               )}
               <Link to={`/admin/register-teams/${registerTeamId}/edit`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-white/30">Edit</Link>
@@ -162,6 +165,11 @@ export default function RegisterTeamDetail() {
               <InfoRow label="Banned" icon={Ban}>
                 {data.isBanned ? <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" />}
               </InfoRow>
+              {data.isBanned && data.rejectionReason && (
+                <InfoRow label="Reject reason" icon={ShieldOff}>
+                  <p className="text-[14px] text-rose-600">{data.rejectionReason}</p>
+                </InfoRow>
+              )}
             </div>
           </CardPanel>
 
@@ -225,6 +233,18 @@ export default function RegisterTeamDetail() {
         confirmText="Reject"
         placeholder="Why is this team being rejected?"
         submitting={rejecting}
+        confirmVariant="danger"
+      />
+
+      <PromptReason
+        open={!!banTarget}
+        onClose={() => { if (!banning) setBanTarget(null) }}
+        onSubmit={handleBanSubmit}
+        title="Ban Team"
+        description={`Ban "${banTarget?.teamName}" from participating in this event.`}
+        confirmText="Ban"
+        placeholder="Why is this team being banned?"
+        submitting={banning}
         confirmVariant="danger"
       />
     </div>
