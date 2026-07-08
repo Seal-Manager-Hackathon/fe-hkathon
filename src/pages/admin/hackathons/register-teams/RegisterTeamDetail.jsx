@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, Ban, ExternalLink } from 'lucide-react'
-import { getRegisterTeamDetail } from '../../../../api/admin'
+import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, Ban, ExternalLink, CheckCircle as CheckCircleIcon, XCircle } from 'lucide-react'
+import { getRegisterTeamDetail, approveRegisterTeam, rejectRegisterTeam } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import Badge from '../../../../components/Badge'
 import CardPanel from '../../../../components/CardPanel'
 import InfoRow from '../../../../components/InfoRow'
 import Avatar from '../../../../components/Avatar'
 import BaseTable from '../../../../components/BaseTable'
+import PromptReason from '../../../../components/PromptReason'
+import { toast, confirm } from '../../../../utils/toast'
 
 const statusBadge = { Pending: 'bg-amber-50 text-amber-700 border border-amber-200', Approved: 'bg-emerald-50 text-emerald-700 border border-emerald-200', Rejected: 'bg-rose-50 text-rose-700 border border-rose-200' }
 const statusIcon = { Pending: <Clock className="h-4 w-4 text-amber-600" />, Approved: <CircleCheck className="h-4 w-4 text-emerald-600" />, Rejected: <Shield className="h-4 w-4 text-rose-600" /> }
@@ -22,20 +24,48 @@ export default function RegisterTeamDetail() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [rejectTarget, setRejectTarget] = useState(null)
+  const [rejecting, setRejecting] = useState(false)
+  const [acting, setActing] = useState(false)
 
-  useEffect(() => {
-    let cancelled = false
-    async function fetch() {
-      setLoading(true); setError('')
-      try {
-        const result = await getRegisterTeamDetail(registerTeamId)
-        if (!cancelled) setData(result)
-      } catch (err) {
-        if (!cancelled) setError(err?.response?.data?.message || 'Failed to load register team detail.')
-      } finally { if (!cancelled) setLoading(false) }
-    }
-    fetch(); return () => { cancelled = true }
-  }, [registerTeamId])
+  async function fetchData() {
+    setLoading(true); setError('')
+    try {
+      const result = await getRegisterTeamDetail(registerTeamId)
+      setData(result)
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Failed to load.')
+    } finally { setLoading(false) }
+  }
+
+  useEffect(() => { fetchData() }, [registerTeamId])
+
+  async function handleApprove() {
+    const ok = await confirm('Approve Registration', `Approve "${data.teamName}"?`)
+    if (!ok) return
+    setActing(true)
+    try {
+      await approveRegisterTeam(registerTeamId)
+      toast.success('Registration approved')
+      fetchData()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to approve.')
+    } finally { setActing(false) }
+  }
+
+  function openReject() { setRejectTarget(data) }
+
+  async function handleRejectSubmit(reason) {
+    setRejecting(true)
+    try {
+      await rejectRegisterTeam(registerTeamId, { reason })
+      toast.success('Registration rejected')
+      setRejectTarget(null)
+      fetchData()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to reject.')
+    } finally { setRejecting(false) }
+  }
 
   if (loading) return (<div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" /><div className="mb-6 flex items-center gap-5"><div className="h-14 w-14 shrink-0 animate-pulse rounded-xl bg-gray-200" /><div className="space-y-2"><div className="h-7 w-48 animate-pulse rounded bg-gray-200" /><div className="h-4 w-72 animate-pulse rounded bg-gray-200" /></div></div><div className="h-80 animate-pulse rounded-xl bg-gray-100" /></div>)
 
@@ -47,18 +77,16 @@ export default function RegisterTeamDetail() {
   if (!data) return null
 
   const members = data.members || []
-  const editUrl = `/admin/register-teams/${registerTeamId}/edit`
+  const showApproval = data.status === 'Pending' && !data.isBanned
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      {/* Back link */}
       <div className="mb-5">
         <Link to={`/admin/hackathons/${data.eventId}?tab=Register+Teams`} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] transition-colors hover:text-[#05404a] hover:underline">
           <ArrowLeft className="h-4 w-4" /> Back to Event
         </Link>
       </div>
 
-      {/* Hero header */}
       <div className="mb-6 overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-sm">
         <div className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-6 py-5 sm:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -79,11 +107,22 @@ export default function RegisterTeamDetail() {
               {data.isBanned && (
                 <Badge label="Banned" className="bg-[#fce4ec] text-[#c62828]" />
               )}
-              <Link to={editUrl} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-white/30">Edit</Link>
+              {showApproval && (
+                <>
+                  <button onClick={handleApprove} disabled={acting} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-emerald-600 disabled:opacity-50">
+                    <CheckCircleIcon className="h-3.5 w-3.5" />{acting ? '...' : 'Approve'}
+                  </button>
+                  <button onClick={openReject} disabled={acting} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-rose-500 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-rose-600 disabled:opacity-50">
+                    <XCircle className="h-3.5 w-3.5" />Reject
+                  </button>
+                </>
+              )}
+              <Link to={`/admin/register-teams/${registerTeamId}/edit`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-white/30">
+                Edit
+              </Link>
             </div>
           </div>
         </div>
-        {/* Quick stats bar */}
         <div className="flex flex-wrap gap-4 border-t border-[#e8ecf0] bg-[#fafbfc] px-6 py-3 sm:px-8">
           <QuickStat icon={Trophy} label="Event" value={data.eventName || '—'} href={data.eventId ? `/admin/hackathons/${data.eventId}` : null} />
           <QuickStat icon={FileText} label="Track" value={data.trackTitle || '—'} href={data.trackId ? `/admin/hackathons/${data.eventId}/tracks/${data.trackId}` : null} />
@@ -92,9 +131,7 @@ export default function RegisterTeamDetail() {
         </div>
       </div>
 
-      {/* Main content grid */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        {/* Left — Registration Info + Timestamps */}
         <div className="space-y-5 lg:col-span-2">
           <CardPanel title="Registration Details">
             <div className="divide-y divide-[#f5f5f5]">
@@ -115,7 +152,6 @@ export default function RegisterTeamDetail() {
             </div>
           </CardPanel>
 
-          {/* Members */}
           <CardPanel title={`Members (${members.length})`}>
             {members.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10">
@@ -128,7 +164,6 @@ export default function RegisterTeamDetail() {
           </CardPanel>
         </div>
 
-        {/* Right sidebar */}
         <div className="space-y-5">
           <CardPanel title="Event" viewAllTo={data.eventId ? `/admin/hackathons/${data.eventId}` : null}>
             <div className="divide-y divide-[#f5f5f5]">
@@ -167,6 +202,18 @@ export default function RegisterTeamDetail() {
           </CardPanel>
         </div>
       </div>
+
+      <PromptReason
+        open={!!rejectTarget}
+        onClose={() => { if (!rejecting) setRejectTarget(null) }}
+        onSubmit={handleRejectSubmit}
+        title="Reject Registration"
+        description={`Reject "${rejectTarget?.teamName}" from this event.`}
+        confirmText="Reject"
+        placeholder="Why is this team being rejected?"
+        submitting={rejecting}
+        confirmVariant="danger"
+      />
     </div>
   )
 }
