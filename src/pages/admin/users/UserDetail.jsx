@@ -183,13 +183,19 @@ export default function UserDetail() {
         </CardPanel>
       </div>
 
+      {/* Event History — full width */}
       <div className="mt-5">
-        <CardPanel title="Event History">
-          <div className="mb-4">
-            <FilterBar filters={eventFilters} values={{ keyword: eventKeyword }} onChange={(key, val) => { setEventKeyword(val); setEventPage(1) }} onReset={() => { setEventKeyword(''); setEventPage(1) }} hasActive={eventHasActive} />
+        <div className="rounded-xl border border-[#e8ecf0] bg-white">
+          <div className="flex items-center justify-between border-b border-[#f0f0f0] px-5 py-4">
+            <h3 className="text-[15px] font-bold text-[#1f2f3a]">Event History</h3>
           </div>
-          <BaseTable columns={eventColumns} data={events} page={eventPage} pageSize={PAGE_SIZE} total={eventsTotal} onPageChange={setEventPage} loading={eventsLoading} emptyText="No event history found." keyExtractor={(row) => row.registerTeamId || row.eventId} />
-        </CardPanel>
+          <div className="px-5 pt-4 pb-0">
+            <div className="mb-4">
+              <FilterBar filters={eventFilters} values={{ keyword: eventKeyword }} onChange={(key, val) => { setEventKeyword(val); setEventPage(1) }} onReset={() => { setEventKeyword(''); setEventPage(1) }} hasActive={eventHasActive} />
+            </div>
+          </div>
+          <BaseTable borderless columns={eventColumns} data={events} page={eventPage} pageSize={PAGE_SIZE} total={eventsTotal} onPageChange={setEventPage} loading={eventsLoading} emptyText="No event history found." keyExtractor={(row) => row.registerTeamId || row.eventId} />
+        </div>
       </div>
     </div>
   )
