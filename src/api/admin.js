@@ -422,6 +422,18 @@ export async function updateCriteriaTemplate(templateId, payload) {
   return data
 }
 
+// ─── Criteria Items ──────────────────────────────────────────────────────────
+
+export async function getCriteriaItemDetail(itemId) {
+  const { data } = await api.get(`/admin/criteria-items/${itemId}`)
+  return data.data
+}
+
+export async function updateCriteriaItem(itemId, payload) {
+  const { data } = await api.patch(`/admin/criteria-items/${itemId}`, payload)
+  return data
+}
+
 // ─── Tracks ─────────────────────────────────────────────────────────────────────
 
 export async function getTracks(eventId, params = {}) {

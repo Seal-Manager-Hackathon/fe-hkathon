@@ -1,95 +1,14 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Plus, Trash2, FileText, GripVertical, Tag, AlignLeft, Hash } from 'lucide-react'
 import FormField from '../../../../components/FormField'
 import EntityFormPage from '../../../../components/EntityFormPage'
 import RichTextEditor from '../../../../components/RichTextEditor'
+import ScoreSlider from '../../../../components/ScoreSlider'
 import { createCriteriaTemplate, getRoundDetail } from '../../../../api/admin'
 import { toast } from '../../../../utils/toast'
 
 const emptyItem = () => ({ name: '', description: '', score: 20 })
-
-/* ───────── custom score slider ───────── */
-const MARKS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-
-function ScoreSlider({ value, onChange }) {
-  const [dragging, setDragging] = useState(false)
-  const trackRef = useRef(null)
-
-  const pct = Math.min(100, Math.max(0, value))
-
-  const updateFromClientX = useCallback((clientX) => {
-    if (!trackRef.current) return
-    const rect = trackRef.current.getBoundingClientRect()
-    const x = clientX - rect.left
-    const w = rect.width
-    const raw = Math.round((x / w) * 100)
-    const clamped = Math.min(100, Math.max(0, raw))
-    onChange(clamped)
-  }, [onChange])
-
-  const handlePointerDown = useCallback((e) => {
-    setDragging(true)
-    updateFromClientX(e.clientX)
-  }, [updateFromClientX])
-
-  useEffect(() => {
-    if (!dragging) return
-    const move = (e) => updateFromClientX(e.clientX)
-    const up = () => setDragging(false)
-    window.addEventListener('pointermove', move)
-    window.addEventListener('pointerup', up)
-    return () => {
-      window.removeEventListener('pointermove', move)
-      window.removeEventListener('pointerup', up)
-    }
-  }, [dragging, updateFromClientX])
-
-  return (
-    <div className="space-y-1.5 select-none">
-      {/* track */}
-      <div
-        ref={trackRef}
-        onPointerDown={handlePointerDown}
-        className="relative h-3 w-full cursor-pointer rounded-full bg-slate-100"
-      >
-        {/* fill */}
-        <div
-          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500 transition-[width] duration-75"
-          style={{ width: `${pct}%` }}
-        />
-        {/* marks */}
-        {MARKS.map((m) => (
-          <span
-            key={m}
-            className="absolute top-1/2 h-2 w-0.5 -translate-y-1/2 rounded-full bg-white/60"
-            style={{ left: `${m}%` }}
-          />
-        ))}
-        {/* thumb */}
-        <div
-          className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 transition-[left] duration-75"
-          style={{ left: `${pct}%` }}
-        >
-          <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-[#064f5d] shadow-lg shadow-[#064f5d]/25">
-            <div className="h-2 w-2 rounded-full bg-white" />
-          </div>
-          {/* bubble */}
-          <div className="absolute -top-9 left-1/2 -translate-x-1/2 rounded-lg bg-[#064f5d] px-2.5 py-1 text-[12px] font-bold text-white shadow-lg">
-            {pct}
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-2 w-2 rotate-45 bg-[#064f5d]" />
-          </div>
-        </div>
-      </div>
-      {/* scale labels */}
-      <div className="flex justify-between px-0.5">
-        {MARKS.filter((_, i) => i % 2 === 0).map((m) => (
-          <span key={m} className="text-[10px] font-medium text-slate-400">{m}</span>
-        ))}
-      </div>
-    </div>
-  )
-}
 
 export default function CriteriaTemplateCreate() {
   const { roundId } = useParams()
@@ -104,36 +23,21 @@ export default function CriteriaTemplateCreate() {
     getRoundDetail(roundId).then((d) => setRound(d)).catch(() => {})
   }, [roundId])
 
-  const canSave = title.trim().length > 0 && items.length > 0 && items.every((i) => i.name.trim() && i.score >= 0)
-
-  function updateItem(index, field, value) {
-    setItems((prev) => {
-      const next = [...prev]
-      next[index] = { ...next[index], [field]: field === 'score' ? Number(value) || 0 : value }
-      return next
-    })
+  const updateItem = (i, field, val) => {
+    setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, [field]: val } : it)))
   }
 
-  function removeItem(index) {
-    if (items.length <= 1) return
-    setItems((prev) => prev.filter((_, i) => i !== index))
-  }
+  const addItem = () => setItems((prev) => [...prev, emptyItem()])
+  const removeItem = (i) => setItems((prev) => prev.filter((_, idx) => idx !== i))
 
-  function addItem() {
-    setItems((prev) => [...prev, emptyItem()])
-  }
+  const canSave = title.trim().length > 0 && items.length > 0 && !saving
 
   async function handleSave() {
     if (!canSave) return
     setSaving(true)
     try {
-      const payload = {
-        title: title.trim(),
-        description: description.trim() || undefined,
-        items: items.map((i) => ({ name: i.name.trim(), description: i.description.trim() || undefined, score: Number(i.score) })),
-      }
-      await createCriteriaTemplate(roundId, payload)
-      toast.success('Criteria template created successfully')
+      await createCriteriaTemplate(roundId, { title: title.trim(), description, items })
+      toast.success('Criteria template created!')
       navigate(`/admin/rounds/${roundId}/criteria-templates`)
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to create criteria template.')
@@ -190,7 +94,7 @@ export default function CriteriaTemplateCreate() {
                     <input type="text" value={item.name} onChange={(e) => updateItem(i, 'name', e.target.value)} placeholder="e.g. Creativity" className="field-input" />
                   </div>
                   <div>
-                    <label className="mb-1 flex items-center gap-1.5 text-[12px] font-semibold text-gray-500"><AlignLeft className="h-3 w-3" />Description (optional)</label>
+                    <label className="mb-1 flex items-center gap-1.5 text-[12px] font-semibold text-gray-500"><AlignLeft className="h-3 w-3" />Description</label>
                     <RichTextEditor value={item.description} onChange={(v) => updateItem(i, 'description', v)} placeholder="Item description..." />
                   </div>
                   <div>
