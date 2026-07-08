@@ -8,8 +8,8 @@ export default function DashboardModal({ modal, onClose }) {
   const { type, data } = modal
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-6" onClick={onClose}>
-      <div className="w-full max-w-[540px] rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 sm:p-6" onClick={onClose}>
+      <div className="w-full max-w-[92%] sm:max-w-[540px] rounded-2xl bg-white p-5 sm:p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
 
         {/* Header */}
         <div className="mb-5 flex items-start justify-between">

@@ -142,7 +142,7 @@ export default function TableSelectModal({
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[6vh]">
       <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px]" onClick={onClose} />
 
-      <div className="relative z-10 flex max-h-[88vh] w-full max-w-[960px] flex-col overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-2xl animate-in fade-in zoom-in-95">
+      <div className="relative z-10 flex max-h-[88vh] w-full max-w-[92%] sm:max-w-[960px] flex-col overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-2xl animate-in fade-in zoom-in-95">
         {/* ── Header ── */}
         <div className="shrink-0 flex items-center justify-between border-b border-[#f0f0f0] px-6 py-4">
           <div className="flex items-center gap-3 min-w-0">

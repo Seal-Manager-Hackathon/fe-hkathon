@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Menu } from 'lucide-react'
 import { MOCK_NOTIFICATIONS } from '../../data/notifications'
 import NotificationModal from '../NotificationModal'
@@ -25,6 +25,8 @@ export default function Header({
 
   useEffect(() => {
     function handleClickOutside(e) {
+      // Don't close dropdown when clicking inside the notification modal
+      if (e.target.closest('[data-notification-modal]')) return
       if (ref.current && !ref.current.contains(e.target)) setOpen(false)
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -36,6 +38,12 @@ export default function Header({
       prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     )
   }
+
+  const markAllRead = useCallback(() => {
+    setNotifications((prev) =>
+      prev.map((n) => ({ ...n, read: true })),
+    )
+  }, [])
 
   return (
     <>
@@ -68,6 +76,7 @@ export default function Header({
                 viewAllTo={viewAllTo}
                 onSelect={setSelected}
                 onMarkRead={markAsRead}
+                onMarkAllRead={markAllRead}
               />
             )}
           </div>

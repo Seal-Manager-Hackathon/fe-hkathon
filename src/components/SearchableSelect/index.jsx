@@ -179,7 +179,7 @@ export default function SearchableSelect({
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh]">
           <div className="absolute inset-0 bg-black/30" onClick={handleClose} />
-          <div className="relative z-10 w-full max-w-[560px] overflow-hidden rounded-xl border border-[#e8ecf0] bg-white shadow-2xl">
+          <div className="relative z-10 w-full max-w-[92%] sm:max-w-[560px] overflow-hidden rounded-xl border border-[#e8ecf0] bg-white shadow-2xl">
             {/* Header */}
             <div className="flex items-center border-b border-[#f0f0f0] px-4 py-3">
               <Search className="mr-3 h-4 w-4 shrink-0 text-gray-400" />

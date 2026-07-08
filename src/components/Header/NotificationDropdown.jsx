@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, CheckCheck } from 'lucide-react'
 
 /**
  * Dropdown list of notifications with mark-as-read + detail view.
@@ -10,16 +10,32 @@ export default function NotificationDropdown({
   viewAllTo = '/notifications',
   onSelect,
   onMarkRead,
+  onMarkAllRead,
 }) {
   return (
-    <div className="absolute right-0 top-full mt-2 w-[calc(100vw-32px)] max-w-[380px] rounded-xl border border-[#e8ecf0] bg-white shadow-lg">
+    <div className="fixed left-2 right-2 top-14 z-40 rounded-xl border border-[#e8ecf0] bg-white shadow-lg sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:z-auto sm:mt-2 sm:w-[380px]">
       <div className="flex items-center justify-between border-b border-[#f0f0f0] px-5 py-3.5">
         <h3 className="text-[14px] font-bold text-[#1f2f3a]">Notifications</h3>
-        {unreadCount > 0 && (
-          <span className="rounded-full bg-[#ffebee] px-2 py-0.5 text-[11px] font-semibold text-[#c62828]">
-            {unreadCount} new
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {unreadCount > 0 && (
+            <>
+              <span className="rounded-full bg-[#ffebee] px-2 py-0.5 text-[11px] font-semibold text-[#c62828]">
+                {unreadCount} new
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onMarkAllRead?.()
+                }}
+                className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-[#e8f5e9] text-[#2e7d32] transition-colors hover:bg-[#c8e6c9]"
+                aria-label="Mark all as read"
+                title="Mark all as read"
+              >
+                <CheckCheck className="h-3.5 w-3.5" />
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="max-h-[340px] overflow-y-auto">

@@ -4,8 +4,8 @@ export default function NotificationModal({ notification, onClose }) {
   if (!notification) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-6" onClick={onClose}>
-      <div className="w-full max-w-[480px] rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 sm:p-6" onClick={onClose} data-notification-modal>
+      <div className="w-full max-w-[92%] sm:max-w-[480px] rounded-2xl bg-white p-5 sm:p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="mb-5 flex items-start justify-between">
           <div>
             <h3 className="text-[17px] font-bold text-[#1f2f3a]">{notification.title}</h3>

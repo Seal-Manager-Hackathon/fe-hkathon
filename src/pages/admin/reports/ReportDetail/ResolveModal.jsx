@@ -41,7 +41,7 @@ export default function ResolveModal({ action, open, onClose, onSubmit, submitti
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[620px] overflow-hidden rounded-2xl bg-white shadow-2xl"
+        className="w-full max-w-[92%] sm:max-w-[620px] overflow-hidden rounded-2xl bg-white shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

@@ -50,7 +50,7 @@ export default function PromptReason({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={!submitting ? handleClose : undefined} />
-      <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+      <div className="relative z-10 w-full max-w-[92%] sm:max-w-md rounded-2xl bg-white p-6 shadow-2xl">
         <div className="flex items-start justify-between">
           <div>
             <h3 className="text-[16px] font-bold text-slate-800">{title}</h3>
