@@ -31,6 +31,7 @@ const TopicDetail = lazy(() => import('../pages/admin/hackathons/tracks/TopicDet
 const TopicEdit = lazy(() => import('../pages/admin/hackathons/tracks/TopicEdit'))
 const AwardCreate = lazy(() => import('../pages/admin/hackathons/awards/AwardCreate'))
 const AwardEdit = lazy(() => import('../pages/admin/hackathons/awards/AwardEdit'))
+const RegisterTeamDetail = lazy(() => import('../pages/admin/hackathons/register-teams/RegisterTeamDetail'))
 const UsersManagement = lazy(() => import('../pages/admin/users/UsersManagement'))
 const UsersCreate = lazy(() => import('../pages/admin/users/UsersCreate'))
 const UserDetail = lazy(() => import('../pages/admin/users/UserDetail'))
@@ -96,6 +97,7 @@ export const routes = [
       { index: true, element: <Suspense fallback={<RouteFallback />}><ReportsManagement /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><ReportDetail /></Suspense> },
     ]},
+    { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><RegisterTeamDetail /></Suspense> },
     { path: 'rounds/:roundId/edit', element: <Suspense fallback={<RouteFallback />}><RoundEdit /></Suspense> },
     { path: 'rounds/:roundId/criteria-templates/create', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplateCreate /></Suspense> },
     { path: 'rounds/:roundId/criteria-templates/:templateId/edit', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplateEdit /></Suspense> },

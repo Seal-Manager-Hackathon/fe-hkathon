@@ -615,3 +615,14 @@ export async function getTeamRegisterHistory(teamId, params = {}) {
   return data.data
 }
 
+// ─── Event Register Teams ──────────────────────────────────────────────────────
+
+export async function getEventRegisterTeams(eventId, params = {}) {
+  const { data } = await api.get(`/admin/events/${eventId}/register-teams`, { params })
+  return data.data
+}
+
+export async function getRegisterTeamDetail(registerTeamId) {
+  const { data } = await api.get(`/admin/register-teams/${registerTeamId}`)
+  return data.data
+}
