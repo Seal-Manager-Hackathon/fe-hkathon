@@ -51,6 +51,51 @@ const SubmissionDetail = lazy(() => import('../pages/admin/submissions/Submissio
 const MyNotifications = lazy(() => import('../pages/admin/notifications/MyNotifications'))
 const AdminProfile = lazy(() => import('../pages/admin/profile/AdminProfile'))
 const AdminProfileEdit = lazy(() => import('../pages/admin/profile/AdminProfileEdit'))
+
+// Staff Pages
+const StaffLayout = lazy(() => import('../layouts/StaffLayout'))
+const StaffDashboard = lazy(() => import('../pages/staff/dashboard/AdminDashboard'))
+const StaffHackathonManagement = lazy(() => import('../pages/staff/hackathons/HackathonManagement'))
+const StaffHackathonDetail = lazy(() => import('../pages/staff/hackathons/HackathonDetail'))
+const StaffHackathonCreate = lazy(() => import('../pages/staff/hackathons/HackathonCreate'))
+const StaffHackathonEdit = lazy(() => import('../pages/staff/hackathons/HackathonEdit'))
+const StaffRoundCreate = lazy(() => import('../pages/staff/hackathons/rounds/RoundCreate'))
+const StaffRoundEdit = lazy(() => import('../pages/staff/hackathons/rounds/RoundEdit'))
+const StaffRoundDetail = lazy(() => import('../pages/staff/hackathons/rounds/RoundDetail'))
+const StaffCriteriaTemplatesManagement = lazy(() => import('../pages/staff/hackathons/rounds/CriteriaTemplatesManagement'))
+const StaffCriteriaTemplateCreate = lazy(() => import('../pages/staff/hackathons/rounds/CriteriaTemplateCreate'))
+const StaffCriteriaTemplateDetail = lazy(() => import('../pages/staff/hackathons/rounds/CriteriaTemplateDetail'))
+const StaffCriteriaTemplateEdit = lazy(() => import('../pages/staff/hackathons/rounds/CriteriaTemplateEdit'))
+const StaffTrackCreate = lazy(() => import('../pages/staff/hackathons/tracks/TrackCreate'))
+const StaffTrackDetail = lazy(() => import('../pages/staff/hackathons/tracks/TrackDetail'))
+const StaffTrackEdit = lazy(() => import('../pages/staff/hackathons/tracks/TrackEdit'))
+const StaffTopicsManagement = lazy(() => import('../pages/staff/hackathons/tracks/TopicsManagement'))
+const StaffTopicCreate = lazy(() => import('../pages/staff/hackathons/tracks/TopicCreate'))
+const StaffTopicDetail = lazy(() => import('../pages/staff/hackathons/tracks/TopicDetail'))
+const StaffTopicEdit = lazy(() => import('../pages/staff/hackathons/tracks/TopicEdit'))
+const StaffAwardCreate = lazy(() => import('../pages/staff/hackathons/awards/AwardCreate'))
+const StaffAwardEdit = lazy(() => import('../pages/staff/hackathons/awards/AwardEdit'))
+const StaffAwardDetail = lazy(() => import('../pages/staff/hackathons/awards/AwardDetail'))
+const StaffRegisterTeamDetail = lazy(() => import('../pages/staff/hackathons/register-teams/RegisterTeamDetail'))
+const StaffRegisterTeamEdit = lazy(() => import('../pages/staff/hackathons/register-teams/RegisterTeamEdit'))
+const StaffUsersManagement = lazy(() => import('../pages/staff/users/UsersManagement'))
+const StaffUsersCreate = lazy(() => import('../pages/staff/users/UsersCreate'))
+const StaffUserDetail = lazy(() => import('../pages/staff/users/UserDetail'))
+const StaffUserEdit = lazy(() => import('../pages/staff/users/UserEdit'))
+const StaffNotificationsManagement = lazy(() => import('../pages/staff/notifications/NotificationsManagement'))
+const StaffNotificationsCreate = lazy(() => import('../pages/staff/notifications/NotificationsCreate'))
+const StaffNotificationDetail = lazy(() => import('../pages/staff/notifications/NotificationDetail'))
+const StaffNotificationEdit = lazy(() => import('../pages/staff/notifications/NotificationEdit'))
+const StaffTeamsManagement = lazy(() => import('../pages/staff/teams/TeamsManagement'))
+const StaffTeamDetail = lazy(() => import('../pages/staff/teams/TeamDetail'))
+const StaffTeamEdit = lazy(() => import('../pages/staff/teams/TeamEdit'))
+const StaffReportsManagement = lazy(() => import('../pages/staff/reports/ReportsManagement'))
+const StaffReportDetail = lazy(() => import('../pages/staff/reports/ReportDetail'))
+const StaffSubmissionDetail = lazy(() => import('../pages/staff/submissions/SubmissionDetail'))
+const StaffMyNotifications = lazy(() => import('../pages/staff/notifications/MyNotifications'))
+const StaffProfile = lazy(() => import('../pages/staff/profile/AdminProfile'))
+const StaffProfileEdit = lazy(() => import('../pages/staff/profile/AdminProfileEdit'))
+
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 export const routes = [
@@ -116,6 +161,62 @@ export const routes = [
       { path: 'edit', element: <Suspense fallback={<RouteFallback />}><AdminProfileEdit /></Suspense> },
     ]},
   ]},
+  { path: '/staff', element: <Suspense fallback={<RouteFallback full />}><StaffLayout /></Suspense>, children: [
+    { index: true, element: <Suspense fallback={<RouteFallback />}><StaffDashboard /></Suspense> },
+    { path: 'hackathons', children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffHackathonManagement /></Suspense> },
+      { path: 'create', element: <Suspense fallback={<RouteFallback />}><StaffHackathonCreate /></Suspense> },
+      { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><StaffHackathonEdit /></Suspense> },
+      { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffHackathonDetail /></Suspense> },
+      { path: ':eventId/rounds/create', element: <Suspense fallback={<RouteFallback />}><StaffRoundCreate /></Suspense> },
+      { path: ':eventId/tracks/create', element: <Suspense fallback={<RouteFallback />}><StaffTrackCreate /></Suspense> },
+      { path: ':eventId/tracks/:trackId/edit', element: <Suspense fallback={<RouteFallback />}><StaffTrackEdit /></Suspense> },
+      { path: ':eventId/tracks/:trackId/topics/create', element: <Suspense fallback={<RouteFallback />}><StaffTopicCreate /></Suspense> },
+      { path: ':eventId/tracks/:trackId/topics/:topicId/edit', element: <Suspense fallback={<RouteFallback />}><StaffTopicEdit /></Suspense> },
+      { path: ':eventId/tracks/:trackId/topics/:topicId', element: <Suspense fallback={<RouteFallback />}><StaffTopicDetail /></Suspense> },
+      { path: ':eventId/tracks/:trackId/topics', element: <Suspense fallback={<RouteFallback />}><StaffTopicsManagement /></Suspense> },
+      { path: ':eventId/tracks/:trackId', element: <Suspense fallback={<RouteFallback />}><StaffTrackDetail /></Suspense> },
+      { path: ':eventId/awards/create', element: <Suspense fallback={<RouteFallback />}><StaffAwardCreate /></Suspense> },
+      { path: ':eventId/awards/:awardId/edit', element: <Suspense fallback={<RouteFallback />}><StaffAwardEdit /></Suspense> },
+      { path: ':eventId/awards/:awardId', element: <Suspense fallback={<RouteFallback />}><StaffAwardDetail /></Suspense> },
+    ]},
+    { path: 'users', children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffUsersManagement /></Suspense> },
+      { path: 'create', element: <Suspense fallback={<RouteFallback />}><StaffUsersCreate /></Suspense> },
+      { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><StaffUserEdit /></Suspense> },
+      { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffUserDetail /></Suspense> },
+    ]},
+    { path: 'notifications', children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffNotificationsManagement /></Suspense> },
+      { path: 'create', element: <Suspense fallback={<RouteFallback />}><StaffNotificationsCreate /></Suspense> },
+      { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><StaffNotificationEdit /></Suspense> },
+      { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffNotificationDetail /></Suspense> },
+    ]},
+    { path: 'teams', children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffTeamsManagement /></Suspense> },
+      { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><StaffTeamEdit /></Suspense> },
+      { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffTeamDetail /></Suspense> },
+    ]},
+    { path: 'reports', children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffReportsManagement /></Suspense> },
+      { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffReportDetail /></Suspense> },
+    ]},
+    { path: 'register-teams/:registerTeamId/edit', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamEdit /></Suspense> },
+    { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamDetail /></Suspense> },
+    { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><StaffSubmissionDetail /></Suspense> },
+    { path: 'rounds/:roundId/edit', element: <Suspense fallback={<RouteFallback />}><StaffRoundEdit /></Suspense> },
+    { path: 'rounds/:roundId/criteria-templates/create', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateCreate /></Suspense> },
+    { path: 'rounds/:roundId/criteria-templates/:templateId/edit', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateEdit /></Suspense> },
+    { path: 'rounds/:roundId/criteria-templates/:templateId', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateDetail /></Suspense> },
+    { path: 'rounds/:roundId/criteria-templates', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplatesManagement /></Suspense> },
+    { path: 'rounds/:roundId', element: <Suspense fallback={<RouteFallback />}><StaffRoundDetail /></Suspense> },
+    { path: 'my-notifications', element: <Suspense fallback={<RouteFallback />}><StaffMyNotifications /></Suspense> },
+    { path: 'profile', children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffProfile /></Suspense> },
+      { path: 'edit', element: <Suspense fallback={<RouteFallback />}><StaffProfileEdit /></Suspense> },
+    ]},
+  ]},
+
   { path: '/login', element: <Suspense fallback={<RouteFallback full />}><LoginPage /></Suspense> },
   { path: '/register', element: <Suspense fallback={<RouteFallback full />}><RegisterPage /></Suspense> },
   { path: '/verify-email', element: <Suspense fallback={<RouteFallback full />}><VerifyEmailPage /></Suspense> },

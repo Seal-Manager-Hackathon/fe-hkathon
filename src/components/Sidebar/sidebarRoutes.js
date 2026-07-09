@@ -11,6 +11,13 @@ const URL_TO_ACTIVE_KEY = [
   { match: (p) => p.startsWith('/admin/notifications'), key: 'notifications' },
   { match: (p) => p.startsWith('/admin/reports'), key: 'reports' },
   { match: (p) => p === '/admin' || p === '/admin/', key: 'dashboard' },
+  // Staff routes
+  { match: (p) => p.startsWith('/staff/hackathons') || p.startsWith('/staff/rounds'), key: 'hackathons' },
+  { match: (p) => p.startsWith('/staff/teams'), key: 'teams' },
+  { match: (p) => p.startsWith('/staff/users'), key: 'users' },
+  { match: (p) => p.startsWith('/staff/notifications'), key: 'notifications' },
+  { match: (p) => p.startsWith('/staff/reports'), key: 'reports' },
+  { match: (p) => p === '/staff' || p === '/staff/', key: 'dashboard' },
 ]
 
 export default URL_TO_ACTIVE_KEY

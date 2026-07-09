@@ -10,7 +10,8 @@ export default function Sidebar({ navItems, open, onClose }) {
 
   const activeKey = useMemo(() => {
     // Special pages that should not highlight any sidebar item
-    if (pathname === '/admin/my-notifications' || pathname.startsWith('/admin/profile')) {
+    if (pathname === '/admin/my-notifications' || pathname.startsWith('/admin/profile')
+        || pathname === '/staff/my-notifications' || pathname.startsWith('/staff/profile')) {
       return ''
     }
     const entry = URL_TO_ACTIVE_KEY.find((m) => m.match(pathname))
