@@ -338,7 +338,7 @@ export default function SubmissionDetail() {
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-5">
         <button onClick={() => window.history.back()} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] transition-colors hover:text-[#05404a] hover:underline">
-          <ArrowLeft className="h-4 w-4" /> Back
+          <ArrowLeft className="h-4 w-4" /> Back to Submissions
         </button>
       </div>
 
