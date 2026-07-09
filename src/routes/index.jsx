@@ -6,7 +6,7 @@ const StudentLayout = lazy(() => import('../layouts/StudentLayout'))
 const HomePage = lazy(() => import('../pages/student/home/HomePage'))
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'))
 const HackathonsPage = lazy(() => import('../pages/student/hackathons/HackathonsPage'))
-
+const YearLeaderboardPage = lazy(() => import('../pages/student/leaderboard/YearLeaderboardPage'))
 const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'))
 const VerifyEmailPage = lazy(() => import('../pages/auth/VerifyEmailPage'))
 const ProfilePage = lazy(() => import('../pages/auth/ProfilePage'))
@@ -103,6 +103,8 @@ const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 export const routes = [
   { path: '/', element: <Suspense fallback={<RouteFallback full />}><StudentLayout /></Suspense>, children: [
     { path: 'hackathons', element: <Suspense fallback={<RouteFallback />}><HackathonsPage /></Suspense> },
+    { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><YearLeaderboardPage /></Suspense> },
+
 
     { index: true, element: <Suspense fallback={<RouteFallback />}><HomePage /></Suspense> },
     { path: 'profile', children: [
