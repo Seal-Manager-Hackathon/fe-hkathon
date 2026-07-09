@@ -237,8 +237,23 @@ function SubmissionTabs({ data, graderScores, graderTotal, graderPage, graderLoa
     { key: 'grader', header: 'Grader', headerIcon: User,
       render: (row) => {
         const gb = row.gradedBy
-        if (gb) return <Link to={`/admin/users/${gb.userId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{gb.firstName} {gb.lastName}</Link>
-        if (row.graderName) return <span className="text-[14px] font-semibold text-[#1f2f3a]">{row.graderName}</span>
+        if (gb) {
+          const name = ((gb.firstName || '') + ' ' + (gb.lastName || '')).trim()
+          return (
+            <Link to={`/admin/users/${gb.userId}`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg px-1 py-0.5 transition-colors hover:bg-[#e3f2fd]/60">
+              <Avatar src={gb.avatarUrl} name={name} size="h-7 w-7" textSize="text-[10px]" />
+              <span className="text-[14px] font-semibold text-[#064f5d] hover:underline">{name}</span>
+            </Link>
+          )
+        }
+        if (row.graderName) return (
+          <div className="inline-flex items-center gap-2 rounded-lg px-1 py-0.5">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#eceff1]">
+              <User className="h-3.5 w-3.5 text-[#78909c]" />
+            </div>
+            <span className="text-[14px] font-semibold text-[#1f2f3a]">{row.graderName}</span>
+          </div>
+        )
         return <span className="text-[14px] text-gray-400">—</span>
       },
     },
