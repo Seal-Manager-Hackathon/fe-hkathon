@@ -5,6 +5,11 @@
  * to an existing parent nav item.
  */
 const URL_TO_ACTIVE_KEY = [
+  // Student routes
+  { match: (p) => p === '/' || p === '', key: 'home' },
+  { match: (p) => p.startsWith('/hackathons'), key: 'hackathons' },
+  { match: (p) => p.startsWith('/leaderboard'), key: 'leaderboard' },
+  // Admin routes
   { match: (p) => p.startsWith('/admin/hackathons') || p.startsWith('/admin/rounds'), key: 'hackathons' },
   { match: (p) => p.startsWith('/admin/teams'), key: 'teams' },
   { match: (p) => p.startsWith('/admin/users'), key: 'users' },
