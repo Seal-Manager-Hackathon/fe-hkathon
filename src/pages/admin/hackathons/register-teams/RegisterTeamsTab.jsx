@@ -3,36 +3,55 @@ import { Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
+import RoundSelectModal from '../../../../components/RoundSelectModal'
 import TrackSelectModal from '../../../../components/TrackSelectModal'
 import TopicSelectModal from '../../../../components/TopicSelectModal'
 import { getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam, assignTrackTopicToRegisterTeam, removeTrackTopicFromRegisterTeam } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import { toast, confirm } from '../../../../utils/toast'
 import PromptReason from '../../../../components/PromptReason'
-import { Search, Ban, Users, Eye, FileText, Trophy, Calendar, MoreHorizontal, CircleCheck, CheckCircle, XCircle, ShieldOff, Edit3, FolderKanban } from 'lucide-react'
-
-const PAGE_SIZE = 10
-const DEFAULT_VALUES = { keyword: '', status: '', isBanned: '', isDisable: '' }
+import { Ban, Users, Eye, FileText, Calendar, MoreHorizontal, CircleCheck, CheckCircle, XCircle, ShieldOff, Edit3, FolderKanban } from 'lucide-react'
+import { useRegisterTeamFilters, PAGE_SIZE } from './useRegisterTeamFilters'
 
 const statusBadge = { Pending: 'bg-amber-50 text-amber-700 border border-amber-200', Approved: 'bg-emerald-50 text-emerald-700 border border-emerald-200', Rejected: 'bg-rose-50 text-rose-700 border border-rose-200' }
-
-const regFilters = [
-  { type: 'search', key: 'keyword', label: 'Team Name', icon: Search, placeholder: 'Search team name...' },
-  { type: 'select', key: 'status', label: 'Status', icon: CircleCheck, options: [{ value: '', label: 'All' }, { value: 'Pending', label: 'Pending' }, { value: 'Approved', label: 'Approved' }, { value: 'Rejected', label: 'Rejected' }] },
-  { type: 'select', key: 'isBanned', label: 'Banned', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
-  { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
-]
 
 const viewBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] transition-colors hover:bg-[#e8e8e8]'
 
 export default function RegisterTeamsTab({ eventId }) {
+  // ── Filters ──
+  const {
+    filters, setFilter, resetFilters, active,
+    roundName, setRoundName, trackName, setTrackName, topicName, setTopicName,
+    filterRoundModalOpen, setFilterRoundModalOpen,
+    filterTrackModalOpen, setFilterTrackModalOpen,
+    filterTopicModalOpen, setFilterTopicModalOpen,
+    handleFilterSelect,
+    filterConfigs,
+  } = useRegisterTeamFilters()
+
   const [teams, setTeams] = useState([])
   const [totalCount, setTotalCount] = useState(0)
   const [pageIndex, setPageIndex] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [filters, setFilters] = useState(DEFAULT_VALUES)
-  const hasActive = Object.entries(filters).some(([, v]) => v !== '')
+
+  // Reset page when filters change
+  const prevFiltersRef = useRef(filters)
+  useEffect(() => {
+    const prev = prevFiltersRef.current
+    if (
+      prev.keyword !== filters.keyword ||
+      prev.status !== filters.status ||
+      prev.isBanned !== filters.isBanned ||
+      prev.isDisable !== filters.isDisable ||
+      prev.roundId !== filters.roundId ||
+      prev.trackId !== filters.trackId ||
+      prev.topicId !== filters.topicId
+    ) {
+      setPageIndex(1)
+    }
+    prevFiltersRef.current = filters
+  }, [filters])
 
   const [rejectTarget, setRejectTarget] = useState(null)
   const [rejecting, setRejecting] = useState(false)
@@ -43,8 +62,8 @@ export default function RegisterTeamsTab({ eventId }) {
   // Track/Topic assignment state
   const [assignTarget, setAssignTarget] = useState(null)
   const [assigning, setAssigning] = useState(false)
-  const [trackModalOpen, setTrackModalOpen] = useState(false)
-  const [topicModalOpen, setTopicModalOpen] = useState(false)
+  const [assignTrackModalOpen, setAssignTrackModalOpen] = useState(false)
+  const [assignTopicModalOpen, setAssignTopicModalOpen] = useState(false)
   const selectedTrackIdRef = useRef(null)
 
   const fetchTeams = useCallback(async () => {
@@ -55,6 +74,9 @@ export default function RegisterTeamsTab({ eventId }) {
       if (filters.status) params.Status = filters.status
       if (filters.isBanned !== '') params.IsBanned = filters.isBanned === 'true'
       if (filters.isDisable !== '') params.IsDisable = filters.isDisable === 'true'
+      if (filters.roundId) params.RoundId = filters.roundId
+      if (filters.trackId) params.TrackId = filters.trackId
+      if (filters.topicId) params.TopicId = filters.topicId
       const result = await getEventRegisterTeams(eventId, params)
       setTeams(result.registerTeams || [])
       setTotalCount(result.totalCount || 0)
@@ -65,9 +87,6 @@ export default function RegisterTeamsTab({ eventId }) {
   }, [eventId, pageIndex, filters])
 
   useEffect(() => { fetchTeams() }, [fetchTeams])
-
-  function handleFilterChange(key, value) { setFilters((prev) => ({ ...prev, [key]: value })); setPageIndex(1) }
-  function handleReset() { setFilters(DEFAULT_VALUES); setPageIndex(1) }
 
   async function handleApprove(row) {
     const ok = await confirm('Approve Registration', `Approve "${row.teamName}" to join this event?`)
@@ -117,7 +136,7 @@ export default function RegisterTeamsTab({ eventId }) {
   function openAssign(row) {
     setAssignTarget(row)
     selectedTrackIdRef.current = null
-    setTrackModalOpen(true)
+    setAssignTrackModalOpen(true)
   }
 
   function handleTrackSelect(trackId) {
@@ -126,19 +145,17 @@ export default function RegisterTeamsTab({ eventId }) {
       return
     }
     selectedTrackIdRef.current = trackId
-    setTrackModalOpen(false)
-    setTopicModalOpen(true)
+    setAssignTrackModalOpen(false)
+    setAssignTopicModalOpen(true)
   }
 
   function handleTopicSelect(topicId) {
-    setTopicModalOpen(false)
+    setAssignTopicModalOpen(false)
     doAssign(selectedTrackIdRef.current, topicId || undefined)
   }
 
   function handleTopicModalClose() {
-    setTopicModalOpen(false)
-    // If user already confirmed via handleTopicSelect, assignTarget was already cleared.
-    // Only submit if user closed without selecting (Cancel / X).
+    setAssignTopicModalOpen(false)
     if (assignTarget) {
       doAssign(selectedTrackIdRef.current, undefined)
     }
@@ -201,23 +218,53 @@ export default function RegisterTeamsTab({ eventId }) {
     {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
     <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
       <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
-        <FilterBar filters={regFilters} values={filters} onChange={handleFilterChange} onReset={handleReset} hasActive={hasActive} />
+        <FilterBar filters={filterConfigs} values={filters} onChange={setFilter} onReset={resetFilters} hasActive={active} />
       </div>
-      <BaseTable borderless columns={columns} data={teams} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No results match.' : 'No registered teams for this event.'} keyExtractor={(row) => row.id} minWidth="950px" />
+      <BaseTable borderless columns={columns} data={teams} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={active ? 'No results match.' : 'No registered teams for this event.'} keyExtractor={(row) => row.id} minWidth="950px" />
     </div>
 
-    {/* Track Select Modal */}
+    {/* ── Filter Select Modals ── */}
+    <RoundSelectModal
+      open={filterRoundModalOpen}
+      onClose={() => setFilterRoundModalOpen(false)}
+      eventId={eventId}
+      selectedRoundId={filters.roundId}
+      onSelect={handleFilterSelect('roundId', setRoundName)}
+    />
+
     <TrackSelectModal
-      open={trackModalOpen}
-      onClose={() => { setTrackModalOpen(false) }}
+      open={filterTrackModalOpen}
+      onClose={() => setFilterTrackModalOpen(false)}
+      eventId={eventId}
+      selectedTrackId={filters.trackId}
+      onSelect={(id, name) => {
+        handleFilterSelect('trackId', setTrackName)(id, name)
+        if (id !== filters.trackId) {
+          setFilter('topicId', '')
+          setTopicName('')
+        }
+      }}
+    />
+
+    <TopicSelectModal
+      open={filterTopicModalOpen}
+      onClose={() => setFilterTopicModalOpen(false)}
+      trackId={filters.trackId}
+      selectedTopicId={filters.topicId}
+      onSelect={handleFilterSelect('topicId', setTopicName)}
+    />
+
+    {/* ── Assignment Modals ── */}
+    <TrackSelectModal
+      open={assignTrackModalOpen}
+      onClose={() => { setAssignTrackModalOpen(false) }}
       eventId={eventId}
       selectedTrackId={assignTarget?.trackId || null}
       onSelect={handleTrackSelect}
     />
 
-    {/* Topic Select Modal (appears after track is chosen) */}
     <TopicSelectModal
-      open={topicModalOpen}
+      open={assignTopicModalOpen}
       onClose={handleTopicModalClose}
       trackId={selectedTrackIdRef.current}
       selectedTopicId={assignTarget?.topicId || null}
