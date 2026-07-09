@@ -264,6 +264,9 @@ export default function RegisterTeamDetail() {
               <InfoRow label="Topic" icon={FileText}>
                 {data.topicId && data.trackId ? <Link to={`/admin/hackathons/${data.eventId}/tracks/${data.trackId}/topics`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.topicTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.topicTitle || '—'}</span>}
               </InfoRow>
+              <InfoRow label="Round" icon={Layers}>
+                {data.roundId ? <Link to={`/admin/rounds/${data.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.roundName || '—'}</Link> : <span className="text-[14px] text-gray-400">—</span>}
+              </InfoRow>
             </div>
           </CardPanel>
 

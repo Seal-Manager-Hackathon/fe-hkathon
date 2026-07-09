@@ -10,7 +10,7 @@ import { getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam, banRegi
 import { formatDateTime } from '../../../../utils/format'
 import { toast, confirm } from '../../../../utils/toast'
 import PromptReason from '../../../../components/PromptReason'
-import { Ban, Users, Eye, FileText, Calendar, MoreHorizontal, CircleCheck, CheckCircle, XCircle, ShieldOff, Edit3, FolderKanban } from 'lucide-react'
+import { Ban, Users, Eye, FileText, Calendar, MoreHorizontal, CircleCheck, CheckCircle, XCircle, ShieldOff, Edit3, FolderKanban, Layers } from 'lucide-react'
 import { useRegisterTeamFilters, PAGE_SIZE } from './useRegisterTeamFilters'
 
 const statusBadge = { Pending: 'bg-amber-50 text-amber-700 border border-amber-200', Approved: 'bg-emerald-50 text-emerald-700 border border-emerald-200', Rejected: 'bg-rose-50 text-rose-700 border border-rose-200' }
@@ -189,6 +189,7 @@ export default function RegisterTeamsTab({ eventId }) {
     { key: 'teamName', header: 'Team', headerIcon: Users, render: (row) => <Link to={`/admin/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName || '—'}</Link> },
     { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => row.trackId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
     { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => row.topicId && row.trackId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}/topics`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.topicTitle || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
+    { key: 'roundName', header: 'Round', headerIcon: Layers, render: (row) => row.roundId ? <Link to={`/admin/rounds/${row.roundId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.roundName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
     { key: 'isBanned', header: 'Banned', headerIcon: Ban, render: (row) => row.isBanned ? <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
     { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => <Badge label={row.status} className={statusBadge[row.status] || 'bg-gray-50 text-gray-600'} /> },
     { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p> },
@@ -220,7 +221,7 @@ export default function RegisterTeamsTab({ eventId }) {
       <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
         <FilterBar filters={filterConfigs} values={filters} onChange={setFilter} onReset={resetFilters} hasActive={active} />
       </div>
-      <BaseTable borderless columns={columns} data={teams} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={active ? 'No results match.' : 'No registered teams for this event.'} keyExtractor={(row) => row.id} minWidth="950px" />
+      <BaseTable borderless columns={columns} data={teams} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={active ? 'No results match.' : 'No registered teams for this event.'} keyExtractor={(row) => row.id} minWidth="1050px" />
     </div>
 
     {/* ── Filter Select Modals ── */}
