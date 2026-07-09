@@ -946,4 +946,19 @@ export async function getRoundLeaderboard(roundId, params = {}) {
   return data.data
 }
 
+// ========== Event Leaderboard ==========
+
+/**
+ * Get leaderboard for an event (team rankings by eventScore).
+ * GET /admin/events/{eventId}/leaderboard
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @param {number} [params.PageIndex] - default 1
+ * @param {number} [params.PageSize] - default 10
+ */
+export async function getEventLeaderboard(eventId, params = {}) {
+  const { data } = await api.get(`/admin/events/${eventId}/leaderboard`, { params })
+  return data.data
+}
+
 
