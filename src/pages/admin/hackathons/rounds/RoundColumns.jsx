@@ -1,4 +1,4 @@
-import { Trash2, RotateCcw, ArrowLeftRight, Edit, Eye, Hash, Calendar, Play, Flag, Users, CircleCheck, MoreHorizontal, ClipboardList } from 'lucide-react'
+import { Trash2, RotateCcw, ArrowLeftRight, Edit, Eye, Hash, Calendar, Play, Flag, Users, CircleCheck, MoreHorizontal, ClipboardList, TrendingUp } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../../components/Badge'
 import { formatDateTime } from '../../../../utils/format'
@@ -17,7 +17,10 @@ const swapBtnClass =
 const criteriaBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] transition-colors hover:bg-[#ffe0b2]'
 
-export function roundColumns(eventId, onSwap, onDelete, onRestore) {
+const nextRoundBtnClass =
+  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] whitespace-nowrap w-[110px] justify-center'
+
+export function roundColumns(eventId, onSwap, onDelete, onRestore, onNextRound) {
   return [
     { key: 'roundNo', header: '#', headerIcon: Hash, render: (row) => <span className="text-[13px] text-gray-500">Round {row.roundNo}</span> },
     { key: 'name', header: 'Round Name', headerIcon: Calendar, render: (row) => <Link to={`/admin/rounds/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.name}</Link> },
@@ -33,34 +36,45 @@ export function roundColumns(eventId, onSwap, onDelete, onRestore) {
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => (
-        <div className="flex items-center justify-end gap-2">
-          {!row.isDisable && (
-            <Link to={`/admin/rounds/${row.id}/criteria-templates`} className={criteriaBtnClass}>
-              <ClipboardList className="h-3.5 w-3.5" /> Criteria
+        <div className="flex flex-col items-end gap-1.5">
+          {/* Row 1: View | Edit | Delete / Restore */}
+          <div className="flex items-center gap-2">
+            <Link to={`/admin/rounds/${row.id}`} className={viewBtnClass}>
+              <Eye className="h-3.5 w-3.5" /> View
             </Link>
-          )}
-          {!row.isDisable && (
-            <button onClick={() => onSwap?.(row)} className={swapBtnClass}>
-              <ArrowLeftRight className="h-3.5 w-3.5" /> Swap
-            </button>
-          )}
-          <Link to={`/admin/rounds/${row.id}`} className={viewBtnClass}>
-            <Eye className="h-3.5 w-3.5" /> View
-          </Link>
-          {row.isDisable ? (
-            <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
-              <RotateCcw className="h-3.5 w-3.5" /> Restore
-            </button>
-          ) : (
-            <>
-              <Link to={`/admin/rounds/${row.id}/edit`} className={actionBtnClass}>
-                <Edit className="h-3.5 w-3.5" /> Edit
-              </Link>
-              <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
-                <Trash2 className="h-3.5 w-3.5" /> Delete
+            {row.isDisable ? (
+              <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
+                <RotateCcw className="h-3.5 w-3.5" /> Restore
               </button>
-            </>
-          )}
+            ) : (
+              <>
+                <Link to={`/admin/rounds/${row.id}/edit`} className={actionBtnClass}>
+                  <Edit className="h-3.5 w-3.5" /> Edit
+                </Link>
+                <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
+                  <Trash2 className="h-3.5 w-3.5" /> Delete
+                </button>
+              </>
+            )}
+          </div>
+          {/* Row 2: Next Round | Criteria | Swap */}
+          <div className="flex items-center gap-2">
+            {!row.isDisable && (
+              <button onClick={() => onNextRound?.(row)} className={nextRoundBtnClass}>
+                <TrendingUp className="h-3.5 w-3.5" /> Team Flow
+              </button>
+            )}
+            {!row.isDisable && (
+              <Link to={`/admin/rounds/${row.id}/criteria-templates`} className={criteriaBtnClass}>
+                <ClipboardList className="h-3.5 w-3.5" /> Criteria
+              </Link>
+            )}
+            {!row.isDisable && (
+              <button onClick={() => onSwap?.(row)} className={swapBtnClass}>
+                <ArrowLeftRight className="h-3.5 w-3.5" /> Swap
+              </button>
+            )}
+          </div>
         </div>
       ),
     },

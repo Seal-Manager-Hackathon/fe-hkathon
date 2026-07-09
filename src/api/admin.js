@@ -863,4 +863,27 @@ export async function getScoreItemDetail(scoreItemId) {
   return data.data
 }
 
+// ========== Register Team Round Management ==========
+
+/**
+ * Assign a register team to the next round (auto-detected).
+ * POST /admin/register-teams/{registerTeamId}/assign-next-round
+ * @param {string} registerTeamId
+ * @returns {Promise<{ data: { registerTeamId, roundId, roundName, roundNo }, message: string }>}
+ */
+export async function assignRegisterTeamToNextRound(registerTeamId) {
+  const { data } = await api.post(`/admin/register-teams/${registerTeamId}/assign-next-round`)
+  return data
+}
+
+/**
+ * Revert a register team to the previous round (hard-delete current round detail).
+ * POST /admin/register-teams/{registerTeamId}/revert-previous-round
+ * @param {string} registerTeamId
+ * @returns {Promise<{ data: { registerTeamId, eventId, teamId, teamName, trackId, trackName, topicId, topicName, roundId, roundName, roundNo }, message: string }>}
+ */
+export async function revertRegisterTeamToPreviousRound(registerTeamId) {
+  const { data } = await api.post(`/admin/register-teams/${registerTeamId}/revert-previous-round`)
+  return data
+}
 

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import SwapModal from '../../../../components/SwapModal'
+import NextRoundModal from '../../../../components/NextRoundModal'
 import { getRounds, getMaxRoundNo, deleteRound, restoreRound, swapRounds } from '../../../../api/admin'
 import { roundColumns } from './RoundColumns'
 import { toast, confirm } from '../../../../utils/toast'
@@ -17,7 +18,6 @@ const roundFilters = [
   { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
 ]
 
-// Swap modal filters
 const roundSwapFilters = [
   { type: 'search', key: 'keyword', label: 'Round Name', icon: Search, placeholder: 'Search round name...' },
   { type: 'search', key: 'roundNo', label: 'Round #', icon: Hash, inputType: 'number', placeholder: 'Enter round number' },
@@ -41,6 +41,7 @@ export default function RoundsTab({ eventId }) {
   const [error, setError] = useState('')
   const [maxRoundNo, setMaxRoundNo] = useState(null)
   const [swapSource, setSwapSource] = useState(null)
+  const [nextRoundTarget, setNextRoundTarget] = useState(null)
   const [filters, setFilters] = useState(DEFAULT_VALUES)
   const hasActive = Object.entries(filters).some(([, v]) => v !== '')
 
@@ -96,7 +97,7 @@ export default function RoundsTab({ eventId }) {
         </div>
         <BaseTable
           borderless
-          columns={roundColumns(eventId, setSwapSource, handleDelete, handleRestore)}
+          columns={roundColumns(eventId, setSwapSource, handleDelete, handleRestore, setNextRoundTarget)}
           data={rounds}
           page={pageIndex}
           pageSize={PAGE_SIZE}
@@ -164,6 +165,15 @@ export default function RoundsTab({ eventId }) {
             },
           },
         ]}
+      />
+
+      <NextRoundModal
+        open={!!nextRoundTarget}
+        onClose={() => setNextRoundTarget(null)}
+        eventId={eventId}
+        roundId={nextRoundTarget?.id}
+        roundName={nextRoundTarget?.name}
+        roundNo={nextRoundTarget?.roundNo}
       />
     </>
   )
