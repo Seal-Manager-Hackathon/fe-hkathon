@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, FileText, Calendar, Clock, Users, User, CircleCheck, Send, ExternalLink, FolderKanban, Layers, Star, Eye, Info, Lock, ChevronRight, Trophy, X } from 'lucide-react'
-import { getSubmissionDetail, getTeamDetail, getSubmissionGraderScores, getRegisterTeamDetail, getScoreDetail, getScoreItems } from '../../../api/admin'
+import { getSubmissionDetail, getTeamDetail, getSubmissionGraderScores, getRegisterTeamDetail, getScoreDetail, getScoreItems, getScoreItemDetail } from '../../../api/admin'
 import { formatDateTime } from '../../../utils/format'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
@@ -66,6 +66,7 @@ function TabBtn({ active, icon: Icon, label, color, onClick }) {
 function ScoreDetailModal({ scoreId, onClose }) {
   const [score, setScore] = useState(null)
   const [items, setItems] = useState([])
+  const [itemDetails, setItemDetails] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -78,7 +79,20 @@ function ScoreDetailModal({ scoreId, onClose }) {
     ])
       .then(([scoreData, itemsData]) => {
         setScore(scoreData)
-        setItems(itemsData.items || [])
+        const scoreItems = itemsData.items || []
+        setItems(scoreItems)
+        // Fetch detail for each score item to get maxScore and route params
+        if (scoreItems.length > 0) {
+          return Promise.all(
+            scoreItems.map((item) =>
+              getScoreItemDetail(item.scoreItemId)
+                .then((detail) => ({ [item.scoreItemId]: detail }))
+                .catch(() => ({ [item.scoreItemId]: {} }))
+            )
+          ).then((details) => {
+            setItemDetails(Object.assign({}, ...details))
+          })
+        }
       })
       .catch((err) => setError(err?.response?.data?.message || 'Failed to load score detail.'))
       .finally(() => setLoading(false))
@@ -114,30 +128,26 @@ function ScoreDetailModal({ scoreId, onClose }) {
                     <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Score</p>
                     <p className="mt-1 text-[24px] font-bold text-[#064f5d]">{score.totalScore ?? '—'}</p>
                   </div>
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Track</p>
-                    <p className="mt-1 text-[15px] font-bold text-slate-800">{score.trackTitle || '—'}</p>
-                  </div>
+                  {score.gradedBy && (
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Graded By</p>
+                      <div className="mt-1 flex items-center gap-3">
+                        <Avatar src={score.gradedBy.avatarUrl} name={`${score.gradedBy.firstName || ''} ${score.gradedBy.lastName || ''}`} size="h-10 w-10" textSize="text-[14px]" />
+                        <div>
+                          <Link to={`/admin/users/${score.gradedBy.userId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">
+                            {score.gradedBy.firstName} {score.gradedBy.lastName}
+                          </Link>
+                          <p className="text-[12px] text-gray-400">{score.gradedBy.email}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="mt-3 flex items-center gap-2">
                   {score.isRetake && <Badge label="Retake" className="bg-[#fce4ec] text-[#c62828]" />}
                   {score.isMock && <Badge label="Mock" className="bg-[#fff3e0] text-[#e65100]" />}
                 </div>
               </div>
-              {score.gradedBy && (
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Graded By</p>
-                  <div className="mt-2 flex items-center gap-3 rounded-xl border border-slate-100 bg-[#fafbfc] p-4">
-                    <Avatar src={score.gradedBy.avatarUrl} name={`${score.gradedBy.firstName || ''} ${score.gradedBy.lastName || ''}`} size="h-10 w-10" textSize="text-[14px]" />
-                    <div>
-                      <Link to={`/admin/users/${score.gradedBy.userId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">
-                        {score.gradedBy.firstName} {score.gradedBy.lastName}
-                      </Link>
-                      <p className="text-[12px] text-gray-400">{score.gradedBy.email}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
               <div>
                 <p className="mb-2 text-[13px] font-semibold text-slate-500">Criteria Scores ({items.length})</p>
                 {items.length === 0 ? (
@@ -153,10 +163,23 @@ function ScoreDetailModal({ scoreId, onClose }) {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#f0f0f0]">
-                        {items.map((item) => (
+                        {items.map((item) => {
+                          const detail = itemDetails[item.scoreItemId] || {}
+                          const criteriaLink = detail.roundId && detail.criteriaTemplateId
+                            ? `/admin/rounds/${detail.roundId}/criteria-templates/${detail.criteriaTemplateId}`
+                            : null
+                          return (
                           <tr key={item.scoreItemId} className="hover:bg-[#fafbfc]">
-                            <td className="px-5 py-3 text-[14px] font-semibold text-[#1f2f3a]">{item.criteriaName || '—'}</td>
-                            <td className="px-5 py-3 text-[15px] font-bold text-[#064f5d]">{item.score ?? '—'}</td>
+                            <td className="px-5 py-3 text-[14px] font-semibold text-[#1f2f3a]">
+                              {criteriaLink ? (
+                                <Link to={criteriaLink} className="text-[#064f5d] hover:underline">{item.criteriaName || '—'}</Link>
+                              ) : (
+                                item.criteriaName || '—'
+                              )}
+                            </td>
+                            <td className="px-5 py-3 text-[15px] font-bold text-[#064f5d]">
+                              {detail.maxScore != null ? `${item.score ?? '—'} / ${detail.maxScore}` : (item.score ?? '—')}
+                            </td>
                             <td className="px-5 py-3 min-w-[300px]">
                               {item.comment ? (
                                 <div className="max-h-[120px] overflow-y-auto rounded-lg bg-[#f4f6f8] p-3">
@@ -165,7 +188,7 @@ function ScoreDetailModal({ scoreId, onClose }) {
                               ) : <span className="italic text-gray-400">—</span>}
                             </td>
                           </tr>
-                        ))}
+                        )})}
                       </tbody>
                     </table>
                   </div>
@@ -211,6 +234,14 @@ function SubmissionTabs({ data, graderScores, graderTotal, graderPage, graderLoa
   const [selectedScoreId, setSelectedScoreId] = useState(null)
 
   const graderColumns = [
+    { key: 'grader', header: 'Grader', headerIcon: User,
+      render: (row) => {
+        const gb = row.gradedBy
+        if (gb) return <Link to={`/admin/users/${gb.userId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{gb.firstName} {gb.lastName}</Link>
+        if (row.graderName) return <span className="text-[14px] font-semibold text-[#1f2f3a]">{row.graderName}</span>
+        return <span className="text-[14px] text-gray-400">—</span>
+      },
+    },
     { key: 'trackTitle', header: 'Track', headerIcon: FolderKanban,
       render: (row) => row.assignTrackId && eventId ? (
         <Link to={`/admin/hackathons/${eventId}/tracks/${row.assignTrackId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">
@@ -242,7 +273,7 @@ function SubmissionTabs({ data, graderScores, graderTotal, graderPage, graderLoa
       <div className="flex bg-gradient-to-r from-slate-50 to-white">
         <TabBtn active={tab === 'content'} icon={Eye} label="Content" color="blue" onClick={() => setTab('content')} />
         <TabBtn active={tab === 'info'} icon={Info} label="Information" color="amber" onClick={() => setTab('info')} />
-        <TabBtn active={tab === 'score'} icon={Star} label="Score" color="green" onClick={() => setTab('score')} />
+        <TabBtn active={tab === 'score'} icon={Star} label="Judge Scores" color="green" onClick={() => setTab('score')} />
       </div>
 
       {tab === 'content' && (
