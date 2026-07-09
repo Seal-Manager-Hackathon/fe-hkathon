@@ -136,11 +136,29 @@
 | TopicSelectModal | Select a topic |
 | RegisterTeamSelectModal | Select registered team |
 | NextRoundModal | Confirm assign to next round |
-| SwapModal | Swap two entities |
+| SwapModal | Swap two entities positions |
+| RoundLeaderboardModal | Round leaderboard (per-round ranking) — uses BaseTable, 5 items/page |
 | TableSelectModal | Searchable table in modal |
 | DashboardModal | Generic modal shell |
 
+## Leaderboard Components
+
+### RoundLeaderboardModal
+**File**: `src/components/RoundLeaderboardModal/index.jsx`
+**Props**: `{ open, onClose, roundId, roundName }`
+**Purpose**: Shows team rankings for a single round, sorted by scopeScore. Uses `BaseTable` with columns: Rank (trophy/medal), Team, Track/Topic, Score. 5 items per page.
+
+### EventLeaderboardTab
+**File**: `src/pages/admin/hackathons/leaderboard/EventLeaderboardTab.jsx`
+**Props**: `{ eventId }`
+**Purpose**: Event-level leaderboard tab in HackathonDetail. Shows team rankings by eventScore with View modal for per-round scores. Uses `BaseTable` with 5 items/page.
+
+### ChapterLeaderboardPage
+**File**: `src/pages/admin/leaderboard/ChapterLeaderboardPage.jsx`
+**URL**: `/admin/leaderboard`
+**Purpose**: Year-based chapter leaderboard. Year selector with < > stepper buttons. Shows team rankings by chapterScore with View modal for per-event scores. Teams link to `/admin/teams/{id}`. Uses `BaseTable` with 10 items/page.
+
 ## Layout Components
 
-**Sidebar**: 248px fixed, teal bg, nav items with icon+label, mobile overlay.
+**Sidebar**: 248px fixed, teal bg, nav items with icon+label, mobile overlay. Icons resolved via `iconMap` in `SidebarNavItem.jsx` — must add new icon to both import and map.
 **Header**: 56px sticky, white bg, notification bell + user menu, hamburger on mobile.

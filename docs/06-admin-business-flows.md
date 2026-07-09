@@ -19,16 +19,17 @@
 - Updates via `updateEvent(id, payload)`
 - Additional: visibility (Public/Private/Unlisted)
 
-### Detail (HackathonDetail.jsx) — 7 Tabs
+### Detail (HackathonDetail.jsx) — 8 Tabs
 | Tab | Component | Features |
 |-----|-----------|----------|
 | Overview | OverviewTab | Event info cards (season, dates, limits), description (rich text), Edit button |
-| Rounds | RoundsTab | List rounds, create/edit/delete rounds, link to criteria templates |
+| Rounds | RoundsTab | List rounds with actions: View/Edit/Delete, Criteria, Team Flow, Swap, Leaderboard |
 | Tracks | TracksTab | List tracks, create/edit/delete, link to topics |
 | Awards | AwardsTab | List awards with prize amounts, CRUD |
-| Assignments | AssignTab | Assign judges to rounds for grading |
+| Assignments | AssignTab | Assign mentors/judges/staff to event, assign tracks per user |
 | Register Teams | RegisterTeamsTab | View registered teams + assign to next/previous round |
 | Submissions | SubmissionsTab | View submissions across all rounds |
+| Leaderboard | EventLeaderboardTab | Event-level rankings by eventScore (weighted avg of round scores) |
 
 ## 2. Round Management (within a Hackathon)
 
@@ -37,9 +38,17 @@
 - **Edit**: `/admin/hackathons/:id/rounds/:roundId/edit`
 - **Detail**: `/admin/hackathons/:id/rounds/:roundId` — shows round info + criteria templates
 - Each round has **Criteria Templates** (scoring rubrics)
+- **Round actions**: View, Edit, Delete/Restore, Criteria, Team Flow (NextRoundModal), Swap (SwapModal), **Leaderboard** (RoundLeaderboardModal)
+
+### Round Leaderboard
+- Button opens `RoundLeaderboardModal` component
+- API: `GET /admin/rounds/{roundId}/leaderboard` → `getRoundLeaderboard(roundId, params)`
+- Shows ranked table of teams with scopeScore, track, topic
+- Top 3 ranked teams get gold/silver/bronze trophy icons
+- Uses `BaseTable` with server-side pagination (5 items/page)
 
 ### Criteria Template Management
-- **List**: `/admin/hackathons/:id/rounds/:roundId/criteria-templates`
+- **List**: `/admin/rounds/:roundId/criteria-templates`
 - **Create**: template title, description, list of criteria items
 - Each criteria item: name, description (rich text), max score (0-100 slider)
 - **Edit/Detail**: view and modify template + items
@@ -110,9 +119,36 @@
 - Revert to previous round: `POST /admin/register-teams/:id/revert-previous-round`
 - View submission history per round
 
-## 11. Dashboard
+## 11. Leaderboard System
+
+### Event Leaderboard (Tab in HackathonDetail)
+- URL: `?tab=Leaderboard`
+- API: `GET /admin/events/{eventId}/leaderboard` → `getEventLeaderboard(eventId, params)`
+- Shows team rankings by `eventScore` (weighted average of round scopeScores)
+- Table columns: Rank (trophy medals top 3), Team (link to register team), Track, Topic, Event Score, Actions (View)
+- View modal: shows per-round score breakdown, track/topic detail links
+- Uses `BaseTable` with server-side pagination (5 items/page)
+
+### Chapter Leaderboard (Sidebar Page)
+- URL: `/admin/leaderboard`
+- API: `GET /admin/events/chapter/{year}/leaderboard` → `getChapterLeaderboard(year, params)`
+- Shows team rankings by `chapterScore` (average of event scores across the year)
+- Year selector with < > stepper buttons (not dropdown)
+- Table columns: Rank, Team (link to `/admin/teams/{id}`), Events count, Chapter Score, Actions (View)
+- View modal: shows per-event score breakdown with links to event detail
+- Uses `BaseTable` with server-side pagination (10 items/page)
+
+## 12. Dashboard
 
 - URL: `/admin` (AdminDashboard.jsx)
 - **Stats sections**: Hackathons (total/published/draft/closed), Users (total/student/lecturer/staff/admin), Teams (total/active/disabled)
 - **Recent Activity tabs**: Hackathons, Users, Notifications, Reports
 - Each tab shows 5 most recent items in a CardPanel
+
+## Admin ↔ Staff Sync
+
+Every admin page has a mirror staff page with:
+- Same component structure
+- Staff API functions (`src/api/staff.js`) with mock data
+- Staff routes (`/staff/*` instead of `/admin/*`)
+- Staff sidebar nav items

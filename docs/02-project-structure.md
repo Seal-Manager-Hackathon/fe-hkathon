@@ -35,12 +35,15 @@ new-fe/
     │   └── adminOptions.js     # Role options, statuses, seasons, badge colors
     │
     ├── data/
-    │   └── mockAdminData.js    # Nav items, stat sections, icon maps, mock data
+    │   ├── mockAdminData.js    # Admin nav items, dashboard stats, icon maps
+    │   ├── mockStaffData.js    # Staff nav items (mirrors admin)
+    │   ├── mockHomeData.js     # Student nav items
+    │   └── mockLeaderboardData.js  # Student leaderboard mock
     │
     ├── api/
     │   ├── admin.js            # ALL admin API functions
     │   ├── auth.js             # Auth: login, register, getCurrentUser
-    │   └── staff.js            # Staff API (mirrors admin)
+    │   └── staff.js            # Staff API (mirrors admin with mock data)
     │
     ├── routes/
     │   └── index.jsx           # ALL routes defined here (lazy-loaded)
@@ -54,13 +57,15 @@ new-fe/
         ├── student/            # Home, hackathons, teams, scores, leaderboard
         ├── admin/              # ADMIN pages (see 06-admin-business-flows.md)
         │   ├── dashboard/      # Dashboard + stats + recent activity
-        │   ├── hackathons/     # CRUD + detail with 7 tabs
+        │   ├── hackathons/     # CRUD + detail with 8 tabs
         │   │   ├── rounds/     # Round CRUD + CriteriaTemplates CRUD
         │   │   ├── tracks/     # Track CRUD + Topic CRUD
         │   │   ├── awards/     # Award CRUD
-        │   │   ├── assign/     # Judge assignments
+        │   │   ├── assign/     # User assignments (mentor/judge/staff)
         │   │   ├── register-teams/
-        │   │   └── submissions/
+        │   │   ├── submissions/
+        │   │   └── leaderboard/  # Event leaderboard tab
+        │   ├── leaderboard/    # Chapter leaderboard page (year-based)
         │   ├── users/          # List + create/edit/detail + ban/unban/delete
         │   ├── teams/          # List + edit/detail
         │   ├── notifications/  # List + create/edit/detail
@@ -75,27 +80,28 @@ new-fe/
 
 ```
 src/components/
-├── Sidebar/            # Nav sidebar
-├── Header/             # Top bar: notifications + user menu
-├── BaseTable/          # Server/client paginated table + skeleton
-├── FilterBar/          # Search + selects + dates + reset
-├── DataManagementPage/ # Client-side CRUD list wrapper
-├── EntityFormPage/     # Create/Edit form wrapper
-├── FormField/          # Label + error wrapper
-├── FormActions/        # Save + Cancel footer
-├── PageHeader/         # Back + title + action
-├── SectionTitle/       # Heading + "View All"
-├── CardPanel/          # Bordered card + "View All"
-├── StatCard/           # Icon + label + value
-├── Badge/              # Rounded pill
-├── TextInput/          # Input + icon + error
-├── SearchInput/        # Search field
-├── SelectInput/        # Dropdown
-├── RichTextEditor/     # Tiptap WYSIWYG
-├── RichTextViewer/     # Tiptap read-only
-├── DetailField/        # Key-value display
-├── Modal family:       # Round/Track/Topic/Swap/NextRound/Notification/Confirm modals
-└── Card family:        # HackathonCard, RankingCard, EventInfoCard
+├── Sidebar/               # Nav sidebar
+├── Header/                # Top bar: notifications + user menu
+├── BaseTable/             # Server/client paginated table + skeleton
+├── FilterBar/             # Search + selects + dates + reset
+├── DataManagementPage/    # Client-side CRUD list wrapper
+├── EntityFormPage/        # Create/Edit form wrapper
+├── FormField/             # Label + error wrapper
+├── FormActions/           # Save + Cancel footer
+├── PageHeader/            # Back + title + action
+├── SectionTitle/          # Heading + "View All"
+├── CardPanel/             # Bordered card + "View All"
+├── StatCard/              # Icon + label + value
+├── Badge/                 # Rounded pill
+├── TextInput/             # Input + icon + error
+├── SearchInput/           # Search field
+├── SelectInput/           # Dropdown
+├── RichTextEditor/        # Tiptap WYSIWYG
+├── RichTextViewer/        # Tiptap read-only
+├── DetailField/           # Key-value display
+├── Modal family:          # Round/Track/Topic/Swap/NextRound/Notification modals
+├── RoundLeaderboardModal/ # Round leaderboard modal
+└── Card family:           # HackathonCard, RankingCard, EventInfoCard
 ```
 
 **CRITICAL:** Admin and Staff directories are structurally identical mirrors. Every change to admin must be replicated to staff.
