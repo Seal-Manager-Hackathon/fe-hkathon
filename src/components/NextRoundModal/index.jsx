@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { X, AlertCircle, TrendingUp, Users, Calendar, CircleCheck, ChevronLeft, ChevronDown, Search, Ban, FolderKanban, FileText, Eye } from 'lucide-react'
+import { X, AlertCircle, TrendingUp, ChevronUp, ChevronDown, Loader2, Users, Calendar, CircleCheck, Search, Ban, FolderKanban, FileText, Eye, Layers } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import BaseTable from '../BaseTable'
 import FilterBar from '../FilterBar'
@@ -188,6 +188,10 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
       ),
     },
     {
+      key: 'roundName', header: 'Round', headerIcon: Layers,
+      render: (row) => row.roundId ? <Link to={`/admin/rounds/${row.roundId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.roundName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span>,
+    },
+    {
       key: 'isBanned', header: 'Banned', headerIcon: Ban,
       render: (row) => (
         row.isBanned
@@ -206,6 +210,7 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
     {
       key: 'actions', header: 'Actions', headerIcon: TrendingUp, headerClassName: 'text-right', className: 'text-right',
       render: (row) => {
+        const isCurrentRound = row.roundId === roundId
         const advancing = advancingIds.has(row.id)
         const reverting = revertingIds.has(row.id)
         const busy = advancing || reverting
@@ -216,16 +221,20 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
             >
               <Eye className="h-3.5 w-3.5" />View
             </Link>
-            <button onClick={() => handleRevert(row)} disabled={busy}
-              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] transition-colors hover:bg-[#ffe0b2] disabled:opacity-50"
-            >
-              {reverting ? (<><span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#e65100] border-t-transparent" />Reverting...</>) : (<><ChevronLeft className="h-3.5 w-3.5" />Revert</>)}
-            </button>
-            <button onClick={() => handleAdvance(row)} disabled={busy}
-              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] disabled:opacity-50"
-            >
-              {advancing ? (<><span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#2e7d32] border-t-transparent" />Advancing...</>) : (<>Advance<TrendingUp className="h-3.5 w-3.5" /></>)}
-            </button>
+            {isCurrentRound ? (
+              <>
+                <button onClick={() => handleAdvance(row)} disabled={busy}
+                  className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] disabled:opacity-50 w-[85px]"
+                >
+                  {advancing ? (<><Loader2 className="h-3.5 w-3.5 animate-spin" />Up...</>) : (<>Up<ChevronUp className="h-3.5 w-3.5" /></>)}
+                </button>
+                <button onClick={() => handleRevert(row)} disabled={busy}
+                  className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] transition-colors hover:bg-[#ffe0b2] disabled:opacity-50 w-[85px]"
+                >
+                  {reverting ? (<><Loader2 className="h-3.5 w-3.5 animate-spin" />Down...</>) : (<>Down<ChevronDown className="h-3.5 w-3.5" /></>)}
+                </button>
+              </>
+            ) : null}
           </div>
         )
       },
@@ -278,7 +287,7 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
               serverSide
               emptyText={hasActive ? 'No teams match the current filters for this round.' : `No register teams found in ${roundName}.`}
               keyExtractor={(row) => row.id}
-              minWidth="900px"
+              minWidth="1000px"
             />
           </div>
         </div>
