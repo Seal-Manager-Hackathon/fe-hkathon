@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Avatar from '../../../../components/Avatar'
-import { getAssignedUsers, getAvailableLecturers, getAvailableStaff, assignUserToEvent, removeAssign, restoreAssign, getTracks, assignTrackToEventAssign } from '../../../../api/admin'
+import { getAssignedUsers, getAvailableLecturers, getAvailableStaff, assignUserToEvent, removeAssign, restoreAssign, getTracks, assignTrackToEventAssign, removeTrackFromAssign, restoreTrackToAssign } from '../../../../api/admin'
 import { toast, confirm } from '../../../../utils/toast'
 import { Search, UserPlus, User, Shield, GraduationCap, MoreHorizontal, UserCheck, ClipboardList, Eye, Phone, X, FolderKanban, Ban, Trash2, RotateCcw, CircleCheck } from 'lucide-react'
 
@@ -33,7 +33,7 @@ const assignBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg
 const removeBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2] w-[92px]'
 const restoreBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9] w-[92px]'
 
-function assignedColumns(handleRemove, handleRestore, handleTrack) {
+function assignedColumns(handleRemove, handleRestore, handleTrack, handleRemoveTrack, handleRestoreTrack) {
   return [
     { key: 'user', header: 'User', headerIcon: User, render: (row) => (
       <Link to={`/admin/users/${row.userId}`} className="flex items-center gap-3 hover:opacity-80">
@@ -51,7 +51,18 @@ function assignedColumns(handleRemove, handleRestore, handleTrack) {
       return (
         <div className="flex flex-wrap gap-1">
           {tracks.map((t) => (
-            <Link key={t.trackId} to={`/admin/hackathons/${row.eventId}/tracks/${t.trackId}`} className="rounded-full bg-[#f5f5f5] px-2.5 py-0.5 text-[12px] font-medium text-[#064f5d] hover:bg-[#e0f2f1]">{t.title}</Link>
+            <span key={t.trackId} className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-medium ${t.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#f5f5f5] text-[#064f5d]'}`}>
+              <Link to={`/admin/hackathons/${row.eventId}/tracks/${t.trackId}`} className="hover:underline">{t.title}</Link>
+              {t.isDisable ? (
+                <button onClick={() => handleRestoreTrack(row.assignEventId, t.trackId)} className="ml-0.5 inline-flex cursor-pointer items-center justify-center rounded-full bg-[#e8f5e9] p-0.5 text-[#2e7d32] hover:bg-[#c8e6c9]" title="Restore track">
+                  <RotateCcw className="h-3 w-3" />
+                </button>
+              ) : (
+                <button onClick={() => handleRemoveTrack(row.assignEventId, t.trackId)} className="ml-0.5 inline-flex cursor-pointer items-center justify-center rounded-full bg-[#fce4ec] p-0.5 text-[#c62828] hover:bg-[#ffcdd2]" title="Remove track">
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </span>
           ))}
         </div>
       )
@@ -356,6 +367,30 @@ export default function AssignTab({ eventId }) {
     }
   }
 
+  async function handleRemoveTrack(assignEventId, trackId) {
+    const ok = await confirm('Remove Track', 'Remove this track from the assignment?')
+    if (!ok) return
+    try {
+      await removeTrackFromAssign(assignEventId, trackId)
+      toast.success('Track removed from assignment')
+      fetchAssigned()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to remove track.')
+    }
+  }
+
+  async function handleRestoreTrack(assignEventId, trackId) {
+    const ok = await confirm('Restore Track', 'Restore this track to the assignment?')
+    if (!ok) return
+    try {
+      await restoreTrackToAssign(assignEventId, trackId)
+      toast.success('Track restored to assignment')
+      fetchAssigned()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to restore track.')
+    }
+  }
+
   function openAssignModal(user, role) {
     setAssignTarget(user)
     setAssignUserRole(role)
@@ -411,7 +446,7 @@ export default function AssignTab({ eventId }) {
           <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
             <FilterBar filters={assignedFilters} values={asFilters} onChange={handleAsFilterChange} onReset={handleAsReset} hasActive={asHasActive} />
           </div>
-          <BaseTable borderless columns={assignedColumns(handleRemove, handleRestore, openTrackModal)} data={assigned} page={assignedPage} pageSize={PAGE_SIZE} total={assignedTotal} onPageChange={setAssignedPage} loading={assignedLoading} serverSide emptyText={asHasActive ? 'No results match.' : 'No users assigned to this event yet.'} keyExtractor={(row) => row.assignEventId} minWidth="900px" />
+          <BaseTable borderless columns={assignedColumns(handleRemove, handleRestore, openTrackModal, handleRemoveTrack, handleRestoreTrack)} data={assigned} page={assignedPage} pageSize={PAGE_SIZE} total={assignedTotal} onPageChange={setAssignedPage} loading={assignedLoading} serverSide emptyText={asHasActive ? 'No results match.' : 'No users assigned to this event yet.'} keyExtractor={(row) => row.assignEventId} minWidth="950px" />
         </div>
       )}
 

@@ -794,6 +794,29 @@ export async function assignTrackToEventAssign(assignEventId, payload) {
   return data
 }
 
+
+/**
+ * Remove (soft-delete) a track from an assign event.
+ * POST /admin/assign/event-assigns/{assignEventId}/tracks/{trackId}/remove
+ * @param {string} assignEventId
+ * @param {string} trackId
+ */
+export async function removeTrackFromAssign(assignEventId, trackId) {
+  const { data } = await api.post(`/admin/assign/event-assigns/${assignEventId}/tracks/${trackId}/remove`)
+  return data
+}
+
+/**
+ * Restore a previously removed track back to an assign event.
+ * POST /admin/assign/event-assigns/{assignEventId}/tracks/{trackId}/restore
+ * @param {string} assignEventId
+ * @param {string} trackId
+ */
+export async function restoreTrackToAssign(assignEventId, trackId) {
+  const { data } = await api.post(`/admin/assign/event-assigns/${assignEventId}/tracks/${trackId}/restore`)
+  return data
+}
+
 // ========== Submissions APIs ==========
 
 /**
