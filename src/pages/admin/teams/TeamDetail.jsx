@@ -3,8 +3,9 @@ import { useParams, Link } from 'react-router-dom'
 import {
   Edit, Calendar, Clock, Users, Crown, User, Shield, CircleCheck, ArrowLeft, Lock,
   FileText, Trophy, Search, BadgeCheck, Clock4, Eye, MoreHorizontal,
+  Send, FileDown, ChevronDown,
 } from 'lucide-react'
-import { getTeamDetail, getTeamRegisterHistory } from '../../../api/admin'
+import { getTeamDetail, getTeamRegisterHistory, getRegisterTeamSubmissions } from '../../../api/admin'
 import { formatDateTime } from '../../../utils/format'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
@@ -51,11 +52,41 @@ function registerColumns() {
   ]
 }
 
+const submissionColumns = [
+  { key: 'round', header: 'Round', headerIcon: Trophy, render: (row) => (
+    <div>
+      <p className="text-[14px] font-semibold text-[#1f2f3a]">{row.roundName}</p>
+      <p className="text-[12px] text-gray-400">{row.trackTitle}{row.topicTitle ? ` / ${row.topicTitle}` : ''}</p>
+    </div>
+  )},
+  { key: 'lastSubmission', header: 'Last Submission', headerIcon: FileDown, render: (row) => {
+    const sub = row.lastSubmission
+    if (!sub) return <span className="text-[13px] text-gray-400">—</span>
+    return (
+      <div>
+        <Link to={`/admin/submissions/${sub.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{sub.description || sub.url || 'View'}</Link>
+        <p className="text-[12px] text-gray-400">{formatDateTime(sub.submittedAt)}</p>
+      </div>
+    )
+  }},
+  { key: 'recordCount', header: 'Records', headerIcon: Clock4, render: (row) => <span className="text-[13px] text-gray-500">{row.records?.length || 0} submission(s)</span> },
+  { key: 'submittedBy', header: 'Submitted By', headerIcon: User, render: (row) => {
+    const by = row.submittedBy
+    if (!by) return <span className="text-[13px] text-gray-400">—</span>
+    return <span className="text-[13px] text-[#1f2f3a]">{by.firstName} {by.lastName}</span>
+  }},
+]
+
 const regFilters = [
   { type: 'select', key: 'status', label: 'Status', icon: CircleCheck, options: [{ value: '', label: 'All' }, { value: 'Pending', label: 'Pending' }, { value: 'Approved', label: 'Approved' }, { value: 'Rejected', label: 'Rejected' }] },
 ]
 
 const REG_PAGE_SIZE = 10
+
+const SUB_TABS = [
+  { key: 'members', label: 'Members', icon: <Users className="h-4 w-4" /> },
+  { key: 'submissions', label: 'Submissions', icon: <Send className="h-4 w-4" /> },
+]
 
 export default function TeamDetail() {
   const { id } = useParams()
@@ -63,12 +94,22 @@ export default function TeamDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const [subTab, setSubTab] = useState('members')
+
   const [registers, setRegisters] = useState([])
   const [regTotal, setRegTotal] = useState(0)
   const [regLoading, setRegLoading] = useState(false)
   const [regPage, setRegPage] = useState(1)
   const [regStatus, setRegStatus] = useState('')
   const regHasActive = regStatus !== ''
+
+  // Submissions
+  const [selectedRegisterId, setSelectedRegisterId] = useState('')
+  const [submissions, setSubmissions] = useState([])
+  const [subTotal, setSubTotal] = useState(0)
+  const [subPage, setSubPage] = useState(1)
+  const [subLoading, setSubLoading] = useState(false)
+  const SUB_PAGE_SIZE = 10
 
   useEffect(() => {
     let cancelled = false
@@ -95,6 +136,44 @@ export default function TeamDetail() {
 
   useEffect(() => { if (team) fetchRegisters() }, [fetchRegisters, team])
 
+  // Fetch all registers (for dropdown) — with a simple useCallback
+  const [allRegisters, setAllRegisters] = useState([])
+  useEffect(() => {
+    if (!team) return
+    let cancelled = false
+    async function fetchAll() {
+      try {
+        const result = await getTeamRegisterHistory(id, { pageIndex: 1, pageSize: 100 })
+        if (!cancelled) setAllRegisters(result.items || [])
+      } catch {}
+    }
+    fetchAll()
+    return () => { cancelled = true }
+  }, [id, team])
+
+  // Auto-select first register when switching to submissions tab
+  useEffect(() => {
+    if (subTab === 'submissions' && !selectedRegisterId && allRegisters.length > 0) {
+      setSelectedRegisterId(allRegisters[0].id)
+    }
+  }, [subTab, allRegisters, selectedRegisterId])
+
+  const fetchSubmissions = useCallback(async () => {
+    if (!selectedRegisterId) { setSubmissions([]); setSubTotal(0); return }
+    setSubLoading(true)
+    try {
+      const params = { pageIndex: subPage, pageSize: SUB_PAGE_SIZE }
+      const result = await getRegisterTeamSubmissions(selectedRegisterId, params)
+      setSubmissions(result.items || [])
+      setSubTotal(result.totalCount || 0)
+    } catch { setSubmissions([]); setSubTotal(0) }
+    finally { setSubLoading(false) }
+  }, [selectedRegisterId, subPage])
+
+  useEffect(() => {
+    if (subTab === 'submissions') fetchSubmissions()
+  }, [fetchSubmissions, subTab])
+
   function handleRegFilterChange(key, value) { setRegStatus(value); setRegPage(1) }
   function handleRegReset() { setRegStatus(''); setRegPage(1) }
 
@@ -105,6 +184,7 @@ export default function TeamDetail() {
   }
 
   const members = team?.members || []
+  const selectedReg = allRegisters.find(r => r.id === selectedRegisterId)
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -132,13 +212,47 @@ export default function TeamDetail() {
       </CardPanel>
 
       <div className="mt-5">
-        <CardPanel title="Members">
-          {members.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12"><Users className="mb-3 h-10 w-10 text-gray-300" /><p className="text-[14px] text-gray-400">No members in this team.</p></div>
-          ) : (
-            <BaseTable borderless columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="600px" />
-          )}
-        </CardPanel>
+        <div className="mb-4 flex gap-1 overflow-x-auto border-b border-[#e8ecf0]">
+          {SUB_TABS.map((t) => (
+            <button key={t.key} onClick={() => setSubTab(t.key)} className={`cursor-pointer shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-semibold transition-colors ${subTab === t.key ? 'border-b-2 border-[#064f5d] text-[#064f5d]' : 'text-gray-400 hover:text-[#1f2f3a]'}`}>
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+
+        {subTab === 'members' && (
+          <CardPanel title="">
+            {members.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12"><Users className="mb-3 h-10 w-10 text-gray-300" /><p className="text-[14px] text-gray-400">No members in this team.</p></div>
+            ) : (
+              <BaseTable borderless columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="600px" />
+            )}
+          </CardPanel>
+        )}
+
+        {subTab === 'submissions' && (
+          <CardPanel title="Submissions">
+            <div className="mb-4 px-1">
+              <label className="text-[13px] font-semibold text-[#1f2f3a] mr-2">Select Registration:</label>
+              <div className="relative inline-block">
+                <select
+                  value={selectedRegisterId}
+                  onChange={(e) => { setSelectedRegisterId(e.target.value); setSubPage(1) }}
+                  className="cursor-pointer appearance-none rounded-lg border border-[#e0e0e0] bg-white py-2 pl-3 pr-8 text-[13px] font-medium text-[#1f2f3a] focus:border-[#064f5d] focus:outline-none"
+                >
+                  {allRegisters.map((r) => (
+                    <option key={r.id} value={r.id}>{r.eventName || 'Untitled Event'} {r.trackName ? `— ${r.trackName}` : ''} ({r.status})</option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              </div>
+              {selectedReg && (
+                <Link to={`/admin/register-teams/${selectedReg.id}`} className="ml-3 text-[13px] font-medium text-[#064f5d] hover:underline">View Registration</Link>
+              )}
+            </div>
+            <BaseTable borderless columns={submissionColumns} data={submissions} page={subPage} pageSize={SUB_PAGE_SIZE} total={subTotal} onPageChange={setSubPage} loading={subLoading} serverSide emptyText="No submissions found." keyExtractor={(row) => row.roundId} minWidth="700px" />
+          </CardPanel>
+        )}
       </div>
 
       <div className="mt-5">

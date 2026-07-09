@@ -914,3 +914,20 @@ export async function revertRegisterTeamToPreviousRound(registerTeamId) {
   return data
 }
 
+// ========== Register Team Submissions ==========
+
+/**
+ * Get submissions history for a register team, grouped by round.
+ * GET /admin/register-teams/{registerTeamId}/submissions
+ * @param {string} registerTeamId
+ * @param {Object} [params]
+ * @param {string} [params.roundId] - Filter by round
+ * @param {number} [params.pageIndex]
+ * @param {number} [params.pageSize]
+ */
+export async function getRegisterTeamSubmissions(registerTeamId, params = {}) {
+  const { data } = await api.get(`/admin/register-teams/${registerTeamId}/submissions`, { params })
+  return data.data
+}
+
+

@@ -84,13 +84,16 @@ export function useSubmissionColumns(eventId) {
       {
         key: 'actions', header: 'Actions', headerIcon: MoreHorizontal,
         headerClassName: 'text-right', className: 'text-right',
-        render: (row) => (
-          <div className="flex items-center justify-end gap-2">
-            <Link to={`/admin/submissions/${row.lastSubmission?.id || row.id}`} className={S.viewBtn}>
-              <Eye className="h-3.5 w-3.5" />View
-            </Link>
-          </div>
-        ),
+        render: (row) => {
+          if (!row.lastSubmission) return null
+          return (
+            <div className="flex items-center justify-end gap-2">
+              <Link to={`/admin/submissions/${row.lastSubmission.id}`} className={S.viewBtn}>
+                <Eye className="h-3.5 w-3.5" />View
+              </Link>
+            </div>
+          )
+        },
       },
     ],
     [eventId],
