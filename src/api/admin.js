@@ -832,3 +832,35 @@ export async function getSubmissionGraderScores(submissionId, params = {}) {
 }
 
 
+/**
+ * Get score detail for admin (one grading session).
+ * GET /admin/scores/{scoreId}
+ * @param {string} scoreId
+ */
+export async function getScoreDetail(scoreId) {
+  const { data } = await api.get(`/admin/scores/${scoreId}`)
+  return data.data
+}
+
+/**
+ * Get score items (paginated) for a score.
+ * GET /admin/scores/{scoreId}/items
+ * @param {string} scoreId
+ * @param {Object} [params] - { pageIndex, pageSize }
+ */
+export async function getScoreItems(scoreId, params = {}) {
+  const { data } = await api.get(`/admin/scores/${scoreId}/items`, { params })
+  return data.data
+}
+
+/**
+ * Get score item detail for admin.
+ * GET /admin/score-items/{scoreItemId}
+ * @param {string} scoreItemId
+ */
+export async function getScoreItemDetail(scoreItemId) {
+  const { data } = await api.get(`/admin/score-items/${scoreItemId}`)
+  return data.data
+}
+
+
