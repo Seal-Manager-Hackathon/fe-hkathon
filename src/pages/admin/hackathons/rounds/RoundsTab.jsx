@@ -4,6 +4,7 @@ import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import SwapModal from '../../../../components/SwapModal'
 import NextRoundModal from '../../../../components/NextRoundModal'
+import RoundLeaderboardModal from '../../../../components/RoundLeaderboardModal'
 import { getRounds, getMaxRoundNo, deleteRound, restoreRound, swapRounds } from '../../../../api/admin'
 import { roundColumns } from './RoundColumns'
 import { toast, confirm } from '../../../../utils/toast'
@@ -42,6 +43,7 @@ export default function RoundsTab({ eventId }) {
   const [maxRoundNo, setMaxRoundNo] = useState(null)
   const [swapSource, setSwapSource] = useState(null)
   const [nextRoundTarget, setNextRoundTarget] = useState(null)
+  const [leaderboardTarget, setLeaderboardTarget] = useState(null)
   const [filters, setFilters] = useState(DEFAULT_VALUES)
   const hasActive = Object.entries(filters).some(([, v]) => v !== '')
 
@@ -97,7 +99,7 @@ export default function RoundsTab({ eventId }) {
         </div>
         <BaseTable
           borderless
-          columns={roundColumns(eventId, setSwapSource, handleDelete, handleRestore, setNextRoundTarget)}
+          columns={roundColumns(eventId, setSwapSource, handleDelete, handleRestore, setNextRoundTarget, setLeaderboardTarget)}
           data={rounds}
           page={pageIndex}
           pageSize={PAGE_SIZE}
@@ -174,6 +176,13 @@ export default function RoundsTab({ eventId }) {
         roundId={nextRoundTarget?.id}
         roundName={nextRoundTarget?.name}
         roundNo={nextRoundTarget?.roundNo}
+      />
+
+      <RoundLeaderboardModal
+        open={!!leaderboardTarget}
+        onClose={() => setLeaderboardTarget(null)}
+        roundId={leaderboardTarget?.id}
+        roundName={leaderboardTarget?.name}
       />
     </>
   )

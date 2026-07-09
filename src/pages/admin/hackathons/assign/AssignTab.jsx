@@ -35,61 +35,71 @@ const restoreBtnClass = 'inline-flex cursor-pointer items-center justify-center 
 
 function assignedColumns(handleRemove, handleRestore, handleTrack, handleRemoveTrack, handleRestoreTrack) {
   return [
-    { key: 'user', header: 'User', headerIcon: User, render: (row) => (
-      <Link to={`/admin/users/${row.userId}`} className="flex items-center gap-3 hover:opacity-80">
-        <Avatar src={row.avatarUrl} name={`${row.firstName} ${row.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
-        <div>
-          <p className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.firstName} {row.lastName}</p>
-          <p className="text-[12px] text-[#1f2f3a]">{row.email}</p>
-        </div>
-      </Link>
-    )},
+    {
+      key: 'user', header: 'User', headerIcon: User, render: (row) => (
+        <Link to={`/admin/users/${row.userId}`} className="flex items-center gap-3 hover:opacity-80">
+          <Avatar src={row.avatarUrl} name={`${row.firstName} ${row.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
+          <div>
+            <p className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.firstName} {row.lastName}</p>
+            <p className="text-[12px] text-[#1f2f3a]">{row.email}</p>
+          </div>
+        </Link>
+      )
+    },
     { key: 'phone', header: 'Phone', headerIcon: Phone, render: (row) => <span className="text-[13px] font-medium text-[#1f2f3a]">{row.phoneNumber || '—'}</span> },
-    { key: 'tracks', header: 'Tracks', headerIcon: GraduationCap, render: (row) => {
-      const tracks = row.assignTracks || []
-      if (tracks.length === 0) return <span className="text-[13px] text-gray-400">—</span>
-      return (
-        <div className="flex flex-wrap gap-1">
-          {tracks.map((t) => (
-            <span key={t.trackId} className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-medium ${t.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#f5f5f5] text-[#064f5d]'}`}>
-              <Link to={`/admin/hackathons/${row.eventId}/tracks/${t.trackId}`} className="hover:underline">{t.title}</Link>
-              {t.isDisable ? (
-                <button onClick={() => handleRestoreTrack(row.assignEventId, t.trackId)} className="ml-0.5 inline-flex cursor-pointer items-center justify-center rounded-full bg-[#e8f5e9] p-0.5 text-[#2e7d32] hover:bg-[#c8e6c9]" title="Restore track">
-                  <RotateCcw className="h-3 w-3" />
-                </button>
-              ) : (
-                <button onClick={() => handleRemoveTrack(row.assignEventId, t.trackId)} className="ml-0.5 inline-flex cursor-pointer items-center justify-center rounded-full bg-[#fce4ec] p-0.5 text-[#c62828] hover:bg-[#ffcdd2]" title="Remove track">
-                  <X className="h-3 w-3" />
-                </button>
-              )}
-            </span>
-          ))}
+    {
+      key: 'tracks', header: 'Tracks', headerIcon: GraduationCap, render: (row) => {
+        const tracks = row.assignTracks || []
+        if (tracks.length === 0) return <span className="text-[13px] text-gray-400">—</span>
+        return (
+          <div className="flex flex-wrap gap-1">
+            {tracks.map((t) => (
+              <span key={t.trackId} className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-medium ${t.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#f5f5f5] text-[#064f5d]'}`}>
+                <Link to={`/admin/hackathons/${row.eventId}/tracks/${t.trackId}`} className="hover:underline">{t.title}</Link>
+                {t.isDisable ? (
+                  <button onClick={() => handleRestoreTrack(row.assignEventId, t.trackId)} className="ml-0.5 inline-flex cursor-pointer items-center justify-center rounded-full bg-[#e8f5e9] p-0.5 text-[#2e7d32] hover:bg-[#c8e6c9]" title="Restore track">
+                    <RotateCcw className="h-3 w-3" />
+                  </button>
+                ) : (
+                  <button onClick={() => handleRemoveTrack(row.assignEventId, t.trackId)} className="ml-0.5 inline-flex cursor-pointer items-center justify-center rounded-full bg-[#fce4ec] p-0.5 text-[#c62828] hover:bg-[#ffcdd2]" title="Remove track">
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </span>
+            ))}
+          </div>
+        )
+      }
+    },
+    {
+      key: 'eventRole', header: 'Role', headerIcon: Shield, render: (row) => (
+        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[12px] font-semibold ${roleBadge[row.eventRole] || ''}`}>
+          {roleIcon[row.eventRole]} {row.eventRole}
+        </span>
+      )
+    },
+    {
+      key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => (
+        row.isDisable
+          ? <span className="inline-flex rounded-full bg-[#fce4ec] px-2.5 py-0.5 text-[12px] font-semibold text-[#c62828]">Deleted</span>
+          : <span className="inline-flex rounded-full bg-[#e8f5e9] px-2.5 py-0.5 text-[12px] font-semibold text-[#2e7d32]">Active</span>
+      )
+    },
+    {
+      key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
+        <div className="flex items-center justify-end gap-2">
+          {!row.isDisable && (row.eventRole === 'Mentor' || row.eventRole === 'Judge') && (
+            <button onClick={() => handleTrack(row)} className={trackBtnClass}><FolderKanban className="h-3.5 w-3.5" />Track</button>
+          )}
+          <Link to={`/admin/users/${row.userId}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
+          {row.isDisable ? (
+            <button onClick={() => handleRestore(row)} className={restoreBtnClass}><RotateCcw className="h-3.5 w-3.5" />Restore</button>
+          ) : (
+            <button onClick={() => handleRemove(row)} className={removeBtnClass}><Trash2 className="h-3.5 w-3.5" />Delete</button>
+          )}
         </div>
       )
-    }},
-    { key: 'eventRole', header: 'Role', headerIcon: Shield, render: (row) => (
-      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[12px] font-semibold ${roleBadge[row.eventRole] || ''}`}>
-        {roleIcon[row.eventRole]} {row.eventRole}
-      </span>
-    )},
-    { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => (
-      row.isDisable
-        ? <span className="inline-flex rounded-full bg-[#fce4ec] px-2.5 py-0.5 text-[12px] font-semibold text-[#c62828]">Deleted</span>
-        : <span className="inline-flex rounded-full bg-[#e8f5e9] px-2.5 py-0.5 text-[12px] font-semibold text-[#2e7d32]">Active</span>
-    )},
-    { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
-      <div className="flex items-center justify-end gap-2">
-        {!row.isDisable && (row.eventRole === 'Mentor' || row.eventRole === 'Judge') && (
-          <button onClick={() => handleTrack(row)} className={trackBtnClass}><FolderKanban className="h-3.5 w-3.5" />Track</button>
-        )}
-        <Link to={`/admin/users/${row.userId}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
-        {row.isDisable ? (
-          <button onClick={() => handleRestore(row)} className={restoreBtnClass}><RotateCcw className="h-3.5 w-3.5" />Restore</button>
-        ) : (
-          <button onClick={() => handleRemove(row)} className={removeBtnClass}><Trash2 className="h-3.5 w-3.5" />Delete</button>
-        )}
-      </div>
-    )},
+    },
   ]
 }
 
@@ -99,23 +109,27 @@ const availFilters = [
 
 function availableColumns(openAssignModal, assigning, label) {
   return [
-    { key: 'user', header: label, headerIcon: User, render: (row) => (
-      <div className="flex items-center gap-3">
-        <Avatar src={row.avatarUrl} name={`${row.firstName} ${row.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
-        <div>
-          <p className="text-[14px] font-semibold text-[#1f2f3a]">{row.firstName} {row.lastName}</p>
-          <p className="text-[12px] text-[#1f2f3a]">{row.email}</p>
+    {
+      key: 'user', header: label, headerIcon: User, render: (row) => (
+        <div className="flex items-center gap-3">
+          <Avatar src={row.avatarUrl} name={`${row.firstName} ${row.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
+          <div>
+            <p className="text-[14px] font-semibold text-[#1f2f3a]">{row.firstName} {row.lastName}</p>
+            <p className="text-[12px] text-[#1f2f3a]">{row.email}</p>
+          </div>
         </div>
-      </div>
-    )},
+      )
+    },
     { key: 'phone', header: 'Phone', headerIcon: Phone, render: (row) => <span className="text-[13px] font-medium text-[#1f2f3a]">{row.phoneNumber || '—'}</span> },
     { key: 'college', header: 'College', headerIcon: GraduationCap, render: (row) => <span className="text-[13px] font-medium text-[#1f2f3a]">{row.college || '—'}</span> },
-    { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
-      <div className="flex items-center justify-end gap-2">
-        <button onClick={() => openAssignModal(row)} disabled={assigning} className={assignBtnClass}><UserPlus className="h-3.5 w-3.5" />Assign</button>
-        <Link to={`/admin/users/${row.id}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
-      </div>
-    )},
+    {
+      key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
+        <div className="flex items-center justify-end gap-2">
+          <button onClick={() => openAssignModal(row)} disabled={assigning} className={assignBtnClass}><UserPlus className="h-3.5 w-3.5" />Assign</button>
+          <Link to={`/admin/users/${row.id}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
+        </div>
+      )
+    },
   ]
 }
 
@@ -242,11 +256,13 @@ function AssignTrackModal({ open, user, eventId, onClose, onAssign, submitting }
           <BaseTable borderless
             columns={[
               { key: 'title', header: 'Track Title', headerIcon: FolderKanban, render: (row) => <span className="text-[14px] font-semibold text-[#064f5d]">{row.title}</span> },
-              { key: 'actions', header: '', headerClassName: 'text-right', className: 'text-right', render: (row) => (
-                <button onClick={() => onAssign(row)} disabled={submitting || row.isDisable} className={`inline-flex cursor-pointer items-center gap-1 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${row.isDisable ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#064f5d] text-white hover:bg-[#05404a]'} disabled:opacity-50`}>
-                  <UserPlus className="h-3.5 w-3.5" />{row.isDisable ? 'Disabled' : 'Assign'}
-                </button>
-              )},
+              {
+                key: 'actions', header: '', headerClassName: 'text-right', className: 'text-right', render: (row) => (
+                  <button onClick={() => onAssign(row)} disabled={submitting || row.isDisable} className={`inline-flex cursor-pointer items-center gap-1 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${row.isDisable ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#064f5d] text-white hover:bg-[#05404a]'} disabled:opacity-50`}>
+                    <UserPlus className="h-3.5 w-3.5" />{row.isDisable ? 'Disabled' : 'Assign'}
+                  </button>
+                )
+              },
             ]}
             data={tracks}
             page={trackPage}

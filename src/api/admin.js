@@ -930,4 +930,20 @@ export async function getRegisterTeamSubmissions(registerTeamId, params = {}) {
   return data.data
 }
 
+// ========== Round Leaderboard ==========
+
+/**
+ * Get leaderboard for a round (team rankings by scopeScore).
+ * GET /admin/rounds/{roundId}/leaderboard
+ * @param {string} roundId
+ * @param {Object} [params]
+ * @param {number} [params.PageIndex] - default 1
+ * @param {number} [params.PageSize] - default 10
+ * @returns {Promise<{ roundId: string, roundName: string, eventId: string, eventName: string, items: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getRoundLeaderboard(roundId, params = {}) {
+  const { data } = await api.get(`/admin/rounds/${roundId}/leaderboard`, { params })
+  return data.data
+}
+
 

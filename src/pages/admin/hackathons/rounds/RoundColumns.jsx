@@ -1,4 +1,4 @@
-import { Trash2, RotateCcw, ArrowLeftRight, Edit, Eye, Hash, Calendar, Play, Flag, Users, CircleCheck, MoreHorizontal, ClipboardList, TrendingUp } from 'lucide-react'
+import { Trash2, RotateCcw, ArrowLeftRight, Edit, Eye, Hash, Calendar, Play, Flag, Users, CircleCheck, MoreHorizontal, ClipboardList, TrendingUp, BarChart3 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../../components/Badge'
 import { formatDateTime } from '../../../../utils/format'
@@ -20,7 +20,10 @@ const criteriaBtnClass =
 const nextRoundBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] whitespace-nowrap w-[110px] justify-center'
 
-export function roundColumns(eventId, onSwap, onDelete, onRestore, onNextRound) {
+const leaderboardBtnClass =
+  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f3e5f5] px-3 py-1.5 text-[13px] font-semibold text-[#7b1fa2] transition-colors hover:bg-[#e1bee7]'
+
+export function roundColumns(eventId, onSwap, onDelete, onRestore, onNextRound, onLeaderboard) {
   return [
     { key: 'roundNo', header: '#', headerIcon: Hash, render: (row) => <span className="text-[13px] text-[#1f2f3a]">Round {row.roundNo}</span> },
     { key: 'name', header: 'Round Name', headerIcon: Calendar, render: (row) => <Link to={`/admin/rounds/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.name}</Link> },
@@ -57,7 +60,7 @@ export function roundColumns(eventId, onSwap, onDelete, onRestore, onNextRound) 
               </>
             )}
           </div>
-          {/* Row 2: Next Round | Criteria | Swap */}
+          {/* Row 2: Next Round | Criteria | Swap | Leaderboard */}
           <div className="flex items-center gap-2">
             {!row.isDisable && (
               <button onClick={() => onNextRound?.(row)} className={nextRoundBtnClass}>
@@ -72,6 +75,11 @@ export function roundColumns(eventId, onSwap, onDelete, onRestore, onNextRound) 
             {!row.isDisable && (
               <button onClick={() => onSwap?.(row)} className={swapBtnClass}>
                 <ArrowLeftRight className="h-3.5 w-3.5" /> Swap
+              </button>
+            )}
+            {!row.isDisable && (
+              <button onClick={() => onLeaderboard?.(row)} className={leaderboardBtnClass}>
+                <BarChart3 className="h-3.5 w-3.5" /> Leaderboard
               </button>
             )}
           </div>
