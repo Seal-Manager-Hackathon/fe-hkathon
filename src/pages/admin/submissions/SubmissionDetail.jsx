@@ -38,7 +38,7 @@ function ErrorState({ message, nf }) {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center">
       <div className="mb-4 rounded-full bg-rose-50 p-4"><Send className="h-8 w-8 text-rose-400" /></div>
-      <p className="text-[18px] font-semibold text-gray-500">{nf ? 'Submission not found' : message}</p>
+      <p className="text-[18px] font-semibold text-[#1f2f3a]">{nf ? 'Submission not found' : message}</p>
       <Link to="/admin/hackathons" className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"><ArrowLeft className="h-4 w-4" /> Back to Hackathons</Link>
     </div>
   )
@@ -151,7 +151,7 @@ function ScoreDetailModal({ scoreId, onClose }) {
                         <tr key={item.scoreItemId} className="hover:bg-[#fafbfc]">
                           <td className="px-4 py-3 text-[14px] font-semibold text-[#1f2f3a]">{item.criteriaName || '—'}</td>
                           <td className="px-4 py-3 text-[15px] font-bold text-[#064f5d]">{item.score ?? '—'}</td>
-                          <td className="px-4 py-3 text-[13px] text-gray-500 max-w-[250px] truncate" title={item.comment}>{item.comment || <span className="italic text-gray-400">—</span>}</td>
+                          <td className="px-4 py-3 text-[13px] text-[#1f2f3a] max-w-[250px] truncate" title={item.comment}>{item.comment || <span className="italic text-gray-400">—</span>}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -203,7 +203,7 @@ function SubmissionTabs({ data, graderScores, graderTotal, graderPage, graderLoa
     },
     { key: 'totalScore', header: 'Score', headerIcon: Star, render: (row) => <span className="text-[15px] font-bold text-[#064f5d]">{row.totalScore}</span> },
     { key: 'flags', header: '', render: (row) => <div className="flex items-center gap-1.5">{row.isRetake && <Badge label="Retake" className="bg-[#fce4ec] text-[#c62828]" />}{row.isMock && <Badge label="Mock" className="bg-[#fff3e0] text-[#e65100]" />}</div> },
-    { key: 'createdAt', header: 'Graded At', headerIcon: Calendar, render: (row) => <span className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</span> },
+    { key: 'createdAt', header: 'Graded At', headerIcon: Calendar, render: (row) => <span className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</span> },
     { key: 'actions', header: 'Action', headerClassName: 'text-right', className: 'text-right',
       render: (row) => (
         <div className="flex items-center justify-end">

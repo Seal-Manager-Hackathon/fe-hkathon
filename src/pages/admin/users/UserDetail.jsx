@@ -46,7 +46,7 @@ const eventColumns = [
     <Badge label={row.status} className={row.status === 'Approved' ? 'bg-[#e8f5e9] text-[#2e7d32]' : 'bg-gray-50 text-gray-600'} />
   )},
   { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => (
-    <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
+    <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p>
   )},
   { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
     <Link to={`/admin/register-teams/${row.registerTeamId}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
@@ -109,7 +109,7 @@ export default function UserDetail() {
     const nf = error.includes('Not Found')
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">{nf ? 'User not found' : error}</p>
+        <p className="text-[18px] font-semibold text-[#1f2f3a]">{nf ? 'User not found' : error}</p>
         <Link to="/admin/users" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Users</Link>
       </div>
     )
@@ -118,7 +118,7 @@ export default function UserDetail() {
   if (!user) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">User not found.</p>
+        <p className="text-[18px] font-semibold text-[#1f2f3a]">User not found.</p>
         <Link to="/admin/users" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Users</Link>
       </div>
     )
@@ -161,7 +161,7 @@ export default function UserDetail() {
             <InfoRow label="Address" icon={MapPin}><p className="text-[14px] text-[#1f2f3a]">{user.address || '—'}</p></InfoRow>
             <InfoRow label="Bio" icon={FileText}><p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{user.bio || '—'}</p></InfoRow>
             <InfoRow label="College" icon={GraduationCap}><p className="text-[14px] text-[#1f2f3a]">{user.college || '—'}</p></InfoRow>
-            <InfoRow label="Student ID" icon={Hash}><p className="text-[14px] font-mono text-[13px] text-gray-500">{user.studentId || '—'}</p></InfoRow>
+            <InfoRow label="Student ID" icon={Hash}><p className="text-[14px] font-mono text-[13px] text-[#1f2f3a]">{user.studentId || '—'}</p></InfoRow>
             <InfoRow label="Role" icon={Shield}><Badge label={user.role} className={roleBadge[user.role] || ''} /></InfoRow>
           </div>
         </CardPanel>

@@ -62,7 +62,7 @@ export function useSubmissionColumns(eventId) {
               <Avatar src={s.avatarUrl} name={fullName} size="h-9 w-9" textSize="text-[13px]" />
               <div>
                 <p className="text-[14px] font-semibold text-[#064f5d] hover:underline">{fullName}</p>
-                <p className="text-[12px] text-gray-500">{s.email}</p>
+                <p className="text-[12px] text-[#1f2f3a]">{s.email}</p>
               </div>
             </Link>
           )

@@ -38,15 +38,15 @@ export default function TrackSelectModal({ open, onClose, eventId, selectedTrack
     },
     {
       key: 'startDate', header: 'Start', headerIcon: Play,
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.startDate)}</p>,
+      render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.startDate)}</p>,
     },
     {
       key: 'endDate', header: 'End', headerIcon: Flag,
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.endDate)}</p>,
+      render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.endDate)}</p>,
     },
     {
       key: 'maxTeam', header: 'Max Teams', headerIcon: Users,
-      render: (row) => <span className="text-[13px] text-gray-500">{row.maxTeam ?? '—'}</span>,
+      render: (row) => <span className="text-[13px] text-[#1f2f3a]">{row.maxTeam ?? '—'}</span>,
     },
     {
       key: 'status', header: 'Status', headerIcon: CircleCheck,

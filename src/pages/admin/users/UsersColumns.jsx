@@ -56,7 +56,7 @@ export function usersColumns(onDelete, onRestore, onBan, onUnban) {
       header: 'College',
       headerIcon: GraduationCap,
       render: (row) => (
-        <p className="text-[13px] text-gray-500">{row.college || '—'}</p>
+        <p className="text-[13px] text-[#1f2f3a]">{row.college || '—'}</p>
       ),
     },
     {
@@ -97,7 +97,7 @@ export function usersColumns(onDelete, onRestore, onBan, onUnban) {
       header: 'Created',
       headerIcon: Calendar,
       render: (row) => (
-        <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
+        <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p>
       ),
     },
     {

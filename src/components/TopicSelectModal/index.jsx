@@ -39,7 +39,7 @@ export default function TopicSelectModal({ open, onClose, trackId, selectedTopic
     },
     {
       key: 'createdAt', header: 'Created', headerIcon: Calendar,
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>,
+      render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p>,
     },
     {
       key: 'status', header: 'Status', headerIcon: CircleCheck,

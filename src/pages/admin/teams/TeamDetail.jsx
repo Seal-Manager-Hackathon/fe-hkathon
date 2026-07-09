@@ -26,7 +26,7 @@ const memberColumns = [
   )},
   { key: 'role', header: 'Role', headerIcon: Shield, render: (row) => row.isLeader ? (
     <div className="inline-flex items-center gap-1.5"><Crown className="h-4 w-4 text-[#ffca28]" /><span className="text-[13px] font-semibold text-[#e65100]">Leader</span></div>
-  ) : <span className="text-[13px] text-gray-500">Member</span> },
+  ) : <span className="text-[13px] text-[#1f2f3a]">Member</span> },
   { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => row.status === 'Active' ? <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" /> : <Badge label={row.status} className="bg-[#f5f5f5] text-[#757575]" /> },
   { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
     <Link to={`/admin/users/${row.userId}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2 py-1.5 text-[12px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]"><Eye className="h-3.5 w-3.5" />View</Link>
@@ -45,7 +45,7 @@ function registerColumns() {
     { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => row.trackId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
     { key: 'topicName', header: 'Topic', headerIcon: FileText, render: (row) => row.topicId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}/topics/${row.topicId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.topicName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
     { key: 'status', header: 'Status', headerIcon: BadgeCheck, render: (row) => <Badge label={row.status} className={registerStatusBadge[row.status] || 'bg-gray-50 text-gray-600'} /> },
-    { key: 'createdAt', header: 'Created', headerIcon: Clock4, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p> },
+    { key: 'createdAt', header: 'Created', headerIcon: Clock4, render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p> },
     { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
       <Link to={`/admin/register-teams/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2 py-1.5 text-[12px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]"><Eye className="h-3.5 w-3.5" />View</Link>
     ) },
@@ -69,7 +69,7 @@ const submissionColumns = [
       </div>
     )
   }},
-  { key: 'recordCount', header: 'Records', headerIcon: Clock4, render: (row) => <span className="text-[13px] text-gray-500">{row.records?.length || 0} submission(s)</span> },
+  { key: 'recordCount', header: 'Records', headerIcon: Clock4, render: (row) => <span className="text-[13px] text-[#1f2f3a]">{row.records?.length || 0} submission(s)</span> },
   { key: 'submittedBy', header: 'Submitted By', headerIcon: User, render: (row) => {
     const by = row.submittedBy
     if (!by) return <span className="text-[13px] text-gray-400">—</span>
@@ -180,7 +180,7 @@ export default function TeamDetail() {
   if (loading) return <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" /><div className="h-80 animate-pulse rounded-xl bg-gray-100" /></div>
   if (error) {
     const nf = error.includes('Not Found')
-    return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{nf ? 'Team not found' : error}</p><Link to="/admin/teams" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Teams</Link></div>
+    return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-[#1f2f3a]">{nf ? 'Team not found' : error}</p><Link to="/admin/teams" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Teams</Link></div>
   }
 
   const members = team?.members || []

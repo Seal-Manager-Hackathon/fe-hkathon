@@ -48,15 +48,15 @@ export default function RoundSelectModal({ open, onClose, eventId, selectedRound
     },
     {
       key: 'startTime', header: 'Start', headerIcon: Play,
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.startTime)}</p>,
+      render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.startTime)}</p>,
     },
     {
       key: 'endTime', header: 'End', headerIcon: Flag,
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.endTime)}</p>,
+      render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.endTime)}</p>,
     },
     {
       key: 'limitTeam', header: 'Teams', headerIcon: Users,
-      render: (row) => <span className="text-[13px] text-gray-500">{row.limitTeam ?? '—'}</span>,
+      render: (row) => <span className="text-[13px] text-[#1f2f3a]">{row.limitTeam ?? '—'}</span>,
     },
     {
       key: 'status', header: 'Status', headerIcon: CircleCheck,

@@ -59,7 +59,7 @@ export function notificationsColumns(targetDetails = {}, onDelete, onRestore) {
       key: 'createdAt',
       header: <span className="inline-flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />Created</span>,
       render: (row) => (
-        <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>
+        <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p>
       ),
     },
     {

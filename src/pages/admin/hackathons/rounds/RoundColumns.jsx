@@ -22,13 +22,13 @@ const nextRoundBtnClass =
 
 export function roundColumns(eventId, onSwap, onDelete, onRestore, onNextRound) {
   return [
-    { key: 'roundNo', header: '#', headerIcon: Hash, render: (row) => <span className="text-[13px] text-gray-500">Round {row.roundNo}</span> },
+    { key: 'roundNo', header: '#', headerIcon: Hash, render: (row) => <span className="text-[13px] text-[#1f2f3a]">Round {row.roundNo}</span> },
     { key: 'name', header: 'Round Name', headerIcon: Calendar, render: (row) => <Link to={`/admin/rounds/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.name}</Link> },
-    { key: 'startTime', header: 'Start', headerIcon: Play, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.startTime)}</p> },
-    { key: 'endTime', header: 'End', headerIcon: Flag, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.endTime)}</p> },
-    { key: 'limitTeam', header: 'Max Teams', headerIcon: Users, render: (row) => <span className="text-[13px] text-gray-500">{row.limitTeam ?? '—'}</span> },
+    { key: 'startTime', header: 'Start', headerIcon: Play, render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.startTime)}</p> },
+    { key: 'endTime', header: 'End', headerIcon: Flag, render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.endTime)}</p> },
+    { key: 'limitTeam', header: 'Max Teams', headerIcon: Users, render: (row) => <span className="text-[13px] text-[#1f2f3a]">{row.limitTeam ?? '—'}</span> },
     { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => row.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
-    { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p> },
+    { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p> },
     {
       key: 'actions',
       header: 'Actions',

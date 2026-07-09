@@ -50,7 +50,7 @@ const submissionColumns = [
         <Avatar src={by.avatarUrl} name={`${by.firstName} ${by.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
         <div>
           <p className="text-[14px] font-semibold text-[#064f5d] hover:underline">{by.firstName} {by.lastName}</p>
-          <p className="text-[12px] text-gray-500">{by.email}</p>
+          <p className="text-[12px] text-[#1f2f3a]">{by.email}</p>
         </div>
       </Link>
     )
@@ -140,10 +140,10 @@ export default function RegisterTeamDetail() {
 
   if (error) {
     const nf = error.includes('Not Found')
-    return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{nf ? 'Registration not found' : error}</p><Link to="/admin/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Hackathons</Link></div>
+    return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-[#1f2f3a]">{nf ? 'Registration not found' : error}</p><Link to="/admin/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Hackathons</Link></div>
   }
 
-  if (!data) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">Not found.</p></div>
+  if (!data) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-[#1f2f3a]">Not found.</p></div>
 
   const members = data?.members || []
   const showApproval = data?.status === 'Pending'

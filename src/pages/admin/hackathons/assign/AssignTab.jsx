@@ -40,7 +40,7 @@ function assignedColumns(handleRemove, handleRestore, handleTrack, handleRemoveT
         <Avatar src={row.avatarUrl} name={`${row.firstName} ${row.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
         <div>
           <p className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.firstName} {row.lastName}</p>
-          <p className="text-[12px] text-gray-500">{row.email}</p>
+          <p className="text-[12px] text-[#1f2f3a]">{row.email}</p>
         </div>
       </Link>
     )},
@@ -104,7 +104,7 @@ function availableColumns(openAssignModal, assigning, label) {
         <Avatar src={row.avatarUrl} name={`${row.firstName} ${row.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
         <div>
           <p className="text-[14px] font-semibold text-[#1f2f3a]">{row.firstName} {row.lastName}</p>
-          <p className="text-[12px] text-gray-500">{row.email}</p>
+          <p className="text-[12px] text-[#1f2f3a]">{row.email}</p>
         </div>
       </div>
     )},
@@ -138,7 +138,7 @@ function AssignRoleModal({ open, user, userRole, onClose, onSubmit, submitting }
         <div className="flex items-start justify-between">
           <div>
             <h3 className="text-[16px] font-bold text-slate-800">Assign Role</h3>
-            <p className="mt-1 text-[13px] text-gray-500">
+            <p className="mt-1 text-[13px] text-[#1f2f3a]">
               Select a role for <span className="font-semibold text-[#1f2f3a]">{user?.firstName} {user?.lastName}</span>
             </p>
           </div>
@@ -224,7 +224,7 @@ function AssignTrackModal({ open, user, eventId, onClose, onAssign, submitting }
         <div className="flex items-start justify-between border-b border-[#e8ecf0] px-6 py-5">
           <div>
             <h3 className="text-[16px] font-bold text-slate-800">Assign to Track</h3>
-            <p className="mt-1 text-[13px] text-gray-500">
+            <p className="mt-1 text-[13px] text-[#1f2f3a]">
               Select a track for <span className="font-semibold text-[#1f2f3a]">{user?.firstName} {user?.lastName}</span>
             </p>
           </div>

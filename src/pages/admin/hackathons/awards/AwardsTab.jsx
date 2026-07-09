@@ -49,7 +49,7 @@ function awardColumns(eventId, onSwap, onDelete, onRestore) {
     { key: 'numberOfAward', header: 'Quantity', headerIcon: Hash, render: (row) => <span className="text-[13px] font-semibold text-slate-600">{row.numberOfAward}</span> },
     { key: 'prize', header: 'Prize', headerIcon: DollarSign, render: (row) => { const u = Number(row.prize || 0); return <span className="text-[13px] font-semibold text-emerald-600">${u.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span> }},
     { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => <Badge label={row.isDisable ? 'Deleted' : 'Active'} className={row.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} /> },
-    { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p> },
+    { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p> },
     { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
       <div className="flex items-center justify-end gap-2">
         {!row.isDisable && <button onClick={() => onSwap(row)} className={swapBtnClass}><ArrowUpDown className="h-3.5 w-3.5" />Swap</button>}

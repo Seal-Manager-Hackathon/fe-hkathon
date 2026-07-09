@@ -32,13 +32,13 @@ export function hackathonColumns(onDelete, onRestore) {
       key: 'startTime',
       header: 'Start',
       headerIcon: Play,
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.startTime)}</p>,
+      render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.startTime)}</p>,
     },
     {
       key: 'endTime',
       header: 'End',
       headerIcon: Flag,
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.endTime)}</p>,
+      render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.endTime)}</p>,
     },
     {
       key: 'status',
@@ -50,7 +50,7 @@ export function hackathonColumns(onDelete, onRestore) {
       key: 'createdAt',
       header: 'Created',
       headerIcon: Calendar,
-      render: (row) => <p className="text-[13px] text-gray-500">{formatDateTime(row.createdAt)}</p>,
+      render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p>,
     },
     {
       key: 'actions',
