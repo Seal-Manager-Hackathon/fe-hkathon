@@ -961,4 +961,19 @@ export async function getEventLeaderboard(eventId, params = {}) {
   return data.data
 }
 
+// ========== Chapter Leaderboard ==========
+
+/**
+ * Get chapter leaderboard (1 year) — team rankings by chapterScore.
+ * GET /admin/events/chapter/{year}/leaderboard
+ * @param {number} year
+ * @param {Object} [params]
+ * @param {number} [params.PageIndex] - default 1
+ * @param {number} [params.PageSize] - default 10
+ */
+export async function getChapterLeaderboard(year, params = {}) {
+  const { data } = await api.get(`/admin/events/chapter/${year}/leaderboard`, { params })
+  return data.data
+}
+
 

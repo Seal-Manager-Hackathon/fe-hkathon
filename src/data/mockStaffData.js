@@ -2,12 +2,13 @@ import {
   Trophy, Users, UserCheck, Bell, FileText, Shield,
   GraduationCap, Briefcase,
   Layers, CheckCircle, XCircle, Clock,
-  UserRound,
+  UserRound, BarChart3,
 } from 'lucide-react'
 
 export const mockStaffNavItems = [
   { key: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', to: '/staff' },
   { key: 'hackathons', label: 'Hackathons', icon: 'Trophy', to: '/staff/hackathons' },
+  { key: 'leaderboard', label: 'Leaderboard', icon: 'BarChart3', to: '/staff/leaderboard' },
   { key: 'teams', label: 'Teams', icon: 'UserRound', to: '/staff/teams' },
   { key: 'users', label: 'Users', icon: 'Users', to: '/staff/users' },
   { key: 'notifications', label: 'Notifications', icon: 'Bell', to: '/staff/notifications' },

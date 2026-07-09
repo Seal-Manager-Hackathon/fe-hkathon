@@ -424,3 +424,26 @@ export async function getEventLeaderboard(eventId, params = {}) {
     totalCount: 30, pageIndex: pi, pageSize: ps,
   }
 }
+export async function getChapterLeaderboard(year, params = {}) {
+  await d(); const pi = params.PageIndex || 1; const ps = params.PageSize || 10
+  return {
+    year, eventCount: Math.floor(Math.random() * 5) + 2,
+    items: pg(
+      Array.from({ length: 25 }, (_, i) => ({
+        rank: i + 1,
+        teamId: mTm[i % 20]?.id || `tm-${i + 1}`,
+        teamName: mTm[i % 20]?.name || `Team ${i + 1}`,
+        chapterScore: Math.round((92 - i * 3 + Math.random() * 4) * 100) / 100,
+        eventCount: Math.floor(Math.random() * 3) + 1,
+        eventScores: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, (_, j) => ({
+          eventId: `ev-${j + 1}`,
+          eventName: `Hackathon ${year} - Season ${j + 1}`,
+          registerTeamId: `rt-${(i % 10) + 1}`,
+          eventScore: Math.round((88 - i * 2.8 + j * 3 + Math.random() * 5) * 100) / 100,
+        })),
+      })),
+      pi, ps
+    ).data,
+    totalCount: 25, pageIndex: pi, pageSize: ps,
+  }
+}

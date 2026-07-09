@@ -53,6 +53,7 @@ const SubmissionDetail = lazy(() => import('../pages/admin/submissions/Submissio
 const MyNotifications = lazy(() => import('../pages/admin/notifications/MyNotifications'))
 const AdminProfile = lazy(() => import('../pages/admin/profile/AdminProfile'))
 const AdminProfileEdit = lazy(() => import('../pages/admin/profile/AdminProfileEdit'))
+const ChapterLeaderboardPage = lazy(() => import('../pages/admin/leaderboard/ChapterLeaderboardPage'))
 
 // Staff Pages
 const StaffLayout = lazy(() => import('../layouts/StaffLayout'))
@@ -95,6 +96,7 @@ const StaffReportsManagement = lazy(() => import('../pages/staff/reports/Reports
 const StaffReportDetail = lazy(() => import('../pages/staff/reports/ReportDetail'))
 const StaffSubmissionDetail = lazy(() => import('../pages/staff/submissions/SubmissionDetail'))
 const StaffMyNotifications = lazy(() => import('../pages/staff/notifications/MyNotifications'))
+const StaffChapterLeaderboardPage = lazy(() => import('../pages/staff/leaderboard/ChapterLeaderboardPage'))
 const StaffProfile = lazy(() => import('../pages/staff/profile/AdminProfile'))
 const StaffProfileEdit = lazy(() => import('../pages/staff/profile/AdminProfileEdit'))
 
@@ -152,6 +154,7 @@ export const routes = [
       { index: true, element: <Suspense fallback={<RouteFallback />}><ReportsManagement /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><ReportDetail /></Suspense> },
     ]},
+    { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><ChapterLeaderboardPage /></Suspense> },
     { path: 'register-teams/:registerTeamId/edit', element: <Suspense fallback={<RouteFallback />}><RegisterTeamEdit /></Suspense> },
     { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><RegisterTeamDetail /></Suspense> },
     { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><SubmissionDetail /></Suspense> },
@@ -207,6 +210,7 @@ export const routes = [
       { index: true, element: <Suspense fallback={<RouteFallback />}><StaffReportsManagement /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffReportDetail /></Suspense> },
     ]},
+    { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><StaffChapterLeaderboardPage /></Suspense> },
     { path: 'register-teams/:registerTeamId/edit', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamEdit /></Suspense> },
     { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamDetail /></Suspense> },
     { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><StaffSubmissionDetail /></Suspense> },
