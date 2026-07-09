@@ -764,21 +764,25 @@ export async function assignUserToEvent(eventId, payload) {
 }
 
 /**
- * Remove a user assignment from an event.
- * @param {string} eventId
+ * Soft-delete (disable) a user assignment from an event.
+ * POST /admin/assign/event-assigns/{assignEventId}/remove
  * @param {string} assignEventId
  */
-export async function removeAssign(eventId, assignEventId) {
-  const { data } = await api.delete(`/admin/assign/events/${eventId}/${assignEventId}`)
+export async function removeAssign(assignEventId) {
+  const { data } = await api.post(`/admin/assign/event-assigns/${assignEventId}/remove`)
   return data
 }
 
 /**
- * Assign an assign event to a track.
- * POST /admin/assign/event-assigns/{assignEventId}/tracks
+ * Restore a previously soft-deleted user assignment.
+ * POST /admin/assign/event-assigns/{assignEventId}/restore
  * @param {string} assignEventId
- * @param {Object} payload { trackId: string }
  */
+export async function restoreAssign(assignEventId) {
+  const { data } = await api.post(`/admin/assign/event-assigns/${assignEventId}/restore`)
+  return data
+}
+
 /**
  * Assign an assign event to a track.
  * POST /admin/assign/event-assigns/{assignEventId}/tracks

@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Avatar from '../../../../components/Avatar'
-import { getAssignedUsers, getAvailableLecturers, getAvailableStaff, assignUserToEvent, removeAssign, getTracks, assignTrackToEventAssign } from '../../../../api/admin'
+import { getAssignedUsers, getAvailableLecturers, getAvailableStaff, assignUserToEvent, removeAssign, restoreAssign, getTracks, assignTrackToEventAssign } from '../../../../api/admin'
 import { toast, confirm } from '../../../../utils/toast'
-import { Search, UserPlus, User, Shield, GraduationCap, MoreHorizontal, UserMinus, UserCheck, ClipboardList, Eye, Phone, X, FolderKanban, Ban } from 'lucide-react'
+import { Search, UserPlus, User, Shield, GraduationCap, MoreHorizontal, UserCheck, ClipboardList, Eye, Phone, X, FolderKanban, Ban, Trash2, RotateCcw, CircleCheck } from 'lucide-react'
 
 const PAGE_SIZE = 10
 
@@ -24,14 +24,16 @@ const roleIcon = {
 const assignedFilters = [
   { type: 'search', key: 'keyword', label: 'Search', icon: Search, placeholder: 'Search by name or email...' },
   { type: 'select', key: 'eventRole', label: 'Role', icon: Shield, options: [{ value: '', label: 'All' }, { value: 'Mentor', label: 'Mentor' }, { value: 'Judge', label: 'Judge' }, { value: 'Staff', label: 'Staff' }] },
+  { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
 ]
 
 const viewBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2.5 py-1.5 text-[13px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]'
 const trackBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#ede7f6] px-2.5 py-1.5 text-[13px] font-semibold text-[#5e35b1] hover:bg-[#d1c4e9]'
 const assignBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#e8f5e9] px-2.5 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9]'
-const removeBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2] w-[110px]'
+const removeBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2] w-[92px]'
+const restoreBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9] w-[92px]'
 
-function assignedColumns(handleRemove, handleTrack) {
+function assignedColumns(handleRemove, handleRestore, handleTrack) {
   return [
     { key: 'user', header: 'User', headerIcon: User, render: (row) => (
       <Link to={`/admin/users/${row.userId}`} className="flex items-center gap-3 hover:opacity-80">
@@ -43,11 +45,6 @@ function assignedColumns(handleRemove, handleTrack) {
       </Link>
     )},
     { key: 'phone', header: 'Phone', headerIcon: Phone, render: (row) => <span className="text-[13px] font-medium text-[#1f2f3a]">{row.phoneNumber || '—'}</span> },
-    { key: 'eventRole', header: 'Role', headerIcon: Shield, render: (row) => (
-      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[12px] font-semibold ${roleBadge[row.eventRole] || ''}`}>
-        {roleIcon[row.eventRole]} {row.eventRole}
-      </span>
-    )},
     { key: 'tracks', header: 'Tracks', headerIcon: GraduationCap, render: (row) => {
       const tracks = row.assignTracks || []
       if (tracks.length === 0) return <span className="text-[13px] text-gray-400">—</span>
@@ -59,13 +56,27 @@ function assignedColumns(handleRemove, handleTrack) {
         </div>
       )
     }},
+    { key: 'eventRole', header: 'Role', headerIcon: Shield, render: (row) => (
+      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[12px] font-semibold ${roleBadge[row.eventRole] || ''}`}>
+        {roleIcon[row.eventRole]} {row.eventRole}
+      </span>
+    )},
+    { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => (
+      row.isDisable
+        ? <span className="inline-flex rounded-full bg-[#fce4ec] px-2.5 py-0.5 text-[12px] font-semibold text-[#c62828]">Deleted</span>
+        : <span className="inline-flex rounded-full bg-[#e8f5e9] px-2.5 py-0.5 text-[12px] font-semibold text-[#2e7d32]">Active</span>
+    )},
     { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
       <div className="flex items-center justify-end gap-2">
-        {(row.eventRole === 'Mentor' || row.eventRole === 'Judge') && (
+        {!row.isDisable && (row.eventRole === 'Mentor' || row.eventRole === 'Judge') && (
           <button onClick={() => handleTrack(row)} className={trackBtnClass}><FolderKanban className="h-3.5 w-3.5" />Track</button>
         )}
         <Link to={`/admin/users/${row.userId}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
-        <button onClick={() => handleRemove(row)} className={removeBtnClass}><UserMinus className="h-3.5 w-3.5" />Remove</button>
+        {row.isDisable ? (
+          <button onClick={() => handleRestore(row)} className={restoreBtnClass}><RotateCcw className="h-3.5 w-3.5" />Restore</button>
+        ) : (
+          <button onClick={() => handleRemove(row)} className={removeBtnClass}><Trash2 className="h-3.5 w-3.5" />Delete</button>
+        )}
       </div>
     )},
   ]
@@ -130,131 +141,79 @@ function AssignRoleModal({ open, user, userRole, onClose, onSubmit, submitting }
         <div className="mt-5 flex gap-3">
           {isLecturer ? (
             <>
-              <button
-                onClick={() => onSubmit('Mentor')}
-                disabled={submitting}
-                className="flex-1 cursor-pointer rounded-xl border-2 border-[#e3f2fd] bg-[#f5f9ff] px-4 py-4 text-center transition-all hover:border-[#1565c0] hover:bg-[#e3f2fd] disabled:opacity-50"
-              >
-                <UserCheck className="mx-auto mb-2 h-8 w-8 text-[#1565c0]" />
+              <button disabled={submitting} onClick={() => onSubmit('Mentor')} className="flex-1 cursor-pointer rounded-xl border-2 border-[#e0e0e0] p-4 text-center transition-all hover:border-[#1565c0] hover:bg-[#e3f2fd] disabled:opacity-50">
+                <UserCheck className="mx-auto mb-2 h-6 w-6 text-[#1565c0]" />
                 <p className="text-[14px] font-bold text-[#1565c0]">Mentor</p>
-                <p className="mt-0.5 text-[11px] text-gray-400">Guide & support</p>
+                <p className="mt-1 text-[12px] text-gray-400">Guide and support teams</p>
               </button>
-              <button
-                onClick={() => onSubmit('Judge')}
-                disabled={submitting}
-                className="flex-1 cursor-pointer rounded-xl border-2 border-[#f3e5f5] bg-[#faf5ff] px-4 py-4 text-center transition-all hover:border-[#6a1b9a] hover:bg-[#f3e5f5] disabled:opacity-50"
-              >
-                <ClipboardList className="mx-auto mb-2 h-8 w-8 text-[#6a1b9a]" />
+              <button disabled={submitting} onClick={() => onSubmit('Judge')} className="flex-1 cursor-pointer rounded-xl border-2 border-[#e0e0e0] p-4 text-center transition-all hover:border-[#6a1b9a] hover:bg-[#f3e5f5] disabled:opacity-50">
+                <ClipboardList className="mx-auto mb-2 h-6 w-6 text-[#6a1b9a]" />
                 <p className="text-[14px] font-bold text-[#6a1b9a]">Judge</p>
-                <p className="mt-0.5 text-[11px] text-gray-400">Score & evaluate</p>
+                <p className="mt-1 text-[12px] text-gray-400">Evaluate submissions</p>
               </button>
             </>
           ) : (
-            <button
-              onClick={() => onSubmit('Staff')}
-              disabled={submitting}
-              className="w-full cursor-pointer rounded-xl border-2 border-[#fff3e0] bg-[#fffaf5] px-4 py-4 text-center transition-all hover:border-[#e65100] hover:bg-[#fff3e0] disabled:opacity-50"
-            >
-              <User className="mx-auto mb-2 h-8 w-8 text-[#e65100]" />
+            <button disabled={submitting} onClick={() => onSubmit('Staff')} className="flex-1 cursor-pointer rounded-xl border-2 border-[#e0e0e0] p-4 text-center transition-all hover:border-[#e65100] hover:bg-[#fff3e0] disabled:opacity-50">
+              <User className="mx-auto mb-2 h-6 w-6 text-[#e65100]" />
               <p className="text-[14px] font-bold text-[#e65100]">Staff</p>
-              <p className="mt-0.5 text-[11px] text-gray-400">Event operations</p>
+              <p className="mt-1 text-[12px] text-gray-400">Event operations</p>
             </button>
           )}
         </div>
+
+        {submitting && (
+          <p className="mt-4 text-center text-[13px] text-gray-400">Assigning...</p>
+        )}
       </div>
     </div>
   )
 }
 
-// ---- Assign Track Modal ----
+// ---- Track Select Modal ----
 function AssignTrackModal({ open, user, eventId, onClose, onAssign, submitting }) {
-  const TRACK_PAGE_SIZE = 5
   const [tracks, setTracks] = useState([])
   const [trackTotal, setTrackTotal] = useState(0)
   const [trackPage, setTrackPage] = useState(1)
   const [trackLoading, setTrackLoading] = useState(false)
-  const [tkFilters, setTkFilters] = useState({ keyword: '', isDisable: '' })
+  const [tkFilters, setTkFilters] = useState({ keyword: '', isDisable: 'false' })
   const tkHasActive = Object.values(tkFilters).some(v => v !== '')
 
-  const fetchTracks = useCallback(async () => {
-    setTrackLoading(true)
-    try {
-      const params = { PageIndex: trackPage, PageSize: TRACK_PAGE_SIZE }
-      if (tkFilters.keyword) params.Keyword = tkFilters.keyword
-      if (tkFilters.isDisable !== '') params.IsDisable = tkFilters.isDisable === 'true'
-      const result = await getTracks(eventId, params)
-      setTracks(result.tracks || [])
-      setTrackTotal(result.totalCount || 0)
-    } catch (err) {
-      setTracks([])
-      setTrackTotal(0)
-    } finally {
-      setTrackLoading(false)
+  useEffect(() => {
+    if (!open) { setTrackPage(1); return }
+    let cancelled = false
+    async function fetchTracks() {
+      setTrackLoading(true)
+      try {
+        const params = { PageIndex: trackPage, PageSize: 10 }
+        if (tkFilters.keyword) params.Keyword = tkFilters.keyword
+        if (tkFilters.isDisable !== '') params.IsDisable = tkFilters.isDisable === 'true'
+        const result = await getTracks(eventId, params)
+        if (!cancelled) {
+          setTracks(result.tracks || [])
+          setTrackTotal(result.totalCount || 0)
+        }
+      } catch { if (!cancelled) { setTracks([]); setTrackTotal(0) } }
+      finally { if (!cancelled) setTrackLoading(false) }
     }
-  }, [eventId, trackPage, tkFilters])
-
-  useEffect(() => { if (open) { setTrackPage(1); setTkFilters({ keyword: '', isDisable: '' }); fetchTracks() } }, [open])
-  useEffect(() => { if (open) fetchTracks() }, [fetchTracks])
-
-  function handleTkFilterChange(key, value) {
-    setTkFilters(prev => ({ ...prev, [key]: value }))
-    setTrackPage(1)
-  }
-  function handleTkReset() {
-    setTkFilters({ keyword: '', isDisable: '' })
-    setTrackPage(1)
-  }
+    fetchTracks()
+    return () => { cancelled = true }
+  }, [open, eventId, trackPage, tkFilters])
 
   if (!open) return null
-
-  const alreadyAssigned = user?.assignTracks?.map(t => t.trackId) || []
 
   const trackFilters = [
     { type: 'search', key: 'keyword', label: 'Track Name', icon: Search, placeholder: 'Search track name...' },
     { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
   ]
 
-  const trackColumns = [
-    { key: 'title', header: 'Track', render: (row) => (
-      <span className="text-[13px] font-semibold text-[#064f5d]">{row.title}</span>
-    )},
-    { key: 'maxTeam', header: 'Max Teams', render: (row) => (
-      <span className="text-[13px] text-gray-500">{row.maxTeam ?? '—'}</span>
-    )},
-    { key: 'status', header: 'Status', render: (row) => (
-      row.isDisable
-        ? <span className="inline-flex rounded-full bg-[#fce4ec] px-2.5 py-0.5 text-[12px] font-semibold text-[#c62828]">Deleted</span>
-        : <span className="inline-flex rounded-full bg-[#e8f5e9] px-2.5 py-0.5 text-[12px] font-semibold text-[#2e7d32]">Active</span>
-    )},
-    { key: 'createdAt', header: 'Created', render: (row) => (
-      <p className="text-[13px] text-gray-500">{row.createdAt ? new Date(row.createdAt).toLocaleString() : '—'}</p>
-    )},
-    { key: 'actions', header: 'Action', headerClassName: 'text-right', className: 'text-right', render: (row) => {
-      const isAssigned = alreadyAssigned.includes(row.id)
-      return (
-        <button
-          onClick={() => !isAssigned && onAssign(row)}
-          disabled={submitting || isAssigned}
-          className={`inline-flex cursor-pointer items-center gap-1 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${
-            isAssigned
-              ? 'bg-[#f5f5f5] text-gray-400 cursor-not-allowed'
-              : 'bg-[#e8f5e9] text-[#2e7d32] hover:bg-[#c8e6c9]'
-          }`}
-        >
-          {isAssigned ? 'Assigned' : 'Assign'}
-        </button>
-      )
-    }},
-  ]
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={!submitting ? onClose : undefined} />
-      <div className="relative z-10 w-full max-w-3xl rounded-2xl bg-white shadow-2xl overflow-hidden">
-        <div className="flex items-start justify-between border-b border-[#f0f0f0] px-6 py-4">
+      <div className="relative z-10 w-full max-w-[92%] sm:max-w-xl rounded-2xl bg-white shadow-2xl">
+        <div className="flex items-start justify-between border-b border-[#e8ecf0] px-6 py-5">
           <div>
             <h3 className="text-[16px] font-bold text-slate-800">Assign to Track</h3>
-            <p className="mt-0.5 text-[13px] text-gray-500">
+            <p className="mt-1 text-[13px] text-gray-500">
               Select a track for <span className="font-semibold text-[#1f2f3a]">{user?.firstName} {user?.lastName}</span>
             </p>
           </div>
@@ -264,23 +223,31 @@ function AssignTrackModal({ open, user, eventId, onClose, onAssign, submitting }
             </button>
           )}
         </div>
-        <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-6 py-3">
-          <FilterBar filters={trackFilters} values={tkFilters} onChange={handleTkFilterChange} onReset={handleTkReset} hasActive={tkHasActive} />
+
+        <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-3">
+          <FilterBar filters={trackFilters} values={tkFilters} onChange={(key, val) => { setTkFilters(prev => ({ ...prev, [key]: val })); setTrackPage(1) }} onReset={() => { setTkFilters({ keyword: '', isDisable: 'false' }); setTrackPage(1) }} hasActive={tkHasActive} />
         </div>
-        <div className="py-4">
-          <BaseTable
-            borderless
-            columns={trackColumns}
+        <div className="max-h-[50vh] overflow-y-auto p-2">
+          <BaseTable borderless
+            columns={[
+              { key: 'title', header: 'Track Title', headerIcon: FolderKanban, render: (row) => <span className="text-[14px] font-semibold text-[#064f5d]">{row.title}</span> },
+              { key: 'actions', header: '', headerClassName: 'text-right', className: 'text-right', render: (row) => (
+                <button onClick={() => onAssign(row)} disabled={submitting || row.isDisable} className={`inline-flex cursor-pointer items-center gap-1 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${row.isDisable ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#064f5d] text-white hover:bg-[#05404a]'} disabled:opacity-50`}>
+                  <UserPlus className="h-3.5 w-3.5" />{row.isDisable ? 'Disabled' : 'Assign'}
+                </button>
+              )},
+            ]}
             data={tracks}
             page={trackPage}
-            pageSize={TRACK_PAGE_SIZE}
+            pageSize={10}
             total={trackTotal}
             onPageChange={setTrackPage}
             loading={trackLoading}
             serverSide
-            emptyText={tkHasActive ? 'No tracks match the current filters.' : 'No tracks found for this event.'}
+            emptyText={tkHasActive ? 'No results match.' : 'No tracks configured for this event.'}
             keyExtractor={(row) => row.id}
-            minWidth="500px"
+            minWidth="550px"
+            borderless
           />
         </div>
       </div>
@@ -296,7 +263,7 @@ export default function AssignTab({ eventId }) {
   const [assignedTotal, setAssignedTotal] = useState(0)
   const [assignedPage, setAssignedPage] = useState(1)
   const [assignedLoading, setAssignedLoading] = useState(false)
-  const [asFilters, setAsFilters] = useState({ keyword: '', eventRole: '' })
+  const [asFilters, setAsFilters] = useState({ keyword: '', eventRole: '', isDisable: '' })
   const asHasActive = Object.values(asFilters).some(v => v !== '')
 
   // Available Lecturers
@@ -327,6 +294,7 @@ export default function AssignTab({ eventId }) {
       const params = { PageIndex: assignedPage, PageSize: PAGE_SIZE }
       if (asFilters.keyword) params.Keyword = asFilters.keyword
       if (asFilters.eventRole) params.EventRole = asFilters.eventRole
+      if (asFilters.isDisable !== '') params.IsDisable = asFilters.isDisable === 'true'
       const result = await getAssignedUsers(eventId, params)
       setAssigned(result.items || [])
       setAssignedTotal(result.totalCount || 0)
@@ -365,14 +333,26 @@ export default function AssignTab({ eventId }) {
   useEffect(() => { fetchStaff() }, [fetchStaff])
 
   async function handleRemove(row) {
-    const ok = await confirm('Remove Assignment', `Remove ${row.firstName} ${row.lastName} (${row.eventRole}) from this event?`)
+    const ok = await confirm('Delete Assignment', `Delete ${row.firstName} ${row.lastName} (${row.eventRole}) from this event?`)
     if (!ok) return
     try {
-      await removeAssign(eventId, row.assignEventId)
-      toast.success('Assignment removed successfully')
+      await removeAssign(row.assignEventId)
+      toast.success('Assignment deleted successfully')
       fetchAssigned()
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to remove assignment.')
+      toast.error(err?.response?.data?.message || 'Failed to delete assignment.')
+    }
+  }
+
+  async function handleRestore(row) {
+    const ok = await confirm('Restore Assignment', `Restore ${row.firstName} ${row.lastName} (${row.eventRole}) to this event?`)
+    if (!ok) return
+    try {
+      await restoreAssign(row.assignEventId)
+      toast.success('Assignment restored successfully')
+      fetchAssigned()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to restore assignment.')
     }
   }
 
@@ -383,11 +363,9 @@ export default function AssignTab({ eventId }) {
 
   async function handleAssignRole(role) {
     if (!assignTarget) return
-    const ok = await confirm('Confirm Assignment', `Assign ${assignTarget.firstName} ${assignTarget.lastName} as ${role} in this event?`)
-    if (!ok) return
     setAssigning(true)
     try {
-      await assignUserToEvent(eventId, { UserId: assignTarget.id, EventRole: role })
+      await assignUserToEvent(eventId, { userId: assignTarget.id, eventRole: role })
       toast.success(`${assignTarget.firstName} ${assignTarget.lastName} assigned as ${role}`)
       setAssignTarget(null)
       if (assignUserRole === 'staff') fetchStaff()
@@ -399,7 +377,7 @@ export default function AssignTab({ eventId }) {
   }
 
   function handleAsFilterChange(key, value) { setAsFilters(prev => ({ ...prev, [key]: value })); setAssignedPage(1) }
-  function handleAsReset() { setAsFilters({ keyword: '', eventRole: '' }); setAssignedPage(1) }
+  function handleAsReset() { setAsFilters({ keyword: '', eventRole: '', isDisable: '' }); setAssignedPage(1) }
 
   function openTrackModal(user) { setTrackTarget(user) }
 
@@ -433,7 +411,7 @@ export default function AssignTab({ eventId }) {
           <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
             <FilterBar filters={assignedFilters} values={asFilters} onChange={handleAsFilterChange} onReset={handleAsReset} hasActive={asHasActive} />
           </div>
-          <BaseTable borderless columns={assignedColumns(handleRemove, openTrackModal)} data={assigned} page={assignedPage} pageSize={PAGE_SIZE} total={assignedTotal} onPageChange={setAssignedPage} loading={assignedLoading} serverSide emptyText={asHasActive ? 'No results match.' : 'No users assigned to this event yet.'} keyExtractor={(row) => row.assignEventId} minWidth="800px" />
+          <BaseTable borderless columns={assignedColumns(handleRemove, handleRestore, openTrackModal)} data={assigned} page={assignedPage} pageSize={PAGE_SIZE} total={assignedTotal} onPageChange={setAssignedPage} loading={assignedLoading} serverSide emptyText={asHasActive ? 'No results match.' : 'No users assigned to this event yet.'} keyExtractor={(row) => row.assignEventId} minWidth="900px" />
         </div>
       )}
 
