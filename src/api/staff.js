@@ -172,7 +172,7 @@ export async function getUsers(params={}) {
 }
 export async function getUserDetail(userId) { await d(); const u=mUs.find(u=>u.id===userId); if(!u) throw new Error('Not found'); return {...u} }
 export async function getUserEvents(userId,params={}) { await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; const ue=mEv.filter((_,i)=>(i+parseInt(userId.split('-')[1]||'1'))%3===0); return {events:pg(ue,pi,ps).data,totalCount:ue.length,pageIndex:pi,pageSize:ps} }
-export async function createUser(payload) { await d(); return {data:{id:`us-${mUs.length+1}`,...payload}} }
+export async function createUser(payload) { await d(); return { id:`us-${mUs.length+1}`, email: payload.email, firstName: payload.firstName, lastName: payload.lastName, password: 'string', role: payload.role, college: 'FPT University' } }
 export async function updateUser(userId,formData) { await d(); return {message:'Updated'} }
 export async function deleteUser(userId) { await d(); return {message:'Deleted'} }
 export async function restoreUser(userId) { await d(); return {message:'Restored'} }
