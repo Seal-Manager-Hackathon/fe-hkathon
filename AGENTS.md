@@ -1,7 +1,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **new-fe** (782 symbols, 1841 relationships, 61 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **fe-hkathon** (2295 symbols, 6373 relationships, 185 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
@@ -25,10 +25,10 @@ This project is indexed by GitNexus as **new-fe** (782 symbols, 1841 relationshi
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/new-fe/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/new-fe/clusters` | All functional areas |
-| `gitnexus://repo/new-fe/processes` | All execution flows |
-| `gitnexus://repo/new-fe/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/fe-hkathon/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/fe-hkathon/clusters` | All functional areas |
+| `gitnexus://repo/fe-hkathon/processes` | All execution flows |
+| `gitnexus://repo/fe-hkathon/process/{name}` | Step-by-step execution trace |
 
 ## CLI
 
