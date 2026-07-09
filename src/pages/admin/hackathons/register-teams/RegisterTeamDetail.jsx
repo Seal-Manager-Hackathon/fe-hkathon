@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, Ban, ExternalLink, Eye, CheckCircle as ApproveIcon, XCircle, ShieldOff, MoreHorizontal } from 'lucide-react'
-import { getRegisterTeamDetail, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam } from '../../../../api/admin'
+import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, Ban, ExternalLink, Eye, CheckCircle as ApproveIcon, XCircle, ShieldOff, MoreHorizontal, Layers, ChevronDown, Send, FileDown } from 'lucide-react'
+import { getRegisterTeamDetail, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam, getRegisterTeamSubmissions } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import Badge from '../../../../components/Badge'
 import CardPanel from '../../../../components/CardPanel'
@@ -9,7 +9,10 @@ import InfoRow from '../../../../components/InfoRow'
 import Avatar from '../../../../components/Avatar'
 import BaseTable from '../../../../components/BaseTable'
 import PromptReason from '../../../../components/PromptReason'
+import RoundSelectModal from '../../../../components/RoundSelectModal'
 import { toast, confirm } from '../../../../utils/toast'
+
+const SUB_PAGE_SIZE = 10
 
 const statusBadge = { Pending: 'bg-amber-50 text-amber-700 border border-amber-200', Approved: 'bg-emerald-50 text-emerald-700 border border-emerald-200', Rejected: 'bg-rose-50 text-rose-700 border border-rose-200' }
 const statusIcon = { Pending: <Clock className="h-4 w-4 text-amber-600" />, Approved: <CircleCheck className="h-4 w-4 text-emerald-600" />, Rejected: <Shield className="h-4 w-4 text-rose-600" /> }
@@ -20,6 +23,38 @@ const memberColumns = [
   { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
     <Link to={`/admin/users/${row.userId}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2 py-1.5 text-[12px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]"><Eye className="h-3.5 w-3.5" />View</Link>
   )},
+]
+
+const submissionColumns = [
+  { key: 'round', header: 'Round', headerIcon: Layers, render: (row) => (
+    <div>
+      <Link to={`/admin/hackathons/${row.eventId}/rounds/${row.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.roundName}</Link>
+      <p className="text-[12px] text-gray-400">{row.trackTitle}{row.topicTitle ? ` / ${row.topicTitle}` : ''}</p>
+    </div>
+  )},
+  { key: 'lastSubmission', header: 'Last Submission', headerIcon: FileDown, render: (row) => {
+    const sub = row.lastSubmission
+    if (!sub) return <span className="text-[13px] text-gray-400">—</span>
+    return (
+      <div>
+        <Link to={`/admin/submissions/${sub.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{sub.description || sub.url || 'View'}</Link>
+        <p className="text-[12px] text-gray-400">{formatDateTime(sub.submittedAt)}</p>
+      </div>
+    )
+  }},
+  { key: 'submittedBy', header: 'Submitted By', headerIcon: User, render: (row) => {
+    const by = row.submittedBy
+    if (!by) return <span className="text-[13px] text-gray-400">—</span>
+    return (
+      <Link to={`/admin/users/${by.userId}`} className="flex items-center gap-3 hover:opacity-80">
+        <Avatar src={by.avatarUrl} name={`${by.firstName} ${by.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
+        <div>
+          <p className="text-[14px] font-semibold text-[#064f5d] hover:underline">{by.firstName} {by.lastName}</p>
+          <p className="text-[12px] text-gray-500">{by.email}</p>
+        </div>
+      </Link>
+    )
+  }},
 ]
 
 export default function RegisterTeamDetail() {
@@ -33,6 +68,15 @@ export default function RegisterTeamDetail() {
   const [banning, setBanning] = useState(false)
   const [acting, setActing] = useState(false)
 
+  // Submissions
+  const [submissions, setSubmissions] = useState([])
+  const [subTotal, setSubTotal] = useState(0)
+  const [subPage, setSubPage] = useState(1)
+  const [subLoading, setSubLoading] = useState(false)
+  const [roundId, setRoundId] = useState('')
+  const [roundName, setRoundName] = useState('')
+  const [roundModalOpen, setRoundModalOpen] = useState(false)
+
   async function fetchData() {
     setLoading(true); setError('')
     try { const result = await getRegisterTeamDetail(registerTeamId); setData(result) }
@@ -41,6 +85,20 @@ export default function RegisterTeamDetail() {
   }
 
   useEffect(() => { fetchData() }, [registerTeamId])
+
+  const fetchSubmissions = useCallback(async () => {
+    setSubLoading(true)
+    try {
+      const params = { pageIndex: subPage, pageSize: SUB_PAGE_SIZE }
+      if (roundId) params.roundId = roundId
+      const result = await getRegisterTeamSubmissions(registerTeamId, params)
+      setSubmissions(result.items || [])
+      setSubTotal(result.totalCount || 0)
+    } catch { setSubmissions([]); setSubTotal(0) }
+    finally { setSubLoading(false) }
+  }, [registerTeamId, subPage, roundId])
+
+  useEffect(() => { if (data) fetchSubmissions() }, [fetchSubmissions, data])
 
   async function handleApprove() {
     const ok = await confirm('Approve', `Approve "${data.teamName}"?`)
@@ -55,7 +113,7 @@ export default function RegisterTeamDetail() {
 
   async function handleRejectSubmit(reason) {
     setRejecting(true)
-    try { await rejectRegisterTeam(registerTeamId, { reason }); toast.success('Rejected'); setRejectTarget(null); fetchData() }
+    try { await rejectRegisterTeam(registerTeamId, { reason }); setRejectTarget(null); toast.success('Rejected'); fetchData() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed') }
     finally { setRejecting(false) }
   }
@@ -63,9 +121,8 @@ export default function RegisterTeamDetail() {
   function openBan() { setBanTarget(data) }
 
   async function handleBanSubmit(reason) {
-    setBanTarget(null)
     setBanning(true)
-    try { await banRegisterTeam(registerTeamId, { rejectionReason: reason || undefined }); toast.success('Banned'); fetchData() }
+    try { await banRegisterTeam(registerTeamId, { reason }); setBanTarget(null); toast.success('Banned'); fetchData() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed') }
     finally { setBanning(false) }
   }
@@ -79,39 +136,37 @@ export default function RegisterTeamDetail() {
     finally { setActing(false) }
   }
 
-  if (loading) return <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" /><div className="mb-6 flex items-center gap-5"><div className="h-14 w-14 shrink-0 animate-pulse rounded-xl bg-gray-200" /><div className="space-y-2"><div className="h-7 w-48 animate-pulse rounded bg-gray-200" /><div className="h-4 w-72 animate-pulse rounded bg-gray-200" /></div></div><div className="h-80 animate-pulse rounded-xl bg-gray-100" /></div>
+  if (loading) return <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" /><div className="h-80 animate-pulse rounded-xl bg-gray-100" /></div>
 
   if (error) {
     const nf = error.includes('Not Found')
-    return <div className="flex min-h-[60vh] flex-col items-center justify-center"><div className="mb-4 rounded-full bg-rose-50 p-4"><Shield className="h-8 w-8 text-rose-400" /></div><p className="text-[18px] font-semibold text-gray-500">{nf ? 'Register team not found' : error}</p><Link to="/admin/hackathons" className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"><ArrowLeft className="h-4 w-4" /> Back to Hackathons</Link></div>
+    return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{nf ? 'Registration not found' : error}</p><Link to="/admin/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Hackathons</Link></div>
   }
 
-  if (!data) return null
+  if (!data) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">Not found.</p></div>
 
-  const members = data.members || []
-  const showApproval = data.status === 'Pending' && !data.isBanned
+  const members = data?.members || []
+  const showApproval = data?.status === 'Pending'
+  const roundHasActive = roundId !== ''
+
+  function handleRoundSelect(id, name) {
+    setRoundId(id)
+    setRoundName(name)
+    setRoundModalOpen(false)
+    setSubPage(1)
+  }
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <div className="mb-5">
-        <Link to={`/admin/hackathons/${data.eventId}?tab=Register+Teams`} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] transition-colors hover:text-[#05404a] hover:underline">
-          <ArrowLeft className="h-4 w-4" /> Back to Event
-        </Link>
+      <div className="mb-4">
+        <Link to={data.eventId ? `/admin/hackathons/${data.eventId}?tab=Register Teams` : '/admin/hackathons'} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] hover:underline"><ArrowLeft className="h-4 w-4" /> Back</Link>
       </div>
 
-      <div className="mb-6 overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-sm">
-        <div className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-6 py-5 sm:px-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/15 text-xl font-bold text-white shadow-inner">
-                {data.teamName?.charAt(0) || '?'}
-              </div>
-              <div>
-                <h1 className="text-[20px] font-bold text-white sm:text-[26px]">{data.teamName}</h1>
-                <p className="mt-0.5 text-[13px] text-white/70">Registered {formatDateTime(data.createdAt)}</p>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
+      <div className="mb-6 rounded-2xl border border-[#e8ecf0] bg-white overflow-hidden shadow-sm">
+        <div className="bg-gradient-to-r from-[#064f5d] to-[#0a7b8a] px-6 py-5 sm:px-8 sm:py-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-[20px] font-bold text-white sm:text-[26px]">{data.teamName || 'Untitled'}</h1>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-[12px] font-semibold text-white">
                 {statusIcon[data.status]}{data.status}
               </span>
@@ -160,38 +215,52 @@ export default function RegisterTeamDetail() {
                 </InfoRow>
               )}
               <InfoRow label="Description" icon={FileText}>
-                <p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{data.description || '—'}</p>
+                <p className="text-[14px] text-[#1f2f3a]">{data.description || '—'}</p>
               </InfoRow>
-              <InfoRow label="Banned" icon={Ban}>
-                {data.isBanned ? <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" />}
-              </InfoRow>
-              {data.isBanned && data.rejectionReason && (
-                <InfoRow label="Reject reason" icon={ShieldOff}>
-                  <p className="text-[14px] text-rose-600">{data.rejectionReason}</p>
-                </InfoRow>
-              )}
             </div>
           </CardPanel>
 
-          <CardPanel title={`Members (${members.length})`}>
+          <CardPanel title="Members">
             {members.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10">
-                <Users className="mb-3 h-10 w-10 text-gray-300" />
-                <p className="text-[14px] text-gray-400">No members.</p>
-              </div>
+              <div className="flex flex-col items-center justify-center py-12"><Users className="mb-3 h-10 w-10 text-gray-300" /><p className="text-[14px] text-gray-400">No members.</p></div>
             ) : (
-              <BaseTable borderless columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="400px" />
+              <BaseTable borderless columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="600px" />
             )}
           </CardPanel>
+
+          <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
+            <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4 flex items-center justify-between">
+              <h3 className="text-[15px] font-bold text-[#1f2f3a] flex items-center gap-2"><Send className="h-4 w-4" /> Submissions</h3>
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setRoundModalOpen(true)}
+                    className="group flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-[#d8e0e6] bg-white px-3 py-2 text-[13px] font-medium transition-all hover:border-[#064f5d] hover:shadow-sm focus:border-[#064f5d] outline-none"
+                  >
+                    <Layers className="h-3.5 w-3.5 text-gray-400 group-hover:text-[#064f5d]" />
+                    <span className={roundName ? 'text-[#1f2f3a]' : 'text-gray-400'}>{roundName || 'All Rounds'}</span>
+                    <ChevronDown className="h-3.5 w-3.5 text-gray-400 group-hover:text-[#064f5d]" />
+                  </button>
+                </div>
+                {roundHasActive && (
+                  <button onClick={() => { setRoundId(''); setRoundName(''); setSubPage(1) }} className="cursor-pointer text-[12px] text-gray-400 hover:text-[#c62828] underline">Clear</button>
+                )}
+              </div>
+            </div>
+            <BaseTable borderless columns={submissionColumns} data={submissions} page={subPage} pageSize={SUB_PAGE_SIZE} total={subTotal} onPageChange={setSubPage} loading={subLoading} serverSide emptyText="No submissions found." keyExtractor={(row) => row.roundId} minWidth="700px" />
+          </div>
         </div>
 
         <div className="space-y-5">
-          <CardPanel title="Event" viewAllTo={data.eventId ? `/admin/hackathons/${data.eventId}` : null}>
+          <CardPanel title="Event & Track">
             <div className="divide-y divide-[#f5f5f5]">
               <InfoRow label="Event" icon={Trophy}>
-                {data.eventId ? <Link to={`/admin/hackathons/${data.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.eventName}</Link> : <span className="text-[14px] text-gray-400">—</span>}
+                {data.eventId ? <Link to={`/admin/hackathons/${data.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.eventName}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.eventName || '—'}</span>}
               </InfoRow>
-              <InfoRow label="Track" icon={FileText}><span className="text-[14px] text-[#1f2f3a]">{data.trackTitle || '—'}</span></InfoRow>
+              <InfoRow label="Track" icon={FileText}>
+                {data.trackId ? <Link to={`/admin/hackathons/${data.eventId}/tracks/${data.trackId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.trackTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.trackTitle || '—'}</span>}
+              </InfoRow>
               <InfoRow label="Topic" icon={FileText}>
                 {data.topicId && data.trackId ? <Link to={`/admin/hackathons/${data.eventId}/tracks/${data.trackId}/topics`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.topicTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.topicTitle || '—'}</span>}
               </InfoRow>
@@ -246,6 +315,14 @@ export default function RegisterTeamDetail() {
         placeholder="Why is this team being banned?"
         submitting={banning}
         confirmVariant="danger"
+      />
+
+      <RoundSelectModal
+        open={roundModalOpen}
+        onClose={() => setRoundModalOpen(false)}
+        eventId={data?.eventId}
+        selectedRoundId={roundId}
+        onSelect={handleRoundSelect}
       />
     </div>
   )
