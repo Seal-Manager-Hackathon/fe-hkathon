@@ -397,3 +397,30 @@ export async function getTeamRegisterHistory(teamId,params={}) {
 export async function updateReportStatus(reportId,payload) { await d(); return {message:'Status updated'} }
 export async function swapAward(eventId,awardId,targetAwardId) { await d(); return {message:'Swapped'} }
 export async function restoreNotification(notifId) { await d(); return {message:'Restored'} }
+export async function getEventLeaderboard(eventId, params = {}) {
+  await d(); const pi = params.PageIndex || 1; const ps = params.PageSize || 10
+  return {
+    eventId, eventName: `Hackathon ${eventId}`,
+    totalRounds: Math.floor(Math.random() * 3) + 1,
+    items: pg(
+      Array.from({ length: 30 }, (_, i) => ({
+        rank: i + 1,
+        registerTeamId: `rt-${(i % 10) + 1}`,
+        teamId: `tm-${(i % 20) + 1}`,
+        teamName: mTm[i % 20]?.name || `Team ${i + 1}`,
+        trackId: `tr-${(i % 15) + 1}`,
+        trackTitle: `Track ${(i % 15) + 1}`,
+        topicId: i % 3 ? `tp-${(i % 5) + 1}` : null,
+        topicTitle: i % 3 ? `Topic ${(i % 5) + 1}` : null,
+        eventScore: Math.round((95 - i * 2.5 + Math.random() * 3) * 100) / 100,
+        roundScores: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, (_, j) => ({
+          roundNo: j + 1,
+          roundName: `Round ${j + 1}`,
+          scopeScore: Math.round((90 - i * 3 + j * 2 + Math.random() * 5) * 100) / 100,
+        })),
+      })),
+      pi, ps
+    ).data,
+    totalCount: 30, pageIndex: pi, pageSize: ps,
+  }
+}
