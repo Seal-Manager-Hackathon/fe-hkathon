@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import {
-  Edit, Mail, Shield, Calendar, Hash, GraduationCap, BadgeCheck,
-  Phone, MapPin, AlertTriangle, Clock, FileText, Trophy, Search, Ban,
-  CircleCheck, Users, Eye, MoreHorizontal,
+  Mail, Shield, Calendar, Hash, GraduationCap, BadgeCheck,
+  Phone, MapPin, AlertTriangle, Clock, FileText,
 } from 'lucide-react'
 import { getUserDetail, getUserEvents } from '../../../api/admin'
 import { roleBadge } from '../../../constants/adminOptions'
@@ -11,47 +10,8 @@ import { formatDateTime } from '../../../utils/format'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
 import InfoRow from '../../../components/InfoRow'
-import Avatar from '../../../components/Avatar'
-import BaseTable from '../../../components/BaseTable'
-import FilterBar from '../../../components/FilterBar'
-
-const eventStatusBadge = {
-  Draft: 'bg-[#f5f5f5] text-[#757575]',
-  Published: 'bg-[#e8f5e9] text-[#2e7d32]',
-  Closed: 'bg-[#e0f2f1] text-[#00695c]',
-}
-
-const viewBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2 py-1.5 text-[12px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]'
-
-const eventColumns = [
-  { key: 'eventName', header: 'Event', headerIcon: Trophy, render: (row) => (
-    <Link to={`/admin/hackathons/${row.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.eventName}</Link>
-  )},
-  { key: 'teamName', header: 'Team', headerIcon: Users, render: (row) => (
-    row.teamId ? <Link to={`/admin/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName}</Link> : <span className="text-[14px] text-gray-400">—</span>
-  )},
-  { key: 'trackTitle', header: 'Track', headerIcon: FileText, render: (row) => (
-    row.trackId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackTitle || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span>
-  )},
-  { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => (
-    row.topicId && row.trackId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}/topics`} className="text-[13px] font-medium text-[#1f2f3a] hover:underline">{row.topicTitle || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span>
-  )},
-  { key: 'isBanned', header: 'Banned', headerIcon: Ban, render: (row) => (
-    row.isBanned ? <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" />
-  )},
-  { key: 'eventStatus', header: 'Status', headerIcon: CircleCheck, render: (row) => (
-    <Badge label={row.eventStatus} className={eventStatusBadge[row.eventStatus] || 'bg-gray-50 text-gray-600'} />
-  )},
-  { key: 'status', header: 'Registration', headerIcon: Shield, render: (row) => (
-    <Badge label={row.status} className={row.status === 'Approved' ? 'bg-[#e8f5e9] text-[#2e7d32]' : 'bg-gray-50 text-gray-600'} />
-  )},
-  { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => (
-    <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p>
-  )},
-  { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
-    <Link to={`/admin/register-teams/${row.registerTeamId}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
-  )},
-]
+import UserDetailHeader from './UserDetailHeader'
+import UserDetailEvents from './UserDetailEvents'
 
 const PAGE_SIZE = 10
 
@@ -99,7 +59,13 @@ export default function UserDetail() {
     return (
       <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
         <div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" />
-        <div className="mb-6 flex items-center gap-5"><div className="h-20 w-20 shrink-0 animate-pulse rounded-full bg-gray-200" /><div className="space-y-2"><div className="h-7 w-48 animate-pulse rounded bg-gray-200" /><div className="h-4 w-72 animate-pulse rounded bg-gray-200" /></div></div>
+        <div className="mb-6 flex items-center gap-5">
+          <div className="h-20 w-20 shrink-0 animate-pulse rounded-full bg-gray-200" />
+          <div className="space-y-2">
+            <div className="h-7 w-48 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-72 animate-pulse rounded bg-gray-200" />
+          </div>
+        </div>
         <div className="h-80 animate-pulse rounded-xl bg-gray-100" />
       </div>
     )
@@ -126,30 +92,16 @@ export default function UserDetail() {
 
   const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email
   const isDisabled = user.isDisable
-  const eventHasActive = eventKeyword !== ''
-  const eventFilters = [{ type: 'search', key: 'keyword', label: 'Event', icon: Search, placeholder: 'Search event name...' }]
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6">
-        <Link to="/admin/users" className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Users</Link>
+        <Link to="/admin/users" className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
+          &larr; Back to Users
+        </Link>
       </div>
 
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-center gap-5">
-          <Avatar src={user.avatarUrl} name={fullName} size="h-20 w-20" textSize="text-[24px]" />
-          <div>
-            <h1 className="text-[24px] font-bold text-[#1f2f3a] leading-tight sm:text-[28px]">{fullName}</h1>
-            <p className="mt-1 text-[14px] text-gray-400">{user.email}</p>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <Badge label={user.role} className={roleBadge[user.role] || ''} />
-              {isDisabled && <Badge label="Disabled" className="bg-[#f5f5f5] text-[#757575]" />}
-              {user.isVerified ? <Badge label="Verified" className="bg-[#e8f5e9] text-[#2e7d32]" /> : <Badge label="Not verified" className="bg-[#fce4ec] text-[#c62828]" />}
-            </div>
-          </div>
-        </div>
-        <Link to={`/admin/users/${id}/edit`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-[#05404a] shrink-0 self-start"><Edit className="h-4 w-4" />Edit User</Link>
-      </div>
+      <UserDetailHeader user={user} fullName={fullName} />
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <CardPanel title="Personal Information">
@@ -183,20 +135,16 @@ export default function UserDetail() {
         </CardPanel>
       </div>
 
-      {/* Event History — full width */}
-      <div className="mt-5">
-        <div className="rounded-xl border border-[#e8ecf0] bg-white">
-          <div className="flex items-center justify-between border-b border-[#f0f0f0] px-5 py-4">
-            <h3 className="text-[15px] font-bold text-[#1f2f3a]">Event History</h3>
-          </div>
-          <div className="px-5 pt-4 pb-0">
-            <div className="mb-4">
-              <FilterBar filters={eventFilters} values={{ keyword: eventKeyword }} onChange={(key, val) => { setEventKeyword(val); setEventPage(1) }} onReset={() => { setEventKeyword(''); setEventPage(1) }} hasActive={eventHasActive} />
-            </div>
-          </div>
-          <BaseTable borderless columns={eventColumns} data={events} page={eventPage} pageSize={PAGE_SIZE} total={eventsTotal} onPageChange={setEventPage} loading={eventsLoading} emptyText="No event history found." keyExtractor={(row) => row.registerTeamId || row.eventId} />
-        </div>
-      </div>
+      <UserDetailEvents
+        events={events}
+        eventsTotal={eventsTotal}
+        eventsLoading={eventsLoading}
+        eventPage={eventPage}
+        eventKeyword={eventKeyword}
+        onPageChange={setEventPage}
+        onFilterChange={(key, val) => { setEventKeyword(val); setEventPage(1) }}
+        onFilterReset={() => { setEventKeyword(''); setEventPage(1) }}
+      />
     </div>
   )
 }

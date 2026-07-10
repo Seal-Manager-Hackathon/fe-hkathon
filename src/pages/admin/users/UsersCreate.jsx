@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { UserPlus, Users, GraduationCap, Briefcase, Shield, X, Copy, Check } from 'lucide-react'
 import { createUser, getUsersCount } from '../../../api/admin'
-import { ROLE_OPTIONS_SELECT_NO_ADMIN } from '../../../constants/adminOptions'
-import SelectInput from '../../../components/SelectInput'
-import FormField from '../../../components/FormField'
-import FormActions from '../../../components/FormActions'
 import { parseError } from '../../../utils/error'
+import UsersCreateForm from './UsersCreateForm'
+import UsersCreateSidebar from './UsersCreateSidebar'
+import UserCreatedModal from './UserCreatedModal'
 
 const INITIAL_FORM = {
   firstName: '',
@@ -38,20 +36,6 @@ function validate(form) {
   return errors
 }
 
-function generatePassword() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$'
-  let pwd = ''
-  for (let i = 0; i < 12; i++) pwd += chars.charAt(Math.floor(Math.random() * chars.length))
-  return pwd
-}
-
-const ROLE_META = {
-  Student: { icon: GraduationCap, color: 'bg-[#e3f2fd] text-[#1565c0] border-[#bbdefb]', iconColor: 'text-[#1565c0]' },
-  Lecturer: { icon: Briefcase, color: 'bg-[#f3e5f5] text-[#7b1fa2] border-[#e1bee7]', iconColor: 'text-[#7b1fa2]' },
-  Staff: { icon: Shield, color: 'bg-[#e8f5e9] text-[#2e7d32] border-[#c8e6c9]', iconColor: 'text-[#2e7d32]' },
-  Admin: { icon: Users, color: 'bg-[#fff3e0] text-[#e65100] border-[#ffe0b2]', iconColor: 'text-[#e65100]' },
-}
-
 export default function UsersCreate() {
   const navigate = useNavigate()
   const [form, setForm] = useState(INITIAL_FORM)
@@ -60,7 +44,6 @@ export default function UsersCreate() {
   const [saving, setSaving] = useState(false)
   const [counts, setCounts] = useState({})
   const [createdUser, setCreatedUser] = useState(null)
-  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     async function fetch() {
@@ -130,27 +113,16 @@ export default function UsersCreate() {
     }
   }
 
+  function handleCloseModal() {
+    setCreatedUser(null)
+    navigate('/admin/users')
+  }
+
   const isFormComplete =
     form.firstName.trim() &&
     form.lastName.trim() &&
     form.email.trim() &&
     form.role
-
-  const totalUsers = Object.values(counts).reduce((a, b) => a + b, 0)
-
-  function handleCopy() {
-    if (!createdUser) return
-    const text = `Email: ${createdUser.email}\nPassword: ${createdUser.password}`
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  function handleCloseModal() {
-    setCreatedUser(null)
-    setCopied(false)
-    navigate('/admin/users')
-  }
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -170,154 +142,20 @@ export default function UsersCreate() {
         </p>
       </div>
 
-      {saveError && (
-        <div className="mb-6 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">
-          {saveError}
-        </div>
-      )}
-
       <div className="grid grid-cols-1 gap-x-10 gap-y-5 lg:grid-cols-[1fr_280px]">
-        <div className="space-y-5">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="First Name" required error={fieldErrors.firstName}>
-              <input
-                type="text"
-                value={form.firstName}
-                onChange={(e) => updateField('firstName', e.target.value)}
-                placeholder="e.g. John"
-                className={`field-input ${fieldErrors.firstName ? 'input-error' : ''}`}
-              />
-            </FormField>
-            <FormField label="Last Name" required error={fieldErrors.lastName}>
-              <input
-                type="text"
-                value={form.lastName}
-                onChange={(e) => updateField('lastName', e.target.value)}
-                placeholder="e.g. Doe"
-                className={`field-input ${fieldErrors.lastName ? 'input-error' : ''}`}
-              />
-            </FormField>
-          </div>
-
-          <FormField label="Email" required error={fieldErrors.email}>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => updateField('email', e.target.value)}
-              placeholder="e.g. staff@fpt.edu.vn"
-              className={`field-input ${fieldErrors.email ? 'input-error' : ''}`}
-            />
-          </FormField>
-
-          <FormField label="Role" required error={fieldErrors.role}>
-            <SelectInput
-              options={ROLE_OPTIONS_SELECT_NO_ADMIN}
-              value={form.role}
-              onChange={(v) => updateField('role', v)}
-            />
-          </FormField>
-
-          <FormActions
-            onSave={handleSave}
-            saving={saving}
-            canSave={isFormComplete}
-            saveLabel="Create User"
-            saveIcon={UserPlus}
-          />
-        </div>
-
-        {/* Sidebar — User counts by role */}
-        <div className="self-start space-y-4">
-          <div className="rounded-xl border border-[#e8ecf0] bg-white shadow-sm overflow-hidden">
-            <div className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-5 py-4">
-              <h4 className="text-[14px] font-bold text-white flex items-center gap-2">
-                <Users className="h-4 w-4 text-[#80deea]" /> Users in System
-              </h4>
-            </div>
-            <div className="divide-y divide-[#f5f5f5]">
-              <div className="px-5 py-3">
-                <p className="text-[13px] text-gray-400">Total</p>
-                <p className="text-[22px] font-bold text-[#1f2f3a]">{totalUsers}</p>
-              </div>
-              {Object.entries(ROLE_META).map(([role, meta]) => {
-                const Icon = meta.icon
-                return (
-                  <div key={role} className="flex items-center gap-3 px-5 py-3">
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg border ${meta.color.replace(/text-\S+/, '')}`}>
-                      <Icon className={`h-4 w-4 ${meta.iconColor}`} />
-                    </div>
-                    <div>
-                      <p className="text-[11px] uppercase tracking-wider text-gray-400">{role}</p>
-                      <p className="text-[14px] font-semibold text-[#1f2f3a]">{counts[role] ?? '—'}</p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
+        <UsersCreateForm
+          form={form}
+          fieldErrors={fieldErrors}
+          saveError={saveError}
+          saving={saving}
+          canSave={isFormComplete}
+          onFieldChange={updateField}
+          onSave={handleSave}
+        />
+        <UsersCreateSidebar counts={counts} />
       </div>
 
-      {/* ── User Created Modal ── */}
-      {createdUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px]" onClick={handleCloseModal} />
-          <div className="relative z-10 w-full max-w-[92%] sm:max-w-[420px] rounded-2xl bg-white shadow-2xl animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-[#f0f0f0] px-6 py-4">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e8f5e9]">
-                  <UserPlus className="h-5 w-5 text-[#2e7d32]" />
-                </div>
-                <div>
-                  <h3 className="text-[16px] font-bold text-[#1f2f3a]">User Created</h3>
-                  <p className="text-[12px] text-gray-400">{createdUser.firstName} {createdUser.lastName} · {createdUser.role}</p>
-                </div>
-              </div>
-              <button onClick={handleCloseModal} className="cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="px-6 py-5 space-y-4">
-              <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4 space-y-3">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Email</p>
-                  <p className="text-[15px] font-semibold text-[#1f2f3a] mt-0.5">{createdUser.email}</p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Password</p>
-                  <div className="mt-0.5 flex items-center gap-2">
-                    <code className="rounded-md bg-[#fff3e0] px-3 py-1 text-[15px] font-bold text-[#e65100]">{createdUser.password}</code>
-                    <button onClick={handleCopy} className="cursor-pointer rounded-md p-1.5 text-gray-400 transition-colors hover:bg-gray-200 hover:text-[#064f5d]">
-                      {copied ? <Check className="h-4 w-4 text-[#2e7d32]" /> : <Copy className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Role</p>
-                  <p className="text-[14px] font-semibold text-[#1f2f3a] mt-0.5">{createdUser.role}</p>
-                </div>
-                {createdUser.college && (
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">College</p>
-                    <p className="text-[14px] font-semibold text-[#1f2f3a] mt-0.5">{createdUser.college}</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="rounded-lg border border-[#e3f2fd] bg-[#e8f4fd] px-4 py-3 text-[13px] text-[#1565c0]">
-                Copy the credentials and share with the user. Password is default, user should change it after first login.
-              </div>
-            </div>
-
-            <div className="border-t border-[#f0f0f0] px-6 py-4">
-              <button onClick={handleCloseModal} className="w-full cursor-pointer rounded-lg bg-[#064f5d] px-4 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a]">
-                Done — Go to Users
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <UserCreatedModal createdUser={createdUser} onClose={handleCloseModal} />
     </div>
   )
 }
