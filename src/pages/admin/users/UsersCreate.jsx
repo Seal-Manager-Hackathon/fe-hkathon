@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { createUser, getUsersCount } from '../../../api/admin'
 import { parseError } from '../../../utils/error'
+import { toast } from '../../../utils/toast'
 import UsersCreateForm from './UsersCreateForm'
 import UsersCreateSidebar from './UsersCreateSidebar'
 import UserCreatedModal from './UserCreatedModal'
@@ -40,7 +41,6 @@ export default function UsersCreate() {
   const navigate = useNavigate()
   const [form, setForm] = useState(INITIAL_FORM)
   const [fieldErrors, setFieldErrors] = useState({})
-  const [saveError, setSaveError] = useState('')
   const [saving, setSaving] = useState(false)
   const [counts, setCounts] = useState({})
   const [createdUser, setCreatedUser] = useState(null)
@@ -68,7 +68,6 @@ export default function UsersCreate() {
   function updateField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }))
     setFieldErrors((prev) => ({ ...prev, [field]: '' }))
-    setSaveError('')
   }
 
   async function handleSave() {
@@ -79,7 +78,6 @@ export default function UsersCreate() {
     }
 
     setSaving(true)
-    setSaveError('')
     try {
       const result = await createUser({
         email: form.email.trim(),
@@ -88,6 +86,7 @@ export default function UsersCreate() {
         role: form.role,
       })
       setCreatedUser(result)
+      toast.success('User created successfully')
     } catch (err) {
       const { message, errors: apiErrors } = parseError(err)
       if (apiErrors && Object.keys(apiErrors).length > 0) {
@@ -105,7 +104,7 @@ export default function UsersCreate() {
         } else if (message.includes('Invalid Role')) {
           setFieldErrors({ role: 'Invalid role' })
         } else {
-          setSaveError(message)
+          toast.error(message)
         }
       }
     } finally {
@@ -146,7 +145,6 @@ export default function UsersCreate() {
         <UsersCreateForm
           form={form}
           fieldErrors={fieldErrors}
-          saveError={saveError}
           saving={saving}
           canSave={isFormComplete}
           onFieldChange={updateField}

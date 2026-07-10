@@ -7,6 +7,7 @@ import SearchableSelect from '../../../components/SearchableSelect'
 import EntityFormPage from '../../../components/EntityFormPage'
 import { createNotification, getUsers, getTeams } from '../../../api/admin'
 import { TARGET_TYPE_OPTIONS } from '../../../constants/adminOptions'
+import { toast } from '../../../utils/toast'
 
 const TARGET_TYPE_SELECT = [
   { value: '', label: 'Select target...' },
@@ -23,7 +24,6 @@ export default function NotificationsCreate() {
     teamId: '',
   })
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
 
   function updateField(field, value) {
     setForm((prev) => {
@@ -70,7 +70,6 @@ export default function NotificationsCreate() {
   async function handleSave() {
     if (!canSave) return
     setSaving(true)
-    setError('')
     try {
       const payload = {
         title: form.title.trim(),
@@ -84,9 +83,10 @@ export default function NotificationsCreate() {
         payload.teamId = form.teamId
       }
       await createNotification(payload)
+      toast.success('Notification sent')
       navigate('/admin/notifications')
     } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to create notification.')
+      toast.error(err?.response?.data?.message || 'Failed to create notification.')
     } finally {
       setSaving(false)
     }
@@ -104,12 +104,6 @@ export default function NotificationsCreate() {
       onSave={handleSave}
       saving={saving}
     >
-      {error && (
-        <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">
-          {error}
-        </div>
-      )}
-
       <div className="w-full max-w-[640px] space-y-5">
         <FormField label="Title" icon={Bell}>
           <input
