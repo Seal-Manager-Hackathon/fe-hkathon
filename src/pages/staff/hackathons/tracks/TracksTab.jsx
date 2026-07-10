@@ -33,7 +33,7 @@ export default function TracksTab({ eventId }) {
       if (filters.keyword) params.Keyword = filters.keyword
       if (filters.isDisable !== '') params.IsDisable = filters.isDisable === 'true'
       const result = await getTracks(eventId, params)
-      setTracks(result.tracks || [])
+      setTracks(result.items || result.tracks || [])
       setTotalCount(result.totalCount || 0)
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to load tracks.')
