@@ -13,7 +13,7 @@ const TABS = [
 ]
 
 export default function CriteriaTemplateEdit() {
-  const { eventId, roundId, templateId } = useParams()
+  const { roundId, templateId } = useParams()
   const navigate = useNavigate()
 
   const [title, setTitle] = useState('')
@@ -24,7 +24,7 @@ export default function CriteriaTemplateEdit() {
   const [round, setRound] = useState(null)
   const [tab, setTab] = useState('info')
 
-  const fetchItems = useCallback((tId, p) => getCriteriaItems(eventId, tId, p), [eventId])
+  const fetchItems = useCallback((tId, p) => getCriteriaItems(tId, p), [])
 
   useEffect(() => {
     let cancelled = false
@@ -32,7 +32,7 @@ export default function CriteriaTemplateEdit() {
       try {
         const [tpl, r] = await Promise.all([
           getCriteriaTemplateDetail(templateId),
-          getRoundDetail(eventId, roundId).catch(() => null),
+          getRoundDetail(roundId).catch(() => null),
         ])
         if (cancelled) return
         setTitle(tpl.title || '')
@@ -56,7 +56,7 @@ export default function CriteriaTemplateEdit() {
     try {
       await updateCriteriaTemplate(templateId, { title: title.trim(), description })
       toast.success('Template updated!')
-      navigate(`/staff/hackathons/${eventId}/rounds/${roundId}/criteria-templates/${templateId}`)
+      navigate(`/staff/rounds/${roundId}/criteria-templates/${templateId}`)
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to update template.')
     } finally { setSaving(false) }
@@ -86,7 +86,7 @@ export default function CriteriaTemplateEdit() {
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <nav className="mb-5">
-        <button onClick={() => navigate(`/staff/hackathons/${eventId}/rounds/${roundId}/criteria-templates/${templateId}`)} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] hover:underline">
+        <button onClick={() => navigate(`/staff/rounds/${roundId}/criteria-templates/${templateId}`)} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] hover:underline">
           &larr; Back to Template
         </button>
       </nav>
@@ -116,7 +116,7 @@ export default function CriteriaTemplateEdit() {
               <RichTextEditor value={description} onChange={setDescription} placeholder="Template description..." />
             </FormField>
             <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-6">
-              <button onClick={() => navigate(`/staff/hackathons/${eventId}/rounds/${roundId}/criteria-templates/${templateId}`)} className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-[14px] font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
+              <button onClick={() => navigate(`/staff/rounds/${roundId}/criteria-templates/${templateId}`)} className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-[14px] font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
               <button onClick={handleSave} disabled={!canSave} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-[#05404a] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50">
                 <Save className="h-4 w-4" />{saving ? 'Saving...' : 'Save Changes'}
               </button>

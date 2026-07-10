@@ -29,7 +29,7 @@ const memberColumns = [
 const submissionColumns = [
   { key: 'round', header: 'Round', headerIcon: Layers, render: (row) => (
     <div>
-      <Link to={`/staff/hackathons/${row.eventId}/rounds/${row.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.roundName}</Link>
+      <Link to={`/staff/rounds/${row.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.roundName}</Link>
       <p className="text-[12px] text-gray-400">{row.trackTitle}{row.topicTitle ? ` / ${row.topicTitle}` : ''}</p>
     </div>
   )},
@@ -266,7 +266,7 @@ export default function RegisterTeamDetail() {
                 {data.topicId && data.trackId ? <Link to={`/staff/hackathons/${data.eventId}/tracks/${data.trackId}/topics`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.topicTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.topicTitle || '—'}</span>}
               </InfoRow>
               <InfoRow label="Round" icon={Layers}>
-                {data.roundId ? <Link to={`/staff/hackathons/${data.eventId}/rounds/${data.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.roundName || '—'}</Link> : <span className="text-[14px] text-gray-400">—</span>}
+                {data.roundId ? <Link to={`/staff/rounds/${data.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.roundName || '—'}</Link> : <span className="text-[14px] text-gray-400">—</span>}
               </InfoRow>
             </div>
           </CardPanel>

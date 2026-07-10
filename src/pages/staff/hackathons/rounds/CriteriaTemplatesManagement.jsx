@@ -26,7 +26,7 @@ const restoreBtnClass =
 const activateBtnClass =
   'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] transition-colors hover:bg-[#bbdefb] w-[92px]'
 
-function criteriaColumns(eventId, roundId, onDelete, onRestore, onActivate) {
+function criteriaColumns(roundId, onDelete, onRestore, onActivate) {
   return [
     {
       key: 'title',
@@ -64,12 +64,12 @@ function criteriaColumns(eventId, roundId, onDelete, onRestore, onActivate) {
       className: 'text-right',
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
-          <Link to={`/staff/hackathons/${eventId}/rounds/${roundId}/criteria-templates/${row.id}`} className={viewBtnClass}>
+          <Link to={`/staff/rounds/${roundId}/criteria-templates/${row.id}`} className={viewBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
           {!row.isDisable && (
             <>
-              <Link to={`/staff/hackathons/${eventId}/rounds/${roundId}/criteria-templates/${row.id}/edit`} className={viewBtnClass}>
+              <Link to={`/staff/rounds/${roundId}/criteria-templates/${row.id}/edit`} className={viewBtnClass}>
                 <Edit className="h-3.5 w-3.5" /> Edit
               </Link>
               <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
@@ -94,7 +94,7 @@ function criteriaColumns(eventId, roundId, onDelete, onRestore, onActivate) {
 }
 
 export default function CriteriaTemplatesManagement() {
-  const { eventId, roundId } = useParams()
+  const { roundId } = useParams()
   const [templates, setTemplates] = useState([])
   const [totalCount, setTotalCount] = useState(0)
   const [pageIndex, setPageIndex] = useState(1)
@@ -106,8 +106,8 @@ export default function CriteriaTemplatesManagement() {
   const hasActive = Object.entries(filters).some(([, v]) => v !== '')
 
   useEffect(() => {
-    getRoundDetail(eventId, roundId).then((d) => setRound(d)).catch(() => {})
-  }, [eventId, roundId])
+    getRoundDetail(roundId).then((d) => setRound(d)).catch(() => {})
+  }, [roundId])
 
   const fetchTemplates = useCallback(async () => {
     setLoading(true); setError('')
@@ -115,7 +115,7 @@ export default function CriteriaTemplatesManagement() {
       const params = { PageIndex: pageIndex, PageSize: PAGE_SIZE }
       if (filters.keyword) params.Keyword = filters.keyword
       if (filters.isDisable !== '') params.IsDisable = filters.isDisable === 'true'
-      const result = await getCriteriaTemplates(eventId, roundId, params)
+      const result = await getCriteriaTemplates(roundId, params)
       setTemplates(result.items || [])
       setTotalCount(result.totalCount || 0)
     } catch (err) {
@@ -124,7 +124,7 @@ export default function CriteriaTemplatesManagement() {
     } finally {
       setLoading(false)
     }
-  }, [eventId, roundId, pageIndex, filters])
+  }, [roundId, pageIndex, filters])
 
   useEffect(() => { fetchTemplates() }, [fetchTemplates])
 
@@ -188,7 +188,7 @@ export default function CriteriaTemplatesManagement() {
             Criteria Templates {round?.name ? `— ${round.name}` : ''}
           </h1>
         </div>
-        <Link to={`/staff/hackathons/${eventId}/rounds/${roundId}/criteria-templates/create`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto">
+        <Link to={`/staff/rounds/${roundId}/criteria-templates/create`}className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto">
           <Plus className="h-4 w-4" />Create Template
         </Link>
       </div>
@@ -198,7 +198,7 @@ export default function CriteriaTemplatesManagement() {
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
 
       <BaseTable
-        columns={criteriaColumns(eventId, roundId, handleDelete, handleRestore, handleActivate)}
+        columns={criteriaColumns(roundId, handleDelete, handleRestore, handleActivate)}
         data={templates}
         page={pageIndex}
         pageSize={PAGE_SIZE}

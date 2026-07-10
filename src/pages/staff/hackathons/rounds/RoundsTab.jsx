@@ -59,7 +59,7 @@ export default function RoundsTab({ eventId }) {
         </div>
         <BaseTable
           borderless
-          columns={roundColumns(eventId, setNextRoundTarget)}
+          columns={roundColumns(setNextRoundTarget)}
           data={rounds}
           page={pageIndex}
           pageSize={PAGE_SIZE}

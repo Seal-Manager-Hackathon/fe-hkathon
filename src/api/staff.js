@@ -546,13 +546,12 @@ export async function getRounds(eventId, params = {}) {
 }
 
 /**
- * Get round detail by ID.
- * @param {string} eventId
+ * Get round detail by ID (same pattern as admin).
  * @param {string} roundId
  * @returns {Promise<object>}
  */
-export async function getRoundDetail(eventId, roundId) {
-  const { data } = await api.get(`/staff/events/${eventId}/rounds/${roundId}`)
+export async function getRoundDetail(roundId) {
+  const { data } = await api.get(`/staff/rounds/${roundId}`)
   return data.data
 }
 
@@ -623,14 +622,13 @@ export async function swapRounds(eventId, roundId, targetRoundNo) {
 // ============================ CRITERIA TEMPLATES ============================
 
 /**
- * Get criteria templates for a round.
- * @param {string} eventId
+ * Get criteria templates for a round (same pattern as admin).
  * @param {string} roundId
  * @param {Object} [params]
  * @returns {Promise<{ criteriaTemplates: Array, totalCount: number }>}
  */
-export async function getCriteriaTemplates(eventId, roundId, params = {}) {
-  const { data } = await api.get(`/staff/events/${eventId}/rounds/${roundId}/criteria-templates`, { params })
+export async function getCriteriaTemplates(roundId, params = {}) {
+  const { data } = await api.get(`/staff/rounds/${roundId}/criteria-templates`, { params })
   return data.data
 }
 
@@ -645,14 +643,13 @@ export async function getCriteriaTemplateDetail(templateId) {
 }
 
 /**
- * Create a criteria template for a round.
- * @param {string} eventId
+ * Create a criteria template for a round (same pattern as admin).
  * @param {string} roundId
  * @param {object} payload
  * @returns {Promise<{ message: string }>}
  */
-export async function createCriteriaTemplate(eventId, roundId, payload) {
-  const { data } = await api.post(`/staff/events/${eventId}/rounds/${roundId}/criteria-templates`, payload)
+export async function createCriteriaTemplate(roundId, payload) {
+  const { data } = await api.post(`/staff/rounds/${roundId}/criteria-templates`, payload)
   return data
 }
 
@@ -700,14 +697,13 @@ export async function activateCriteriaTemplate(templateId) {
 // ============================ CRITERIA ITEMS ============================
 
 /**
- * Get criteria items for a template.
- * @param {string} eventId
+ * Get criteria items for a template (same pattern as admin).
  * @param {string} templateId
  * @param {Object} [params]
  * @returns {Promise<{ items: Array, totalCount: number }>}
  */
-export async function getCriteriaItems(eventId, templateId, params = {}) {
-  const { data } = await api.get(`/staff/events/${eventId}/criteria-templates/${templateId}/items`, { params })
+export async function getCriteriaItems(templateId, params = {}) {
+  const { data } = await api.get(`/staff/criteria-templates/${templateId}/items`, { params })
   return data.data
 }
 

@@ -164,8 +164,8 @@ function ScoreDetailModal({ scoreId, onClose }) {
                       <tbody className="divide-y divide-[#f0f0f0]">
                         {items.map((item) => {
                           const detail = itemDetails[item.scoreItemId] || {}
-                          const criteriaLink = detail.eventId && detail.roundId && detail.criteriaTemplateId
-                            ? `/staff/hackathons/${detail.eventId}/rounds/${detail.roundId}/criteria-templates/${detail.criteriaTemplateId}`
+                          const criteriaLink = detail.roundId && detail.criteriaTemplateId
+                            ? `/staff/rounds/${detail.roundId}/criteria-templates/${detail.criteriaTemplateId}`
                             : null
                           return (
                           <tr key={item.scoreItemId} className="hover:bg-[#fafbfc]">

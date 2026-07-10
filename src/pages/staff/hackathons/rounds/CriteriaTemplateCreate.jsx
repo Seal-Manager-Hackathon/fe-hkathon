@@ -11,7 +11,7 @@ import { toast } from '../../../../utils/toast'
 const emptyItem = () => ({ name: '', description: '', score: 20 })
 
 export default function CriteriaTemplateCreate() {
-  const { eventId, roundId } = useParams()
+  const { roundId } = useParams()
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -20,8 +20,8 @@ export default function CriteriaTemplateCreate() {
   const [round, setRound] = useState(null)
 
   useEffect(() => {
-    getRoundDetail(eventId, roundId).then((d) => setRound(d)).catch(() => {})
-  }, [eventId, roundId])
+    getRoundDetail(roundId).then((d) => setRound(d)).catch(() => {})
+  }, [roundId])
 
   const updateItem = (i, field, val) => {
     setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, [field]: val } : it)))
@@ -36,9 +36,9 @@ export default function CriteriaTemplateCreate() {
     if (!canSave) return
     setSaving(true)
     try {
-      await createCriteriaTemplate(eventId, roundId, { title: title.trim(), description, items })
+      await createCriteriaTemplate(roundId, { title: title.trim(), description, items })
       toast.success('Criteria template created!')
-      navigate(`/staff/hackathons/${eventId}/rounds/${roundId}/criteria-templates`)
+      navigate(`/staff/rounds/${roundId}/criteria-templates`)
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to create criteria template.')
     } finally {
@@ -48,7 +48,7 @@ export default function CriteriaTemplateCreate() {
 
   return (
     <EntityFormPage
-      backUrl={`/staff/hackathons/${eventId}/rounds/${roundId}/criteria-templates`}
+      backUrl={`/staff/rounds/${roundId}/criteria-templates`}
       backLabel="Back to Criteria Templates"
       title="Create Criteria Template"
       description={round?.name ? `Round: ${round.name}` : ''}
