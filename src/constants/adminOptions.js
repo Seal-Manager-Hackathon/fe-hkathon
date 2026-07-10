@@ -160,7 +160,7 @@ export const targetTypeBadge = {
 export const REPORT_STATUS_OPTIONS = [
   { value: 'Pending', label: 'Pending' },
   { value: 'Resolved', label: 'Resolved' },
-  { value: 'Rejected', label: 'Rejected' },
+  { value: 'Reject', label: 'Rejected' },
 ]
 
 export const REPORT_STATUS_OPTIONS_ALL = [
@@ -171,7 +171,7 @@ export const REPORT_STATUS_OPTIONS_ALL = [
 export const reportStatusBadge = {
   Pending: 'bg-[#fff3e0] text-[#e65100]',
   Resolved: 'bg-[#e8f5e9] text-[#2e7d32]',
-  Rejected: 'bg-[#fce4ec] text-[#c62828]',
+  Reject: 'bg-[#fce4ec] text-[#c62828]',
 }
 
 export const reportTypeBadge = {

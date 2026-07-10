@@ -43,6 +43,7 @@ export default function ReportsManagement() {
     setPageIndex,
     handleFilterChange,
     handleReset,
+    refetch,
   } = useServerPagination({
     fetchFn: getReports,
     defaultFilters: DEFAULT_VALUES,
@@ -83,20 +84,19 @@ export default function ReportsManagement() {
 
   const handleModalSubmit = useCallback(async (reasonHtml) => {
     const reportId = modal.reportId
-    const newStatus = modal.action === 'resolve' ? 'Resolved' : 'Rejected'
+    const newStatus = modal.action === 'resolve' ? 'Resolved' : 'Reject'
     setModal({ open: false, action: 'resolve', reportId: null })
     setActing(true)
     try {
       await updateReportStatus(reportId, newStatus, reasonHtml)
       toast.success(`Report has been ${newStatus.toLowerCase()}.`)
-      // Refresh the list to reflect status change
-      handleReset()
+      refetch()
     } catch (err) {
       toast.error(err?.response?.data?.message || `Failed to ${newStatus.toLowerCase()} report.`)
     } finally {
       setActing(false)
     }
-  }, [modal.reportId, modal.action, handleReset])
+  }, [modal.reportId, modal.action, refetch])
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">

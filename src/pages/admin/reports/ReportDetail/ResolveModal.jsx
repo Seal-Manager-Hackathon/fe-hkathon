@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { X, CheckCircle, XCircle } from 'lucide-react'
 import RichTextEditor from '../../../../components/RichTextEditor'
 import { cn } from '../../../../utils/cn'
@@ -18,6 +18,11 @@ export default function ResolveModal({ action, open, onClose, onSubmit, submitti
     if (!reason.trim()) return
     onSubmit(reason)
   }, [reason, onSubmit])
+
+  // Clear reason when modal opens
+  useEffect(() => {
+    if (open) setReason('')
+  }, [open])
 
   if (!open) return null
 

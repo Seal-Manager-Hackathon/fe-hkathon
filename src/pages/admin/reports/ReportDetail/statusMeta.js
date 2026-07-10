@@ -27,7 +27,7 @@ export const STATUS_META = {
     stepperLine: 'bg-emerald-300',
     stepperLabel: 'text-emerald-700',
   },
-  Rejected: {
+  Reject: {
     heroBg: 'bg-gradient-to-br from-rose-100/70 via-rose-50/40 to-white',
     heroBorder: 'border-rose-300',
     heroAccent: 'bg-rose-500',
@@ -45,7 +45,8 @@ export const STATUS_META = {
 export const STATUS_STEPPER_STEPS = (status) => {
   const isDone = status !== 'Pending'
   const isResolved = status === 'Resolved'
-  const isRejected = status === 'Rejected'
+  const isRejected = status === 'Reject'
+  const outcomeLabel = isDone ? (isResolved ? 'Resolved' : 'Rejected') : 'Outcome'
   return [
     {
       key: 'pending',
@@ -54,7 +55,7 @@ export const STATUS_STEPPER_STEPS = (status) => {
     },
     {
       key: 'outcome',
-      label: isDone ? (isResolved ? 'Resolved' : 'Rejected') : 'Outcome',
+      label: outcomeLabel,
       done: isDone,
       rejected: isRejected,
     },

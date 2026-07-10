@@ -32,7 +32,7 @@ export default function HeroCard({
                 )}
               >
                 <span className={cn('h-2 w-2 rounded-full ring-2 ring-white', meta.dot)} />
-                {report.status}
+                {report.status === 'Reject' ? 'Rejected' : report.status}
               </span>
               {/* Type badge */}
               <Badge
