@@ -127,7 +127,7 @@ export default function CriteriaTemplateEdit() {
 
       {/* Tab: Criteria Items */}
       {tab === 'items' && (
-        <CriteriaItemsPanel templateId={templateId} fetchItemsFn={fetchItems} />
+        <CriteriaItemsPanel templateId={templateId} readOnly fetchItemsFn={fetchItems} />
       )}
     </div>
   )

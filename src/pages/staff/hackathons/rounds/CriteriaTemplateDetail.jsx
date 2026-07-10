@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { ArrowLeft, Eye, EyeOff, FileText, Calendar, Clock, CircleCheck, Edit, Target } from 'lucide-react'
+import { ArrowLeft, Eye, EyeOff, FileText, Calendar, Clock, Target } from 'lucide-react'
 import { getCriteriaTemplateDetail, getRoundDetail, getCriteriaItems } from '../../../../api/staff'
 import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
 import CriteriaItemsPanel from '../../../../components/CriteriaItemsPanel'
-import { formatDateTime, formatDate } from '../../../../utils/format'
+import { formatDate } from '../../../../utils/format'
 import { cn } from '../../../../utils/cn'
 
 export default function CriteriaTemplateDetail() {
@@ -18,7 +18,6 @@ export default function CriteriaTemplateDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState(tabParam === 'items' ? 'items' : 'description')
-  const [itemsCounts, setItemsCounts] = useState({ active: 0, total: 0 })
   const fetchItems = useCallback((tId, p) => getCriteriaItems(tId, p), [])
 
   useEffect(() => {
@@ -70,8 +69,6 @@ export default function CriteriaTemplateDetail() {
     )
   }
 
-  const templateItems = template.items || []
-  const totalScore = templateItems.reduce((sum, i) => sum + (Number(i.score) || 0), 0)
   const isDeleted = template.isDisable
 
   return (
@@ -98,33 +95,20 @@ export default function CriteriaTemplateDetail() {
               <span className="inline-flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" />Updated {formatDate(template.updatedAt)}</span>
             </div>
           </div>
-          {!isDeleted && (
-            <Link to={`/staff/rounds/${roundId}/criteria-templates/${templateId}/edit`} className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 text-[14px] font-semibold text-white backdrop-blur-sm border border-white/20 hover:bg-white/25 active:scale-[0.97] shrink-0 self-start">
-              <Edit className="h-4 w-4" />Edit Template
-            </Link>
-          )}
         </div>
-      </div>
-
-      {/* Stats */}
-      <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatCard icon={<CircleCheck className="h-5 w-5" />} label="Total Score" value={itemsCounts.total > 0 ? `${itemsCounts.activeScore ?? totalScore}/${itemsCounts.maxScore}` : totalScore} color="text-emerald-500" bg="bg-emerald-50" border="border-emerald-100" />
-        <StatCard icon={<Eye className="h-5 w-5" />} label="Criteria Items" value={itemsCounts.total > 0 ? `${itemsCounts.active}/${itemsCounts.total}` : templateItems.length} color="text-violet-500" bg="bg-violet-50" border="border-violet-100" />
-        <StatCard icon={<Calendar className="h-5 w-5" />} label="Created" value={formatDate(template.createdAt)} color="text-blue-500" bg="bg-blue-50" border="border-blue-100" mono />
-        <StatCard icon={<Clock className="h-5 w-5" />} label="Updated" value={formatDate(template.updatedAt)} color="text-orange-500" bg="bg-orange-50" border="border-orange-100" mono />
       </div>
 
       {/* Tabs */}
       <div className="rounded-2xl border border-[#e8ecf0] bg-white shadow-sm overflow-hidden">
         <div className="flex border-b border-slate-100 bg-[#fafbfc]">
           <TabBtn active={activeTab === 'description'} onClick={() => setTab('description')} icon={FileText} label="Description" />
-          <TabBtn active={activeTab === 'items'} onClick={() => setTab('items')} icon={Eye} label={`Items (${itemsCounts.total > 0 ? `${itemsCounts.active}/${itemsCounts.total}` : templateItems.length})`} />
+          <TabBtn active={activeTab === 'items'} onClick={() => setTab('items')} icon={Eye} label="Items" />
         </div>
         <div className="p-5 sm:p-6">
           {activeTab === 'description' ? (
             <RichTextViewer content={template.description || 'No description provided.'} />
           ) : (
-            <CriteriaItemsPanel templateId={templateId} onCountsChange={setItemsCounts} fetchItemsFn={fetchItems} />
+            <CriteriaItemsPanel templateId={templateId} readOnly fetchItemsFn={fetchItems} />
           )}
         </div>
       </div>
@@ -138,14 +122,5 @@ function TabBtn({ active, onClick, icon: Icon, label }) {
       <span className="inline-flex items-center gap-2"><Icon className={cn('h-4 w-4 transition-colors duration-200', active ? 'text-[#064f5d]' : 'text-slate-400')} />{label}</span>
       {active && <span className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-[#064f5d]" />}
     </button>
-  )
-}
-
-function StatCard({ icon, label, value, color, bg, border, mono = false }) {
-  return (
-    <div className={`rounded-2xl border ${border} ${bg} p-4 sm:p-5 flex flex-col gap-1.5 transition-shadow hover:shadow-sm`}>
-      <div className="flex items-center gap-2"><span className={color}>{icon}</span><span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{label}</span></div>
-      <p className={`font-bold text-slate-800 ${mono ? 'text-[12px] sm:text-[13px]' : 'text-[18px] sm:text-[22px]'}`}>{value}</p>
-    </div>
   )
 }

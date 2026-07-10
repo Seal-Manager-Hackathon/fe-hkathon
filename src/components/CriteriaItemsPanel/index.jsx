@@ -49,6 +49,7 @@ function ItemModal({ title, onClose, children }) {
 export default function CriteriaItemsPanel({
   templateId,
   onCountsChange,
+  readOnly = false,
   fetchItemsFn = getCriteriaItems,
   createItemFn = createCriteriaItem,
   updateItemFn = updateCriteriaItem,
@@ -76,9 +77,9 @@ export default function CriteriaItemsPanel({
     if (!templateId) return
     setItemsLoading(true)
     try {
-      const params = { pageIndex: itemPage, pageSize: ITEMS_PER_PAGE }
-      if (itemKeyword) params.keyword = itemKeyword
-      if (itemIsDisable !== '') params.isDisable = itemIsDisable === 'true'
+      const params = { PageIndex: itemPage, PageSize: ITEMS_PER_PAGE }
+      if (itemKeyword) params.Keyword = itemKeyword
+      if (itemIsDisable !== '') params.IsDisable = itemIsDisable === 'true'
       const result = await fetchItemsFn(templateId, params)
       setItems(result.items || [])
       setItemsTotal(result.totalCount || 0)
@@ -92,8 +93,8 @@ export default function CriteriaItemsPanel({
     if (!templateId || !onCountsChange) return
     try {
       const [activeRes, totalRes] = await Promise.all([
-        fetchItemsFn(templateId, { pageIndex: 1, pageSize: 1, isDisable: false }),
-        fetchItemsFn(templateId, { pageIndex: 1, pageSize: 1 }),
+        fetchItemsFn(templateId, { PageIndex: 1, PageSize: 1, IsDisable: false }),
+        fetchItemsFn(templateId, { PageIndex: 1, PageSize: 1 }),
       ])
       const totalCount = totalRes.totalCount || 0
       const activeCount = activeRes.totalCount || 0
@@ -102,7 +103,7 @@ export default function CriteriaItemsPanel({
       let maxScore = 0
       let activeScore = 0
       if (totalCount > 0) {
-        const allRes = await fetchItemsFn(templateId, { pageIndex: 1, pageSize: totalCount })
+        const allRes = await fetchItemsFn(templateId, { PageIndex: 1, PageSize: totalCount })
         const allItems = allRes.items || []
         for (const item of allItems) {
           const s = Number(item.score) || 0
@@ -189,10 +190,8 @@ export default function CriteriaItemsPanel({
 
   const hasActive = itemKeyword !== '' || itemIsDisable !== ''
   const btnClass = 'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]'
-  const restoreClass = 'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9] w-[92px]'
-  const dangerClass = 'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2] w-[92px]'
 
-  const itemColumns = [
+  const baseColumns = [
     { key: 'name', header: 'Name', headerIcon: FileText, render: (row) => <span className="text-[14px] font-semibold text-[#064f5d]">{row.name}</span> },
     { key: 'score', header: 'Score', headerIcon: Hash, render: (row) => {
       const s = Number(row.score) || 0; const pct = Math.round((s / 100) * 100)
@@ -202,23 +201,30 @@ export default function CriteriaItemsPanel({
     }},
     { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => <Badge label={row.isDisable ? 'Deleted' : 'Active'} className={row.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#e8f5e9] text-[#2e7d32]'} /> },
     { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p> },
-    { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
+  ]
+
+  const actionsColumn = readOnly ? [] : [{
+    key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
       <div className="flex items-center justify-end gap-2">
         <button onClick={() => handleViewItem(row)} className={btnClass}><Eye className="h-3.5 w-3.5" />View</button>
         <button onClick={() => setEditingItem({ ...row })} className={btnClass}><Pencil className="h-3.5 w-3.5" />Edit</button>
         {row.isDisable
-          ? <button onClick={() => handleRestoreItem(row)} className={restoreClass}><RotateCcw className="h-3.5 w-3.5" />Restore</button>
-          : <button onClick={() => handleDeleteItem(row)} className={dangerClass}><Trash2 className="h-3.5 w-3.5" />Delete</button>
+          ? <button onClick={() => handleRestoreItem(row)} className={btnClass}><RotateCcw className="h-3.5 w-3.5" />Restore</button>
+          : <button onClick={() => handleDeleteItem(row)} className={btnClass}><Trash2 className="h-3.5 w-3.5" />Delete</button>
         }
       </div>
-    )},
-  ]
+    ),
+  }]
+
+  const itemColumns = [...baseColumns, ...actionsColumn]
 
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
         <FilterBar filters={itemFilters} values={{ keyword: itemKeyword, isDisable: itemIsDisable }} onChange={handleFilterChange} onReset={handleFilterReset} hasActive={hasActive} />
-        <button onClick={() => { setNewItem({ name: '', description: '', score: 20 }); setCreatingItem(true) }} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white shadow-sm hover:bg-[#05404a]"><Plus className="h-4 w-4" />Create Item</button>
+        {!readOnly && (
+          <button onClick={() => { setNewItem({ name: '', description: '', score: 20 }); setCreatingItem(true) }} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white shadow-sm hover:bg-[#05404a]"><Plus className="h-4 w-4" />Create Item</button>
+        )}
       </div>
       <BaseTable columns={itemColumns} data={items} page={itemPage} pageSize={ITEMS_PER_PAGE} total={itemsTotal} onPageChange={setItemPage} loading={itemsLoading} emptyText="No criteria items found." keyExtractor={(row) => row.id} />
 
