@@ -23,7 +23,7 @@ export default function LoginPage() {
     try {
       const userData = await login({ email, password })
       toast.success('Login successful')
-      navigate(userData.role === 'Admin' ? '/admin' : '/')
+      navigate(userData.role === 'Admin' ? '/admin' : userData.role === 'Staff' ? '/staff' : '/')
     } catch (err) {
       toast.error(getErrorMessage(err))
     } finally {
