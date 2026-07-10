@@ -10,7 +10,7 @@ const URL_TO_ACTIVE_KEY = [
   { match: (p) => p.startsWith('/hackathons'), key: 'hackathons' },
   { match: (p) => p.startsWith('/leaderboard'), key: 'leaderboard' },
   // Admin routes
-  { match: (p) => p.startsWith('/admin/hackathons') || p.startsWith('/admin/rounds'), key: 'hackathons' },
+  { match: (p) => p.startsWith('/admin/hackathons') || p.startsWith('/admin/rounds') || p.startsWith('/admin/tracks') || p.startsWith('/admin/awards'), key: 'hackathons' },
   { match: (p) => p.startsWith('/admin/leaderboard'), key: 'leaderboard' },
   { match: (p) => p.startsWith('/admin/teams'), key: 'teams' },
   { match: (p) => p.startsWith('/admin/users'), key: 'users' },
@@ -18,7 +18,7 @@ const URL_TO_ACTIVE_KEY = [
   { match: (p) => p.startsWith('/admin/reports'), key: 'reports' },
   { match: (p) => p === '/admin' || p === '/admin/', key: 'dashboard' },
   // Staff routes
-  { match: (p) => p.startsWith('/staff/hackathons') || p.startsWith('/staff/rounds'), key: 'hackathons' },
+  { match: (p) => p.startsWith('/staff/hackathons') || p.startsWith('/staff/rounds') || p.startsWith('/staff/tracks') || p.startsWith('/staff/awards'), key: 'hackathons' },
   { match: (p) => p.startsWith('/staff/leaderboard'), key: 'leaderboard' },
   { match: (p) => p.startsWith('/staff/teams'), key: 'teams' },
   { match: (p) => p.startsWith('/staff/users'), key: 'users' },
