@@ -50,7 +50,7 @@ export default function TopicDetail() {
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6">
         <Link to={backUrl} className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
-          <ArrowLeft className="h-4 w-4" /> Back to Event
+          <ArrowLeft className="h-4 w-4" /> Back to Topics
         </Link>
       </div>
 
