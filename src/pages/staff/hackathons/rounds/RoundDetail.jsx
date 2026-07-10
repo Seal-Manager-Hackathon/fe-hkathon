@@ -16,7 +16,7 @@ const statusBadge = {
 }
 
 export default function RoundDetail() {
-  const { roundId } = useParams()
+  const { eventId, roundId } = useParams()
   const [round, setRound] = useState(null)
   const [event, setEvent] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -27,7 +27,7 @@ export default function RoundDetail() {
     async function fetch() {
       setLoading(true); setError('')
       try {
-        const data = await getRoundDetail(roundId)
+        const data = await getRoundDetail(eventId, roundId)
         if (!cancelled) {
           setRound(data)
           if (data?.eventId) {

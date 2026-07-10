@@ -9,7 +9,7 @@ import { formatDateTime, formatDate } from '../../../../utils/format'
 import { cn } from '../../../../utils/cn'
 
 export default function CriteriaTemplateDetail() {
-  const { roundId, templateId } = useParams()
+  const { eventId, roundId, templateId } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
   const tabParam = searchParams.get('tab')
 
@@ -36,14 +36,14 @@ export default function CriteriaTemplateDetail() {
         const data = await getCriteriaTemplateDetail(templateId)
         if (cancelled) return
         setTemplate(data)
-        try { const r = await getRoundDetail(roundId); if (!cancelled) setRound(r) } catch {}
+        try { const r = await getRoundDetail(eventId, roundId); if (!cancelled) setRound(r) } catch {}
       } catch (err) {
         if (!cancelled) setError(err?.response?.data?.message || 'Failed to load template.')
       } finally { if (!cancelled) setLoading(false) }
     }
     fetch()
     return () => { cancelled = true }
-  }, [roundId, templateId])
+  }, [eventId, roundId, templateId])
 
   if (loading) {
     return (
@@ -62,7 +62,7 @@ export default function CriteriaTemplateDetail() {
       <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
         <div className="mb-4 rounded-full bg-rose-50 p-4"><EyeOff className="h-8 w-8 text-rose-400" /></div>
         <p className="text-[18px] font-semibold text-gray-500">{error.includes('Not Found') ? 'Template not found' : error}</p>
-        <Link to={`/staff/rounds/${roundId}/criteria-templates`} className="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-[#05404a]">
+        <Link to={`/staff/hackathons/${eventId}/rounds/${roundId}/criteria-templates`} className="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-[#05404a]">
           <ArrowLeft className="h-4 w-4" /> Back to Templates
         </Link>
       </div>
@@ -76,7 +76,7 @@ export default function CriteriaTemplateDetail() {
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <nav className="mb-5">
-        <Link to={`/staff/rounds/${roundId}/criteria-templates`} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] hover:text-[#05404a] hover:underline">
+        <Link to={`/staff/hackathons/${eventId}/rounds/${roundId}/criteria-templates`} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] hover:text-[#05404a] hover:underline">
           <ArrowLeft className="h-4 w-4" /> Back to Criteria Templates
         </Link>
       </nav>
@@ -98,7 +98,7 @@ export default function CriteriaTemplateDetail() {
             </div>
           </div>
           {!isDeleted && (
-            <Link to={`/staff/rounds/${roundId}/criteria-templates/${templateId}/edit`} className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 text-[14px] font-semibold text-white backdrop-blur-sm border border-white/20 hover:bg-white/25 active:scale-[0.97] shrink-0 self-start">
+            <Link to={`/staff/hackathons/${eventId}/rounds/${roundId}/criteria-templates/${templateId}/edit`}className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 text-[14px] font-semibold text-white backdrop-blur-sm border border-white/20 hover:bg-white/25 active:scale-[0.97] shrink-0 self-start">
               <Edit className="h-4 w-4" />Edit Template
             </Link>
           )}

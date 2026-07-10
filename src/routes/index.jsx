@@ -182,6 +182,11 @@ export const routes = [
       { path: ':eventId/awards/create', element: <Suspense fallback={<RouteFallback />}><StaffAwardCreate /></Suspense> },
       { path: ':eventId/awards/:awardId/edit', element: <Suspense fallback={<RouteFallback />}><StaffAwardEdit /></Suspense> },
       { path: ':eventId/awards/:awardId', element: <Suspense fallback={<RouteFallback />}><StaffAwardDetail /></Suspense> },
+      { path: ':eventId/rounds/:roundId/criteria-templates/create', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateCreate /></Suspense> },
+      { path: ':eventId/rounds/:roundId/criteria-templates/:templateId/edit', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateEdit /></Suspense> },
+      { path: ':eventId/rounds/:roundId/criteria-templates/:templateId', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateDetail /></Suspense> },
+      { path: ':eventId/rounds/:roundId/criteria-templates', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplatesManagement /></Suspense> },
+      { path: ':eventId/rounds/:roundId', element: <Suspense fallback={<RouteFallback />}><StaffRoundDetail /></Suspense> },
     ]},
     { path: 'users', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><StaffUsersManagement /></Suspense> },
@@ -205,11 +210,6 @@ export const routes = [
     { path: 'register-teams/:registerTeamId/edit', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamEdit /></Suspense> },
     { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamDetail /></Suspense> },
     { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><StaffSubmissionDetail /></Suspense> },
-    { path: 'rounds/:roundId/criteria-templates/create', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateCreate /></Suspense> },
-    { path: 'rounds/:roundId/criteria-templates/:templateId/edit', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateEdit /></Suspense> },
-    { path: 'rounds/:roundId/criteria-templates/:templateId', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateDetail /></Suspense> },
-    { path: 'rounds/:roundId/criteria-templates', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplatesManagement /></Suspense> },
-    { path: 'rounds/:roundId', element: <Suspense fallback={<RouteFallback />}><StaffRoundDetail /></Suspense> },
     { path: 'my-notifications', element: <Suspense fallback={<RouteFallback />}><StaffMyNotifications /></Suspense> },
     { path: 'profile', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><StaffProfile /></Suspense> },

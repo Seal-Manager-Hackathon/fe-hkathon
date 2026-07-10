@@ -547,11 +547,12 @@ export async function getRounds(eventId, params = {}) {
 
 /**
  * Get round detail by ID.
+ * @param {string} eventId
  * @param {string} roundId
  * @returns {Promise<object>}
  */
-export async function getRoundDetail(roundId) {
-  const { data } = await api.get(`/staff/rounds/${roundId}`)
+export async function getRoundDetail(eventId, roundId) {
+  const { data } = await api.get(`/staff/events/${eventId}/rounds/${roundId}`)
   return data.data
 }
 
