@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Eye, Pencil, Trash2, RotateCcw, Plus, X, Hash, CircleCheck, FileText, Calendar, Search, MoreHorizontal } from 'lucide-react'
 import {
   getCriteriaTemplateDetail,
+  getCriteriaItems,
   getCriteriaItemDetail,
   createCriteriaItem,
   updateCriteriaItem,
