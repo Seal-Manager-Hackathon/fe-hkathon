@@ -6,15 +6,15 @@ import { UserPlus, X, Copy, Check } from 'lucide-react'
  * @param {{ createdUser: object|null, onClose: () => void }} props
  */
 export default function UserCreatedModal({ createdUser, onClose }) {
-  const [copied, setCopied] = useState(false)
+  const [emailCopied, setEmailCopied] = useState(false)
+  const [passCopied, setPassCopied] = useState(false)
 
   if (!createdUser) return null
 
-  function handleCopy() {
-    const text = `Email: ${createdUser.email}\nPassword: ${createdUser.password}`
+  function handleCopy(text, setter) {
     navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    setter(true)
+    setTimeout(() => setter(false), 2000)
   }
 
   return (
@@ -40,14 +40,19 @@ export default function UserCreatedModal({ createdUser, onClose }) {
           <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4 space-y-3">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Email</p>
-              <p className="text-[15px] font-semibold text-[#1f2f3a] mt-0.5">{createdUser.email}</p>
+              <div className="mt-0.5 flex items-center gap-2">
+                <p className="text-[15px] font-semibold text-[#1f2f3a]">{createdUser.email}</p>
+                <button onClick={() => handleCopy(createdUser.email, setEmailCopied)} className="cursor-pointer rounded-md p-1.5 text-gray-400 transition-colors hover:bg-gray-200 hover:text-[#064f5d]">
+                  {emailCopied ? <Check className="h-4 w-4 text-[#2e7d32]" /> : <Copy className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Password</p>
               <div className="mt-0.5 flex items-center gap-2">
                 <code className="rounded-md bg-[#fff3e0] px-3 py-1 text-[15px] font-bold text-[#e65100]">{createdUser.password}</code>
-                <button onClick={handleCopy} className="cursor-pointer rounded-md p-1.5 text-gray-400 transition-colors hover:bg-gray-200 hover:text-[#064f5d]">
-                  {copied ? <Check className="h-4 w-4 text-[#2e7d32]" /> : <Copy className="h-4 w-4" />}
+                <button onClick={() => handleCopy(createdUser.password, setPassCopied)} className="cursor-pointer rounded-md p-1.5 text-gray-400 transition-colors hover:bg-gray-200 hover:text-[#064f5d]">
+                  {passCopied ? <Check className="h-4 w-4 text-[#2e7d32]" /> : <Copy className="h-4 w-4" />}
                 </button>
               </div>
             </div>
