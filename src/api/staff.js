@@ -784,51 +784,6 @@ export async function getTrackDetail(eventId, trackId) {
 }
 
 /**
- * Create a track in an event.
- * @param {string} eventId
- * @param {object} payload
- * @returns {Promise<{ message: string }>}
- */
-export async function createTrack(eventId, payload) {
-  const { data } = await api.post(`/staff/events/${eventId}/tracks`, payload)
-  return data
-}
-
-/**
- * Update a track.
- * @param {string} eventId
- * @param {string} trackId
- * @param {object} payload
- * @returns {Promise<{ message: string }>}
- */
-export async function updateTrack(eventId, trackId, payload) {
-  const { data } = await api.patch(`/staff/events/${eventId}/tracks/${trackId}`, payload)
-  return data
-}
-
-/**
- * Soft-delete a track.
- * @param {string} trackId
- * @returns {Promise<{ message: string }>}
- */
-export async function deleteTrack(trackId) {
-  const { data } = await api.post(`/staff/tracks/${trackId}/delete`)
-  return data
-}
-
-/**
- * Restore a soft-deleted track.
- * @param {string} trackId
- * @returns {Promise<{ message: string }>}
- */
-export async function restoreTrack(trackId) {
-  const { data } = await api.post(`/staff/tracks/${trackId}/restore`)
-  return data
-}
-
-// ============================ TOPICS ============================
-
-/**
  * Get topics for a track.
  * @param {string} trackId
  * @param {Object} [params]
