@@ -1240,6 +1240,16 @@ export async function getScoreItemDetail(scoreItemId) {
 // ============================ LEADERBOARD ============================
 
 /**
+ * Get round leaderboard.
+ * @param {string} roundId
+ * @param {Object} [params]
+ */
+export async function getRoundLeaderboard(roundId, params = {}) {
+  const { data } = await api.get(`/staff/rounds/${roundId}/leaderboard`, { params })
+  return data.data
+}
+
+/**
  * Get event leaderboard.
  * @param {string} eventId
  * @param {Object} [params]

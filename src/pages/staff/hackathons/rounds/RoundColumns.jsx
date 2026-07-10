@@ -1,4 +1,4 @@
-import { Eye, Hash, Calendar, Play, Flag, Users, CircleCheck, ClipboardList, TrendingUp } from 'lucide-react'
+import { Eye, Hash, Calendar, Play, Flag, Users, CircleCheck, ClipboardList, TrendingUp, BarChart3 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../../components/Badge'
 import { formatDateTime } from '../../../../utils/format'
@@ -12,7 +12,10 @@ const criteriaBtnClass =
 const nextRoundBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] whitespace-nowrap w-[110px] justify-center'
 
-export function roundColumns(onNextRound) {
+const leaderboardBtnClass =
+  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f3e5f5] px-3 py-1.5 text-[13px] font-semibold text-[#7b1fa2] transition-colors hover:bg-[#e1bee7]'
+
+export function roundColumns(onNextRound, onLeaderboard) {
   return [
     { key: 'roundNo', header: '#', headerIcon: Hash, render: (row) => <span className="text-[13px] text-[#1f2f3a]">Round {row.roundNo}</span> },
     { key: 'name', header: 'Round Name', headerIcon: Calendar, render: (row) => <Link to={`/staff/rounds/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.name}</Link> },
@@ -28,20 +31,25 @@ export function roundColumns(onNextRound) {
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => (
-        <div className="flex items-center justify-end gap-2">
-          <Link to={`/staff/rounds/${row.id}`} className={viewBtnClass}>
-            <Eye className="h-3.5 w-3.5" /> View
-          </Link>
-          {!row.isDisable && (
-            <>
-              <button onClick={() => onNextRound?.(row)} className={nextRoundBtnClass}>
-                <TrendingUp className="h-3.5 w-3.5" /> Team Flow
-              </button>
-              <Link to={`/staff/rounds/${row.id}/criteria-templates`} className={criteriaBtnClass}>
-                <ClipboardList className="h-3.5 w-3.5" /> Criteria
-              </Link>
-            </>
-          )}
+        <div className="flex flex-col items-end gap-1.5">
+          <div className="flex items-center gap-2">
+            <Link to={`/staff/rounds/${row.id}`} className={viewBtnClass}>
+              <Eye className="h-3.5 w-3.5" /> View
+            </Link>
+            {!row.isDisable && (
+              <>
+                <button onClick={() => onNextRound?.(row)} className={nextRoundBtnClass}>
+                  <TrendingUp className="h-3.5 w-3.5" /> Team Flow
+                </button>
+                <Link to={`/staff/rounds/${row.id}/criteria-templates`} className={criteriaBtnClass}>
+                  <ClipboardList className="h-3.5 w-3.5" /> Criteria
+                </Link>
+                <button onClick={() => onLeaderboard?.(row)} className={leaderboardBtnClass}>
+                  <BarChart3 className="h-3.5 w-3.5" /> Leaderboard
+                </button>
+              </>
+            )}
+          </div>
         </div>
       ),
     },

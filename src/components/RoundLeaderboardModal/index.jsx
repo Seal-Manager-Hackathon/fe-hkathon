@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
-import { X, Trophy, Medal, Hash, Users, Target } from 'lucide-react'
+import { X, Trophy, Hash, Users, Target } from 'lucide-react'
 import BaseTable from '../BaseTable'
-import { getRoundLeaderboard } from '../../api/admin'
+import RankIcon from './RankIcon'
 import { cn } from '../../utils/cn'
 
 const PAGE_SIZE = 5
@@ -12,14 +12,18 @@ const rankBadge = {
   3: { bg: 'bg-[#ffedd5]', border: 'border-[#ea580c]/25' },
 }
 
-function RankIcon({ rank }) {
-  if (rank === 1) return <Trophy className="h-4 w-4 text-[#d97706]" fill="#d97706" />
-  if (rank === 2) return <Trophy className="h-4 w-4 text-[#64748b]" fill="#64748b" />
-  if (rank === 3) return <Medal className="h-4 w-4 text-[#ea580c]" />
-  return <span className="text-[13px] font-bold text-[#5a6a73] text-center w-4">#{rank}</span>
-}
-
-export default function RoundLeaderboardModal({ open, onClose, roundId, roundName }) {
+/**
+ * Round leaderboard modal.
+ *
+ * @param {{
+ *   open: boolean,
+ *   onClose: () => void,
+ *   roundId: string,
+ *   roundName: string,
+ *   fetchLeaderboard: (roundId: string, params: object) => Promise<{ items: Array, totalCount: number, pageIndex: number, roundName?: string, eventName?: string }>,
+ * }} props
+ */
+export default function RoundLeaderboardModal({ open, onClose, roundId, roundName, fetchLeaderboard }) {
   const [items, setItems] = useState([])
   const [meta, setMeta] = useState({ totalCount: 0, pageIndex: 1, roundName: '', eventName: '' })
   const [loading, setLoading] = useState(false)
@@ -30,7 +34,7 @@ export default function RoundLeaderboardModal({ open, onClose, roundId, roundNam
     setLoading(true)
     setError('')
     try {
-      const result = await getRoundLeaderboard(roundId, { PageIndex: page, PageSize: PAGE_SIZE })
+      const result = await fetchLeaderboard(roundId, { PageIndex: page, PageSize: PAGE_SIZE })
       setItems(result.items || [])
       setMeta({
         totalCount: result.totalCount || 0,
@@ -44,7 +48,7 @@ export default function RoundLeaderboardModal({ open, onClose, roundId, roundNam
     } finally {
       setLoading(false)
     }
-  }, [roundId, roundName])
+  }, [roundId, roundName, fetchLeaderboard])
 
   useEffect(() => {
     if (open) fetch(1)
@@ -114,7 +118,7 @@ export default function RoundLeaderboardModal({ open, onClose, roundId, roundNam
       <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px]" onClick={onClose} />
 
       <div className="relative z-10 flex max-h-[88vh] w-full max-w-[92%] sm:max-w-[860px] flex-col overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-2xl animate-in fade-in zoom-in-95">
-        {/* ── Header ── */}
+        {/* Header */}
         <div className="shrink-0 flex items-center justify-between border-b border-[#f0f0f0] px-6 py-4">
           <div className="flex items-center gap-3 min-w-0">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#fff3e0]">
@@ -132,12 +136,12 @@ export default function RoundLeaderboardModal({ open, onClose, roundId, roundNam
           </button>
         </div>
 
-        {/* ── Error ── */}
+        {/* Error */}
         {error && (
           <div className="mx-6 mt-4 flex items-start gap-2.5 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>
         )}
 
-        {/* ── Table ── */}
+        {/* Table */}
         <div className="flex-1 min-h-0 overflow-auto">
           <BaseTable
             borderless

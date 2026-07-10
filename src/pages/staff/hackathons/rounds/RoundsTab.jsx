@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import NextRoundModal from '../../../../components/NextRoundModal'
-import { getRounds, getEventRegisterTeams, assignRegisterTeamToNextRound, revertRegisterTeamToPreviousRound } from '../../../../api/staff'
+import RoundLeaderboardModal from '../../../../components/RoundLeaderboardModal'
+import { getRounds, getEventRegisterTeams, assignRegisterTeamToNextRound, revertRegisterTeamToPreviousRound, getRoundLeaderboard } from '../../../../api/staff'
 import { roundColumns } from './RoundColumns'
 import { Search, Hash, Ban } from 'lucide-react'
 
@@ -22,6 +23,7 @@ export default function RoundsTab({ eventId }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [nextRoundTarget, setNextRoundTarget] = useState(null)
+  const [leaderboardTarget, setLeaderboardTarget] = useState(null)
   const [filters, setFilters] = useState(DEFAULT_VALUES)
   const hasActive = Object.entries(filters).some(([, v]) => v !== '')
 
@@ -59,7 +61,7 @@ export default function RoundsTab({ eventId }) {
         </div>
         <BaseTable
           borderless
-          columns={roundColumns(setNextRoundTarget)}
+          columns={roundColumns(setNextRoundTarget, setLeaderboardTarget)}
           data={rounds}
           page={pageIndex}
           pageSize={PAGE_SIZE}
@@ -72,6 +74,14 @@ export default function RoundsTab({ eventId }) {
           minWidth="780px"
         />
       </div>
+
+      <RoundLeaderboardModal
+        open={!!leaderboardTarget}
+        onClose={() => setLeaderboardTarget(null)}
+        roundId={leaderboardTarget?.id}
+        roundName={leaderboardTarget?.name}
+        fetchLeaderboard={getRoundLeaderboard}
+      />
 
       <NextRoundModal
         open={!!nextRoundTarget}

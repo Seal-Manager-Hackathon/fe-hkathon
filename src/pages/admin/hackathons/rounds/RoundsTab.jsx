@@ -5,7 +5,7 @@ import FilterBar from '../../../../components/FilterBar'
 import SwapModal from '../../../../components/SwapModal'
 import NextRoundModal from '../../../../components/NextRoundModal'
 import RoundLeaderboardModal from '../../../../components/RoundLeaderboardModal'
-import { getRounds, getMaxRoundNo, deleteRound, restoreRound, swapRounds, getEventRegisterTeams, assignRegisterTeamToNextRound, revertRegisterTeamToPreviousRound } from '../../../../api/admin'
+import { getRounds, getMaxRoundNo, deleteRound, restoreRound, swapRounds, getEventRegisterTeams, assignRegisterTeamToNextRound, revertRegisterTeamToPreviousRound, getRoundLeaderboard } from '../../../../api/admin'
 import { roundColumns } from './RoundColumns'
 import { toast, confirm } from '../../../../utils/toast'
 import { Search, Hash, Ban, ArrowUpDown } from 'lucide-react'
@@ -187,6 +187,7 @@ export default function RoundsTab({ eventId }) {
         onClose={() => setLeaderboardTarget(null)}
         roundId={leaderboardTarget?.id}
         roundName={leaderboardTarget?.name}
+        fetchLeaderboard={getRoundLeaderboard}
       />
     </>
   )
