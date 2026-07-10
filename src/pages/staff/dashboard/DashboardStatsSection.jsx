@@ -1,6 +1,16 @@
+import {
+  Trophy, Users, UserCheck, Shield,
+  GraduationCap, Briefcase,
+  Layers, CheckCircle, XCircle, Clock,
+} from 'lucide-react'
 import StatCard from '../../../components/StatCard'
 import SectionTitle from '../../../components/SectionTitle'
-import { iconMap } from '../../../data/mockStaffData'
+
+const iconMap = {
+  Trophy, Users, UserCheck, Shield,
+  GraduationCap, Briefcase,
+  Layers, CheckCircle, XCircle, Clock,
+}
 
 /**
  * Renders a stats grid section (Hackathons, Users, Teams) with title and optional view-all link.
