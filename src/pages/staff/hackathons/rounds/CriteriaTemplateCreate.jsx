@@ -36,7 +36,7 @@ export default function CriteriaTemplateCreate() {
     if (!canSave) return
     setSaving(true)
     try {
-      await createCriteriaTemplate(roundId, { title: title.trim(), description, items })
+      await createCriteriaTemplate(eventId, roundId, { title: title.trim(), description, items })
       toast.success('Criteria template created!')
       navigate(`/staff/hackathons/${eventId}/rounds/${roundId}/criteria-templates`)
     } catch (err) {

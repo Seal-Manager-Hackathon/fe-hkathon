@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { FileText, Save, ListChecks } from 'lucide-react'
 import FormField from '../../../../components/FormField'
 import RichTextEditor from '../../../../components/RichTextEditor'
 import CriteriaItemsPanel from '../../../../components/CriteriaItemsPanel'
-import { getCriteriaTemplateDetail, getRoundDetail, updateCriteriaTemplate } from '../../../../api/staff'
+import { getCriteriaTemplateDetail, getRoundDetail, updateCriteriaTemplate, getCriteriaItems } from '../../../../api/staff'
 import { toast } from '../../../../utils/toast'
 
 const TABS = [
@@ -23,6 +23,8 @@ export default function CriteriaTemplateEdit() {
   const [error, setError] = useState('')
   const [round, setRound] = useState(null)
   const [tab, setTab] = useState('info')
+
+  const fetchItems = useCallback((tId, p) => getCriteriaItems(eventId, tId, p), [eventId])
 
   useEffect(() => {
     let cancelled = false
@@ -125,7 +127,7 @@ export default function CriteriaTemplateEdit() {
 
       {/* Tab: Criteria Items */}
       {tab === 'items' && (
-        <CriteriaItemsPanel templateId={templateId} />
+        <CriteriaItemsPanel templateId={templateId} fetchItemsFn={fetchItems} />
       )}
     </div>
   )

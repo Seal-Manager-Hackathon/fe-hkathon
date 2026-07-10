@@ -1,8 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Eye, Pencil, Trash2, RotateCcw, Plus, X, Hash, CircleCheck, FileText, Calendar, Search, MoreHorizontal } from 'lucide-react'
 import {
-  getCriteriaItems, getCriteriaItemDetail, createCriteriaItem,
-  updateCriteriaItem, deleteCriteriaItem, restoreCriteriaItem
+  getCriteriaTemplateDetail,
+  getCriteriaItemDetail,
+  createCriteriaItem,
+  updateCriteriaItem,
+  deleteCriteriaItem,
+  restoreCriteriaItem,
 } from '../../api/admin'
 import Badge from '../Badge'
 import RichTextEditor from '../RichTextEditor'
@@ -28,7 +32,30 @@ function ItemModal({ title, onClose, children }) {
   )
 }
 
-export default function CriteriaItemsPanel({ templateId, onCountsChange }) {
+/**
+ * Criteria items panel — manages criteria items (create, edit, view, delete, restore).
+ *
+ * @param {{
+ *   templateId: string,
+ *   onCountsChange?: (counts: object) => void,
+ *   fetchItemsFn?: (templateId: string, params: object) => Promise<{ items: Array, totalCount: number }>,
+ *   createItemFn?: (templateId: string, payload: object) => Promise<any>,
+ *   updateItemFn?: (itemId: string, payload: object) => Promise<any>,
+ *   deleteItemFn?: (itemId: string) => Promise<any>,
+ *   restoreItemFn?: (itemId: string) => Promise<any>,
+ *   getDetailFn?: (itemId: string) => Promise<object>,
+ * }} props
+ */
+export default function CriteriaItemsPanel({
+  templateId,
+  onCountsChange,
+  fetchItemsFn = getCriteriaItems,
+  createItemFn = createCriteriaItem,
+  updateItemFn = updateCriteriaItem,
+  deleteItemFn = deleteCriteriaItem,
+  restoreItemFn = restoreCriteriaItem,
+  getDetailFn = getCriteriaItemDetail,
+}) {
   const [items, setItems] = useState([])
   const [itemsTotal, setItemsTotal] = useState(0)
   const [itemsLoading, setItemsLoading] = useState(false)
@@ -52,21 +79,21 @@ export default function CriteriaItemsPanel({ templateId, onCountsChange }) {
       const params = { pageIndex: itemPage, pageSize: ITEMS_PER_PAGE }
       if (itemKeyword) params.keyword = itemKeyword
       if (itemIsDisable !== '') params.isDisable = itemIsDisable === 'true'
-      const result = await getCriteriaItems(templateId, params)
+      const result = await fetchItemsFn(templateId, params)
       setItems(result.items || [])
       setItemsTotal(result.totalCount || 0)
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to load items.')
     } finally { setItemsLoading(false) }
-  }, [templateId, itemPage, itemKeyword, itemIsDisable])
+  }, [templateId, itemPage, itemKeyword, itemIsDisable, fetchItemsFn])
 
   // Fetch both active & total counts (unfiltered) to report to parent
   const fetchCounts = useCallback(async () => {
     if (!templateId || !onCountsChange) return
     try {
       const [activeRes, totalRes] = await Promise.all([
-        getCriteriaItems(templateId, { pageIndex: 1, pageSize: 1, isDisable: false }),
-        getCriteriaItems(templateId, { pageIndex: 1, pageSize: 1 }),
+        fetchItemsFn(templateId, { pageIndex: 1, pageSize: 1, isDisable: false }),
+        fetchItemsFn(templateId, { pageIndex: 1, pageSize: 1 }),
       ])
       const totalCount = totalRes.totalCount || 0
       const activeCount = activeRes.totalCount || 0
@@ -75,7 +102,7 @@ export default function CriteriaItemsPanel({ templateId, onCountsChange }) {
       let maxScore = 0
       let activeScore = 0
       if (totalCount > 0) {
-        const allRes = await getCriteriaItems(templateId, { pageIndex: 1, pageSize: totalCount })
+        const allRes = await fetchItemsFn(templateId, { pageIndex: 1, pageSize: totalCount })
         const allItems = allRes.items || []
         for (const item of allItems) {
           const s = Number(item.score) || 0
@@ -85,7 +112,7 @@ export default function CriteriaItemsPanel({ templateId, onCountsChange }) {
       }
       onCountsChange({ active: activeCount, total: totalCount, maxScore, activeScore })
     } catch { /* ignore */ }
-  }, [templateId, onCountsChange])
+  }, [templateId, onCountsChange, fetchItemsFn])
 
   useEffect(() => { fetchItems() }, [fetchItems])
 
@@ -98,7 +125,7 @@ export default function CriteriaItemsPanel({ templateId, onCountsChange }) {
     if (!editingItem) return
     setItemSaving(true)
     try {
-      await updateCriteriaItem(editingItem.id, {
+      await updateItemFn(editingItem.id, {
         name: editingItem.name, description: editingItem.description,
         score: editingItem.score, isDisable: editingItem.isDisable,
       })
@@ -114,20 +141,20 @@ export default function CriteriaItemsPanel({ templateId, onCountsChange }) {
   async function handleDeleteItem(item) {
     const ok = await confirm('Delete Item', `Delete "${item.name}"?`)
     if (!ok) return
-    try { await deleteCriteriaItem(item.id); toast.success('Deleted'); fetchItems(); fetchCounts() }
+    try { await deleteItemFn(item.id); toast.success('Deleted'); fetchItems(); fetchCounts() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed.') }
   }
 
   async function handleRestoreItem(item) {
     const ok = await confirm('Restore Item', `Restore "${item.name}"?`)
     if (!ok) return
-    try { await restoreCriteriaItem(item.id); toast.success('Restored'); fetchItems(); fetchCounts() }
+    try { await restoreItemFn(item.id); toast.success('Restored'); fetchItems(); fetchCounts() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed.') }
   }
 
   async function handleViewItem(item) {
     setViewLoading(true)
-    try { const detail = await getCriteriaItemDetail(item.id); setViewingItem(detail) }
+    try { const detail = await getDetailFn(item.id); setViewingItem(detail) }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed to load.') }
     finally { setViewLoading(false) }
   }
@@ -136,7 +163,7 @@ export default function CriteriaItemsPanel({ templateId, onCountsChange }) {
     if (!newItem.name.trim()) return
     setItemCreating(true)
     try {
-      await createCriteriaItem(templateId, { name: newItem.name.trim(), description: newItem.description || undefined, score: newItem.score })
+      await createItemFn(templateId, { name: newItem.name.trim(), description: newItem.description || undefined, score: newItem.score })
       toast.success('Criteria item created!')
       setCreatingItem(false)
       setNewItem({ name: '', description: '', score: 20 })

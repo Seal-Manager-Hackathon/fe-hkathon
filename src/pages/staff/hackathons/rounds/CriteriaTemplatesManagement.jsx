@@ -112,11 +112,11 @@ export default function CriteriaTemplatesManagement() {
   const fetchTemplates = useCallback(async () => {
     setLoading(true); setError('')
     try {
-      const params = { pageIndex, pageSize: PAGE_SIZE }
-      if (filters.keyword) params.keyword = filters.keyword
-      if (filters.isDisable !== '') params.isDisable = filters.isDisable === 'true'
-      const result = await getCriteriaTemplates(roundId, params)
-      setTemplates(result.templates || [])
+      const params = { PageIndex: pageIndex, PageSize: PAGE_SIZE }
+      if (filters.keyword) params.Keyword = filters.keyword
+      if (filters.isDisable !== '') params.IsDisable = filters.isDisable === 'true'
+      const result = await getCriteriaTemplates(eventId, roundId, params)
+      setTemplates(result.items || [])
       setTotalCount(result.totalCount || 0)
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to load criteria templates.')
@@ -124,7 +124,7 @@ export default function CriteriaTemplatesManagement() {
     } finally {
       setLoading(false)
     }
-  }, [roundId, pageIndex, filters])
+  }, [eventId, roundId, pageIndex, filters])
 
   useEffect(() => { fetchTemplates() }, [fetchTemplates])
 

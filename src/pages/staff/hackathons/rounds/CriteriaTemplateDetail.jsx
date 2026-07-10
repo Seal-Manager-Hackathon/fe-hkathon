@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
 import { ArrowLeft, Eye, EyeOff, FileText, Calendar, Clock, CircleCheck, Edit, Target } from 'lucide-react'
-import { getCriteriaTemplateDetail, getRoundDetail } from '../../../../api/staff'
+import { getCriteriaTemplateDetail, getRoundDetail, getCriteriaItems } from '../../../../api/staff'
 import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
 import CriteriaItemsPanel from '../../../../components/CriteriaItemsPanel'
@@ -11,6 +11,7 @@ import { cn } from '../../../../utils/cn'
 export default function CriteriaTemplateDetail() {
   const { eventId, roundId, templateId } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
+  const fetchItems = useCallback((tId, p) => getCriteriaItems(eventId, tId, p), [eventId])
   const tabParam = searchParams.get('tab')
 
   const [template, setTemplate] = useState(null)
@@ -123,7 +124,7 @@ export default function CriteriaTemplateDetail() {
           {activeTab === 'description' ? (
             <RichTextViewer content={template.description || 'No description provided.'} />
           ) : (
-            <CriteriaItemsPanel templateId={templateId} onCountsChange={setItemsCounts} />
+            <CriteriaItemsPanel templateId={templateId} onCountsChange={setItemsCounts} fetchItemsFn={fetchItems} />
           )}
         </div>
       </div>
