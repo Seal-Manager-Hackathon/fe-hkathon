@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Avatar from '../../../../components/Avatar'
-import { getAssignedUsers, getAvailableLecturers, getAvailableStaff, assignUserToEvent, removeAssign, restoreAssign, getTracks, assignTrackToEventAssign, removeTrackFromAssign, restoreTrackToAssign } from '../../../../api/staff'
+import { getAssignedUsers, getAvailableLecturers, assignUserToEvent, removeAssign, restoreAssign, getTracks, assignTrackToEventAssign, removeTrackFromAssign, restoreTrackToAssign } from '../../../../api/staff'
 import { toast, confirm } from '../../../../utils/toast'
 import { Search, UserPlus, User, Shield, GraduationCap, MoreHorizontal, UserCheck, ClipboardList, Eye, Phone, X, FolderKanban, Ban, Trash2, RotateCcw, CircleCheck } from 'lucide-react'
 
@@ -122,14 +122,11 @@ function availableColumns(openAssignModal, assigning, label) {
 const SUB_TABS = [
   { key: 'assigned', label: 'Assigned', icon: <UserCheck className="h-4 w-4" /> },
   { key: 'lecturers', label: 'Available Lecturers', icon: <GraduationCap className="h-4 w-4" /> },
-  { key: 'staff', label: 'Available Staff', icon: <User className="h-4 w-4" /> },
 ]
 
 // ---- Assign Role Modal ----
-function AssignRoleModal({ open, user, userRole, onClose, onSubmit, submitting }) {
+function AssignRoleModal({ open, user, onClose, onSubmit, submitting }) {
   if (!open) return null
-
-  const isLecturer = userRole === 'lecturer'
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -150,26 +147,16 @@ function AssignRoleModal({ open, user, userRole, onClose, onSubmit, submitting }
         </div>
 
         <div className="mt-5 flex gap-3">
-          {isLecturer ? (
-            <>
-              <button disabled={submitting} onClick={() => onSubmit('Mentor')} className="flex-1 cursor-pointer rounded-xl border-2 border-[#e0e0e0] p-4 text-center transition-all hover:border-[#1565c0] hover:bg-[#e3f2fd] disabled:opacity-50">
-                <UserCheck className="mx-auto mb-2 h-6 w-6 text-[#1565c0]" />
-                <p className="text-[14px] font-bold text-[#1565c0]">Mentor</p>
-                <p className="mt-1 text-[12px] text-gray-400">Guide and support teams</p>
-              </button>
-              <button disabled={submitting} onClick={() => onSubmit('Judge')} className="flex-1 cursor-pointer rounded-xl border-2 border-[#e0e0e0] p-4 text-center transition-all hover:border-[#6a1b9a] hover:bg-[#f3e5f5] disabled:opacity-50">
-                <ClipboardList className="mx-auto mb-2 h-6 w-6 text-[#6a1b9a]" />
-                <p className="text-[14px] font-bold text-[#6a1b9a]">Judge</p>
-                <p className="mt-1 text-[12px] text-gray-400">Evaluate submissions</p>
-              </button>
-            </>
-          ) : (
-            <button disabled={submitting} onClick={() => onSubmit('Staff')} className="flex-1 cursor-pointer rounded-xl border-2 border-[#e0e0e0] p-4 text-center transition-all hover:border-[#e65100] hover:bg-[#fff3e0] disabled:opacity-50">
-              <User className="mx-auto mb-2 h-6 w-6 text-[#e65100]" />
-              <p className="text-[14px] font-bold text-[#e65100]">Staff</p>
-              <p className="mt-1 text-[12px] text-gray-400">Event operations</p>
-            </button>
-          )}
+          <button disabled={submitting} onClick={() => onSubmit('Mentor')} className="flex-1 cursor-pointer rounded-xl border-2 border-[#e0e0e0] p-4 text-center transition-all hover:border-[#1565c0] hover:bg-[#e3f2fd] disabled:opacity-50">
+            <UserCheck className="mx-auto mb-2 h-6 w-6 text-[#1565c0]" />
+            <p className="text-[14px] font-bold text-[#1565c0]">Mentor</p>
+            <p className="mt-1 text-[12px] text-gray-400">Guide and support teams</p>
+          </button>
+          <button disabled={submitting} onClick={() => onSubmit('Judge')} className="flex-1 cursor-pointer rounded-xl border-2 border-[#e0e0e0] p-4 text-center transition-all hover:border-[#6a1b9a] hover:bg-[#f3e5f5] disabled:opacity-50">
+            <ClipboardList className="mx-auto mb-2 h-6 w-6 text-[#6a1b9a]" />
+            <p className="text-[14px] font-bold text-[#6a1b9a]">Judge</p>
+            <p className="mt-1 text-[12px] text-gray-400">Evaluate submissions</p>
+          </button>
         </div>
 
         {submitting && (
@@ -284,16 +271,8 @@ export default function AssignTab({ eventId }) {
   const [lecLoading, setLecLoading] = useState(false)
   const [lecKeyword, setLecKeyword] = useState('')
 
-  // Available Staff
-  const [staff, setStaff] = useState([])
-  const [staffTotal, setStaffTotal] = useState(0)
-  const [staffPage, setStaffPage] = useState(1)
-  const [staffLoading, setStaffLoading] = useState(false)
-  const [staffKeyword, setStaffKeyword] = useState('')
-
   const [assigning, setAssigning] = useState(false)
   const [assignTarget, setAssignTarget] = useState(null)
-  const [assignUserRole, setAssignUserRole] = useState('')
 
   // Track assignment
   const [trackTarget, setTrackTarget] = useState(null)
@@ -328,20 +307,6 @@ export default function AssignTab({ eventId }) {
   }, [eventId, lecPage, lecKeyword])
 
   useEffect(() => { fetchLecturers() }, [fetchLecturers])
-
-  const fetchStaff = useCallback(async () => {
-    setStaffLoading(true)
-    try {
-      const params = { PageIndex: staffPage, PageSize: PAGE_SIZE }
-      if (staffKeyword) params.Keyword = staffKeyword
-      const result = await getAvailableStaff(eventId, params)
-      setStaff(result.items || [])
-      setStaffTotal(result.totalCount || 0)
-    } catch (err) { setStaff([]); setStaffTotal(0) }
-    finally { setStaffLoading(false) }
-  }, [eventId, staffPage, staffKeyword])
-
-  useEffect(() => { fetchStaff() }, [fetchStaff])
 
   async function handleRemove(row) {
     const ok = await confirm('Delete Assignment', `Delete ${row.firstName} ${row.lastName} (${row.eventRole}) from this event?`)
@@ -391,9 +356,8 @@ export default function AssignTab({ eventId }) {
     }
   }
 
-  function openAssignModal(user, role) {
+  function openAssignModal(user) {
     setAssignTarget(user)
-    setAssignUserRole(role)
   }
 
   async function handleAssignRole(role) {
@@ -403,8 +367,7 @@ export default function AssignTab({ eventId }) {
       await assignUserToEvent(eventId, { userId: assignTarget.id, eventRole: role })
       toast.success(`${assignTarget.firstName} ${assignTarget.lastName} assigned as ${role}`)
       setAssignTarget(null)
-      if (assignUserRole === 'staff') fetchStaff()
-      else fetchLecturers()
+      fetchLecturers()
       fetchAssigned()
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to assign.')
@@ -455,23 +418,13 @@ export default function AssignTab({ eventId }) {
           <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
             <FilterBar filters={availFilters} values={{ keyword: lecKeyword }} onChange={(key, val) => { setLecKeyword(val); setLecPage(1) }} onReset={() => { setLecKeyword(''); setLecPage(1) }} hasActive={lecKeyword !== ''} />
           </div>
-          <BaseTable borderless columns={availableColumns((row) => openAssignModal(row, 'lecturer'), assigning, 'Lecturer')} data={lecturers} page={lecPage} pageSize={PAGE_SIZE} total={lecTotal} onPageChange={setLecPage} loading={lecLoading} serverSide emptyText={lecKeyword ? 'No results match.' : 'No available lecturers.'} keyExtractor={(row) => row.id} minWidth="700px" />
-        </div>
-      )}
-
-      {subTab === 'staff' && (
-        <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
-          <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
-            <FilterBar filters={availFilters} values={{ keyword: staffKeyword }} onChange={(key, val) => { setStaffKeyword(val); setStaffPage(1) }} onReset={() => { setStaffKeyword(''); setStaffPage(1) }} hasActive={staffKeyword !== ''} />
-          </div>
-          <BaseTable borderless columns={availableColumns((row) => openAssignModal(row, 'staff'), assigning, 'Staff')} data={staff} page={staffPage} pageSize={PAGE_SIZE} total={staffTotal} onPageChange={setStaffPage} loading={staffLoading} serverSide emptyText={staffKeyword ? 'No results match.' : 'No available staff.'} keyExtractor={(row) => row.id} minWidth="700px" />
+          <BaseTable borderless columns={availableColumns((row) => openAssignModal(row), assigning, 'Lecturer')} data={lecturers} page={lecPage} pageSize={PAGE_SIZE} total={lecTotal} onPageChange={setLecPage} loading={lecLoading} serverSide emptyText={lecKeyword ? 'No results match.' : 'No available lecturers.'} keyExtractor={(row) => row.id} minWidth="700px" />
         </div>
       )}
 
       <AssignRoleModal
         open={!!assignTarget}
         user={assignTarget}
-        userRole={assignUserRole}
         onClose={() => { if (!assigning) setAssignTarget(null) }}
         onSubmit={handleAssignRole}
         submitting={assigning}
