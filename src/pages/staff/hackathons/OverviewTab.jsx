@@ -1,4 +1,4 @@
-import { Calendar, Clock, Users, Hash, Flag, UserPlus, Edit, FileText } from 'lucide-react'
+import { Calendar, Clock, Users, Hash, Flag, UserPlus, FileText } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../components/Badge'
 import RichTextViewer from '../../../components/RichTextViewer'
@@ -38,9 +38,6 @@ export default function OverviewTab({ event }) {
             <span className="inline-flex items-center gap-1.5"><Users className="h-3.5 w-3.5" /> {event.limitTeam ?? '—'} teams</span>
           </div>
         </div>
-        <Link to={`/staff/hackathons/${event.id}/edit`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto">
-          <Edit className="h-4 w-4" />Edit Hackathon
-        </Link>
       </div>
 
       <h3 className="mb-4 text-[15px] font-bold text-[#1f2f3a]">Event Information</h3>
