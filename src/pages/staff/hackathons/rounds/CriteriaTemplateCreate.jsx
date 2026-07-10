@@ -68,14 +68,11 @@ export default function CriteriaTemplateCreate() {
         </FormField>
 
         <div>
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-3">
             <h3 className="text-[15px] font-bold text-[#1f2f3a] flex items-center gap-2">
               <GripVertical className="h-4 w-4 text-gray-400" />
               Criteria Items
             </h3>
-            <button type="button" onClick={addItem} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] transition-colors hover:bg-[#bbdefb]">
-              <Plus className="h-3.5 w-3.5" /> Add Item
-            </button>
           </div>
           <div className="space-y-3">
             {items.map((item, i) => (
@@ -104,6 +101,14 @@ export default function CriteriaTemplateCreate() {
                 </div>
               </div>
             ))}
+            <button
+              type="button"
+              onClick={addItem}
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#d8e0e6] bg-white px-4 py-4 text-[14px] font-semibold text-gray-400 transition-colors hover:border-[#064f5d] hover:text-[#064f5d]"
+            >
+              <Plus className="h-5 w-5" />
+              Add Item
+            </button>
           </div>
         </div>
       </div>
