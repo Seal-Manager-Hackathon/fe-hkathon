@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Plus, Eye, Edit, FileText, Calendar, CircleCheck, MoreHorizontal, Search, Ban, ArrowLeft, Trash2, RotateCcw, Play } from 'lucide-react'
-import { getCriteriaTemplates, getRoundDetail, deleteCriteriaTemplate, restoreCriteriaTemplate, activateCriteriaTemplate } from '../../../../api/staff'
+import { Eye, FileText, Calendar, CircleCheck, Search, Ban, ArrowLeft } from 'lucide-react'
+import { getCriteriaTemplates, getRoundDetail } from '../../../../api/staff'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
 import { formatDateTime } from '../../../../utils/format'
-import { toast, confirm } from '../../../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -19,14 +18,8 @@ const criteriaFilters = [
 
 const viewBtnClass =
   'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] transition-colors hover:bg-[#e8e8e8]'
-const dangerBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2] w-[92px]'
-const restoreBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[92px]'
-const activateBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] transition-colors hover:bg-[#bbdefb] w-[92px]'
 
-function criteriaColumns(roundId, onDelete, onRestore, onActivate) {
+function criteriaColumns(roundId) {
   return [
     {
       key: 'title',
@@ -37,7 +30,7 @@ function criteriaColumns(roundId, onDelete, onRestore, onActivate) {
     {
       key: 'isActive',
       header: 'Active',
-      headerIcon: Play,
+      headerIcon: null,
       render: (row) => row.isActive
         ? <Badge label="Yes" className="bg-[#e8f5e9] text-[#2e7d32]" />
         : <Badge label="No" className="bg-[#f5f5f5] text-[#9e9e9e]" />,
@@ -58,8 +51,7 @@ function criteriaColumns(roundId, onDelete, onRestore, onActivate) {
     },
     {
       key: 'actions',
-      header: 'Actions',
-      headerIcon: MoreHorizontal,
+      header: '',
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => (
@@ -67,26 +59,6 @@ function criteriaColumns(roundId, onDelete, onRestore, onActivate) {
           <Link to={`/staff/rounds/${roundId}/criteria-templates/${row.id}`} className={viewBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
-          {!row.isDisable && (
-            <>
-              <Link to={`/staff/rounds/${roundId}/criteria-templates/${row.id}/edit`} className={viewBtnClass}>
-                <Edit className="h-3.5 w-3.5" /> Edit
-              </Link>
-              <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
-                <Trash2 className="h-3.5 w-3.5" /> Delete
-              </button>
-              {!row.isActive && (
-                <button onClick={() => onActivate?.(row)} className={activateBtnClass}>
-                  <Play className="h-3.5 w-3.5" /> Activate
-                </button>
-              )}
-            </>
-          )}
-          {row.isDisable && (
-            <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
-              <RotateCcw className="h-3.5 w-3.5" /> Restore
-            </button>
-          )}
         </div>
       ),
     },
@@ -138,43 +110,6 @@ export default function CriteriaTemplatesManagement() {
     setPageIndex(1)
   }
 
-  async function handleDelete(template) {
-    const ok = await confirm('Delete Template', `Are you sure you want to delete "${template.title}"?`)
-    if (!ok) return
-    try {
-      await deleteCriteriaTemplate(template.id)
-      toast.success('Template deleted')
-      fetchTemplates()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to delete template.')
-    }
-  }
-
-  async function handleRestore(template) {
-    const ok = await confirm('Restore Template', `Are you sure you want to restore "${template.title}"?`)
-    if (!ok) return
-    try {
-      await restoreCriteriaTemplate(template.id)
-      toast.success('Template restored')
-      fetchTemplates()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to restore template.')
-    }
-  }
-
-  async function handleActivate(template) {
-    try {
-      await activateCriteriaTemplate(template.id)
-      toast.success('Template activated')
-      setTemplates((prev) => prev.map((t) => ({
-        ...t,
-        isActive: t.id === template.id,
-      })))
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to activate template.')
-    }
-  }
-
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-4">
@@ -188,9 +123,6 @@ export default function CriteriaTemplatesManagement() {
             Criteria Templates {round?.name ? `— ${round.name}` : ''}
           </h1>
         </div>
-        <Link to={`/staff/rounds/${roundId}/criteria-templates/create`}className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto">
-          <Plus className="h-4 w-4" />Create Template
-        </Link>
       </div>
 
       <FilterBar filters={criteriaFilters} values={filters} onChange={handleFilterChange} onReset={handleReset} hasActive={hasActive} />
@@ -198,7 +130,7 @@ export default function CriteriaTemplatesManagement() {
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
 
       <BaseTable
-        columns={criteriaColumns(roundId, handleDelete, handleRestore, handleActivate)}
+        columns={criteriaColumns(roundId)}
         data={templates}
         page={pageIndex}
         pageSize={PAGE_SIZE}
