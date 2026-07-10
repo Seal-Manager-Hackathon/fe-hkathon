@@ -1,5 +1,6 @@
 import { Search, CircleDot, Ban, Calendar } from 'lucide-react'
-import { HACKATHON_STATUS_OPTIONS_ALL as STATUS_OPTIONS, DISABLE_OPTIONS } from '../../../constants/adminOptions'
+import { HACKATHON_STATUS_OPTIONS_ALL as STATUS_OPTIONS } from '../../../constants/adminOptions'
+import { DISABLE_OPTIONS } from '../../../constants/commonOptions'
 
 /**
  * Filter descriptor array consumed by FilterBar.

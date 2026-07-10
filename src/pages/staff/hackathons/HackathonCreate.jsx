@@ -5,7 +5,7 @@ import FormField from '../../../components/FormField'
 import EntityFormPage from '../../../components/EntityFormPage'
 import RichTextEditor from '../../../components/RichTextEditor'
 import { createEvent } from '../../../api/staff'
-import { SEASON_OPTIONS_SELECT } from '../../../constants/adminOptions'
+import { SEASON_OPTIONS_SELECT } from '../../../constants/commonOptions'
 import { toast } from '../../../utils/toast'
 
 const INITIAL_FORM = {

@@ -1,7 +1,7 @@
 import { User, FileText, Calendar, Clock, Hash } from 'lucide-react'
 import Badge from '../../../../components/Badge'
 import NotificationTarget from '../../../../components/NotificationTarget'
-import { reportStatusBadge, reportTypeBadge } from '../../../../constants/adminOptions'
+import { reportStatusBadge, reportTypeBadge } from '../../../../constants/commonOptions'
 import { formatDateTime } from '../../../../utils/format'
 
 function InfoItem({ icon: Icon, label, children }) {

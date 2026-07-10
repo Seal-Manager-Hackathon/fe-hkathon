@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Eye, FileText, User, Flag, Calendar, CheckCircle, XCircle } from 'lucide-react'
 import Badge from '../../../components/Badge'
 import NotificationTarget from '../../../components/NotificationTarget'
-import { reportStatusBadge, reportTypeBadge } from '../../../constants/adminOptions'
+import { reportStatusBadge, reportTypeBadge } from '../../../constants/commonOptions'
 import { formatDateTime } from '../../../utils/format'
 
 const actionBtnClass =

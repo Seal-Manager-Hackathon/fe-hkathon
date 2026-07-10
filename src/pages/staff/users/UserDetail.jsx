@@ -5,7 +5,7 @@ import {
   Phone, MapPin, AlertTriangle, Clock, FileText,
 } from 'lucide-react'
 import { getUserDetail, getUserEvents } from '../../../api/staff'
-import { roleBadge } from '../../../constants/adminOptions'
+import { roleBadge } from '../../../constants/commonOptions'
 import { formatDateTime } from '../../../utils/format'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'

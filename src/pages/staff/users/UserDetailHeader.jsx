@@ -2,7 +2,7 @@ import { Edit } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Avatar from '../../../components/Avatar'
 import Badge from '../../../components/Badge'
-import { roleBadge } from '../../../constants/adminOptions'
+import { roleBadge } from '../../../constants/commonOptions'
 
 /**
  * User detail page header with avatar, name, badges, and edit button.

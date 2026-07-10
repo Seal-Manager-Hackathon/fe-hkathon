@@ -1,5 +1,5 @@
 import { Search, CircleDot, Calendar } from 'lucide-react'
-import { MY_STAFF_EVENT_STATUS_OPTIONS as STATUS_OPTIONS } from '../../../constants/adminOptions'
+import { MY_STAFF_EVENT_STATUS_OPTIONS as STATUS_OPTIONS } from '../../../constants/staffOptions'
 
 /**
  * Filter descriptor array consumed by FilterBar.

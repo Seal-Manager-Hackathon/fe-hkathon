@@ -1,5 +1,5 @@
 import { Search, Flag, Calendar } from 'lucide-react'
-import { REPORT_STATUS_OPTIONS_ALL } from '../../../constants/adminOptions'
+import { REPORT_STATUS_OPTIONS_ALL } from '../../../constants/commonOptions'
 
 export const reportsFilters = [
   {

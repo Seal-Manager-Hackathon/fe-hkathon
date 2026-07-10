@@ -6,7 +6,7 @@ import FormField from '../../../components/FormField'
 import EntityFormPage from '../../../components/EntityFormPage'
 import RichTextEditor from '../../../components/RichTextEditor'
 import { getEventDetail, updateEvent } from '../../../api/admin'
-import { SEASON_OPTIONS_SELECT } from '../../../constants/adminOptions'
+import { SEASON_OPTIONS_SELECT } from '../../../constants/commonOptions'
 import { toast } from '../../../utils/toast'
 import { formatDate } from '../../../utils/format'
 

@@ -2,7 +2,7 @@ import FormField from '../../../components/FormField'
 import SelectInput from '../../../components/SelectInput'
 import FormActions from '../../../components/FormActions'
 import { UserPlus } from 'lucide-react'
-import { ROLE_OPTIONS_SELECT_NO_ADMIN } from '../../../constants/adminOptions'
+import { ROLE_OPTIONS_SELECT_NO_ADMIN } from '../../../constants/commonOptions'
 
 /**
  * User creation form component.

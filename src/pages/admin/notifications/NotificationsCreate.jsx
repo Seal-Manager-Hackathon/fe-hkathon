@@ -6,7 +6,7 @@ import SelectInput from '../../../components/SelectInput'
 import SearchableSelect from '../../../components/SearchableSelect'
 import EntityFormPage from '../../../components/EntityFormPage'
 import { createNotification, getUsers, getTeams } from '../../../api/admin'
-import { TARGET_TYPE_OPTIONS } from '../../../constants/adminOptions'
+import { TARGET_TYPE_OPTIONS } from '../../../constants/commonOptions'
 import { toast } from '../../../utils/toast'
 
 const TARGET_TYPE_SELECT = [

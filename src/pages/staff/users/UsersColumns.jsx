@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Eye, Edit, Trash2, RotateCcw, User, Shield, UserCheck, GraduationCap, Calendar, MoreHorizontal, CircleCheck, Ban, Circle, AlertTriangle } from 'lucide-react'
 import Badge from '../../../components/Badge'
 import Avatar from '../../../components/Avatar'
-import { roleBadge } from '../../../constants/adminOptions'
+import { roleBadge } from '../../../constants/commonOptions'
 import { formatDateTime } from '../../../utils/format'
 
 const actionBtnClass =

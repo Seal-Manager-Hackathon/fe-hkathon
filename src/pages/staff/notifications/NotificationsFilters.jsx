@@ -1,5 +1,5 @@
 import { Search, Target, Trash2, Calendar } from 'lucide-react'
-import { TARGET_TYPE_OPTIONS_ALL, DISABLE_OPTIONS } from '../../../constants/adminOptions'
+import { TARGET_TYPE_OPTIONS_ALL, DISABLE_OPTIONS } from '../../../constants/commonOptions'
 
 /**
  * Filter descriptor array consumed by FilterBar.

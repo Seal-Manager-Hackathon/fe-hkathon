@@ -5,7 +5,7 @@ import CardPanel from '../CardPanel'
 import InfoRow from '../InfoRow'
 import Avatar from '../Avatar'
 import { formatDateTime } from '../../utils/format'
-import { roleBadge } from '../../constants/adminOptions'
+import { roleBadge } from '../../constants/commonOptions'
 
 export default function ProfileInfo({ user, editTo, children }) {
   const displayName = user?.firstName

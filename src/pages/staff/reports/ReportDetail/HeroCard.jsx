@@ -1,7 +1,7 @@
 import { cn } from '../../../../utils/cn'
 import { Calendar, Clock } from 'lucide-react'
 import Badge from '../../../../components/Badge'
-import { reportTypeBadge } from '../../../../constants/adminOptions'
+import { reportTypeBadge } from '../../../../constants/commonOptions'
 import { formatDate } from '../../../../utils/format'
 import StatusStepper from './StatusStepper'
 import ActionButtons, { ActionError } from './ActionButtons'

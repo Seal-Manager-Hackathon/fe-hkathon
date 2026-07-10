@@ -1,5 +1,5 @@
 import { Search, Lock, Ban, Calendar } from 'lucide-react'
-import { LOCK_OPTIONS, DISABLE_OPTIONS } from '../../../constants/adminOptions'
+import { LOCK_OPTIONS, DISABLE_OPTIONS } from '../../../constants/commonOptions'
 
 /**
  * Filter descriptor array consumed by FilterBar.

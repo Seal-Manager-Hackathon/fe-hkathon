@@ -1,6 +1,6 @@
 import { useDashboardData } from '../../../hooks/useDashboardData'
 import { statSections, statusBadge } from '../../../data/mockAdminData'
-import { roleBadge } from '../../../constants/adminOptions'
+import { roleBadge } from '../../../constants/commonOptions'
 import DashboardStatsSection from './DashboardStatsSection'
 import RecentActivityPanel from './RecentActivityPanel'
 

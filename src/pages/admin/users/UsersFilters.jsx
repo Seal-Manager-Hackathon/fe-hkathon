@@ -1,5 +1,5 @@
 import { Search, Shield, UserCheck, Ban, Calendar } from 'lucide-react'
-import { ROLE_OPTIONS_ALL, VERIFIED_OPTIONS, DISABLE_OPTIONS } from '../../../constants/adminOptions'
+import { ROLE_OPTIONS_ALL, VERIFIED_OPTIONS, DISABLE_OPTIONS } from '../../../constants/commonOptions'
 
 /**
  * Filter descriptor array consumed by FilterBar.
