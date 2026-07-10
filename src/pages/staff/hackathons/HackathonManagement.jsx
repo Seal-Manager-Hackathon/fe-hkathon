@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus } from 'lucide-react'
-import { getEvents, deleteEvent, restoreEvent } from '../../../api/staff'
+import { getMyStaffEvents, deleteEvent, restoreEvent } from '../../../api/staff'
 import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import { hackathonFilters } from './HackathonFilters'
@@ -14,7 +14,6 @@ const PAGE_SIZE = 10
 const DEFAULT_VALUES = {
   keyword: '',
   status: '',
-  isDisable: '',
   fromDate: '',
   toDate: '',
 }
@@ -22,10 +21,9 @@ const DEFAULT_VALUES = {
 export default function HackathonManagement() {
   const buildParams = useCallback((filters, pageIndex) => {
     const params = { PageIndex: pageIndex, PageSize: PAGE_SIZE }
-    const { keyword, status, isDisable, fromDate, toDate } = filters
+    const { keyword, status, fromDate, toDate } = filters
     if (keyword) params.Keyword = keyword
     if (status) params.Status = status
-    if (isDisable !== '') params.IsDisable = isDisable === 'true'
     if (fromDate) params.FromDate = new Date(fromDate).toISOString()
     if (toDate) params.ToDate = new Date(toDate).toISOString()
     return params
@@ -44,7 +42,7 @@ export default function HackathonManagement() {
     handleReset,
     refetch,
   } = useServerPagination({
-    fetchFn: getEvents,
+    fetchFn: getMyStaffEvents,
     defaultFilters: DEFAULT_VALUES,
     pageSize: PAGE_SIZE,
     buildParams,

@@ -1,5 +1,5 @@
-import { Search, CircleDot, Ban, Calendar } from 'lucide-react'
-import { HACKATHON_STATUS_OPTIONS_ALL as STATUS_OPTIONS, DISABLE_OPTIONS } from '../../../constants/adminOptions'
+import { Search, CircleDot, Calendar } from 'lucide-react'
+import { MY_STAFF_EVENT_STATUS_OPTIONS as STATUS_OPTIONS } from '../../../constants/adminOptions'
 
 /**
  * Filter descriptor array consumed by FilterBar.
@@ -21,14 +21,6 @@ export const hackathonFilters = [
     icon: CircleDot,
     options: STATUS_OPTIONS,
     className: 'w-full sm:w-[180px]',
-  },
-  {
-    type: 'select',
-    key: 'isDisable',
-    label: 'Deleted',
-    icon: Ban,
-    options: DISABLE_OPTIONS,
-    className: 'w-full sm:w-[160px]',
   },
   {
     type: 'date',

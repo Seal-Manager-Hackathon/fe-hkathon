@@ -90,6 +90,23 @@ export async function getEvents(params = {}) {
 }
 
 /**
+ * Get events where the current staff user is assigned as Staff (EventRole = Staff).
+ * Auto-excludes Draft events. Returns all events including disabled ones.
+ * @param {Object} params
+ * @param {string} [params.Keyword]
+ * @param {'Ongoing'|'Upcoming'|'Completed'} [params.Status]
+ * @param {string} [params.FromDate]
+ * @param {string} [params.ToDate]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ items: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getMyStaffEvents(params = {}) {
+  const { data } = await api.get('/staff/events/my-staff', { params })
+  return data.data
+}
+
+/**
  * Get event detail by ID.
  * @param {string} eventId
  * @returns {Promise<object>}

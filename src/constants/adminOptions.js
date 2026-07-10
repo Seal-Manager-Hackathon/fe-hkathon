@@ -57,6 +57,13 @@ export const HACKATHON_STATUS_OPTIONS_ALL = [
   ...HACKATHON_STATUS_OPTIONS,
 ]
 
+export const MY_STAFF_EVENT_STATUS_OPTIONS = [
+  { value: '', label: 'All Statuses' },
+  { value: 'Ongoing', label: 'Ongoing' },
+  { value: 'Upcoming', label: 'Upcoming' },
+  { value: 'Completed', label: 'Completed' },
+]
+
 export const VISIBILITY_OPTIONS = [
   { value: 'Public', label: 'Public' },
   { value: 'Private', label: 'Private' },
