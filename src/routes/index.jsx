@@ -87,6 +87,11 @@ const StaffChapterLeaderboardPage = lazy(() => import('../pages/staff/leaderboar
 const StaffProfile = lazy(() => import('../pages/staff/profile/AdminProfile'))
 const StaffProfileEdit = lazy(() => import('../pages/staff/profile/AdminProfileEdit'))
 
+// Lecture Pages
+const LecturerLayout = lazy(() => import('../layouts/LecturerLayout'))
+const LecturerDashboard = lazy(() => import('../pages/lecture/dashboard/LecturerDashboard'))
+const LecturerHackathonsPage = lazy(() => import('../pages/lecture/hackathons/LecturerHackathonsPage'))
+
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 export const routes = [
@@ -195,6 +200,21 @@ export const routes = [
     { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamDetail /></Suspense> },
     { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><StaffSubmissionDetail /></Suspense> },
     { path: 'my-notifications', element: <Suspense fallback={<RouteFallback />}><StaffMyNotifications /></Suspense> },
+    { path: 'profile', children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffProfile /></Suspense> },
+      { path: 'edit', element: <Suspense fallback={<RouteFallback />}><StaffProfileEdit /></Suspense> },
+    ]},
+  ]},
+  { path: '/lecture', element: <Suspense fallback={<RouteFallback full />}><LecturerLayout /></Suspense>, children: [
+    { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
+    { path: 'hackathons', children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerHackathonsPage /></Suspense> },
+      { path: ':id', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
+    ]},
+    { path: 'teams', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
+    { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
+    { path: 'submissions', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
+    { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
     { path: 'profile', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><StaffProfile /></Suspense> },
       { path: 'edit', element: <Suspense fallback={<RouteFallback />}><StaffProfileEdit /></Suspense> },
