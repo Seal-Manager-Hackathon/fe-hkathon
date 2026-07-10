@@ -6,7 +6,7 @@ import Badge from '../../../../components/Badge'
 import RoundSelectModal from '../../../../components/RoundSelectModal'
 import TrackSelectModal from '../../../../components/TrackSelectModal'
 import TopicSelectModal from '../../../../components/TopicSelectModal'
-import { getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam, assignTrackTopicToRegisterTeam, removeTrackTopicFromRegisterTeam } from '../../../../api/admin'
+import { getRounds, getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam, assignTrackTopicToRegisterTeam, removeTrackTopicFromRegisterTeam } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import { toast, confirm } from '../../../../utils/toast'
 import PromptReason from '../../../../components/PromptReason'
@@ -231,6 +231,7 @@ export default function RegisterTeamsTab({ eventId }) {
       eventId={eventId}
       selectedRoundId={filters.roundId}
       onSelect={handleFilterSelect('roundId', setRoundName)}
+      fetchRounds={getRounds}
     />
 
     <TrackSelectModal

@@ -10,6 +10,7 @@ import Avatar from '../../../../components/Avatar'
 import BaseTable from '../../../../components/BaseTable'
 import PromptReason from '../../../../components/PromptReason'
 import RoundSelectModal from '../../../../components/RoundSelectModal'
+import { getRounds } from '../../../../api/staff'
 import { toast, confirm } from '../../../../utils/toast'
 
 const SUB_PAGE_SIZE = 10
@@ -326,6 +327,7 @@ export default function RegisterTeamDetail() {
         eventId={data?.eventId}
         selectedRoundId={roundId}
         onSelect={handleRoundSelect}
+        fetchRounds={getRounds}
       />
     </div>
   )

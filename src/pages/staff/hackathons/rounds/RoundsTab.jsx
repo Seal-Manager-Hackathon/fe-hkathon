@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import NextRoundModal from '../../../../components/NextRoundModal'
-import { getRounds } from '../../../../api/staff'
+import { getRounds, getEventRegisterTeams, assignRegisterTeamToNextRound, revertRegisterTeamToPreviousRound } from '../../../../api/staff'
 import { roundColumns } from './RoundColumns'
 import { Search, Hash, Ban } from 'lucide-react'
 
@@ -80,6 +80,10 @@ export default function RoundsTab({ eventId }) {
         roundId={nextRoundTarget?.id}
         roundName={nextRoundTarget?.name}
         roundNo={nextRoundTarget?.roundNo}
+        routePrefix="/staff"
+        fetchTeams={getEventRegisterTeams}
+        onAdvance={assignRegisterTeamToNextRound}
+        onRevert={revertRegisterTeamToPreviousRound}
       />
     </>
   )

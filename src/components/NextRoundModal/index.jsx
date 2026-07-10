@@ -7,7 +7,6 @@ import Badge from '../Badge'
 import TrackSelectModal from '../TrackSelectModal'
 import TopicSelectModal from '../TopicSelectModal'
 import { formatDateTime } from '../../utils/format'
-import { getEventRegisterTeams, assignRegisterTeamToNextRound, revertRegisterTeamToPreviousRound } from '../../api/admin'
 import { toast, confirm } from '../../utils/toast'
 
 const PAGE_SIZE = 5
@@ -19,7 +18,7 @@ const statusBadge = {
   Rejected: 'bg-rose-50 text-rose-700 border border-rose-200',
 }
 
-// ── Picker button (same pattern as useSubmissionFilters) ──
+// ── Picker button ──
 function FilterPickButton({ icon: Icon, label, name, allLabel, onClick }) {
   return (
     <div className="relative w-full sm:w-[180px]">
@@ -40,7 +39,28 @@ function FilterPickButton({ icon: Icon, label, name, allLabel, onClick }) {
   )
 }
 
-export default function NextRoundModal({ open, onClose, eventId, roundId, roundName, roundNo }) {
+/**
+ * Round Team Flow modal — shows register teams in the current round
+ * and lets staff advance or revert them to adjacent rounds.
+ *
+ * @param {{
+ *   open: boolean,
+ *   onClose: () => void,
+ *   eventId: string,
+ *   roundId: string,
+ *   roundName: string,
+ *   roundNo: number,
+ *   routePrefix?: string,           // '/admin' or '/staff' (default '/admin')
+ *   fetchTeams: (eventId: string, params: object) => Promise<{ registerTeams: Array, totalCount: number }>,
+ *   onAdvance: (registerTeamId: string) => Promise<{ data: { roundName: string } }>,
+ *   onRevert: (registerTeamId: string) => Promise<{ data: { roundName: string } }>,
+ * }} props
+ */
+export default function NextRoundModal({
+  open, onClose, eventId, roundId, roundName, roundNo,
+  routePrefix = '/admin',
+  fetchTeams, onAdvance, onRevert,
+}) {
   const [items, setItems] = useState([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -50,11 +70,8 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
   const [advancingIds, setAdvancingIds] = useState(new Set())
   const [revertingIds, setRevertingIds] = useState(new Set())
 
-  // ── Display names for picker filters ──
   const [trackName, setTrackName] = useState('')
   const [topicName, setTopicName] = useState('')
-
-  // ── Modal open states ──
   const [trackModalOpen, setTrackModalOpen] = useState(false)
   const [topicModalOpen, setTopicModalOpen] = useState(false)
 
@@ -72,14 +89,14 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
       params.RoundId = roundId
       if (currentFilters.trackId) params.TrackId = currentFilters.trackId
       if (currentFilters.topicId) params.TopicId = currentFilters.topicId
-      const result = await getEventRegisterTeams(eventId, params)
+      const result = await fetchTeams(eventId, params)
       setItems(result.registerTeams || [])
       setTotal(result.totalCount || 0)
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to load register teams.')
       setItems([]); setTotal(0)
     } finally { setLoading(false) }
-  }, [eventId, roundId])
+  }, [eventId, roundId, fetchTeams])
   doFetchRef.current = doFetch
 
   useEffect(() => {
@@ -111,7 +128,7 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
     if (!ok) return
     setAdvancingIds((prev) => { const next = new Set(prev); next.add(row.id); return next })
     try {
-      const result = await assignRegisterTeamToNextRound(row.id)
+      const result = await onAdvance(row.id)
       toast.success(`"${row.teamName}" advanced to ${result.data.roundName}`)
       doFetchRef.current(page, filters)
     } catch (err) {
@@ -126,7 +143,7 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
     if (!ok) return
     setRevertingIds((prev) => { const next = new Set(prev); next.add(row.id); return next })
     try {
-      const result = await revertRegisterTeamToPreviousRound(row.id)
+      const result = await onRevert(row.id)
       toast.success(`"${row.teamName}" reverted to ${result.data.roundName}`)
       doFetchRef.current(page, filters)
     } catch (err) {
@@ -136,7 +153,6 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
     }
   }
 
-  // ── Filter bar uses a mix of built-in selects + custom picker buttons ──
   const filterConfigs = [
     { type: 'search', key: 'keyword', label: 'Team Name', icon: Search, placeholder: 'Search team name...' },
     { type: 'select', key: 'status', label: 'Status', icon: CircleCheck, options: [{ value: '', label: 'All' }, { value: 'Pending', label: 'Pending' }, { value: 'Approved', label: 'Approved' }, { value: 'Rejected', label: 'Rejected' }] },
@@ -166,7 +182,7 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
     {
       key: 'teamName', header: 'Team', headerIcon: Users,
       render: (row) => (
-        <Link to={`/admin/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">
+        <Link to={`${routePrefix}/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">
           {row.teamName || '—'}
         </Link>
       ),
@@ -175,7 +191,7 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
       key: 'trackName', header: 'Track', headerIcon: FileText,
       render: (row) => (
         row.trackId
-          ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link>
+          ? <Link to={`${routePrefix}/hackathons/${row.eventId}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link>
           : <span className="text-[13px] text-gray-400">—</span>
       ),
     },
@@ -183,13 +199,13 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
       key: 'topicTitle', header: 'Topic', headerIcon: FileText,
       render: (row) => (
         row.topicId && row.trackId
-          ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}/topics`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.topicTitle || '—'}</Link>
+          ? <Link to={`${routePrefix}/hackathons/${row.eventId}/tracks/${row.trackId}/topics`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.topicTitle || '—'}</Link>
           : <span className="text-[13px] text-gray-400">—</span>
       ),
     },
     {
       key: 'roundName', header: 'Round', headerIcon: Layers,
-      render: (row) => row.roundId ? <Link to={`/admin/rounds/${row.roundId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.roundName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span>,
+      render: (row) => row.roundId ? <Link to={`${routePrefix}/hackathons/${row.eventId}/rounds/${row.roundId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.roundName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span>,
     },
     {
       key: 'isBanned', header: 'Banned', headerIcon: Ban,
@@ -216,7 +232,7 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
         const busy = advancing || reverting
         return (
           <div className="flex items-center justify-end gap-2">
-            <Link to={`/admin/register-teams/${row.id}`}
+            <Link to={`${routePrefix}/register-teams/${row.id}`}
               className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] transition-colors hover:bg-[#e8e8e8]"
             >
               <Eye className="h-3.5 w-3.5" />View
@@ -246,7 +262,7 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
       <div className="fixed inset-0 z-50 flex items-start justify-center pt-[6vh]">
         <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px]" onClick={onClose} />
         <div className="relative z-10 flex max-h-[88vh] w-full max-w-[95%] sm:max-w-[1100px] flex-col overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-2xl animate-in fade-in zoom-in-95">
-          {/* ── Header ── */}
+          {/* Header */}
           <div className="shrink-0 flex items-center justify-between border-b border-[#f0f0f0] px-6 py-4">
             <div className="flex items-center gap-3 min-w-0">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#e8f5e9]">
@@ -261,19 +277,17 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
             </button>
           </div>
 
-          {/* ── Filter Bar ── */}
+          {/* Filter Bar */}
           <div className="shrink-0 border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
             <FilterBar filters={filterConfigs} values={filters} onChange={setFilter} onReset={resetFilters} hasActive={hasActive} />
           </div>
 
-          {/* ── Error ── */}
           {error && (
             <div className="mx-6 mt-4 flex items-start gap-2.5 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[13px] text-[#c62828]">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}
             </div>
           )}
 
-          {/* ── Table ── */}
           <div className="flex-1 min-h-0 overflow-auto">
             <BaseTable
               borderless
@@ -293,7 +307,6 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
         </div>
       </div>
 
-      {/* ── Picker Modals ── */}
       <TrackSelectModal
         open={trackModalOpen}
         onClose={() => setTrackModalOpen(false)}
@@ -311,7 +324,7 @@ export default function NextRoundModal({ open, onClose, eventId, roundId, roundN
         selectedTopicId={filters.topicId}
         onSelect={(id, name) => {
           setFilter('topicId', id)
-          setTopicName(name)
+          setTrackName(name)
         }}
       />
     </>

@@ -5,7 +5,7 @@ import FilterBar from '../../../../components/FilterBar'
 import SwapModal from '../../../../components/SwapModal'
 import NextRoundModal from '../../../../components/NextRoundModal'
 import RoundLeaderboardModal from '../../../../components/RoundLeaderboardModal'
-import { getRounds, getMaxRoundNo, deleteRound, restoreRound, swapRounds } from '../../../../api/admin'
+import { getRounds, getMaxRoundNo, deleteRound, restoreRound, swapRounds, getEventRegisterTeams, assignRegisterTeamToNextRound, revertRegisterTeamToPreviousRound } from '../../../../api/admin'
 import { roundColumns } from './RoundColumns'
 import { toast, confirm } from '../../../../utils/toast'
 import { Search, Hash, Ban, ArrowUpDown } from 'lucide-react'
@@ -176,6 +176,10 @@ export default function RoundsTab({ eventId }) {
         roundId={nextRoundTarget?.id}
         roundName={nextRoundTarget?.name}
         roundNo={nextRoundTarget?.roundNo}
+        routePrefix="/admin"
+        fetchTeams={getEventRegisterTeams}
+        onAdvance={assignRegisterTeamToNextRound}
+        onRevert={revertRegisterTeamToPreviousRound}
       />
 
       <RoundLeaderboardModal

@@ -2,7 +2,6 @@ import { useMemo, useCallback } from 'react'
 import { Search, Hash, Ban, Calendar, Play, Flag, Users, CircleCheck } from 'lucide-react'
 import Badge from '../Badge'
 import { formatDateTime } from '../../utils/format'
-import { getRounds } from '../../api/admin'
 import TableSelectModal from '../TableSelectModal'
 
 const FILTER_DEFS = [
@@ -27,11 +26,21 @@ function buildQuery(filters, page) {
   return q
 }
 
-export default function RoundSelectModal({ open, onClose, eventId, selectedRoundId, onSelect }) {
+/**
+ * @param {{
+ *   open: boolean,
+ *   onClose: () => void,
+ *   eventId: string,
+ *   selectedRoundId: string,
+ *   onSelect: (id: string, name: string) => void,
+ *   fetchRounds: (eventId: string, params: object) => Promise<{ rounds: Array, totalCount: number }>,
+ * }} props
+ */
+export default function RoundSelectModal({ open, onClose, eventId, selectedRoundId, onSelect, fetchRounds }) {
   const fetchFn = useCallback(async (q) => {
-    const result = await getRounds(eventId, q)
+    const result = await fetchRounds(eventId, q)
     return { items: result.rounds || [], totalCount: result.totalCount || 0 }
-  }, [eventId])
+  }, [eventId, fetchRounds])
 
   const columns = useMemo(() => [
     {

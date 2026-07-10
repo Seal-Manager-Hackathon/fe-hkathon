@@ -97,6 +97,7 @@ export default function SubmissionsTab({ eventId }) {
         eventId={eventId}
         selectedRoundId={filters.roundId}
         onSelect={handleSelect('roundId', setRoundName)}
+        fetchRounds={getRounds}
       />
 
       <TrackSelectModal
