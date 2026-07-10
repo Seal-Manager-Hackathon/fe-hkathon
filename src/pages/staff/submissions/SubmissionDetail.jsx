@@ -258,7 +258,7 @@ function SubmissionTabs({ data, graderScores, graderTotal, graderPage, graderLoa
     },
     { key: 'trackTitle', header: 'Track', headerIcon: FolderKanban,
       render: (row) => row.assignTrackId && eventId ? (
-        <Link to={`/staff/hackathons/${eventId}/tracks/${row.assignTrackId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">
+        <Link to={`/staff/tracks/${row.assignTrackId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">
           {row.trackTitle || '—'}
         </Link>
       ) : <span className="text-[14px] font-semibold text-[#1f2f3a]">{row.trackTitle || '—'}</span>
@@ -500,12 +500,12 @@ export default function SubmissionDetail() {
             </InfoRow>
             <InfoRow label="Track" icon={FolderKanban}>
               {data.trackId && eventId ? (
-                <Link to={`/staff/hackathons/${eventId}/tracks/${data.trackId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.trackTitle || '—'}</Link>
+                <Link to={`/staff/tracks/${data.trackId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.trackTitle || '—'}</Link>
               ) : <span className="text-[14px] text-gray-400">—</span>}
             </InfoRow>
             <InfoRow label="Topic" icon={FileText}>
               {data.topicId && data.trackId && eventId ? (
-                <Link to={`/staff/hackathons/${eventId}/tracks/${data.trackId}/topics`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.topicTitle || '—'}</Link>
+                <Link to={`/staff/tracks/${data.trackId}/topics`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.topicTitle || '—'}</Link>
               ) : <span className="text-[14px] text-gray-400">—</span>}
             </InfoRow>
           </SidebarCard>

@@ -35,7 +35,7 @@ export function useSubmissionColumns(eventId) {
         key: 'trackTitle', header: 'Track', headerIcon: FolderKanban,
         render: (row) =>
           row.trackId ? (
-            <Link to={`/admin/hackathons/${eventId}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">
+            <Link to={`/admin/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">
               {row.trackTitle || '—'}
             </Link>
           ) : (

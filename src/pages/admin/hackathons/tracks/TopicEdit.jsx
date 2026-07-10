@@ -108,7 +108,7 @@ export default function TopicEdit() {
             </h4>
           </div>
           <div className="space-y-2 px-5 py-3">
-            <Link to={`/admin/hackathons/${eventId}/tracks/${trackId}`} className="text-[14px] font-bold text-[#064f5d] leading-snug hover:underline">{track.title}</Link>
+            <Link to={`/admin/tracks/${trackId}`} className="text-[14px] font-bold text-[#064f5d] leading-snug hover:underline">{track.title}</Link>
             <R icon={<Users className="h-3.5 w-3.5 text-[#2e7d32]" />} label="Max Teams" value={track.maxTeam != null ? String(track.maxTeam) : '—'} cls="text-[#2e7d32]" />
           </div>
         </div>

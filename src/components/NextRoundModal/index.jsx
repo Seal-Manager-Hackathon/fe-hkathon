@@ -191,7 +191,7 @@ export default function NextRoundModal({
       key: 'trackName', header: 'Track', headerIcon: FileText,
       render: (row) => (
         row.trackId
-          ? <Link to={`${routePrefix}/hackathons/${row.eventId}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link>
+          ? <Link to={`${routePrefix}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link>
           : <span className="text-[13px] text-gray-400">—</span>
       ),
     },
@@ -199,7 +199,7 @@ export default function NextRoundModal({
       key: 'topicTitle', header: 'Topic', headerIcon: FileText,
       render: (row) => (
         row.topicId && row.trackId
-          ? <Link to={`${routePrefix}/hackathons/${row.eventId}/tracks/${row.trackId}/topics`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.topicTitle || '—'}</Link>
+          ? <Link to={`${routePrefix}/tracks/${row.trackId}/topics`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.topicTitle || '—'}</Link>
           : <span className="text-[13px] text-gray-400">—</span>
       ),
     },

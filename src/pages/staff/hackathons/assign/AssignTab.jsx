@@ -52,7 +52,7 @@ function assignedColumns(handleRemove, handleRestore, handleTrack, handleRemoveT
         <div className="flex flex-wrap gap-1">
           {tracks.map((t) => (
             <span key={t.trackId} className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-medium ${t.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#f5f5f5] text-[#064f5d]'}`}>
-              <Link to={`/staff/hackathons/${t.eventId}/tracks/${t.trackId}`} className="hover:underline">{t.title}</Link>
+              <Link to={`/staff/tracks/${t.trackId}`} className="hover:underline">{t.title}</Link>
               {t.isDisable ? (
                 <button onClick={() => handleRestoreTrack(row.assignEventId, t.trackId)} className="ml-0.5 inline-flex cursor-pointer items-center justify-center rounded-full bg-[#e8f5e9] p-0.5 text-[#2e7d32] hover:bg-[#c8e6c9]" title="Restore track">
                   <RotateCcw className="h-3 w-3" />

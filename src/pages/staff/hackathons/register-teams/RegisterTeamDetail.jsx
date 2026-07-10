@@ -197,8 +197,8 @@ export default function RegisterTeamDetail() {
         </div>
         <div className="flex flex-wrap gap-4 border-t border-[#e8ecf0] bg-[#fafbfc] px-6 py-3 sm:px-8">
           <QuickStat icon={Trophy} label="Event" value={data.eventName || '—'} href={data.eventId ? `/staff/hackathons/${data.eventId}` : null} />
-          <QuickStat icon={FileText} label="Track" value={data.trackTitle || '—'} href={data.trackId ? `/staff/hackathons/${data.eventId}/tracks/${data.trackId}` : null} />
-          <QuickStat icon={FileText} label="Topic" value={data.topicTitle || '—'} href={data.topicId && data.trackId ? `/staff/hackathons/${data.eventId}/tracks/${data.trackId}/topics` : null} />
+          <QuickStat icon={FileText} label="Track" value={data.trackTitle || '—'} href={data.trackId ? `/staff/tracks/${data.trackId}` : null} />
+          <QuickStat icon={FileText} label="Topic" value={data.topicTitle || '—'} href={data.topicId && data.trackId ? `/staff/tracks/${data.trackId}/topics` : null} />
           <QuickStat icon={Users} label="Team" value={data.teamName || '—'} href={data.teamId ? `/staff/teams/${data.teamId}` : null} />
         </div>
       </div>
@@ -260,10 +260,10 @@ export default function RegisterTeamDetail() {
                 {data.eventId ? <Link to={`/staff/hackathons/${data.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.eventName}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.eventName || '—'}</span>}
               </InfoRow>
               <InfoRow label="Track" icon={FileText}>
-                {data.trackId ? <Link to={`/staff/hackathons/${data.eventId}/tracks/${data.trackId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.trackTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.trackTitle || '—'}</span>}
+                {data.trackId ? <Link to={`/staff/tracks/${data.trackId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.trackTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.trackTitle || '—'}</span>}
               </InfoRow>
               <InfoRow label="Topic" icon={FileText}>
-                {data.topicId && data.trackId ? <Link to={`/staff/hackathons/${data.eventId}/tracks/${data.trackId}/topics`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.topicTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.topicTitle || '—'}</span>}
+                {data.topicId && data.trackId ? <Link to={`/staff/tracks/${data.trackId}/topics`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.topicTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.topicTitle || '—'}</span>}
               </InfoRow>
               <InfoRow label="Round" icon={Layers}>
                 {data.roundId ? <Link to={`/staff/rounds/${data.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.roundName || '—'}</Link> : <span className="text-[14px] text-gray-400">—</span>}

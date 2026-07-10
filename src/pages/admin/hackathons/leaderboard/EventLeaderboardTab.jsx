@@ -72,7 +72,7 @@ function DetailModal({ open, team, eventId, onClose }) {
             <div className="flex items-center gap-1.5">
               <span className="text-gray-400">Track:</span>
               {team.trackId && eventId ? (
-                <Link to={`/admin/hackathons/${eventId}/tracks/${team.trackId}`} className="font-semibold text-[#064f5d] hover:underline">{team.trackTitle || '—'}</Link>
+                <Link to={`/admin/tracks/${team.trackId}`} className="font-semibold text-[#064f5d] hover:underline">{team.trackTitle || '—'}</Link>
               ) : (
                 <span className="font-semibold text-[#1f2f3a]">{team.trackTitle || '—'}</span>
               )}
@@ -81,7 +81,7 @@ function DetailModal({ open, team, eventId, onClose }) {
               <div className="flex items-center gap-1.5">
                 <span className="text-gray-400">Topic:</span>
                 {team.topicId && team.trackId && eventId ? (
-                  <Link to={`/admin/hackathons/${eventId}/tracks/${team.trackId}/topics`} className="font-semibold text-[#064f5d] hover:underline">{team.topicTitle}</Link>
+                  <Link to={`/admin/tracks/${team.trackId}/topics`} className="font-semibold text-[#064f5d] hover:underline">{team.topicTitle}</Link>
                 ) : (
                   <span className="font-semibold text-[#1f2f3a]">{team.topicTitle}</span>
                 )}
@@ -165,7 +165,7 @@ export default function EventLeaderboardTab({ eventId }) {
       className: 'w-[120px]',
       render: (row) => (
         row.trackId ? (
-          <Link to={`/admin/hackathons/${eventId}/tracks/${row.trackId}`} className="text-[13px] font-semibold text-[#064f5d] hover:underline truncate block">{row.trackTitle || '—'}</Link>
+          <Link to={`/admin/tracks/${row.trackId}`} className="text-[13px] font-semibold text-[#064f5d] hover:underline truncate block">{row.trackTitle || '—'}</Link>
         ) : (
           <span className="text-[13px] font-semibold text-[#1f2f3a]">{row.trackTitle || '—'}</span>
         )
@@ -179,7 +179,7 @@ export default function EventLeaderboardTab({ eventId }) {
       className: 'w-[110px]',
       render: (row) => (
         row.topicTitle && row.topicId && row.trackId ? (
-          <Link to={`/admin/hackathons/${eventId}/tracks/${row.trackId}/topics`} className="text-[13px] font-semibold text-[#064f5d] hover:underline truncate block">{row.topicTitle}</Link>
+          <Link to={`/admin/tracks/${row.trackId}/topics`} className="text-[13px] font-semibold text-[#064f5d] hover:underline truncate block">{row.topicTitle}</Link>
         ) : (
           <span className="text-[13px] text-gray-400">{row.topicTitle || '—'}</span>
         )

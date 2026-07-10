@@ -22,10 +22,10 @@ export const userEventColumns = [
     row.teamId ? <Link to={`/admin/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName}</Link> : <span className="text-[14px] text-gray-400">—</span>
   )},
   { key: 'trackTitle', header: 'Track', headerIcon: FileText, render: (row) => (
-    row.trackId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackTitle || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span>
+    row.trackId ? <Link to={`/admin/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackTitle || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span>
   )},
   { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => (
-    row.topicId && row.trackId ? <Link to={`/admin/hackathons/${row.eventId}/tracks/${row.trackId}/topics`} className="text-[13px] font-medium text-[#1f2f3a] hover:underline">{row.topicTitle || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span>
+    row.topicId && row.trackId ? <Link to={`/admin/tracks/${row.trackId}/topics`} className="text-[13px] font-medium text-[#1f2f3a] hover:underline">{row.topicTitle || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span>
   )},
   { key: 'isBanned', header: 'Banned', headerIcon: Ban, render: (row) => (
     row.isBanned ? <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" />
