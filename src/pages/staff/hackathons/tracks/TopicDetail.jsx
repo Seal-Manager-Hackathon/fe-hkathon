@@ -37,7 +37,7 @@ export default function TopicDetail() {
     }
     fetch()
     return () => { cancelled = true }
-  }, [eventId, trackId, topicId])
+  }, [trackId, topicId])
 
   if (loading) return <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="h-7 w-96 animate-pulse rounded bg-gray-200 mb-2" /><div className="h-60 animate-pulse rounded-xl bg-gray-100" /></div>
   if (error || !topic) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{error || 'Topic not found.'}</p><Link to="/staff/tracks" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Tracks</Link></div>
