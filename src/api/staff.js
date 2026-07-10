@@ -849,48 +849,6 @@ export async function getTopicDetail(topicId) {
   return data.data
 }
 
-/**
- * Create a topic in a track.
- * @param {string} trackId
- * @param {object} payload
- * @returns {Promise<{ message: string }>}
- */
-export async function createTopic(trackId, payload) {
-  const { data } = await api.post(`/staff/tracks/${trackId}/topics`, payload)
-  return data
-}
-
-/**
- * Update a topic.
- * @param {string} topicId
- * @param {object} payload
- * @returns {Promise<{ message: string }>}
- */
-export async function updateTopic(topicId, payload) {
-  const { data } = await api.patch(`/staff/topics/${topicId}`, payload)
-  return data
-}
-
-/**
- * Soft-delete a topic.
- * @param {string} topicId
- * @returns {Promise<{ message: string }>}
- */
-export async function deleteTopic(topicId) {
-  const { data } = await api.post(`/staff/topics/${topicId}/delete`)
-  return data
-}
-
-/**
- * Restore a soft-deleted topic.
- * @param {string} topicId
- * @returns {Promise<{ message: string }>}
- */
-export async function restoreTopic(topicId) {
-  const { data } = await api.post(`/staff/topics/${topicId}/restore`)
-  return data
-}
-
 // ============================ AWARDS ============================
 
 /**

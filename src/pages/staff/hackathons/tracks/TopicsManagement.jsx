@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Plus, Eye, Edit, Trash2, RotateCcw, FileText, Calendar, CircleCheck, MoreHorizontal, Search, Ban, ArrowLeft } from 'lucide-react'
-import { getTopics, getTrackDetail, deleteTopic, restoreTopic } from '../../../../api/staff'
-import { toast, confirm } from '../../../../utils/toast'
+import { Eye, FileText, Calendar, CircleCheck, Search, Ban, ArrowLeft } from 'lucide-react'
+import { getTopics, getTrackDetail } from '../../../../api/staff'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
@@ -17,14 +16,10 @@ const topicFilters = [
   { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
 ]
 
-const actionBtnClass =
-  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
-const dangerBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2] w-[92px]'
-const restoreBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[92px]'
+const viewBtnClass =
+  'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] transition-colors hover:bg-[#e8e8e8]'
 
-function topicColumns(eventId, trackId, onDelete, onRestore) {
+function topicColumns(eventId, trackId) {
   return [
     {
       key: 'title',
@@ -46,29 +41,14 @@ function topicColumns(eventId, trackId, onDelete, onRestore) {
     },
     {
       key: 'actions',
-      header: 'Actions',
-      headerIcon: MoreHorizontal,
+      header: '',
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
-          <Link to={`/staff/hackathons/${eventId}/tracks/${trackId}/topics/${row.id}`} className={actionBtnClass}>
+          <Link to={`/staff/hackathons/${eventId}/tracks/${trackId}/topics/${row.id}`} className={viewBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
-          {!row.isDisable && (
-            <Link to={`/staff/hackathons/${eventId}/tracks/${trackId}/topics/${row.id}/edit`} className={actionBtnClass}>
-              <Edit className="h-3.5 w-3.5" /> Edit
-            </Link>
-          )}
-          {row.isDisable ? (
-            <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
-              <RotateCcw className="h-3.5 w-3.5" /> Restore
-            </button>
-          ) : (
-            <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
-              <Trash2 className="h-3.5 w-3.5" /> Delete
-            </button>
-          )}
         </div>
       ),
     },
@@ -120,28 +100,6 @@ export default function TopicsManagement() {
     setPageIndex(1)
   }
 
-  async function handleDelete(row) {
-    if (!(await confirm('Delete Topic', `Are you sure you want to delete "${row.title}"?`))) return
-    try {
-      await deleteTopic(row.id)
-      toast.success('Topic deleted successfully')
-      fetchTopics()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to delete topic.')
-    }
-  }
-
-  async function handleRestore(row) {
-    if (!(await confirm('Restore Topic', `Are you sure you want to restore "${row.title}"?`))) return
-    try {
-      await restoreTopic(row.id)
-      toast.success('Topic restored successfully')
-      fetchTopics()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to restore topic.')
-    }
-  }
-
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-4">
@@ -155,11 +113,6 @@ export default function TopicsManagement() {
             Topics {track?.title ? `— ${track.title}` : ''}
           </h1>
         </div>
-        {trackId && (
-          <Link to={`/staff/hackathons/${eventId}/tracks/${trackId}/topics/create`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto">
-            <Plus className="h-4 w-4" />Create Topic
-          </Link>
-        )}
       </div>
 
       <FilterBar filters={topicFilters} values={filters} onChange={handleFilterChange} onReset={handleReset} hasActive={hasActive} />
@@ -167,7 +120,7 @@ export default function TopicsManagement() {
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
 
       <BaseTable
-        columns={topicColumns(eventId, trackId, handleDelete, handleRestore)}
+        columns={topicColumns(eventId, trackId)}
         data={topics}
         page={pageIndex}
         pageSize={PAGE_SIZE}
