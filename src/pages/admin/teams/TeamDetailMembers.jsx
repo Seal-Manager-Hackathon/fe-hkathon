@@ -11,7 +11,13 @@ import { teamMemberColumns } from './teamMemberColumns'
  */
 export default function TeamDetailMembers({ members }) {
   return (
-    <CardPanel title="">
+    <div className="rounded-xl border border-[#e8ecf0] bg-white">
+      <div className="border-b border-[#f0f0f0] px-5 py-4">
+        <div className="flex items-center gap-2">
+          <Users className="h-4 w-4 text-[#064f5d]" />
+          <h3 className="text-[15px] font-bold text-[#1f2f3a]">Members</h3>
+        </div>
+      </div>
       {members.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12">
           <Users className="mb-3 h-10 w-10 text-gray-300" />
@@ -30,6 +36,6 @@ export default function TeamDetailMembers({ members }) {
           minWidth="600px"
         />
       )}
-    </CardPanel>
+    </div>
   )
 }

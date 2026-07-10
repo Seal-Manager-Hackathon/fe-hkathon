@@ -1,26 +1,17 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Send, Users as UsersIcon } from 'lucide-react'
-import { getTeamDetail, getTeamRegisterHistory, getRegisterTeamSubmissions } from '../../../api/staff'
+import { getTeamDetail, getTeamRegisterHistory } from '../../../api/staff'
 import TeamDetailHeader from './TeamDetailHeader'
 import TeamDetailMembers from './TeamDetailMembers'
-import TeamDetailSubmissions from './TeamDetailSubmissions'
 import TeamDetailRegistrations from './TeamDetailRegistrations'
 
 const REG_PAGE_SIZE = 10
-
-const SUB_TABS = [
-  { key: 'members', label: 'Members', icon: <UsersIcon className="h-4 w-4" /> },
-  { key: 'submissions', label: 'Submissions', icon: <Send className="h-4 w-4" /> },
-]
 
 export default function TeamDetail() {
   const { id } = useParams()
   const [team, setTeam] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-
-  const [subTab, setSubTab] = useState('members')
 
   // Registration history
   const [registers, setRegisters] = useState([])
@@ -29,14 +20,6 @@ export default function TeamDetail() {
   const [regPage, setRegPage] = useState(1)
   const [regStatus, setRegStatus] = useState('')
   const regHasActive = regStatus !== ''
-
-  // Submissions
-  const [selectedRegisterId, setSelectedRegisterId] = useState('')
-  const [submissions, setSubmissions] = useState([])
-  const [subTotal, setSubTotal] = useState(0)
-  const [subPage, setSubPage] = useState(1)
-  const [subLoading, setSubLoading] = useState(false)
-  const SUB_PAGE_SIZE = 10
 
   useEffect(() => {
     let cancelled = false
@@ -63,45 +46,6 @@ export default function TeamDetail() {
   }, [id, regPage, regStatus])
 
   useEffect(() => { if (team) fetchRegisters() }, [fetchRegisters, team])
-
-  // Fetch all registers for submissions dropdown
-  const [allRegisters, setAllRegisters] = useState([])
-  useEffect(() => {
-    if (!team) return
-    let cancelled = false
-    async function fetchAll() {
-      try {
-        const result = await getTeamRegisterHistory(id, { pageIndex: 1, pageSize: 100 })
-        if (!cancelled) setAllRegisters(result.items || [])
-      } catch {}
-    }
-    fetchAll()
-    return () => { cancelled = true }
-  }, [id, team])
-
-  // Auto-select first register when switching to submissions tab
-  useEffect(() => {
-    if (subTab === 'submissions' && !selectedRegisterId && allRegisters.length > 0) {
-      setSelectedRegisterId(allRegisters[0].id)
-    }
-  }, [subTab, allRegisters, selectedRegisterId])
-
-  // Fetch submissions for selected register
-  const fetchSubmissions = useCallback(async () => {
-    if (!selectedRegisterId) { setSubmissions([]); setSubTotal(0); return }
-    setSubLoading(true)
-    try {
-      const params = { pageIndex: subPage, pageSize: SUB_PAGE_SIZE }
-      const result = await getRegisterTeamSubmissions(selectedRegisterId, params)
-      setSubmissions(result.items || [])
-      setSubTotal(result.totalCount || 0)
-    } catch { setSubmissions([]); setSubTotal(0) }
-    finally { setSubLoading(false) }
-  }, [selectedRegisterId, subPage])
-
-  useEffect(() => {
-    if (subTab === 'submissions') fetchSubmissions()
-  }, [fetchSubmissions, subTab])
 
   function handleRegFilterChange(key, value) { setRegStatus(value); setRegPage(1) }
   function handleRegReset() { setRegStatus(''); setRegPage(1) }
@@ -132,36 +76,7 @@ export default function TeamDetail() {
       <TeamDetailHeader team={team} />
 
       <div className="mt-5">
-        <div className="mb-4 flex gap-1 overflow-x-auto border-b border-[#e8ecf0]">
-          {SUB_TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setSubTab(t.key)}
-              className={`cursor-pointer shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-semibold transition-colors ${
-                subTab === t.key
-                  ? 'border-b-2 border-[#064f5d] text-[#064f5d]'
-                  : 'text-gray-400 hover:text-[#1f2f3a]'
-              }`}
-            >
-              {t.icon} {t.label}
-            </button>
-          ))}
-        </div>
-
-        {subTab === 'members' && <TeamDetailMembers members={members} />}
-
-        {subTab === 'submissions' && (
-          <TeamDetailSubmissions
-            allRegisters={allRegisters}
-            selectedRegisterId={selectedRegisterId}
-            submissions={submissions}
-            subTotal={subTotal}
-            subPage={subPage}
-            subLoading={subLoading}
-            onRegisterChange={(id) => { setSelectedRegisterId(id); setSubPage(1) }}
-            onPageChange={setSubPage}
-          />
-        )}
+        <TeamDetailMembers members={members} />
       </div>
 
       <TeamDetailRegistrations
