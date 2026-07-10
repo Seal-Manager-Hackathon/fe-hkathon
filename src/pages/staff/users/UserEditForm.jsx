@@ -29,17 +29,11 @@ const FIELDS = [
  * @param {{
  *   form: Record<string, string>,
  *   onChange: (field: string, value: string) => void,
- *   error?: string,
  * }} props
  */
-export default function UserEditForm({ form, onChange, error }) {
+export default function UserEditForm({ form, onChange }) {
   return (
     <>
-      {error && (
-        <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">
-          {error}
-        </div>
-      )}
 
       <div className="rounded-xl border border-[#e8ecf0] bg-white p-6">
         <div className="space-y-4">

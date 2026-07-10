@@ -5,6 +5,7 @@ import { getTeamDetail, updateTeam } from '../../../api/staff'
 import FormField from '../../../components/FormField'
 import FormActions from '../../../components/FormActions'
 import { getErrorMessage } from '../../../utils/error'
+import { toast } from '../../../utils/toast'
 
 export default function TeamEdit() {
   const { id } = useParams()
@@ -40,14 +41,14 @@ export default function TeamEdit() {
   async function handleSave() {
     if (!name.trim()) return
     setSaving(true)
-    setError('')
     try {
       if (name !== team?.name) {
         await updateTeam(id, { name: name.trim() })
       }
+      toast.success('Team updated')
       navigate(`/staff/teams/${id}`)
     } catch (err) {
-      setError(getErrorMessage(err))
+      toast.error(getErrorMessage(err))
     } finally {
       setSaving(false)
     }
@@ -91,12 +92,6 @@ export default function TeamEdit() {
       </div>
 
       <h1 className="mb-6 text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Edit Team</h1>
-
-      {error && (
-        <div className="mb-6 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">
-          {error}
-        </div>
-      )}
 
       <div className="w-full max-w-[480px]">
         <FormField label="Team Name" icon={UserRound}>

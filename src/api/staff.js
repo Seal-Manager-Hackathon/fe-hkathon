@@ -1,449 +1,1177 @@
+import api from '../libs/api'
+
+// ============================ DASHBOARD ============================
+
 /**
- * Staff Mock API — mirrors admin API surface with mock data.
- * Replace with real API calls when backend is ready.
+ * Count events by optional status filter.
+ * @param {'Draft'|'Published'|'Closed'} [status]
+ * @returns {Promise<{ total: number }>}
  */
-
-const DELAY_MS = 150
-function d(ms = DELAY_MS) { return new Promise((r) => setTimeout(r, ms)) }
-function pg(list, pi = 1, ps = 10) {
-  const s = (pi - 1) * ps
-  return { data: list.slice(s, s + ps), totalCount: list.length, pageIndex: pi, pageSize: ps }
-}
-
-const FN = ['Alex','Maria','David','Sarah','James','Emily','Michael','Jessica','Daniel','Laura']
-const LN = ['Johnson','Chen','Kim','Wilson','Brown','Davis','Miller','Garcia','Martinez','Taylor']
-
-const mEv = Array.from({length:45},(_,i)=>({
-  id:`ev-${i+1}`,name:`Hackathon ${2020+Math.floor(i/4)} - ${['Spring','Summer','Fall','Winter'][i%4]}`,
-  startTime:new Date(2025,i%12,(i+1)*3).toISOString(),endTime:new Date(2025,(i%12)+1,(i+1)*3+7).toISOString(),
-  status:i<25?'Published':i<38?'Draft':'Closed',isDisable:i%10===0,
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-  description:`Desc for event ${i+1}.`,
-}))
-
-const mUs = Array.from({length:80},(_,i)=>({
-  id:`us-${i+1}`,email:`user${i+1}@seal.dev`,
-  firstName:FN[i%10],lastName:LN[i%10],fullName:`${FN[i%10]} ${LN[i%10]}`,
-  role:['Admin','Staff','Student','Lecturer'][i%4],isDisable:i%12===0,isVerified:i%20!==0,
-  isBanned:i%15===0,banReason:i%15===0?'Violation':null,
-  college:'SEAL University',avatarUrl:null,
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-}))
-
-const mTm = Array.from({length:50},(_,i)=>({
-  id:`tm-${i+1}`,name:`Team ${['Alpha','Beta','Gamma','Delta','Epsilon'][i%5]} ${i+1}`,
-  canEdit:i%3!==0,isDisable:i%7===0,
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-  members:Array.from({length:2+(i%3)},(_,j)=>({id:`mb-${i}-${j}`,userId:`us-${(i*3+j+1)}`,
-    firstName:FN[(i*3+j)%10],lastName:LN[(i*3+j)%10],email:`mb${i*3+j+1}@seal.dev`,role:j===0?'Leader':'Member'})),
-}))
-
-const mNf = Array.from({length:30},(_,i)=>({
-  id:`nf-${i+1}`,title:`Notif ${i+1}: ${['System Update','New Event','Deadline','Team','Announce'][i%5]}`,
-  description:`Desc for notif ${i+1}.`,targetType:['Personal','Team','System'][i%3],
-  status:i<24?'Sent':'Draft',
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-  sentAt:i<24?new Date(2025,i%12,(i+1)*2+1).toISOString():null,createdBy:'Admin',
-}))
-
-const mRp = Array.from({length:20},(_,i)=>({
-  id:`rp-${i+1}`,title:`Report ${i+1}: ${['Bug','Feature','Content','User','Other'][i%5]}`,
-  description:`Desc for report ${i+1}.`,status:['Pending','Reviewed','Resolved'][i%3],
-  typeReport:['Bug','Feature','Content','User','Other'][i%5],
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-  reportedBy:`us-${(i%10)+1}`,
-}))
-
-const mRd = Array.from({length:60},(_,i)=>({
-  id:`rd-${i+1}`,eventId:`ev-${(i%10)+1}`,
-  name:`Round ${(i%4)+1}: ${['Ideation','Prototype','Final','Judging'][i%4]}`,
-  roundNo:(i%4)+1,description:`Desc for round ${i+1}`,
-  startTime:new Date(2025,i%12,(i+1)*3).toISOString(),endTime:new Date(2025,i%12,(i+1)*3+5).toISOString(),
-  startSubmission:new Date(2025,i%12,(i+1)*3).toISOString(),endSubmission:new Date(2025,i%12,(i+1)*3+4).toISOString(),
-  limitTeam:5,isDisable:i%9===0,
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-}))
-
-const mTr = Array.from({length:30},(_,i)=>({
-  id:`tr-${i+1}`,eventId:`ev-${(i%5)+1}`,
-  name:`${['Web','Mobile','AI/ML','Blockchain','Cloud'][i%5]} Track`,
-  description:`Desc for track ${i+1}`,isDisable:i%7===0,
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-}))
-
-const mTp = Array.from({length:40},(_,i)=>({
-  id:`tp-${i+1}`,trackId:`tr-${(i%5)+1}`,
-  name:`${['Healthcare','Finance','Education','Gaming','Green'][i%5]} Topic ${i+1}`,
-  description:`Desc for topic ${i+1}`,isDisable:i%8===0,
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-}))
-
-const mAw = Array.from({length:15},(_,i)=>({
-  id:`aw-${i+1}`,eventId:`ev-${(i%3)+1}`,
-  name:`${['1st','2nd','3rd','Innovation','Design'][i%5]} Award ${i+1}`,
-  description:`Award desc ${i+1}`,prize:`$${(i+1)*5000}`,isDisable:i%6===0,
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-}))
-
-const mAs = Array.from({length:20},(_,i)=>({
-  id:`as-${i+1}`,eventId:`ev-${(i%8)+1}`,userId:`us-${(i%15)+1}`,
-  eventRole:['Staff','Mentor','Judge'][i%3],isDisable:i%10===0,
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-  user:{id:`us-${(i%15)+1}`,email:`user${(i%15)+1}@seal.dev`,firstName:FN[(i%15)%10],lastName:LN[(i%15)%10],role:'Staff'},
-  event:{id:`ev-${(i%8)+1}`,name:mEv[i%45]?.name||`Event ${i+1}`},
-}))
-
-const mRT = Array.from({length:30},(_,i)=>({
-  id:`rt-${i+1}`,eventId:`ev-${(i%5)+1}`,teamId:`tm-${(i%10)+1}`,
-  teamName:mTm[i%50]?.name||`Team ${i+1}`,
-  trackId:`tr-${(i%5)+1}`,trackName:mTr[i%30]?.name||`Track ${i+1}`,
-  topicId:`tp-${(i%8)+1}`,topicName:mTp[i%40]?.name||`Topic ${i+1}`,
-  status:['Pending','Approved','Rejected'][i%3],isDisable:i%9===0,
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-}))
-
-const mSb = Array.from({length:40},(_,i)=>({
-  id:`sb-${i+1}`,eventId:`ev-${(i%5)+1}`,roundId:`rd-${(i%10)+1}`,
-  registerTeamId:`rt-${(i%10)+1}`,teamName:mTm[i%50]?.name||`Team ${i+1}`,
-  trackName:mTr[i%30]?.name||`Track ${i+1}`,
-  status:['Submitted','Grading','Graded'][i%3],
-  submittedAt:new Date(2025,i%12,(i+1)*3).toISOString(),
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-  fileUrls:[`https://example.com/sub-${i+1}.pdf`],
-}))
-
-const mCT = Array.from({length:20},(_,i)=>({
-  id:`ct-${i+1}`,roundId:`rd-${(i%5)+1}`,
-  name:`${['Technical','Creativity','Impact','Presentation'][i%4]} Template`,
-  description:`CT desc ${i+1}`,isActive:i%3===0,isDisable:i%7===0,
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-}))
-
-const mCI = Array.from({length:50},(_,i)=>({
-  id:`ci-${i+1}`,templateId:`ct-${(i%10)+1}`,
-  name:`${['Code Quality','Innovation','Scalability','UI/UX','Docs'][i%5]} ${i+1}`,
-  description:`CI desc ${i+1}`,maxScore:10+(i%5)*5,weight:1+(i%3),isDisable:i%11===0,
-  createdAt:new Date(2025,i%12,(i+1)*2).toISOString(),updatedAt:new Date(2025,i%12,(i+1)*2+1).toISOString(),
-}))
-
-// ============================ COUNTS ============================
-
 export async function getEventsCount(status) {
-  await d(); const t = status ? mEv.filter(e=>e.status===status&&!e.isDisable).length : mEv.filter(e=>!e.isDisable).length
-  return {total:t}
+  const params = status ? { Status: status } : {}
+  const { data } = await api.get('/staff/events/count', { params })
+  return data.data
 }
+
+/**
+ * Count users by optional role filter.
+ * @param {'Student'|'Lecturer'|'Staff'|'Admin'} [role]
+ * @returns {Promise<{ total: number }>}
+ */
 export async function getUsersCount(role) {
-  await d(); const t = role ? mUs.filter(u=>u.role===role&&!u.isDisable).length : mUs.filter(u=>!u.isDisable).length
-  return {total:t}
+  const params = role ? { Role: role } : {}
+  const { data } = await api.get('/staff/users/count', { params })
+  return data.data
 }
+
+/**
+ * Count teams by optional IsDisable filter.
+ * @param {boolean} [isDisable]
+ * @returns {Promise<{ total: number }>}
+ */
 export async function getTeamsCount(isDisable) {
-  await d(); const t = isDisable!==undefined ? mTm.filter(t=>t.isDisable===isDisable).length : mTm.length
-  return {total:t}
+  const params = isDisable !== undefined ? { IsDisable: isDisable } : {}
+  const { data } = await api.get('/staff/teams/count', { params })
+  return data.data
 }
-export async function getRecentEvents() { await d(); return {events:mEv.slice(0,5)} }
-export async function getRecentUsers() { await d(); return {users:mUs.slice(0,5)} }
-export async function getRecentNotifications() { await d(); return {notifications:mNf.filter(n=>n.status==='Sent').slice(0,5)} }
-export async function getRecentReports() { await d(); return {reports:mRp.slice(0,5)} }
+
+/**
+ * Get 5 most recent events.
+ * @returns {Promise<{ events: Array }>}
+ */
+export async function getRecentEvents() {
+  const { data } = await api.get('/staff/events/recent')
+  return data.data
+}
+
+/**
+ * Get 5 most recent users.
+ * @returns {Promise<{ users: Array }>}
+ */
+export async function getRecentUsers() {
+  const { data } = await api.get('/staff/users/recent')
+  return data.data
+}
+
+/**
+ * Get 5 most recent notifications.
+ * @returns {Promise<{ notifications: Array }>}
+ */
+export async function getRecentNotifications() {
+  const { data } = await api.get('/staff/notifications/recent')
+  return data.data
+}
+
+/**
+ * Get 5 most recent reports.
+ * @returns {Promise<{ reports: Array }>}
+ */
+export async function getRecentReports() {
+  const { data } = await api.get('/staff/reports/recent')
+  return data.data
+}
 
 // ============================ EVENTS ============================
 
-export async function getEvents(params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=[...mEv]
-  if(params.Keyword){const k=params.Keyword.toLowerCase();l=l.filter(e=>e.name.toLowerCase().includes(k))}
-  if(params.Status) l=l.filter(e=>e.status===params.Status)
-  if(params.IsDisable!==undefined) l=l.filter(e=>e.isDisable===params.IsDisable)
-  return {events:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Get paginated events list with search and filters.
+ * @param {Object} params
+ * @param {string} [params.Keyword]
+ * @param {'Draft'|'Published'|'Closed'} [params.Status]
+ * @param {string} [params.FromDate]
+ * @param {string} [params.ToDate]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ events: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getEvents(params = {}) {
+  const { data } = await api.get('/staff/events', { params })
+  return data.data
 }
-export async function getEventDetail(eventId) { await d(); const e=mEv.find(e=>e.id===eventId); if(!e) throw new Error('Not found'); return {...e} }
-export async function createEvent(payload) { await d(); return {data:{id:`ev-${mEv.length+1}`,...payload},message:'Created'} }
-export async function updateEvent(eventId,payload) { await d(); return {message:'Updated'} }
-export async function deleteEvent(eventId) { await d(); return {message:'Deleted'} }
-export async function restoreEvent(eventId) { await d(); return {message:'Restored'} }
+
+/**
+ * Get event detail by ID.
+ * @param {string} eventId
+ * @returns {Promise<object>}
+ */
+export async function getEventDetail(eventId) {
+  const { data } = await api.get(`/staff/events/${eventId}`)
+  return data.data
+}
+
+/**
+ * Create a new event.
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function createEvent(payload) {
+  const { data } = await api.post('/staff/events', payload)
+  return data
+}
+
+/**
+ * Update event by ID.
+ * @param {string} eventId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateEvent(eventId, payload) {
+  const { data } = await api.patch(`/staff/events/${eventId}`, payload)
+  return data
+}
+
+/**
+ * Soft-delete an event.
+ * @param {string} eventId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteEvent(eventId) {
+  const { data } = await api.post(`/staff/events/${eventId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted event.
+ * @param {string} eventId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreEvent(eventId) {
+  const { data } = await api.post(`/staff/events/${eventId}/restore`)
+  return data
+}
 
 // ============================ USERS ============================
 
-export async function getUsers(params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=[...mUs]
-  if(params.Keyword){const k=params.Keyword.toLowerCase();l=l.filter(u=>u.email.toLowerCase().includes(k)||u.firstName.toLowerCase().includes(k)||u.lastName.toLowerCase().includes(k))}
-  if(params.Role) l=l.filter(u=>u.role===params.Role)
-  if(params.IsDisable!==undefined) l=l.filter(u=>u.isDisable===params.IsDisable)
-  if(params.IsVerified!==undefined) l=l.filter(u=>u.isVerified===params.IsVerified)
-  return {users:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Get paginated users list with search and filters.
+ * @param {Object} params
+ * @param {string} [params.Keyword]
+ * @param {'Admin'|'Staff'|'Student'|'Lecturer'} [params.Role]
+ * @param {boolean} [params.IsDisable]
+ * @param {boolean} [params.IsVerified]
+ * @param {string} [params.FromDate]
+ * @param {string} [params.ToDate]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ users: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getUsers(params = {}) {
+  const { data } = await api.get('/staff/users', { params })
+  return data.data
 }
-export async function getUserDetail(userId) { await d(); const u=mUs.find(u=>u.id===userId); if(!u) throw new Error('Not found'); return {...u} }
-export async function getUserEvents(userId,params={}) { await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; const ue=mEv.filter((_,i)=>(i+parseInt(userId.split('-')[1]||'1'))%3===0); return {events:pg(ue,pi,ps).data,totalCount:ue.length,pageIndex:pi,pageSize:ps} }
-export async function createUser(payload) { await d(); return { id:`us-${mUs.length+1}`, email: payload.email, firstName: payload.firstName, lastName: payload.lastName, password: 'string', role: payload.role, college: 'FPT University' } }
-export async function updateUser(userId,formData) { await d(); return {message:'Updated'} }
-export async function deleteUser(userId) { await d(); return {message:'Deleted'} }
-export async function restoreUser(userId) { await d(); return {message:'Restored'} }
-export async function banUser(userId,banReason) { await d(); return {message:'Banned'} }
-export async function unbanUser(userId) { await d(); return {message:'Unbanned'} }
+
+/**
+ * Get user detail by ID.
+ * @param {string} userId
+ * @returns {Promise<object>}
+ */
+export async function getUserDetail(userId) {
+  const { data } = await api.get(`/staff/users/${userId}`)
+  return data.data
+}
+
+/**
+ * Get events that a user has participated in.
+ * @param {string} userId
+ * @param {object} [params]
+ * @returns {Promise<{ events: Array, totalCount: number }>}
+ */
+export async function getUserEvents(userId, params = {}) {
+  const { data } = await api.get(`/staff/users/${userId}/events`, { params })
+  return data.data
+}
+
+/**
+ * Create a new user.
+ * @param {object} payload
+ * @returns {Promise<object>}
+ */
+export async function createUser(payload) {
+  const { data } = await api.post('/staff/users', payload)
+  return data.data
+}
+
+/**
+ * Update user by ID (multipart/form-data).
+ * @param {string} userId
+ * @param {FormData} formData
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateUser(userId, formData) {
+  const { data } = await api.patch(`/staff/users/${userId}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return data
+}
+
+/**
+ * Soft-delete a user.
+ * @param {string} userId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteUser(userId) {
+  const { data } = await api.post(`/staff/users/${userId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted user.
+ * @param {string} userId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreUser(userId) {
+  const { data } = await api.post(`/staff/users/${userId}/restore`)
+  return data
+}
+
+/**
+ * Ban a user with a reason.
+ * @param {string} userId
+ * @param {string} banReason
+ * @returns {Promise<{ message: string }>}
+ */
+export async function banUser(userId, banReason) {
+  const { data } = await api.post(`/staff/users/${userId}/ban`, { banReason })
+  return data
+}
+
+/**
+ * Unban a user.
+ * @param {string} userId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function unbanUser(userId) {
+  const { data } = await api.post(`/staff/users/${userId}/unban`)
+  return data
+}
 
 // ============================ TEAMS ============================
 
-export async function getTeams(params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=[...mTm]
-  if(params.Keyword){const k=params.Keyword.toLowerCase();l=l.filter(t=>t.name.toLowerCase().includes(k))}
-  if(params.CanEdit!==undefined) l=l.filter(t=>t.canEdit===params.CanEdit)
-  if(params.IsDisable!==undefined) l=l.filter(t=>t.isDisable===params.IsDisable)
-  return {teams:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Get paginated teams list with search and filters.
+ * @param {Object} params
+ * @param {string} [params.Keyword]
+ * @param {boolean} [params.CanEdit]
+ * @param {string} [params.FromDate]
+ * @param {string} [params.ToDate]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ teams: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getTeams(params = {}) {
+  const { data } = await api.get('/staff/teams', { params })
+  return data.data
 }
-export async function getTeamDetail(teamId) { await d(); const t=mTm.find(t=>t.id===teamId); if(!t) throw new Error('Not found'); return {...t} }
-export async function deleteTeam(teamId) { await d(); return {message:'Deleted'} }
-export async function restoreTeam(teamId) { await d(); return {message:'Restored'} }
-export async function lockTeam(teamId) { await d(); return {message:'Locked'} }
-export async function unlockTeam(teamId) { await d(); return {message:'Unlocked'} }
-export async function updateTeam(teamId,payload) { await d(); return {message:'Updated'} }
+
+/**
+ * Get team detail by ID.
+ * @param {string} teamId
+ * @returns {Promise<object>}
+ */
+export async function getTeamDetail(teamId) {
+  const { data } = await api.get(`/staff/teams/${teamId}`)
+  return data.data
+}
+
+/**
+ * Update team by ID.
+ * @param {string} teamId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateTeam(teamId, payload) {
+  const { data } = await api.patch(`/staff/teams/${teamId}`, payload)
+  return data
+}
+
+/**
+ * Soft-delete a team.
+ * @param {string} teamId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteTeam(teamId) {
+  const { data } = await api.post(`/staff/teams/${teamId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted team.
+ * @param {string} teamId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreTeam(teamId) {
+  const { data } = await api.post(`/staff/teams/${teamId}/restore`)
+  return data
+}
+
+/**
+ * Lock a team.
+ * @param {string} teamId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function lockTeam(teamId) {
+  const { data } = await api.post(`/staff/teams/${teamId}/lock`)
+  return data
+}
+
+/**
+ * Unlock a team.
+ * @param {string} teamId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function unlockTeam(teamId) {
+  const { data } = await api.post(`/staff/teams/${teamId}/unlock`)
+  return data
+}
+
+/**
+ * Get register history for a team.
+ * @param {string} teamId
+ * @param {Object} [params]
+ * @returns {Promise<{ registerTeams: Array, totalCount: number }>}
+ */
+export async function getTeamRegisterHistory(teamId, params = {}) {
+  const { data } = await api.get(`/staff/teams/${teamId}/register-teams`, { params })
+  return data.data
+}
 
 // ============================ NOTIFICATIONS ============================
 
-export async function getNotifications(params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=[...mNf]
-  if(params.Title){const k=params.Title.toLowerCase();l=l.filter(n=>n.title.toLowerCase().includes(k))}
-  if(params.TargetType) l=l.filter(n=>n.targetType===params.TargetType)
-  return {notifications:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Get paginated notifications list with search and filters.
+ * @param {Object} params
+ * @param {string} [params.Title]
+ * @param {'Personal'|'Team'|'System'} [params.TargetType]
+ * @param {string} [params.FromDate]
+ * @param {string} [params.ToDate]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ notifications: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getNotifications(params = {}) {
+  const { data } = await api.get('/staff/notifications', { params })
+  return data.data
 }
-export async function getNotificationDetail(notifId) { await d(); const n=mNf.find(n=>n.id===notifId); if(!n) throw new Error('Not found'); return {...n} }
-export async function createNotification(payload) { await d(); return {data:{id:`nf-${mNf.length+1}`,...payload},message:'Created'} }
-export async function updateNotification(notifId,payload) { await d(); return {message:'Updated'} }
-export async function deleteNotification(notifId) { await d(); return {message:'Deleted'} }
+
+/**
+ * Get notification detail by ID.
+ * @param {string} notificationId
+ * @returns {Promise<object>}
+ */
+export async function getNotificationDetail(notificationId) {
+  const { data } = await api.get(`/staff/notifications/${notificationId}`)
+  return data.data
+}
+
+/**
+ * Create a new notification.
+ * @param {{ title: string, description: string, targetType: string, userId?: string, teamId?: string }} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function createNotification(payload) {
+  const { data } = await api.post('/staff/notifications', payload)
+  return data
+}
+
+/**
+ * Update notification by ID.
+ * @param {string} notificationId
+ * @param {{ title?: string, description?: string }} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateNotification(notificationId, payload) {
+  const { data } = await api.patch(`/staff/notifications/${notificationId}`, payload)
+  return data
+}
+
+/**
+ * Soft-delete a notification.
+ * @param {string} notificationId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteNotification(notificationId) {
+  const { data } = await api.post(`/staff/notifications/${notificationId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted notification.
+ * @param {string} notificationId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreNotification(notificationId) {
+  const { data } = await api.post(`/staff/notifications/${notificationId}/restore`)
+  return data
+}
 
 // ============================ REPORTS ============================
 
-export async function getReports(params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=[...mRp]
-  if(params.Keyword){const k=params.Keyword.toLowerCase();l=l.filter(r=>r.title.toLowerCase().includes(k)||r.description.toLowerCase().includes(k))}
-  if(params.Status) l=l.filter(r=>r.status===params.Status)
-  if(params.TypeReport) l=l.filter(r=>r.typeReport===params.TypeReport)
-  return {reports:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Get paginated reports list with search and filters.
+ * @param {Object} params
+ * @param {string} [params.keyword]
+ * @param {'Pending'|'Resolved'|'Rejected'} [params.status]
+ * @param {number} [params.pageIndex]
+ * @param {number} [params.pageSize]
+ * @returns {Promise<{ items: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getReports(params = {}) {
+  const { data } = await api.get('/staff/reports', { params })
+  return data.data
 }
-export async function getReportDetail(reportId) { await d(); const r=mRp.find(r=>r.id===reportId); if(!r) throw new Error('Not found'); return {...r} }
-export async function resolveReport(reportId,{resolution}) { await d(); return {message:'Resolved'} }
+
+/**
+ * Get report detail by ID.
+ * @param {string} reportId
+ * @returns {Promise<Object>}
+ */
+export async function getReportDetail(reportId) {
+  const { data } = await api.get(`/staff/reports/${reportId}`)
+  return data.data
+}
+
+/**
+ * Update report status (Resolve / Reject).
+ * @param {string} reportId
+ * @param {'Pending'|'Resolved'|'Rejected'} status
+ * @param {string} [reason]
+ * @returns {Promise<{ data: null, message: string, status: number }>}
+ */
+export async function updateReportStatus(reportId, status, reason) {
+  const payload = { status }
+  if (reason) payload.reason = reason
+  const { data } = await api.patch(`/staff/reports/${reportId}/status`, payload)
+  return data
+}
 
 // ============================ ROUNDS ============================
 
-export async function getRounds(eventId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mRd.filter(r=>r.eventId===eventId)
-  if(params.Keyword){const k=params.Keyword.toLowerCase();l=l.filter(r=>r.name.toLowerCase().includes(k))}
-  if(params.RoundNo) l=l.filter(r=>r.roundNo===params.RoundNo)
-  if(params.IsDisable!==undefined) l=l.filter(r=>r.isDisable===params.IsDisable)
-  return {rounds:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Get paginated rounds for an event.
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @param {string} [params.Keyword]
+ * @param {number} [params.RoundNo]
+ * @param {boolean} [params.IsDisable]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ rounds: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getRounds(eventId, params = {}) {
+  const { data } = await api.get(`/staff/events/${eventId}/rounds`, { params })
+  return data.data
 }
-export async function getRoundDetail(roundId) { await d(); const r=mRd.find(r=>r.id===roundId); if(!r) throw new Error('Not found'); return {...r} }
-export async function createRound(eventId,payload) { await d(); return {message:'Created'} }
-export async function updateRound(roundId,payload) { await d(); return {message:'Updated'} }
-export async function deleteRound(roundId) { await d(); return {message:'Deleted'} }
-export async function restoreRound(roundId) { await d(); return {message:'Restored'} }
-export async function getMaxRoundNo(eventId) { await d(); const rs=mRd.filter(r=>r.eventId===eventId); return rs.length>0?Math.max(...rs.map(r=>r.roundNo)):null }
-export async function swapRounds(eventId,roundId,targetRoundNo) { await d(); return {message:'Swapped'} }
 
-// ============================ TRACKS ============================
-
-export async function getTracks(eventId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mTr.filter(t=>t.eventId===eventId)
-  if(params.Keyword){const k=params.Keyword.toLowerCase();l=l.filter(t=>t.name.toLowerCase().includes(k))}
-  if(params.IsDisable!==undefined) l=l.filter(t=>t.isDisable===params.IsDisable)
-  return {tracks:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Get round detail by ID.
+ * @param {string} roundId
+ * @returns {Promise<object>}
+ */
+export async function getRoundDetail(roundId) {
+  const { data } = await api.get(`/staff/rounds/${roundId}`)
+  return data.data
 }
-export async function getTrackDetail(eventId,trackId) { await d(); const t=mTr.find(t=>t.id===trackId&&t.eventId===eventId); if(!t) throw new Error('Not found'); return {...t} }
-export async function createTrack(eventId,payload) { await d(); return {message:'Created'} }
-export async function updateTrack(eventId,trackId,payload) { await d(); return {message:'Updated'} }
-export async function deleteTrack(eventId,trackId) { await d(); return {message:'Deleted'} }
-export async function restoreTrack(eventId,trackId) { await d(); return {message:'Restored'} }
 
-// ============================ TOPICS ============================
-
-export async function getTopics(trackId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mTp.filter(t=>t.trackId===trackId)
-  return {topics:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Create a new round for an event.
+ * @param {string} eventId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function createRound(eventId, payload) {
+  const { data } = await api.post(`/staff/events/${eventId}/rounds`, payload)
+  return data
 }
-export async function getTopicDetail(topicId) { await d(); const t=mTp.find(t=>t.id===topicId); if(!t) throw new Error('Not found'); return {...t} }
-export async function createTopic(trackId,payload) { await d(); return {message:'Created'} }
-export async function updateTopic(topicId,payload) { await d(); return {message:'Updated'} }
-export async function deleteTopic(topicId) { await d(); return {message:'Deleted'} }
-export async function restoreTopic(topicId) { await d(); return {message:'Restored'} }
 
-// ============================ AWARDS ============================
-
-export async function getAwards(eventId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mAw.filter(a=>a.eventId===eventId)
-  if(params.IsDisable!==undefined) l=l.filter(a=>a.isDisable===params.IsDisable)
-  return {awards:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Update round by ID.
+ * @param {string} roundId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateRound(roundId, payload) {
+  const { data } = await api.patch(`/staff/rounds/${roundId}`, payload)
+  return data
 }
-export async function getAwardDetail(eventId,awardId) { await d(); const a=mAw.find(a=>a.id===awardId&&a.eventId===eventId); if(!a) throw new Error('Not found'); return {...a} }
-export async function createAward(eventId,payload) { await d(); return {message:'Created'} }
-export async function updateAward(eventId,awardId,payload) { await d(); return {message:'Updated'} }
-export async function deleteAward(eventId,awardId) { await d(); return {message:'Deleted'} }
-export async function restoreAward(eventId,awardId) { await d(); return {message:'Restored'} }
+
+/**
+ * Soft-delete a round.
+ * @param {string} roundId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteRound(roundId) {
+  const { data } = await api.post(`/staff/rounds/${roundId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted round.
+ * @param {string} roundId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreRound(roundId) {
+  const { data } = await api.post(`/staff/rounds/${roundId}/restore`)
+  return data
+}
+
+/**
+ * Get the highest round number in an event.
+ * @param {string} eventId
+ * @returns {Promise<number|null>}
+ */
+export async function getMaxRoundNo(eventId) {
+  const { data } = await api.get(`/staff/events/${eventId}/rounds/max-round-no`)
+  return data.data
+}
+
+/**
+ * Swap two rounds within the same event.
+ * @param {string} eventId
+ * @param {string} roundId
+ * @param {number} targetRoundNo
+ * @returns {Promise<{ message: string }>}
+ */
+export async function swapRounds(eventId, roundId, targetRoundNo) {
+  const { data } = await api.post(`/staff/events/${eventId}/rounds/${roundId}/swap`, { targetRoundNo })
+  return data
+}
 
 // ============================ CRITERIA TEMPLATES ============================
 
-export async function getCriteriaTemplates(roundId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mCT.filter(c=>c.roundId===roundId)
-  if(params.IsDisable!==undefined) l=l.filter(c=>c.isDisable===params.IsDisable)
-  return {criteriaTemplates:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Get criteria templates for a round.
+ * @param {string} roundId
+ * @param {Object} [params]
+ * @returns {Promise<{ criteriaTemplates: Array, totalCount: number }>}
+ */
+export async function getCriteriaTemplates(roundId, params = {}) {
+  const { data } = await api.get(`/staff/rounds/${roundId}/criteria-templates`, { params })
+  return data.data
 }
-export async function getCriteriaTemplateDetail(templateId) { await d(); const ct=mCT.find(c=>c.id===templateId); if(!ct) throw new Error('Not found'); return {...ct} }
-export async function createCriteriaTemplate(roundId,payload) { await d(); return {message:'Created'} }
-export async function updateCriteriaTemplate(templateId,payload) { await d(); return {message:'Updated'} }
-export async function deleteCriteriaTemplate(templateId) { await d(); return {message:'Deleted'} }
-export async function restoreCriteriaTemplate(templateId) { await d(); return {message:'Restored'} }
-export async function activateCriteriaTemplate(templateId) { await d(); return {message:'Activated'} }
+
+/**
+ * Get criteria template detail by ID.
+ * @param {string} templateId
+ * @returns {Promise<object>}
+ */
+export async function getCriteriaTemplateDetail(templateId) {
+  const { data } = await api.get(`/staff/criteria-templates/${templateId}`)
+  return data.data
+}
+
+/**
+ * Create a criteria template for a round.
+ * @param {string} roundId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function createCriteriaTemplate(roundId, payload) {
+  const { data } = await api.post(`/staff/rounds/${roundId}/criteria-templates`, payload)
+  return data
+}
+
+/**
+ * Update a criteria template.
+ * @param {string} templateId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateCriteriaTemplate(templateId, payload) {
+  const { data } = await api.patch(`/staff/criteria-templates/${templateId}`, payload)
+  return data
+}
+
+/**
+ * Soft-delete a criteria template.
+ * @param {string} templateId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteCriteriaTemplate(templateId) {
+  const { data } = await api.post(`/staff/criteria-templates/${templateId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted criteria template.
+ * @param {string} templateId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreCriteriaTemplate(templateId) {
+  const { data } = await api.post(`/staff/criteria-templates/${templateId}/restore`)
+  return data
+}
+
+/**
+ * Activate a criteria template.
+ * @param {string} templateId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function activateCriteriaTemplate(templateId) {
+  const { data } = await api.post(`/staff/criteria-templates/${templateId}/activate`)
+  return data
+}
 
 // ============================ CRITERIA ITEMS ============================
 
-export async function getCriteriaItems(templateId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mCI.filter(c=>c.templateId===templateId)
-  if(params.IsDisable!==undefined) l=l.filter(c=>c.isDisable===params.IsDisable)
-  return {criteriaItems:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Get criteria items for a template.
+ * @param {string} templateId
+ * @param {Object} [params]
+ * @returns {Promise<{ criteriaItems: Array, totalCount: number }>}
+ */
+export async function getCriteriaItems(templateId, params = {}) {
+  const { data } = await api.get(`/staff/criteria-templates/${templateId}/criteria-items`, { params })
+  return data.data
 }
-export async function getCriteriaItemDetail(itemId) { await d(); const ci=mCI.find(c=>c.id===itemId); if(!ci) throw new Error('Not found'); return {...ci} }
-export async function createCriteriaItem(templateId,payload) { await d(); return {message:'Created'} }
-export async function updateCriteriaItem(itemId,payload) { await d(); return {message:'Updated'} }
-export async function deleteCriteriaItem(itemId) { await d(); return {message:'Deleted'} }
-export async function restoreCriteriaItem(itemId) { await d(); return {message:'Restored'} }
 
-// ============================ ASSIGNS ============================
+/**
+ * Get criteria item detail by ID.
+ * @param {string} itemId
+ * @returns {Promise<object>}
+ */
+export async function getCriteriaItemDetail(itemId) {
+  const { data } = await api.get(`/staff/criteria-items/${itemId}`)
+  return data.data
+}
 
-export async function getEventAssigns(eventId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mAs.filter(a=>a.eventId===eventId)
-  if(params.Keyword){const k=params.Keyword.toLowerCase();l=l.filter(a=>a.user?.firstName?.toLowerCase().includes(k)||a.user?.email?.toLowerCase().includes(k))}
-  if(params.IsDisable!==undefined) l=l.filter(a=>a.isDisable===params.IsDisable)
-  return {eventAssigns:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Create a criteria item in a template.
+ * @param {string} templateId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function createCriteriaItem(templateId, payload) {
+  const { data } = await api.post(`/staff/criteria-templates/${templateId}/criteria-items`, payload)
+  return data
 }
-export async function getAvailableStaff(eventId,params={}) {
-  await d(); const assigned=mAs.filter(a=>a.eventId===eventId&&!a.isDisable).map(a=>a.userId)
-  const available=mUs.filter(u=>(u.role==='Staff'||u.role==='Lecturer')&&!assigned.includes(u.id)&&!u.isDisable)
-  return {users:available,totalCount:available.length}
+
+/**
+ * Update a criteria item.
+ * @param {string} itemId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateCriteriaItem(itemId, payload) {
+  const { data } = await api.patch(`/staff/criteria-items/${itemId}`, payload)
+  return data
 }
-export async function assignUserToEvent(eventId,payload) { await d(); return {message:'Assigned'} }
-export async function removeAssign(assignEventId) { await d(); return {message:'Removed'} }
-export async function restoreAssign(assignEventId) { await d(); return {message:'Restored'} }
-export async function assignTrackToEventAssign(assignEventId,payload) { await d(); return {message:'Track assigned'} }
-export async function removeTrackFromAssign(assignEventId,trackId) { await d(); return {message:'Track removed'} }
-export async function restoreTrackToAssign(assignEventId,trackId) { await d(); return {message:'Track restored'} }
+
+/**
+ * Soft-delete a criteria item.
+ * @param {string} itemId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteCriteriaItem(itemId) {
+  const { data } = await api.post(`/staff/criteria-items/${itemId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted criteria item.
+ * @param {string} itemId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreCriteriaItem(itemId) {
+  const { data } = await api.post(`/staff/criteria-items/${itemId}/restore`)
+  return data
+}
+
+// ============================ TRACKS ============================
+
+/**
+ * Get tracks for an event.
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @returns {Promise<{ tracks: Array, totalCount: number }>}
+ */
+export async function getTracks(eventId, params = {}) {
+  const { data } = await api.get(`/staff/events/${eventId}/tracks`, { params })
+  return data.data
+}
+
+/**
+ * Get track detail by ID.
+ * @param {string} eventId
+ * @param {string} trackId
+ * @returns {Promise<object>}
+ */
+export async function getTrackDetail(eventId, trackId) {
+  const { data } = await api.get(`/staff/events/${eventId}/tracks/${trackId}`)
+  return data.data
+}
+
+/**
+ * Create a track in an event.
+ * @param {string} eventId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function createTrack(eventId, payload) {
+  const { data } = await api.post(`/staff/events/${eventId}/tracks`, payload)
+  return data
+}
+
+/**
+ * Update a track.
+ * @param {string} eventId
+ * @param {string} trackId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateTrack(eventId, trackId, payload) {
+  const { data } = await api.patch(`/staff/events/${eventId}/tracks/${trackId}`, payload)
+  return data
+}
+
+/**
+ * Soft-delete a track.
+ * @param {string} trackId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteTrack(trackId) {
+  const { data } = await api.post(`/staff/tracks/${trackId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted track.
+ * @param {string} trackId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreTrack(trackId) {
+  const { data } = await api.post(`/staff/tracks/${trackId}/restore`)
+  return data
+}
+
+// ============================ TOPICS ============================
+
+/**
+ * Get topics for a track.
+ * @param {string} trackId
+ * @param {Object} [params]
+ * @returns {Promise<{ topics: Array, totalCount: number }>}
+ */
+export async function getTopics(trackId, params = {}) {
+  const { data } = await api.get(`/staff/tracks/${trackId}/topics`, { params })
+  return data.data
+}
+
+/**
+ * Get topic detail by ID.
+ * @param {string} topicId
+ * @returns {Promise<object>}
+ */
+export async function getTopicDetail(topicId) {
+  const { data } = await api.get(`/staff/topics/${topicId}`)
+  return data.data
+}
+
+/**
+ * Create a topic in a track.
+ * @param {string} trackId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function createTopic(trackId, payload) {
+  const { data } = await api.post(`/staff/tracks/${trackId}/topics`, payload)
+  return data
+}
+
+/**
+ * Update a topic.
+ * @param {string} topicId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateTopic(topicId, payload) {
+  const { data } = await api.patch(`/staff/topics/${topicId}`, payload)
+  return data
+}
+
+/**
+ * Soft-delete a topic.
+ * @param {string} topicId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteTopic(topicId) {
+  const { data } = await api.post(`/staff/topics/${topicId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted topic.
+ * @param {string} topicId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreTopic(topicId) {
+  const { data } = await api.post(`/staff/topics/${topicId}/restore`)
+  return data
+}
+
+// ============================ AWARDS ============================
+
+/**
+ * Get awards for an event.
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @returns {Promise<{ awards: Array, totalCount: number }>}
+ */
+export async function getAwards(eventId, params = {}) {
+  const { data } = await api.get(`/staff/events/${eventId}/awards`, { params })
+  return data.data
+}
+
+/**
+ * Get award detail by ID.
+ * @param {string} eventId
+ * @param {string} awardId
+ * @returns {Promise<object>}
+ */
+export async function getAwardDetail(eventId, awardId) {
+  const { data } = await api.get(`/staff/events/${eventId}/awards/${awardId}`)
+  return data.data
+}
+
+/**
+ * Create an award in an event.
+ * @param {string} eventId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function createAward(eventId, payload) {
+  const { data } = await api.post(`/staff/events/${eventId}/awards`, payload)
+  return data
+}
+
+/**
+ * Update an award.
+ * @param {string} eventId
+ * @param {string} awardId
+ * @param {object} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function updateAward(eventId, awardId, payload) {
+  const { data } = await api.patch(`/staff/events/${eventId}/awards/${awardId}`, payload)
+  return data
+}
+
+/**
+ * Soft-delete an award.
+ * @param {string} eventId
+ * @param {string} awardId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function deleteAward(eventId, awardId) {
+  const { data } = await api.post(`/staff/events/${eventId}/awards/${awardId}/delete`)
+  return data
+}
+
+/**
+ * Restore a soft-deleted award.
+ * @param {string} eventId
+ * @param {string} awardId
+ * @returns {Promise<{ message: string }>}
+ */
+export async function restoreAward(eventId, awardId) {
+  const { data } = await api.post(`/staff/events/${eventId}/awards/${awardId}/restore`)
+  return data
+}
+
+/**
+ * Swap award order.
+ * @param {string} eventId
+ * @param {string} awardId
+ * @param {number} targetLevel
+ * @returns {Promise<{ message: string }>}
+ */
+export async function swapAward(eventId, awardId, targetLevel) {
+  const { data } = await api.post(`/staff/events/${eventId}/awards/${awardId}/swap`, { targetLevel })
+  return data
+}
+
+// ============================ ASSIGN ============================
+
+/**
+ * Get users assigned to an event.
+ * @param {string} eventId
+ * @param {Object} [params]
+ */
+export async function getAssignedUsers(eventId, params = {}) {
+  const { data } = await api.get(`/staff/assign/events/${eventId}/assigned`, { params })
+  return data.data
+}
+
+/**
+ * Get lecturers available to be assigned.
+ * @param {string} eventId
+ * @param {Object} [params]
+ */
+export async function getAvailableLecturers(eventId, params = {}) {
+  const { data } = await api.get(`/staff/assign/events/${eventId}/lecturers/available`, { params })
+  return data.data
+}
+
+/**
+ * Get staff available to be assigned.
+ * @param {string} eventId
+ * @param {Object} [params]
+ */
+export async function getAvailableStaff(eventId, params = {}) {
+  const { data } = await api.get(`/staff/assign/events/${eventId}/staff/available`, { params })
+  return data.data
+}
+
+/**
+ * Assign a user to an event.
+ * @param {string} eventId
+ * @param {{ userId: string, eventRole: string }} payload
+ */
+export async function assignUserToEvent(eventId, payload) {
+  const { data } = await api.post(`/staff/assign/events/${eventId}/assign/users`, payload)
+  return data
+}
+
+/**
+ * Soft-delete a user assignment.
+ * @param {string} assignEventId
+ */
+export async function removeAssign(assignEventId) {
+  const { data } = await api.post(`/staff/assign/event-assigns/${assignEventId}/remove`)
+  return data
+}
+
+/**
+ * Restore a user assignment.
+ * @param {string} assignEventId
+ */
+export async function restoreAssign(assignEventId) {
+  const { data } = await api.post(`/staff/assign/event-assigns/${assignEventId}/restore`)
+  return data
+}
+
+/**
+ * Assign a track to an event assign.
+ * @param {string} assignEventId
+ * @param {{ trackId: string }} payload
+ */
+export async function assignTrackToEventAssign(assignEventId, payload) {
+  const { data } = await api.post(`/staff/assign/event-assigns/${assignEventId}/tracks`, payload)
+  return data
+}
+
+/**
+ * Remove a track from an assign event.
+ * @param {string} assignEventId
+ * @param {string} trackId
+ */
+export async function removeTrackFromAssign(assignEventId, trackId) {
+  const { data } = await api.post(`/staff/assign/event-assigns/${assignEventId}/tracks/${trackId}/remove`)
+  return data
+}
+
+/**
+ * Restore a track to an assign event.
+ * @param {string} assignEventId
+ * @param {string} trackId
+ */
+export async function restoreTrackToAssign(assignEventId, trackId) {
+  const { data } = await api.post(`/staff/assign/event-assigns/${assignEventId}/tracks/${trackId}/restore`)
+  return data
+}
 
 // ============================ REGISTER TEAMS ============================
 
-export async function getRegisterTeams(eventId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mRT.filter(rt=>rt.eventId===eventId)
-  if(params.Keyword){const k=params.Keyword.toLowerCase();l=l.filter(rt=>rt.teamName.toLowerCase().includes(k))}
-  if(params.Status) l=l.filter(rt=>rt.status===params.Status)
-  if(params.IsDisable!==undefined) l=l.filter(rt=>rt.isDisable===params.IsDisable)
-  return {registerTeams:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Get register teams for an event.
+ * @param {string} eventId
+ * @param {Object} [params]
+ */
+export async function getEventRegisterTeams(eventId, params = {}) {
+  const { data } = await api.get(`/staff/events/${eventId}/register-teams`, { params })
+  return data.data
 }
-export async function getRegisterTeamDetail(registerTeamId) { await d(); const rt=mRT.find(r=>r.id===registerTeamId); if(!rt) throw new Error('Not found'); return {...rt} }
-export async function updateRegisterTeam(registerTeamId,payload) { await d(); return {message:'Updated'} }
-export async function assignRegisterTeamToNextRound(registerTeamId) { await d(); return {data:{registerTeamId,roundId:'rd-1',roundName:'Next',roundNo:2},message:'Assigned'} }
-export async function revertRegisterTeamToPreviousRound(registerTeamId) { await d(); return {data:{registerTeamId},message:'Reverted'} }
-export async function getRegisterTeamSubmissions(registerTeamId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mSb.filter(s=>s.registerTeamId===registerTeamId)
-  return {submissions:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+
+/**
+ * Get register team detail.
+ * @param {string} registerTeamId
+ */
+export async function getRegisterTeamDetail(registerTeamId) {
+  const { data } = await api.get(`/staff/register-teams/${registerTeamId}`)
+  return data.data
+}
+
+/**
+ * Approve a register team.
+ * @param {string} registerTeamId
+ */
+export async function approveRegisterTeam(registerTeamId) {
+  const { data } = await api.post(`/staff/register-teams/${registerTeamId}/approve`)
+  return data
+}
+
+/**
+ * Reject a register team.
+ * @param {string} registerTeamId
+ * @param {object} [payload]
+ */
+export async function rejectRegisterTeam(registerTeamId, payload = {}) {
+  const { data } = await api.post(`/staff/register-teams/${registerTeamId}/reject`, payload)
+  return data
+}
+
+/**
+ * Ban a register team.
+ * @param {string} registerTeamId
+ * @param {object} payload
+ */
+export async function banRegisterTeam(registerTeamId, payload) {
+  const { data } = await api.post(`/staff/register-teams/${registerTeamId}/ban`, payload)
+  return data
+}
+
+/**
+ * Unban a register team.
+ * @param {string} registerTeamId
+ */
+export async function unbanRegisterTeam(registerTeamId) {
+  const { data } = await api.post(`/staff/register-teams/${registerTeamId}/unban`)
+  return data
+}
+
+/**
+ * Update a register team.
+ * @param {string} registerTeamId
+ * @param {object} payload
+ */
+export async function updateRegisterTeam(registerTeamId, payload) {
+  const { data } = await api.patch(`/staff/register-teams/${registerTeamId}`, payload)
+  return data
+}
+
+/**
+ * Assign track and topic to a register team.
+ * @param {string} registerTeamId
+ * @param {{ trackId: string, topicId?: string }} payload
+ */
+export async function assignTrackTopicToRegisterTeam(registerTeamId, payload) {
+  const { data } = await api.post(`/staff/register-teams/${registerTeamId}/assign-track-topic`, payload)
+  return data
+}
+
+/**
+ * Remove track and topic from a register team.
+ * @param {string} registerTeamId
+ */
+export async function removeTrackTopicFromRegisterTeam(registerTeamId) {
+  const { data } = await api.post(`/staff/register-teams/${registerTeamId}/remove-track-topic`)
+  return data
+}
+
+/**
+ * Assign a register team to the next round.
+ * @param {string} registerTeamId
+ */
+export async function assignRegisterTeamToNextRound(registerTeamId) {
+  const { data } = await api.post(`/staff/register-teams/${registerTeamId}/assign-next-round`)
+  return data
+}
+
+/**
+ * Revert a register team to the previous round.
+ * @param {string} registerTeamId
+ */
+export async function revertRegisterTeamToPreviousRound(registerTeamId) {
+  const { data } = await api.post(`/staff/register-teams/${registerTeamId}/revert-previous-round`)
+  return data
+}
+
+/**
+ * Get submissions for a register team.
+ * @param {string} registerTeamId
+ * @param {Object} [params]
+ */
+export async function getRegisterTeamSubmissions(registerTeamId, params = {}) {
+  const { data } = await api.get(`/staff/register-teams/${registerTeamId}/submissions`, { params })
+  return data.data
 }
 
 // ============================ SUBMISSIONS ============================
 
-export async function getEventSubmissions(eventId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mSb.filter(s=>s.eventId===eventId)
-  if(params.roundId) l=l.filter(s=>s.roundId===params.roundId)
-  if(params.topicId) l=l.filter(s=>s.registerTeamId&&mRT.find(rt=>rt.id===s.registerTeamId&&rt.topicId===params.topicId))
-  if(params.keyword){const k=params.keyword.toLowerCase();l=l.filter(s=>s.teamName?.toLowerCase().includes(k))}
-  return {submissions:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Get submissions for an event.
+ * @param {string} eventId
+ * @param {Object} [params]
+ */
+export async function getEventSubmissions(eventId, params = {}) {
+  const { data } = await api.get(`/staff/events/${eventId}/submissions`, { params })
+  return data.data
 }
-export async function getSubmissionDetail(submissionId) { await d(); const s=mSb.find(s=>s.id===submissionId); if(!s) throw new Error('Not found'); return {...s} }
-export async function getSubmissionGraderScores(submissionId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10
-  const scores=[{id:'sc-1',submissionId,graderName:'Grader A',totalScore:85,maxScore:100,createdAt:new Date().toISOString()},{id:'sc-2',submissionId,graderName:'Grader B',totalScore:78,maxScore:100,createdAt:new Date().toISOString()}]
-  return {graderScores:pg(scores,pi,ps).data,totalCount:scores.length,pageIndex:pi,pageSize:ps}
-}
-export async function getScoreDetail(scoreId) { await d(); return {id:scoreId,graderName:'Grader',totalScore:85,maxScore:100} }
-export async function getScoreItems(scoreId,params={}) { await d(); return {scoreItems:[],totalCount:0} }
-export async function getScoreItemDetail(scoreItemId) { await d(); return {id:scoreItemId,name:'Score Item',score:10,maxScore:10} }
 
-// ============================ PROFILE ============================
+/**
+ * Get submission detail.
+ * @param {string} submissionId
+ */
+export async function getSubmissionDetail(submissionId) {
+  const { data } = await api.get(`/staff/submissions/${submissionId}`)
+  return data.data
+}
 
-export async function getAdminProfile() {
-  await d(); return {id:'st-1',email:'staff@seal.dev',firstName:'Staff',lastName:'Member',role:'Staff',college:'SEAL University',avatarUrl:null}
+/**
+ * Get grader scores for a submission.
+ * @param {string} submissionId
+ * @param {Object} [params]
+ */
+export async function getSubmissionGraderScores(submissionId, params = {}) {
+  const { data } = await api.get(`/staff/submissions/${submissionId}/grader-scores`, { params })
+  return data.data
 }
-export async function updateProfile(formData) { await d(); return {message:'Profile updated'} }
 
-// ============================ MISSING FUNCTIONS ============================
+/**
+ * Get score detail.
+ * @param {string} scoreId
+ */
+export async function getScoreDetail(scoreId) {
+  const { data } = await api.get(`/staff/scores/${scoreId}`)
+  return data.data
+}
 
-export async function getAssignedUsers(eventId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mAs.filter(a=>a.eventId===eventId&&!a.isDisable)
-  if(params.Keyword){const k=params.Keyword.toLowerCase();l=l.filter(a=>a.user?.firstName?.toLowerCase().includes(k)||a.user?.email?.toLowerCase().includes(k))}
-  return {eventAssigns:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
+/**
+ * Get score items for a score.
+ * @param {string} scoreId
+ * @param {Object} [params]
+ */
+export async function getScoreItems(scoreId, params = {}) {
+  const { data } = await api.get(`/staff/scores/${scoreId}/items`, { params })
+  return data.data
 }
-export async function getAvailableLecturers(eventId,params={}) {
-  await d(); return {users:mUs.filter(u=>u.role==='Lecturer'&&!u.isDisable).slice(0,10),totalCount:10}
+
+/**
+ * Get score item detail.
+ * @param {string} scoreItemId
+ */
+export async function getScoreItemDetail(scoreItemId) {
+  const { data } = await api.get(`/staff/score-items/${scoreItemId}`)
+  return data.data
 }
-export async function getEventRegisterTeams(eventId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mRT.filter(rt=>rt.eventId===eventId)
-  if(params.Keyword){const k=params.Keyword.toLowerCase();l=l.filter(rt=>rt.teamName.toLowerCase().includes(k))}
-  if(params.Status) l=l.filter(rt=>rt.status===params.Status)
-  if(params.IsDisable!==undefined) l=l.filter(rt=>rt.isDisable===params.IsDisable)
-  return {registerTeams:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
-}
-export async function approveRegisterTeam(registerTeamId) { await d(); return {message:'Approved'} }
-export async function rejectRegisterTeam(registerTeamId) { await d(); return {message:'Rejected'} }
-export async function banRegisterTeam(registerTeamId) { await d(); return {message:'Banned'} }
-export async function unbanRegisterTeam(registerTeamId) { await d(); return {message:'Unbanned'} }
-export async function assignTrackTopicToRegisterTeam(registerTeamId,payload) { await d(); return {message:'Track/Topic assigned'} }
-export async function removeTrackTopicFromRegisterTeam(registerTeamId) { await d(); return {message:'Track/Topic removed'} }
-export async function getTeamRegisterHistory(teamId,params={}) {
-  await d(); const pi=params.PageIndex||1,ps=params.PageSize||10; let l=mRT.filter(rt=>rt.teamId===teamId)
-  return {registerTeams:pg(l,pi,ps).data,totalCount:l.length,pageIndex:pi,pageSize:ps}
-}
-export async function updateReportStatus(reportId,payload) { await d(); return {message:'Status updated'} }
-export async function swapAward(eventId,awardId,targetAwardId) { await d(); return {message:'Swapped'} }
-export async function restoreNotification(notifId) { await d(); return {message:'Restored'} }
+
+// ============================ LEADERBOARD ============================
+
+/**
+ * Get event leaderboard.
+ * @param {string} eventId
+ * @param {Object} [params]
+ */
 export async function getEventLeaderboard(eventId, params = {}) {
-  await d(); const pi = params.PageIndex || 1; const ps = params.PageSize || 10
-  return {
-    eventId, eventName: `Hackathon ${eventId}`,
-    totalRounds: Math.floor(Math.random() * 3) + 1,
-    items: pg(
-      Array.from({ length: 30 }, (_, i) => ({
-        rank: i + 1,
-        registerTeamId: `rt-${(i % 10) + 1}`,
-        teamId: `tm-${(i % 20) + 1}`,
-        teamName: mTm[i % 20]?.name || `Team ${i + 1}`,
-        trackId: `tr-${(i % 15) + 1}`,
-        trackTitle: `Track ${(i % 15) + 1}`,
-        topicId: i % 3 ? `tp-${(i % 5) + 1}` : null,
-        topicTitle: i % 3 ? `Topic ${(i % 5) + 1}` : null,
-        eventScore: Math.round((95 - i * 2.5 + Math.random() * 3) * 100) / 100,
-        roundScores: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, (_, j) => ({
-          roundNo: j + 1,
-          roundName: `Round ${j + 1}`,
-          scopeScore: Math.round((90 - i * 3 + j * 2 + Math.random() * 5) * 100) / 100,
-        })),
-      })),
-      pi, ps
-    ).data,
-    totalCount: 30, pageIndex: pi, pageSize: ps,
-  }
+  const { data } = await api.get(`/staff/events/${eventId}/leaderboard`, { params })
+  return data.data
 }
+
+/**
+ * Get chapter leaderboard.
+ * @param {number} year
+ * @param {Object} [params]
+ */
 export async function getChapterLeaderboard(year, params = {}) {
-  await d(); const pi = params.PageIndex || 1; const ps = params.PageSize || 10
-  return {
-    year, eventCount: Math.floor(Math.random() * 5) + 2,
-    items: pg(
-      Array.from({ length: 25 }, (_, i) => ({
-        rank: i + 1,
-        teamId: mTm[i % 20]?.id || `tm-${i + 1}`,
-        teamName: mTm[i % 20]?.name || `Team ${i + 1}`,
-        chapterScore: Math.round((92 - i * 3 + Math.random() * 4) * 100) / 100,
-        eventCount: Math.floor(Math.random() * 3) + 1,
-        eventScores: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, (_, j) => ({
-          eventId: `ev-${j + 1}`,
-          eventName: `Hackathon ${year} - Season ${j + 1}`,
-          registerTeamId: `rt-${(i % 10) + 1}`,
-          eventScore: Math.round((88 - i * 2.8 + j * 3 + Math.random() * 5) * 100) / 100,
-        })),
-      })),
-      pi, ps
-    ).data,
-    totalCount: 25, pageIndex: pi, pageSize: ps,
-  }
+  const { data } = await api.get(`/staff/events/chapter/${year}/leaderboard`, { params })
+  return data.data
 }

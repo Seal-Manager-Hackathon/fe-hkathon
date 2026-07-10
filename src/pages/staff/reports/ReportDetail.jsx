@@ -56,7 +56,7 @@ export default function ReportDetail() {
   }, [id])
 
   const handleModalSubmit = useCallback(async (reasonHtml) => {
-    const newStatus = modal.action === 'resolve' ? 'Resolved' : 'Rejected'
+    const newStatus = modal.action === 'resolve' ? 'Resolved' : 'Reject'
     setModal({ open: false, action: 'resolve' })
     setActing(true)
     setActionError('')
@@ -64,6 +64,9 @@ export default function ReportDetail() {
       await updateReportStatus(id, newStatus, reasonHtml)
       setReport((prev) => (prev ? { ...prev, status: newStatus, reason: reasonHtml, updatedAt: new Date().toISOString() } : prev))
       toast.success(`Report has been ${newStatus.toLowerCase()}.`)
+      // Refetch full details to get server-side updates
+      const refreshed = await getReportDetail(id)
+      setReport(refreshed)
     } catch (err) {
       setActionError(err?.response?.data?.message || `Failed to ${newStatus.toLowerCase()} report.`)
     } finally {

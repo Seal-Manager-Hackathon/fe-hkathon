@@ -58,7 +58,7 @@ export function reportsColumns(userDetails = {}, callbacks = {}) {
       header: 'Status',
       headerIcon: Flag,
       render: (row) => (
-        <Badge label={row.status} className={reportStatusBadge[row.status] || ''} />
+        <Badge label={row.status === 'Reject' ? 'Rejected' : row.status} className={reportStatusBadge[row.status] || ''} />
       ),
     },
     {

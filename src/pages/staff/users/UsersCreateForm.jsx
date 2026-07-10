@@ -11,21 +11,15 @@ import { ROLE_OPTIONS_SELECT_NO_ADMIN } from '../../../constants/adminOptions'
  * @param {{
  *   form: { firstName: string, lastName: string, email: string, role: string },
  *   fieldErrors: Record<string, string>,
- *   saveError: string,
  *   saving: boolean,
  *   canSave: boolean,
  *   onFieldChange: (field: string, value: string) => void,
  *   onSave: () => void,
  * }} props
  */
-export default function UsersCreateForm({ form, fieldErrors, saveError, saving, canSave, onFieldChange, onSave }) {
+export default function UsersCreateForm({ form, fieldErrors, saving, canSave, onFieldChange, onSave }) {
   return (
     <div className="space-y-5">
-      {saveError && (
-        <div className="rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">
-          {saveError}
-        </div>
-      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="First Name" required error={fieldErrors.firstName}>

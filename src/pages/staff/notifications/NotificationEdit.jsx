@@ -4,6 +4,7 @@ import { Bell, FileText } from 'lucide-react'
 import FormField from '../../../components/FormField'
 import EntityFormPage from '../../../components/EntityFormPage'
 import { getNotificationDetail, updateNotification } from '../../../api/staff'
+import { toast } from '../../../utils/toast'
 
 export default function NotificationEdit() {
   const { id } = useParams()
@@ -51,15 +52,15 @@ export default function NotificationEdit() {
   async function handleSave() {
     if (!canSave) return
     setSaving(true)
-    setError('')
     try {
       await updateNotification(id, {
         title: form.title.trim(),
         description: form.description.trim(),
       })
+      toast.success('Notification updated')
       navigate(`/staff/notifications/${id}`)
     } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to update notification.')
+      toast.error(err?.response?.data?.message || 'Failed to update notification.')
     } finally {
       setSaving(false)
     }

@@ -4,7 +4,7 @@ import { STATUS_STEPPER_STEPS, STATUS_META } from './statusMeta'
 export default function StatusStepper({ status }) {
   const steps = STATUS_STEPPER_STEPS(status)
   const meta = STATUS_META[status] || STATUS_META.Pending
-  const activeIndex = status === 'Pending' ? 0 : 1
+  const activeIndex = status === 'Pending' ? 0 : 2
 
   return (
     <div className="flex items-center justify-center sm:justify-start">

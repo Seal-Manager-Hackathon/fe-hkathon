@@ -4,6 +4,7 @@ import { Save } from 'lucide-react'
 import { getUserDetail, updateUser } from '../../../api/staff'
 import FormActions from '../../../components/FormActions'
 import { getErrorMessage } from '../../../utils/error'
+import { toast } from '../../../utils/toast'
 import UserEditAvatar from './UserEditAvatar'
 import UserEditForm from './UserEditForm'
 
@@ -76,7 +77,6 @@ export default function UserEdit() {
 
   async function handleSave() {
     setSaving(true)
-    setError('')
     try {
       const fd = new FormData()
 
@@ -96,9 +96,10 @@ export default function UserEdit() {
       if (avatarFile) fd.append('AvatarFile', avatarFile)
 
       await updateUser(id, fd)
+      toast.success('User updated')
       navigate(`/staff/users/${id}`)
     } catch (err) {
-      setError(getErrorMessage(err))
+      toast.error(getErrorMessage(err))
     } finally {
       setSaving(false)
     }
@@ -156,7 +157,7 @@ export default function UserEdit() {
         onRemove={removeAvatar}
       />
 
-      <UserEditForm form={form} onChange={updateField} error={error} />
+      <UserEditForm form={form} onChange={updateField} />
 
       <FormActions
         onSave={handleSave}
