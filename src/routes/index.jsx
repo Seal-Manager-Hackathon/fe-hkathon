@@ -89,7 +89,6 @@ const StaffNotificationDetail = lazy(() => import('../pages/staff/notifications/
 const StaffNotificationEdit = lazy(() => import('../pages/staff/notifications/NotificationEdit'))
 const StaffTeamsManagement = lazy(() => import('../pages/staff/teams/TeamsManagement'))
 const StaffTeamDetail = lazy(() => import('../pages/staff/teams/TeamDetail'))
-const StaffTeamEdit = lazy(() => import('../pages/staff/teams/TeamEdit'))
 const StaffReportsManagement = lazy(() => import('../pages/staff/reports/ReportsManagement'))
 const StaffReportDetail = lazy(() => import('../pages/staff/reports/ReportDetail'))
 const StaffSubmissionDetail = lazy(() => import('../pages/staff/submissions/SubmissionDetail'))
@@ -199,7 +198,6 @@ export const routes = [
     ]},
     { path: 'teams', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><StaffTeamsManagement /></Suspense> },
-      { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><StaffTeamEdit /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffTeamDetail /></Suspense> },
     ]},
     { path: 'reports', children: [
