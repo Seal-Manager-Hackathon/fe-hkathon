@@ -183,17 +183,37 @@ export async function restoreEvent(eventId) {
 // ============================ USERS ============================
 
 /**
- * Get paginated users list with search and filters.
+ * Get paginated users list with search and filters (sắp xếp gần nhất trên cùng).
  * @param {Object} params
  * @param {string} [params.Keyword]
  * @param {'Admin'|'Staff'|'Student'|'Lecturer'} [params.Role]
  * @param {boolean} [params.IsDisable]
  * @param {boolean} [params.IsVerified]
+ * @param {boolean} [params.IsBanned] — BanReason != null
  * @param {string} [params.FromDate]
  * @param {string} [params.ToDate]
  * @param {number} [params.PageIndex]
  * @param {number} [params.PageSize]
- * @returns {Promise<{ users: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ * @returns {Promise<{
+ *   users: Array<{
+ *     id: string,
+ *     email: string,
+ *     firstName: string,
+ *     lastName: string,
+ *     role: string,
+ *     status: string,
+ *     isVerified: boolean,
+ *     isDisable: boolean,
+ *     banReason: string|null,
+ *     bannedAt: string|null,
+ *     avatarUrl: string|null,
+ *     college: string|null,
+ *     createdAt: string,
+ *   }>,
+ *   totalCount: number,
+ *   pageIndex: number,
+ *   pageSize: number,
+ * }>}
  */
 export async function getUsers(params = {}) {
   const { data } = await api.get('/staff/users', { params })
@@ -203,7 +223,30 @@ export async function getUsers(params = {}) {
 /**
  * Get user detail by ID.
  * @param {string} userId
- * @returns {Promise<object>}
+ * @returns {Promise<{
+ *   id: string,
+ *   email: string,
+ *   firstName: string,
+ *   lastName: string,
+ *   phoneNumber: string|null,
+ *   avatarUrl: string|null,
+ *   bio: string|null,
+ *   address: string|null,
+ *   dateOfBirth: string|null,
+ *   studentId: string|null,
+ *   college: string|null,
+ *   imgUrl: string|null,
+ *   linkUrl: string|null,
+ *   role: string,
+ *   status: string,
+ *   isVerified: boolean,
+ *   isDisable: boolean,
+ *   banReason: string|null,
+ *   bannedAt: string|null,
+ *   verifyEmailAt: string|null,
+ *   createdAt: string,
+ *   updatedAt: string,
+ * }>}
  */
 export async function getUserDetail(userId) {
   const { data } = await api.get(`/staff/users/${userId}`)

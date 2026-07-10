@@ -1,5 +1,5 @@
-import { Search, Shield, UserCheck, Ban, Calendar } from 'lucide-react'
-import { ROLE_OPTIONS_ALL, VERIFIED_OPTIONS, DISABLE_OPTIONS } from '../../../constants/commonOptions'
+import { Search, Shield, UserCheck, Ban, AlertTriangle, Calendar } from 'lucide-react'
+import { ROLE_OPTIONS_ALL, VERIFIED_OPTIONS, DISABLE_OPTIONS, BANNED_OPTIONS } from '../../../constants/commonOptions'
 
 /**
  * Filter descriptor array consumed by FilterBar.
@@ -36,6 +36,14 @@ export const usersFilters = [
     label: 'Deleted',
     icon: Ban,
     options: DISABLE_OPTIONS,
+    className: 'w-full sm:w-[160px]',
+  },
+  {
+    type: 'select',
+    key: 'isBanned',
+    label: 'Banned',
+    icon: AlertTriangle,
+    options: BANNED_OPTIONS,
     className: 'w-full sm:w-[160px]',
   },
   {

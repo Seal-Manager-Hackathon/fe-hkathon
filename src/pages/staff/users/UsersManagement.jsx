@@ -17,6 +17,7 @@ const DEFAULT_VALUES = {
   role: '',
   isDisable: '',
   isVerified: '',
+  isBanned: '',
   fromDate: '',
   toDate: '',
 }
@@ -24,11 +25,12 @@ const DEFAULT_VALUES = {
 export default function UsersManagement() {
   const buildParams = useCallback((filters, pageIndex) => {
     const params = { PageIndex: pageIndex, PageSize: PAGE_SIZE }
-    const { keyword, role, isDisable, isVerified, fromDate, toDate } = filters
+    const { keyword, role, isDisable, isVerified, isBanned, fromDate, toDate } = filters
     if (keyword) params.Keyword = keyword
     if (role) params.Role = role
     if (isDisable !== '') params.IsDisable = isDisable === 'true'
     if (isVerified !== '') params.IsVerified = isVerified === 'true'
+    if (isBanned !== '') params.IsBanned = isBanned === 'true'
     if (fromDate) params.FromDate = new Date(fromDate).toISOString()
     if (toDate) params.ToDate = new Date(toDate).toISOString()
     return params

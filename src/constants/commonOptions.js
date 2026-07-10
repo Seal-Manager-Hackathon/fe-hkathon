@@ -45,6 +45,12 @@ export const DISABLE_OPTIONS = [
   { value: 'false', label: 'No' },
 ]
 
+export const BANNED_OPTIONS = [
+  { value: '', label: 'All' },
+  { value: 'true', label: 'Banned' },
+  { value: 'false', label: 'Not Banned' },
+]
+
 /* ─── Season ─── */
 export const SEASON_OPTIONS = [
   { value: 'Spring', label: 'Spring' },
