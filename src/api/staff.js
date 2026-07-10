@@ -107,9 +107,32 @@ export async function getMyStaffEvents(params = {}) {
 }
 
 /**
- * Get event detail by ID.
+ * Get event detail by ID (staff my-staff endpoint).
+ * Only returns data if the current staff user is assigned to the event.
+ * Returns 404 if not assigned — does not leak event existence.
+ *
+ * Extended fields vs list endpoint: registerLimitTime, limitTeam, minMember, maxMember, eventRoleId, eventRoleName.
+ *
  * @param {string} eventId
- * @returns {Promise<object>}
+ * @returns {Promise<{
+ *   id: string,
+ *   name: string,
+ *   description: string,
+ *   status: string,
+ *   numberRound: number,
+ *   season: string,
+ *   startTime: string,
+ *   endTime: string,
+ *   registerLimitTime: string,
+ *   limitTeam: number,
+ *   minMember: number,
+ *   maxMember: number,
+ *   eventRoleId: string,
+ *   eventRoleName: string,
+ *   isDisable: boolean,
+ *   createdAt: string,
+ *   updatedAt: string,
+ * }>}
  */
 export async function getEventDetail(eventId) {
   const { data } = await api.get(`/staff/events/${eventId}`)
