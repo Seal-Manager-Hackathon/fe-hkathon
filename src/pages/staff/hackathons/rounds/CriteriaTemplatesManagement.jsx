@@ -116,7 +116,7 @@ export default function CriteriaTemplatesManagement() {
       if (filters.keyword) params.Keyword = filters.keyword
       if (filters.isDisable !== '') params.IsDisable = filters.isDisable === 'true'
       const result = await getCriteriaTemplates(roundId, params)
-      setTemplates(result.items || [])
+      setTemplates(result.templates || result.criteriaTemplates || result.items || [])
       setTotalCount(result.totalCount || 0)
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to load criteria templates.')
