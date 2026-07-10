@@ -40,17 +40,17 @@ export default function TopicDetail() {
   }, [trackId, topicId])
 
   if (loading) return <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="h-7 w-96 animate-pulse rounded bg-gray-200 mb-2" /><div className="h-60 animate-pulse rounded-xl bg-gray-100" /></div>
-  if (error || !topic) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{error || 'Topic not found.'}</p><Link to="/admin/tracks" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Tracks</Link></div>
+  if (error || !topic) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{error || 'Topic not found.'}</p><Link to="/admin/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Hackathons</Link></div>
 
-  const backUrl = trackId
-    ? `/admin/tracks/${trackId}/topics`
-    : '/admin/tracks'
+  const backUrl = track?.eventId
+    ? `/admin/hackathons/${track.eventId}?tab=Tracks`
+    : trackId ? `/admin/tracks/${trackId}` : '/admin/hackathons'
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6">
         <Link to={backUrl} className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
-          <ArrowLeft className="h-4 w-4" /> Back to Topics
+          <ArrowLeft className="h-4 w-4" /> Back to Event
         </Link>
       </div>
 
@@ -60,7 +60,7 @@ export default function TopicDetail() {
             <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{topic.title}</h1>
             {topic.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
           </div>
-          {track && <p className="mt-1 text-[14px] text-gray-400">Track: <Link to={`/admin/tracks/${trackId}`} className="font-medium text-[#064f5d] hover:underline">{track.title}</Link></p>}
+          {track && <p className="mt-1 text-[14px] text-gray-400">Track: <Link to={track?.eventId ? `/admin/hackathons/${track.eventId}?tab=Tracks` : '#'} className="font-medium text-[#064f5d] hover:underline">{track.title}</Link></p>}
         </div>
       </div>
 
