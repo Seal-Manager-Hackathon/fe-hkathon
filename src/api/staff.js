@@ -819,12 +819,11 @@ export async function getAwards(eventId, params = {}) {
 
 /**
  * Get award detail by ID.
- * @param {string} eventId
  * @param {string} awardId
  * @returns {Promise<object>}
  */
-export async function getAwardDetail(eventId, awardId) {
-  const { data } = await api.get(`/staff/events/${eventId}/awards/${awardId}`)
+export async function getAwardDetail(awardId) {
+  const { data } = await api.get(`/staff/awards/${awardId}`)
   return data.data
 }
 

@@ -634,8 +634,8 @@ export async function restoreAward(eventId, awardId) {
   return data
 }
 
-export async function getAwardDetail(eventId, awardId) {
-  const { data } = await api.get(`/admin/events/${eventId}/awards/${awardId}`)
+export async function getAwardDetail(awardId) {
+  const { data } = await api.get(`/admin/awards/${awardId}`)
   return data.data
 }
 

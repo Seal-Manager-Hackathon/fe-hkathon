@@ -27,7 +27,7 @@ export default function AwardDetail() {
     async function fetch() {
       setLoading(true); setError('')
       try {
-        const data = await getAwardDetail(eventId, awardId)
+        const data = await getAwardDetail(awardId)
         if (!cancelled) setAward(data)
         if (data?.eventId) {
           try { const ev = await getEventDetail(data.eventId); if (!cancelled) setEvent(ev) } catch {}
