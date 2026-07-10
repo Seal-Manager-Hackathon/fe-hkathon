@@ -385,8 +385,8 @@ export async function restoreRound(roundId) {
  * @param {number} targetRoundNo - target round number to swap with
  * @returns {Promise<{ message: string }>}
  */
-export async function swapRounds(eventId, roundId, targetRoundNo) {
-  const { data } = await api.post(`/admin/events/${eventId}/rounds/${roundId}/swap`, { targetRoundNo })
+export async function swapRounds(roundId, targetRoundNo) {
+  const { data } = await api.post(`/admin/rounds/${roundId}/swap`, { targetRoundNo })
   return data
 }
 
@@ -619,18 +619,18 @@ export async function createAward(eventId, payload) {
   return data
 }
 
-export async function updateAward(eventId, awardId, payload) {
-  const { data } = await api.patch(`/admin/events/${eventId}/awards/${awardId}`, payload)
+export async function updateAward(awardId, payload) {
+  const { data } = await api.patch(`/admin/awards/${awardId}`, payload)
   return data
 }
 
-export async function deleteAward(eventId, awardId) {
-  const { data } = await api.post(`/admin/events/${eventId}/awards/${awardId}/delete`)
+export async function deleteAward(awardId) {
+  const { data } = await api.post(`/admin/awards/${awardId}/delete`)
   return data
 }
 
-export async function restoreAward(eventId, awardId) {
-  const { data } = await api.post(`/admin/events/${eventId}/awards/${awardId}/restore`)
+export async function restoreAward(awardId) {
+  const { data } = await api.post(`/admin/awards/${awardId}/restore`)
   return data
 }
 
@@ -639,8 +639,8 @@ export async function getAwardDetail(awardId) {
   return data.data
 }
 
-export async function swapAward(eventId, awardId, targetLevel) {
-  const { data } = await api.post(`/admin/events/${eventId}/awards/${awardId}/swap`, { targetLevel })
+export async function swapAward(awardId, targetLevel) {
+  const { data } = await api.post(`/admin/awards/${awardId}/swap`, { targetLevel })
   return data
 }
 

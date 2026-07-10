@@ -122,7 +122,7 @@ export default function RoundsTab({ eventId }) {
         sourceSummary={`Round #${swapSource?.roundNo} — ${swapSource?.name || ''}`}
         eventId={eventId}
         fetchFn={getRounds}
-        swapFn={(target) => swapRounds(eventId, swapSource.id, target.roundNo)}
+        swapFn={(target) => swapRounds(swapSource.id, target.roundNo)}
         filters={roundSwapFilters}
         buildQueryParams={buildRoundSwapQuery}
         columns={({ handleSwap, swappingId }) => [

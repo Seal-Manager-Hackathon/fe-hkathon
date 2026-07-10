@@ -83,10 +83,12 @@ function assignedColumns(handleRemove, handleRestore, handleTrack, handleRemoveT
           <button onClick={() => handleTrack(row)} className={trackBtnClass}><FolderKanban className="h-3.5 w-3.5" />Track</button>
         )}
         <Link to={`/staff/users/${row.userId}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
-        {row.isDisable ? (
-          <button onClick={() => handleRestore(row)} className={restoreBtnClass}><RotateCcw className="h-3.5 w-3.5" />Restore</button>
-        ) : (
-          <button onClick={() => handleRemove(row)} className={removeBtnClass}><Trash2 className="h-3.5 w-3.5" />Delete</button>
+        {row.eventRole !== 'Staff' && (
+          row.isDisable ? (
+            <button onClick={() => handleRestore(row)} className={restoreBtnClass}><RotateCcw className="h-3.5 w-3.5" />Restore</button>
+          ) : (
+            <button onClick={() => handleRemove(row)} className={removeBtnClass}><Trash2 className="h-3.5 w-3.5" />Delete</button>
+          )
         )}
       </div>
     )},

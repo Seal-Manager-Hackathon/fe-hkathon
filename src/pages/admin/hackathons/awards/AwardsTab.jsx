@@ -93,14 +93,14 @@ export default function AwardsTab({ eventId }) {
   async function handleDelete(award) {
     const ok = await confirm('Delete Award', `Delete "${award.name}"?`)
     if (!ok) return
-    try { await deleteAward(eventId, award.id); toast.success('Award deleted'); fetchAwards() }
+    try { await deleteAward(award.id); toast.success('Award deleted'); fetchAwards() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed to delete award.') }
   }
 
   async function handleRestore(award) {
     const ok = await confirm('Restore Award', `Restore "${award.name}"?`)
     if (!ok) return
-    try { await restoreAward(eventId, award.id); toast.success('Award restored'); fetchAwards() }
+    try { await restoreAward(award.id); toast.success('Award restored'); fetchAwards() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed to restore award.') }
   }
 
@@ -142,7 +142,7 @@ export default function AwardsTab({ eventId }) {
         sourceSummary={`${swapSource?.name || ''} — ${levelOrdinal(swapSource?.levelAward)}`}
         eventId={eventId}
         fetchFn={getAwards}
-        swapFn={(target) => swapAward(eventId, swapSource.id, target.levelAward)}
+        swapFn={(target) => swapAward(swapSource.id, target.levelAward)}
         filters={awardSwapFilters}
         buildQueryParams={buildAwardSwapQuery}
         columns={({ handleSwap, swappingId }) => [

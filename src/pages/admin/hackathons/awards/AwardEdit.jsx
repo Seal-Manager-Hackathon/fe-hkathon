@@ -47,7 +47,7 @@ export default function AwardEdit() {
       const payload = { name: name.trim(), prize: Number(prize) }
       if (description.trim()) payload.description = description.trim()
       if (numberOfAward !== '') payload.numberOfAward = Number(numberOfAward)
-      await updateAward(eventId, awardId, payload)
+      await updateAward(awardId, payload)
       toast.success('Award updated successfully')
       navigate(`/admin/hackathons/${eventId}?tab=Awards`)
     } catch (err) {
