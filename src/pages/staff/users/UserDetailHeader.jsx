@@ -1,11 +1,10 @@
-import { Edit } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Avatar from '../../../components/Avatar'
 import Badge from '../../../components/Badge'
 import { roleBadge } from '../../../constants/commonOptions'
 
 /**
- * User detail page header with avatar, name, badges, and edit button.
+ * User detail page header with avatar, name, and badges.
  * Receives user data via props — no API import.
  *
  * @param {{
@@ -32,12 +31,6 @@ export default function UserDetailHeader({ user, fullName }) {
           </div>
         </div>
       </div>
-      <Link
-        to={`/staff/users/${user.id}/edit`}
-        className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2.5 text-[14px] font-semibold text-white shadow-sm hover:bg-[#05404a] shrink-0 self-start"
-      >
-        <Edit className="h-4 w-4" />Edit User
-      </Link>
     </div>
   )
 }

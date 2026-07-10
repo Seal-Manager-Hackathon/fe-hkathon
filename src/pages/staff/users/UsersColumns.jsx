@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Eye, Edit, Trash2, RotateCcw, User, Shield, UserCheck, GraduationCap, Calendar, MoreHorizontal, CircleCheck, Ban, Circle, AlertTriangle } from 'lucide-react'
+import { Eye, User, Shield, UserCheck, GraduationCap, Calendar, CircleCheck, AlertTriangle } from 'lucide-react'
 import Badge from '../../../components/Badge'
 import Avatar from '../../../components/Avatar'
 import { roleBadge } from '../../../constants/commonOptions'
@@ -7,22 +7,12 @@ import { formatDateTime } from '../../../utils/format'
 
 const actionBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
-const dangerBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2] w-[92px]'
-const restoreBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[92px]'
-const banBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] transition-colors hover:bg-[#ffe0b2] w-[84px]'
-const unbanBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[84px]'
 
 /**
  * Builds table columns for the UsersManagement list.
- * @param {function} onDelete  - (user) => void
- * @param {function} onRestore - (user) => void
  * @returns {Array} column descriptors
  */
-export function usersColumns(onDelete, onRestore, onBan, onUnban) {
+export function usersColumns() {
   return [
     {
       key: 'user',
@@ -102,8 +92,7 @@ export function usersColumns(onDelete, onRestore, onBan, onUnban) {
     },
     {
       key: 'actions',
-      header: 'Actions',
-      headerIcon: MoreHorizontal,
+      header: '',
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => (
@@ -111,29 +100,6 @@ export function usersColumns(onDelete, onRestore, onBan, onUnban) {
           <Link to={`/staff/users/${row.id}`} className={actionBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
-          {row.isDisable ? (
-            <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
-              <RotateCcw className="h-3.5 w-3.5" /> Restore
-            </button>
-          ) : (
-            <>
-              <Link to={`/staff/users/${row.id}/edit`} className={actionBtnClass}>
-                <Edit className="h-3.5 w-3.5" /> Edit
-              </Link>
-              {row.bannedAt ? (
-                <button onClick={() => onUnban?.(row)} className={unbanBtnClass}>
-                  <Circle className="h-3.5 w-3.5" /> Unban
-                </button>
-              ) : (
-                <button onClick={() => onBan?.(row)} className={banBtnClass}>
-                  <Ban className="h-3.5 w-3.5" /> Ban
-                </button>
-              )}
-              <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
-                <Trash2 className="h-3.5 w-3.5" /> Delete
-              </button>
-            </>
-          )}
         </div>
       ),
     },

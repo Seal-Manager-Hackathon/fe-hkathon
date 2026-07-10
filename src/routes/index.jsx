@@ -82,9 +82,7 @@ const StaffAwardDetail = lazy(() => import('../pages/staff/hackathons/awards/Awa
 const StaffRegisterTeamDetail = lazy(() => import('../pages/staff/hackathons/register-teams/RegisterTeamDetail'))
 const StaffRegisterTeamEdit = lazy(() => import('../pages/staff/hackathons/register-teams/RegisterTeamEdit'))
 const StaffUsersManagement = lazy(() => import('../pages/staff/users/UsersManagement'))
-const StaffUsersCreate = lazy(() => import('../pages/staff/users/UsersCreate'))
 const StaffUserDetail = lazy(() => import('../pages/staff/users/UserDetail'))
-const StaffUserEdit = lazy(() => import('../pages/staff/users/UserEdit'))
 const StaffNotificationsManagement = lazy(() => import('../pages/staff/notifications/NotificationsManagement'))
 const StaffNotificationsCreate = lazy(() => import('../pages/staff/notifications/NotificationsCreate'))
 const StaffNotificationDetail = lazy(() => import('../pages/staff/notifications/NotificationDetail'))
@@ -191,8 +189,6 @@ export const routes = [
     ]},
     { path: 'users', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><StaffUsersManagement /></Suspense> },
-      { path: 'create', element: <Suspense fallback={<RouteFallback />}><StaffUsersCreate /></Suspense> },
-      { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><StaffUserEdit /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffUserDetail /></Suspense> },
     ]},
     { path: 'notifications', children: [
