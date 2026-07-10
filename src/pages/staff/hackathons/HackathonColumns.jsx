@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Eye, Edit, Trash2, RotateCcw, Trophy, Play, Flag, CircleDot, Calendar, MoreHorizontal } from 'lucide-react'
+import { Eye, Trophy, Play, Flag, CircleDot, Calendar } from 'lucide-react'
 import Badge from '../../../components/Badge'
 import { formatDateTime } from '../../../utils/format'
 
@@ -11,12 +11,8 @@ const statusBadge = {
 
 const actionBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
-const dangerBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2] w-[92px]'
-const restoreBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[92px]'
 
-export function hackathonColumns(onDelete, onRestore) {
+export function hackathonColumns() {
   return [
     {
       key: 'name',
@@ -54,8 +50,7 @@ export function hackathonColumns(onDelete, onRestore) {
     },
     {
       key: 'actions',
-      header: 'Actions',
-      headerIcon: MoreHorizontal,
+      header: '',
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => (
@@ -63,20 +58,6 @@ export function hackathonColumns(onDelete, onRestore) {
           <Link to={`/staff/hackathons/${row.id}`} className={actionBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
-          {!row.isDisable ? (
-            <>
-              <Link to={`/staff/hackathons/${row.id}/edit`} className={actionBtnClass}>
-                <Edit className="h-3.5 w-3.5" /> Edit
-              </Link>
-              <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
-                <Trash2 className="h-3.5 w-3.5" /> Delete
-              </button>
-            </>
-          ) : (
-            <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
-              <RotateCcw className="h-3.5 w-3.5" /> Restore
-            </button>
-          )}
         </div>
       ),
     },
