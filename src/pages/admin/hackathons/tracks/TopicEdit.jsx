@@ -1,29 +1,19 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
-import { Calendar, Clock, Users, FileText } from 'lucide-react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { FileText } from 'lucide-react'
 import FormField from '../../../../components/FormField'
 import EntityFormPage from '../../../../components/EntityFormPage'
 import RichTextEditor from '../../../../components/RichTextEditor'
-import { getTopicDetail, getTrackDetail, getEventDetail, updateTopic } from '../../../../api/admin'
+import { getTopicDetail, updateTopic } from '../../../../api/admin'
 import { toast } from '../../../../utils/toast'
-import { formatDateTime } from '../../../../utils/format'
-import Badge from '../../../../components/Badge'
-
-const statusBadge = {
-  Draft: 'bg-[#f5f5f5] text-[#757575]',
-  Published: 'bg-[#e8f5e9] text-[#2e7d32]',
-  Closed: 'bg-[#e0f2f1] text-[#00695c]',
-}
 
 export default function TopicEdit() {
-  const { eventId, trackId, topicId } = useParams()
+  const { trackId, topicId } = useParams()
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [event, setEvent] = useState(null)
-  const [track, setTrack] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -33,13 +23,6 @@ export default function TopicEdit() {
         if (cancelled) return
         setTitle(data.title || '')
         setDescription(data.description || '')
-        try {
-          const [ev, tr] = await Promise.all([
-            getEventDetail(eventId),
-            getTrackDetail(eventId, trackId),
-          ])
-          if (!cancelled) { setEvent(ev); setTrack(tr) }
-        } catch {}
       } catch {
         if (!cancelled) toast.error('Failed to load topic.')
       } finally {
@@ -48,7 +31,7 @@ export default function TopicEdit() {
     }
     fetch()
     return () => { cancelled = true }
-  }, [eventId, trackId, topicId])
+  }, [topicId])
 
   const canSave = title.trim().length > 0
 
@@ -60,7 +43,7 @@ export default function TopicEdit() {
       if (description !== undefined) payload.description = description.trim() || null
       await updateTopic(topicId, payload)
       toast.success('Topic updated successfully')
-      navigate(`/admin/hackathons/${eventId}/tracks/${trackId}/topics`)
+      navigate(`/admin/tracks/${trackId}/topics`)
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to update topic.')
     } finally {
@@ -72,7 +55,7 @@ export default function TopicEdit() {
 
   return (
     <EntityFormPage
-      backUrl={`/admin/hackathons/${eventId}/tracks/${trackId}/topics`}
+      backUrl={`/admin/tracks/${trackId}/topics`}
       backLabel="Back to Topics"
       title="Edit Topic"
       description=""
@@ -82,22 +65,17 @@ export default function TopicEdit() {
       onSave={handleSave}
       saving={saving}
     >
-      <div className="grid grid-cols-1 gap-x-10 gap-y-5 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-5">
-          <FormField label="Topic Title" required icon={FileText}>
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. AI Chatbot for Education" maxLength={200} className="field-input" />
-          </FormField>
-          <FormField label="Description" icon={FileText}>
-            <RichTextEditor value={description} onChange={setDescription} placeholder="Topic description..." />
-          </FormField>
-        </div>
-        <ContextSidebar event={event} track={track} eventId={eventId} trackId={trackId} />
+      <div className="max-w-[640px] space-y-5">
+        <FormField label="Topic Title" required icon={FileText}>
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. AI Chatbot for Education" maxLength={200} className="field-input" />
+        </FormField>
+        <FormField label="Description" icon={FileText}>
+          <RichTextEditor value={description} onChange={setDescription} placeholder="Topic description..." />
+        </FormField>
       </div>
     </EntityFormPage>
   )
 }
-
-function ContextSidebar({ event, track, eventId, trackId }) {
   return (
     <div className="space-y-4 self-start">
       {event && (

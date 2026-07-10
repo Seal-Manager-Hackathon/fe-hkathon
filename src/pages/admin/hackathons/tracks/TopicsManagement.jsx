@@ -24,13 +24,13 @@ const dangerBtnClass =
 const restoreBtnClass =
   'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[92px]'
 
-function topicColumns(eventId, trackId, onDelete, onRestore) {
+function topicColumns(trackId, onDelete, onRestore) {
   return [
     {
       key: 'title',
       header: 'Topic Title',
       headerIcon: FileText,
-      render: (row) => <Link to={`/admin/hackathons/${eventId}/tracks/${trackId}/topics/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.title}</Link>,
+      render: (row) => <Link to={`/admin/tracks/${trackId}/topics/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.title}</Link>,
     },
     {
       key: 'status',
@@ -52,11 +52,11 @@ function topicColumns(eventId, trackId, onDelete, onRestore) {
       className: 'text-right',
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
-          <Link to={`/admin/hackathons/${eventId}/tracks/${trackId}/topics/${row.id}`} className={actionBtnClass}>
+          <Link to={`/admin/tracks/${trackId}/topics/${row.id}`} className={actionBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
           {!row.isDisable && (
-            <Link to={`/admin/hackathons/${eventId}/tracks/${trackId}/topics/${row.id}/edit`} className={actionBtnClass}>
+            <Link to={`/admin/tracks/${trackId}/topics/${row.id}/edit`} className={actionBtnClass}>
               <Edit className="h-3.5 w-3.5" /> Edit
             </Link>
           )}
@@ -76,7 +76,7 @@ function topicColumns(eventId, trackId, onDelete, onRestore) {
 }
 
 export default function TopicsManagement() {
-  const { eventId, trackId } = useParams()
+  const { trackId } = useParams()
   const [topics, setTopics] = useState([])
   const [totalCount, setTotalCount] = useState(0)
   const [pageIndex, setPageIndex] = useState(1)
@@ -88,8 +88,8 @@ export default function TopicsManagement() {
   const hasActive = Object.entries(filters).some(([, v]) => v !== '')
 
   useEffect(() => {
-    getTrackDetail(eventId || '', trackId).then((d) => setTrack(d)).catch(() => {})
-  }, [eventId, trackId])
+    getTrackDetail(trackId).then((d) => setTrack(d)).catch(() => {})
+  }, [trackId])
 
   const fetchTopics = useCallback(async () => {
     setLoading(true); setError('')
@@ -145,8 +145,8 @@ export default function TopicsManagement() {
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-4">
-        <Link to={`/admin/hackathons/${eventId}?tab=Tracks`} className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
-          <ArrowLeft className="h-4 w-4" /> Back to Tracks
+        <Link to={`/admin/tracks/${trackId}`} className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
+          <ArrowLeft className="h-4 w-4" /> Back to Track
         </Link>
       </div>
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -156,7 +156,7 @@ export default function TopicsManagement() {
           </h1>
         </div>
         {trackId && (
-          <Link to={`/admin/hackathons/${eventId}/tracks/${trackId}/topics/create`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto">
+          <Link to={`/admin/tracks/${trackId}/topics/create`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto">
             <Plus className="h-4 w-4" />Create Topic
           </Link>
         )}
@@ -167,7 +167,7 @@ export default function TopicsManagement() {
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
 
       <BaseTable
-        columns={topicColumns(eventId, trackId, handleDelete, handleRestore)}
+        columns={topicColumns(trackId, handleDelete, handleRestore)}
         data={topics}
         page={pageIndex}
         pageSize={PAGE_SIZE}

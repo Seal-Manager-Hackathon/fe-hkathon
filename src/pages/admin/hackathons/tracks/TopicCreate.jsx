@@ -1,40 +1,18 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
-import { Calendar, Clock, Users, Hash, Flag, FileText } from 'lucide-react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { FileText } from 'lucide-react'
 import FormField from '../../../../components/FormField'
 import EntityFormPage from '../../../../components/EntityFormPage'
 import RichTextEditor from '../../../../components/RichTextEditor'
-import { createTopic, getEventDetail, getTrackDetail } from '../../../../api/admin'
+import { createTopic } from '../../../../api/admin'
 import { toast } from '../../../../utils/toast'
-import { formatDateTime } from '../../../../utils/format'
-import Badge from '../../../../components/Badge'
-
-const statusBadge = {
-  Draft: 'bg-[#f5f5f5] text-[#757575]',
-  Published: 'bg-[#e8f5e9] text-[#2e7d32]',
-  Closed: 'bg-[#e0f2f1] text-[#00695c]',
-}
 
 export default function TopicCreate() {
-  const { eventId, trackId } = useParams()
+  const { trackId } = useParams()
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [saving, setSaving] = useState(false)
-  const [event, setEvent] = useState(null)
-  const [track, setTrack] = useState(null)
-
-  useEffect(() => {
-    let cancelled = false
-    async function fetch() {
-      try {
-        const [ev, tr] = await Promise.all([getEventDetail(eventId), getTrackDetail(eventId, trackId)])
-        if (!cancelled) { setEvent(ev); setTrack(tr) }
-      } catch {}
-    }
-    fetch()
-    return () => { cancelled = true }
-  }, [eventId, trackId])
 
   const canSave = title.trim().length > 0
 
@@ -46,7 +24,7 @@ export default function TopicCreate() {
       if (description.trim()) payload.description = description.trim()
       await createTopic(trackId, payload)
       toast.success('Topic created successfully')
-      navigate(`/admin/hackathons/${eventId}/tracks/${trackId}/topics`)
+      navigate(`/admin/tracks/${trackId}/topics`)
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to create topic.')
     } finally {
@@ -56,7 +34,7 @@ export default function TopicCreate() {
 
   return (
     <EntityFormPage
-      backUrl={`/admin/hackathons/${eventId}/tracks/${trackId}/topics`}
+      backUrl={`/admin/tracks/${trackId}/topics`}
       backLabel="Back to Topics"
       title="Create Topic"
       description=""
@@ -66,37 +44,17 @@ export default function TopicCreate() {
       onSave={handleSave}
       saving={saving}
     >
-      <div className="grid grid-cols-1 gap-x-10 gap-y-5 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-5">
-          <FormField label="Topic Title" required icon={FileText}>
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. AI Chatbot for Education" maxLength={200} className="field-input" />
-          </FormField>
-          <FormField label="Description" icon={FileText}>
-            <RichTextEditor value={description} onChange={setDescription} placeholder="Topic description..." />
-          </FormField>
-        </div>
-        <ContextSidebar event={event} track={track} />
+      <div className="max-w-[640px] space-y-5">
+        <FormField label="Topic Title" required icon={FileText}>
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. AI Chatbot for Education" maxLength={200} className="field-input" />
+        </FormField>
+        <FormField label="Description" icon={FileText}>
+          <RichTextEditor value={description} onChange={setDescription} placeholder="Topic description..." />
+        </FormField>
       </div>
     </EntityFormPage>
   )
 }
-
-function ContextSidebar({ event, track }) {
-  return (
-    <div className="space-y-4 self-start">
-      {event && (
-        <div className="rounded-xl border border-[#e8ecf0] bg-white shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-5 py-4">
-            <h4 className="text-[14px] font-bold text-white flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-[#80deea]" /> Event
-            </h4>
-          </div>
-          <div className="divide-y divide-[#f5f5f5]">
-            <div className="px-5 py-3.5">
-              <Link to={`/admin/hackathons/${event.id}`} className="text-[14px] font-bold text-[#064f5d] leading-snug hover:underline">{event.name}</Link>
-              <div className="mt-1.5 flex items-center gap-2">
-                <Badge label={event.status} className={statusBadge[event.status] || 'bg-[#f5f5f5] text-[#757575]'} />
-                {event.isDisable && <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />}
               </div>
             </div>
             <div className="space-y-2 px-5 py-3">

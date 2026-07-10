@@ -83,7 +83,7 @@ export default function TracksTab({ eventId }) {
     <>
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-[15px] font-bold text-[#1f2f3a]">Tracks</h3>
-        <Link to={`/admin/hackathons/${eventId}/tracks/create`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#064f5d] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#05404a]">
+        <Link to={`/admin/tracks/create`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#064f5d] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#05404a]">
           + Create Track
         </Link>
       </div>

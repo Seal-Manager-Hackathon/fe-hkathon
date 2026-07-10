@@ -9,7 +9,7 @@ import RichTextViewer from '../../../../components/RichTextViewer'
 import { formatDateTime } from '../../../../utils/format'
 
 export default function TopicDetail() {
-  const { eventId, trackId, topicId } = useParams()
+  const { trackId, topicId } = useParams()
   const [topic, setTopic] = useState(null)
   const [track, setTrack] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -25,7 +25,7 @@ export default function TopicDetail() {
         setTopic(data)
         if (trackId) {
           try {
-            const tr = await getTrackDetail(eventId, trackId)
+            const tr = await getTrackDetail(trackId)
             if (!cancelled) setTrack(tr)
           } catch {}
         }
@@ -37,14 +37,14 @@ export default function TopicDetail() {
     }
     fetch()
     return () => { cancelled = true }
-  }, [eventId, trackId, topicId])
+  }, [trackId, topicId])
 
   if (loading) return <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="h-7 w-96 animate-pulse rounded bg-gray-200 mb-2" /><div className="h-60 animate-pulse rounded-xl bg-gray-100" /></div>
-  if (error || !topic) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{error || 'Topic not found.'}</p><Link to="/admin/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Hackathons</Link></div>
+  if (error || !topic) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{error || 'Topic not found.'}</p><Link to="/admin/tracks" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Tracks</Link></div>
 
-  const backUrl = eventId && trackId
-    ? `/admin/hackathons/${eventId}/tracks/${trackId}/topics`
-    : '/admin/hackathons'
+  const backUrl = trackId
+    ? `/admin/tracks/${trackId}/topics`
+    : '/admin/tracks'
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -60,7 +60,7 @@ export default function TopicDetail() {
             <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{topic.title}</h1>
             {topic.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
           </div>
-          {track && <p className="mt-1 text-[14px] text-gray-400">Track: <Link to={`/admin/hackathons/${eventId}/tracks/${trackId}`} className="font-medium text-[#064f5d] hover:underline">{track.title}</Link></p>}
+          {track && <p className="mt-1 text-[14px] text-gray-400">Track: <Link to={`/admin/tracks/${trackId}`} className="font-medium text-[#064f5d] hover:underline">{track.title}</Link></p>}
         </div>
       </div>
 
@@ -83,13 +83,13 @@ export default function TopicDetail() {
           </CardPanel>
         </div>
 
-        <TrackSidebar track={track} eventId={eventId} trackId={trackId} />
+        <TrackSidebar track={track} trackId={trackId} />
       </div>
     </div>
   )
 }
 
-function TrackSidebar({ track, eventId, trackId }) {
+function TrackSidebar({ track, trackId }) {
   if (!track) {
     return (
       <div className="rounded-xl border border-[#e8ecf0] bg-white shadow-sm self-start overflow-hidden">
@@ -112,7 +112,7 @@ function TrackSidebar({ track, eventId, trackId }) {
       </div>
       <div className="divide-y divide-[#f5f5f5]">
         <div className="px-5 py-3.5">
-          <Link to={`/admin/hackathons/${eventId}/tracks/${trackId}`} className="text-[14px] font-bold text-[#064f5d] hover:underline">{track.title}</Link>
+          <Link to={`/admin/tracks/${trackId}`} className="text-[14px] font-bold text-[#064f5d] hover:underline">{track.title}</Link>
         </div>
         <div className="px-5 py-3 space-y-2">
           <R icon={<Users className="h-3.5 w-3.5 text-[#2e7d32]" />} label="Max Teams" value={track.maxTeam != null ? String(track.maxTeam) : '—'} />
