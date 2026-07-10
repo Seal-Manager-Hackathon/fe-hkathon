@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Edit, Calendar, Clock, DollarSign, Hash, Trophy, CircleCheck } from 'lucide-react'
+import { Calendar, Clock, DollarSign, Hash, Trophy, CircleCheck } from 'lucide-react'
 import { getAwardDetail, getEventDetail } from '../../../../api/staff'
 import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
@@ -66,11 +66,6 @@ export default function AwardDetail() {
             </p>
           )}
         </div>
-        {!award.isDisable && (
-          <Link to={`/staff/hackathons/${eventId}/awards/${awardId}/edit`} className="inline-flex items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto">
-            <Edit className="h-4 w-4" /> Edit Award
-          </Link>
-        )}
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_320px]">

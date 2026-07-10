@@ -834,57 +834,6 @@ export async function getAwardDetail(eventId, awardId) {
  * @param {object} payload
  * @returns {Promise<{ message: string }>}
  */
-export async function createAward(eventId, payload) {
-  const { data } = await api.post(`/staff/events/${eventId}/awards`, payload)
-  return data
-}
-
-/**
- * Update an award.
- * @param {string} eventId
- * @param {string} awardId
- * @param {object} payload
- * @returns {Promise<{ message: string }>}
- */
-export async function updateAward(eventId, awardId, payload) {
-  const { data } = await api.patch(`/staff/events/${eventId}/awards/${awardId}`, payload)
-  return data
-}
-
-/**
- * Soft-delete an award.
- * @param {string} eventId
- * @param {string} awardId
- * @returns {Promise<{ message: string }>}
- */
-export async function deleteAward(eventId, awardId) {
-  const { data } = await api.post(`/staff/events/${eventId}/awards/${awardId}/delete`)
-  return data
-}
-
-/**
- * Restore a soft-deleted award.
- * @param {string} eventId
- * @param {string} awardId
- * @returns {Promise<{ message: string }>}
- */
-export async function restoreAward(eventId, awardId) {
-  const { data } = await api.post(`/staff/events/${eventId}/awards/${awardId}/restore`)
-  return data
-}
-
-/**
- * Swap award order.
- * @param {string} eventId
- * @param {string} awardId
- * @param {number} targetLevel
- * @returns {Promise<{ message: string }>}
- */
-export async function swapAward(eventId, awardId, targetLevel) {
-  const { data } = await api.post(`/staff/events/${eventId}/awards/${awardId}/swap`, { targetLevel })
-  return data
-}
-
 // ============================ ASSIGN ============================
 
 /**

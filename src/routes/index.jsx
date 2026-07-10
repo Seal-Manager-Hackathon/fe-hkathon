@@ -70,8 +70,6 @@ const StaffCriteriaTemplateEdit = lazy(() => import('../pages/staff/hackathons/r
 const StaffTrackDetail = lazy(() => import('../pages/staff/hackathons/tracks/TrackDetail'))
 const StaffTopicsManagement = lazy(() => import('../pages/staff/hackathons/tracks/TopicsManagement'))
 const StaffTopicDetail = lazy(() => import('../pages/staff/hackathons/tracks/TopicDetail'))
-const StaffAwardCreate = lazy(() => import('../pages/staff/hackathons/awards/AwardCreate'))
-const StaffAwardEdit = lazy(() => import('../pages/staff/hackathons/awards/AwardEdit'))
 const StaffAwardDetail = lazy(() => import('../pages/staff/hackathons/awards/AwardDetail'))
 const StaffRegisterTeamDetail = lazy(() => import('../pages/staff/hackathons/register-teams/RegisterTeamDetail'))
 const StaffRegisterTeamEdit = lazy(() => import('../pages/staff/hackathons/register-teams/RegisterTeamEdit'))
@@ -171,8 +169,6 @@ export const routes = [
       { path: ':eventId/tracks/:trackId/topics/:topicId', element: <Suspense fallback={<RouteFallback />}><StaffTopicDetail /></Suspense> },
       { path: ':eventId/tracks/:trackId/topics', element: <Suspense fallback={<RouteFallback />}><StaffTopicsManagement /></Suspense> },
       { path: ':eventId/tracks/:trackId', element: <Suspense fallback={<RouteFallback />}><StaffTrackDetail /></Suspense> },
-      { path: ':eventId/awards/create', element: <Suspense fallback={<RouteFallback />}><StaffAwardCreate /></Suspense> },
-      { path: ':eventId/awards/:awardId/edit', element: <Suspense fallback={<RouteFallback />}><StaffAwardEdit /></Suspense> },
       { path: ':eventId/awards/:awardId', element: <Suspense fallback={<RouteFallback />}><StaffAwardDetail /></Suspense> },
     ]},
     { path: 'rounds/:roundId/criteria-templates/create', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateCreate /></Suspense> },
