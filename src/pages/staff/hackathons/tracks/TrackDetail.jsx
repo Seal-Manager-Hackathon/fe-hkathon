@@ -55,7 +55,7 @@ export default function TrackDetail() {
             {track.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
           </div>
           {event ? (
-            <p className="mt-1 text-[14px] text-gray-400">Event: <Link to={`/staff/hackathons/${eventId}`} className="font-medium text-[#064f5d] hover:underline">{event.name}</Link><Badge label={event.status} className={`ml-2 ${statusBadge[event.status] || 'bg-[#f5f5f5] text-[#757575]'}`} /></p>
+            <p className="mt-1 text-[14px] text-gray-400">Event: <Link to={`/staff/hackathons/${event.id}`} className="font-medium text-[#064f5d] hover:underline">{event.name}</Link><Badge label={event.status} className={`ml-2 ${statusBadge[event.status] || 'bg-[#f5f5f5] text-[#757575]'}`} /></p>
           ) : (
             <p className="mt-1 text-[14px] text-gray-400">Event: —</p>
           )}
