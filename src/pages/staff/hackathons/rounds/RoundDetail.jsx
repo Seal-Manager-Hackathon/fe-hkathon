@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Edit, Calendar, Clock, Users, Hash, Flag, CircleCheck } from 'lucide-react'
+import { Calendar, Clock, Users, Hash, Flag, CircleCheck } from 'lucide-react'
 import { getRoundDetail, getEventDetail } from '../../../../api/staff'
 import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
@@ -70,9 +70,6 @@ export default function RoundDetail() {
             <p className="mt-1 text-[14px] text-gray-400">Event: —</p>
           )}
         </div>
-        <Link to={`/staff/rounds/${roundId}/edit`} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto">
-          <Edit className="h-4 w-4" />Edit Round
-        </Link>
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_320px]">

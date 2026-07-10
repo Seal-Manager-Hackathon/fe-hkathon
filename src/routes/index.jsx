@@ -62,8 +62,6 @@ const StaffHackathonManagement = lazy(() => import('../pages/staff/hackathons/Ha
 const StaffHackathonDetail = lazy(() => import('../pages/staff/hackathons/HackathonDetail'))
 const StaffHackathonCreate = lazy(() => import('../pages/staff/hackathons/HackathonCreate'))
 const StaffHackathonEdit = lazy(() => import('../pages/staff/hackathons/HackathonEdit'))
-const StaffRoundCreate = lazy(() => import('../pages/staff/hackathons/rounds/RoundCreate'))
-const StaffRoundEdit = lazy(() => import('../pages/staff/hackathons/rounds/RoundEdit'))
 const StaffRoundDetail = lazy(() => import('../pages/staff/hackathons/rounds/RoundDetail'))
 const StaffCriteriaTemplatesManagement = lazy(() => import('../pages/staff/hackathons/rounds/CriteriaTemplatesManagement'))
 const StaffCriteriaTemplateCreate = lazy(() => import('../pages/staff/hackathons/rounds/CriteriaTemplateCreate'))
@@ -174,7 +172,6 @@ export const routes = [
       { path: 'create', element: <Suspense fallback={<RouteFallback />}><StaffHackathonCreate /></Suspense> },
       { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><StaffHackathonEdit /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffHackathonDetail /></Suspense> },
-      { path: ':eventId/rounds/create', element: <Suspense fallback={<RouteFallback />}><StaffRoundCreate /></Suspense> },
       { path: ':eventId/tracks/create', element: <Suspense fallback={<RouteFallback />}><StaffTrackCreate /></Suspense> },
       { path: ':eventId/tracks/:trackId/edit', element: <Suspense fallback={<RouteFallback />}><StaffTrackEdit /></Suspense> },
       { path: ':eventId/tracks/:trackId/topics/create', element: <Suspense fallback={<RouteFallback />}><StaffTopicCreate /></Suspense> },
@@ -208,7 +205,6 @@ export const routes = [
     { path: 'register-teams/:registerTeamId/edit', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamEdit /></Suspense> },
     { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamDetail /></Suspense> },
     { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><StaffSubmissionDetail /></Suspense> },
-    { path: 'rounds/:roundId/edit', element: <Suspense fallback={<RouteFallback />}><StaffRoundEdit /></Suspense> },
     { path: 'rounds/:roundId/criteria-templates/create', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateCreate /></Suspense> },
     { path: 'rounds/:roundId/criteria-templates/:templateId/edit', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateEdit /></Suspense> },
     { path: 'rounds/:roundId/criteria-templates/:templateId', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateDetail /></Suspense> },
