@@ -19,13 +19,13 @@ const topicFilters = [
 const viewBtnClass =
   'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] transition-colors hover:bg-[#e8e8e8]'
 
-function topicColumns(eventId, trackId) {
+function topicColumns(trackId) {
   return [
     {
       key: 'title',
       header: 'Topic Title',
       headerIcon: FileText,
-      render: (row) => <Link to={`/staff/hackathons/${eventId}/tracks/${trackId}/topics/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.title}</Link>,
+      render: (row) => <Link to={`/staff/tracks/${trackId}/topics/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.title}</Link>,
     },
     {
       key: 'status',
@@ -46,7 +46,7 @@ function topicColumns(eventId, trackId) {
       className: 'text-right',
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
-          <Link to={`/staff/hackathons/${eventId}/tracks/${trackId}/topics/${row.id}`} className={viewBtnClass}>
+          <Link to={`/staff/tracks/${trackId}/topics/${row.id}`} className={viewBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
         </div>
@@ -56,7 +56,7 @@ function topicColumns(eventId, trackId) {
 }
 
 export default function TopicsManagement() {
-  const { eventId, trackId } = useParams()
+  const { trackId } = useParams()
   const [topics, setTopics] = useState([])
   const [totalCount, setTotalCount] = useState(0)
   const [pageIndex, setPageIndex] = useState(1)
@@ -68,8 +68,8 @@ export default function TopicsManagement() {
   const hasActive = Object.entries(filters).some(([, v]) => v !== '')
 
   useEffect(() => {
-    getTrackDetail(eventId || '', trackId).then((d) => setTrack(d)).catch(() => {})
-  }, [eventId, trackId])
+    getTrackDetail(trackId).then((d) => setTrack(d)).catch(() => {})
+  }, [trackId])
 
   const fetchTopics = useCallback(async () => {
     setLoading(true); setError('')
@@ -103,8 +103,8 @@ export default function TopicsManagement() {
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-4">
-        <Link to={`/staff/hackathons/${eventId}?tab=Tracks`} className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
-          <ArrowLeft className="h-4 w-4" /> Back to Tracks
+        <Link to={`/staff/tracks/${trackId}`} className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
+          <ArrowLeft className="h-4 w-4" /> Back to Track
         </Link>
       </div>
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -120,7 +120,7 @@ export default function TopicsManagement() {
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
 
       <BaseTable
-        columns={topicColumns(eventId, trackId)}
+        columns={topicColumns(trackId)}
         data={topics}
         page={pageIndex}
         pageSize={PAGE_SIZE}

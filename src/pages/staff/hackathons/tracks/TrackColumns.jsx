@@ -10,7 +10,7 @@ const topicBtnClass =
 
 export function trackColumns() {
   return [
-    { key: 'title', header: 'Track Title', headerIcon: FileText, render: (row) => <Link to={`/staff/hackathons/${row.eventId}/tracks/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.title}</Link> },
+    { key: 'title', header: 'Track Title', headerIcon: FileText, render: (row) => <Link to={`/staff/tracks/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.title}</Link> },
     { key: 'maxTeam', header: 'Max Teams', headerIcon: Users, render: (row) => <span className="text-[13px] text-[#1f2f3a]">{row.maxTeam ?? '—'}</span> },
     { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => row.isDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
     { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p> },
@@ -22,11 +22,11 @@ export function trackColumns() {
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
           {!row.isDisable && (
-            <Link to={`/staff/hackathons/${row.eventId}/tracks/${row.id}/topics`} className={topicBtnClass}>
+            <Link to={`/staff/tracks/${row.id}/topics`} className={topicBtnClass}>
               <BookOpen className="h-3.5 w-3.5" /> Topics
             </Link>
           )}
-          <Link to={`/staff/hackathons/${row.eventId}/tracks/${row.id}`} className={viewBtnClass}>
+          <Link to={`/staff/tracks/${row.id}`} className={viewBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
         </div>

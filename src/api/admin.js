@@ -497,8 +497,8 @@ export async function updateTrack(eventId, trackId, payload) {
   return data
 }
 
-export async function getTrackDetail(eventId, trackId) {
-  const { data } = await api.get(`/admin/events/${eventId}/tracks/${trackId}`)
+export async function getTrackDetail(trackId) {
+  const { data } = await api.get(`/admin/tracks/${trackId}`)
   return data.data
 }
 

@@ -16,7 +16,7 @@ const statusBadge = {
 }
 
 export default function TrackDetail() {
-  const { eventId, trackId } = useParams()
+  const { trackId } = useParams()
   const [track, setTrack] = useState(null)
   const [event, setEvent] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -27,7 +27,7 @@ export default function TrackDetail() {
     async function fetch() {
       setLoading(true); setError('')
       try {
-        const data = await getTrackDetail(eventId, trackId)
+        const data = await getTrackDetail(trackId)
         if (!cancelled) setTrack(data)
         if (data?.eventId) {
           try { const ev = await getEventDetail(data.eventId); if (!cancelled) setEvent(ev) } catch {}
@@ -40,14 +40,14 @@ export default function TrackDetail() {
     }
     fetch()
     return () => { cancelled = true }
-  }, [eventId, trackId])
+  }, [trackId])
 
   if (loading) return <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="h-7 w-96 animate-pulse rounded bg-gray-200 mb-2" /><div className="h-60 animate-pulse rounded-xl bg-gray-100" /></div>
-  if (error || !track) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{error || 'Track not found.'}</p><Link to={eventId ? `/staff/hackathons/${eventId}?tab=Tracks` : '/staff/hackathons'} className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Event</Link></div>
+  if (error || !track) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{error || 'Track not found.'}</p><Link to="/staff/tracks" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Tracks</Link></div>
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <div className="mb-6"><Link to={`/staff/hackathons/${eventId}?tab=Tracks`} className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Event</Link></div>
+      <div className="mb-6"><Link to="/staff/tracks" className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Tracks</Link></div>
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">

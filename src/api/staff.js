@@ -778,8 +778,8 @@ export async function getTracks(eventId, params = {}) {
  * @param {string} trackId
  * @returns {Promise<object>}
  */
-export async function getTrackDetail(eventId, trackId) {
-  const { data } = await api.get(`/staff/events/${eventId}/tracks/${trackId}`)
+export async function getTrackDetail(trackId) {
+  const { data } = await api.get(`/staff/tracks/${trackId}`)
   return data.data
 }
 
