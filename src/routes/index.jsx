@@ -126,8 +126,8 @@ export const routes = [
       { path: ':eventId/rounds/create', element: <Suspense fallback={<RouteFallback />}><RoundCreate /></Suspense> },
       { path: ':eventId/awards/create', element: <Suspense fallback={<RouteFallback />}><AwardCreate /></Suspense> },
       { path: ':eventId/awards/:awardId/edit', element: <Suspense fallback={<RouteFallback />}><AwardEdit /></Suspense> },
-      { path: ':eventId/awards/:awardId', element: <Suspense fallback={<RouteFallback />}><AwardDetail /></Suspense> },
     ]},
+    { path: 'awards/:awardId', element: <Suspense fallback={<RouteFallback />}><AwardDetail /></Suspense> },
     { path: 'tracks/:trackId/topics/:topicId', element: <Suspense fallback={<RouteFallback />}><TopicDetail /></Suspense> },
     { path: 'tracks/:trackId/topics', element: <Suspense fallback={<RouteFallback />}><TopicsManagement /></Suspense> },
     { path: 'tracks/:trackId', element: <Suspense fallback={<RouteFallback />}><TrackDetail /></Suspense> },
@@ -177,8 +177,8 @@ export const routes = [
     { path: 'hackathons', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><StaffHackathonManagement /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffHackathonDetail /></Suspense> },
-      { path: ':eventId/awards/:awardId', element: <Suspense fallback={<RouteFallback />}><StaffAwardDetail /></Suspense> },
     ]},
+    { path: 'awards/:awardId', element: <Suspense fallback={<RouteFallback />}><StaffAwardDetail /></Suspense> },
     { path: 'tracks/:trackId/topics/:topicId', element: <Suspense fallback={<RouteFallback />}><StaffTopicDetail /></Suspense> },
     { path: 'tracks/:trackId/topics', element: <Suspense fallback={<RouteFallback />}><StaffTopicsManagement /></Suspense> },
     { path: 'tracks/:trackId', element: <Suspense fallback={<RouteFallback />}><StaffTrackDetail /></Suspense> },
@@ -220,7 +220,6 @@ export const routes = [
     { path: 'hackathons', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerHackathonsPage /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><LecturerHackathonDetail /></Suspense> },
-      { path: ':id/awards/:awardId', element: <Suspense fallback={<RouteFallback />}><LecturerAwardDetail /></Suspense> },
     ]},
     { path: 'rounds/:roundId', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerRoundDetail /></Suspense> },
@@ -235,6 +234,7 @@ export const routes = [
     { path: 'submissions', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
     { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
     { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><LecturerRegisterTeamDetail /></Suspense> },
+    { path: 'awards/:awardId', element: <Suspense fallback={<RouteFallback />}><LecturerAwardDetail /></Suspense> },
     { path: 'tracks/:trackId', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerTrackDetail /></Suspense> },
       { path: 'topics', element: <Suspense fallback={<RouteFallback />}><LecturerTopicsList /></Suspense> },

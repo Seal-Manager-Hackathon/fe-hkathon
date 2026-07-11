@@ -16,7 +16,7 @@ const statusBadge = {
 }
 
 export default function AwardDetail() {
-  const { eventId, awardId } = useParams()
+  const { awardId } = useParams()
   const [award, setAward] = useState(null)
   const [event, setEvent] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -40,17 +40,17 @@ export default function AwardDetail() {
     }
     fetch()
     return () => { cancelled = true }
-  }, [eventId, awardId])
+  }, [awardId])
 
   if (loading) return <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="h-7 w-96 animate-pulse rounded bg-gray-200 mb-2" /><div className="h-60 animate-pulse rounded-xl bg-gray-100" /></div>
-  if (error || !award) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{error || 'Award not found.'}</p><Link to={`/staff/hackathons/${eventId}?tab=Awards`} className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Event</Link></div>
+  if (error || !award) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{error || 'Award not found.'}</p><Link to="/staff/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Hackathons</Link></div>
 
   const usd = Number(award.prize || 0)
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6">
-        <Link to={`/staff/hackathons/${eventId}?tab=Awards`} className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Event</Link>
+        <Link to={award.eventId ? `/staff/hackathons/${award.eventId}?tab=Awards` : '/staff/hackathons'} className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Event</Link>
       </div>
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -61,7 +61,7 @@ export default function AwardDetail() {
           </div>
           {event && (
             <p className="mt-1 text-[14px] text-gray-400">
-              Event: <Link to={`/staff/hackathons/${eventId}`} className="font-medium text-[#064f5d] hover:underline">{event.name}</Link>
+              Event: <Link to={award.eventId ? `/staff/hackathons/${award.eventId}` : '#'} className="font-medium text-[#064f5d] hover:underline">{event.name}</Link>
               <Badge label={event.status} className={`ml-2 ${statusBadge[event.status] || 'bg-[#f5f5f5] text-[#757575]'}`} />
             </p>
           )}

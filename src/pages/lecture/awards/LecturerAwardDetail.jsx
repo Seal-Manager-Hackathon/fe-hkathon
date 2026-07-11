@@ -37,14 +37,14 @@ export default function LecturerAwardDetail() {
   }, [eventId, awardId])
 
   if (loading) return <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="h-7 w-96 animate-pulse rounded bg-gray-200 mb-2" /><div className="h-60 animate-pulse rounded-xl bg-gray-100" /></div>
-  if (error || !award) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{error || 'Award not found.'}</p><Link to={`/lecture/hackathons/${eventId}?tab=Awards`} className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Event</Link></div>
+  if (error || !award) return <div className="flex min-h-[60vh] flex-col items-center justify-center"><p className="text-[18px] font-semibold text-gray-500">{error || 'Award not found.'}</p><Link to={`/lecture/hackathons`} className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to Hackathons</Link></div>
 
   const usd = Number(award.prize || 0)
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6">
-        <Link to={`/lecture/hackathons/${eventId}?tab=Awards`} className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
+        <Link to={award.eventId ? `/lecture/hackathons/${award.eventId}?tab=Awards` : '/lecture/hackathons'} className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">
           <ArrowLeft className="h-4 w-4" /> Back to Event
         </Link>
       </div>

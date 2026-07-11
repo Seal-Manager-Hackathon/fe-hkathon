@@ -34,7 +34,7 @@ const columns = [
   { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p> },
   { key: 'actions', header: '', headerClassName: 'text-right', className: 'text-right', render: (row) => (
     <div className="flex items-center justify-end gap-2">
-      <Link to={`/lecture/hackathons/${row.eventId}/awards/${row.id}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
+      <Link to={`/lecture/awards/${row.id}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
     </div>
   )},
 ]

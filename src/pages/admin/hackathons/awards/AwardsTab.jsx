@@ -53,7 +53,7 @@ function awardColumns(eventId, onSwap, onDelete, onRestore) {
     { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
       <div className="flex items-center justify-end gap-2">
         {!row.isDisable && <button onClick={() => onSwap(row)} className={swapBtnClass}><ArrowUpDown className="h-3.5 w-3.5" />Swap</button>}
-        <Link to={`/admin/hackathons/${eventId}/awards/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] hover:bg-[#e8e8e8]"><Eye className="h-3.5 w-3.5" />View</Link>
+        <Link to={`/admin/awards/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] hover:bg-[#e8e8e8]"><Eye className="h-3.5 w-3.5" />View</Link>
         {!row.isDisable && <Link to={`/admin/hackathons/${eventId}/awards/${row.id}/edit`} className={actionBtnClass}><Edit className="h-3.5 w-3.5" /> Edit</Link>}
         {row.isDisable ? <button onClick={() => onRestore?.(row)} className={restoreBtnClass}><RotateCcw className="h-3.5 w-3.5" /> Restore</button> : <button onClick={() => onDelete?.(row)} className={dangerBtnClass}><Trash2 className="h-3.5 w-3.5" /> Delete</button>}
       </div>
