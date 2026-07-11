@@ -343,3 +343,44 @@ export async function getLecturerAwardDetail(awardId) {
   const { data } = await api.get(`/lecturer/awards/${awardId}`)
   return data.data
 }
+
+// ============================ LEADERBOARD ============================
+
+/**
+ * Get chapter leaderboard for a year (lecturer view).
+ * @param {number} year
+ * @param {Object} [params]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ year: number, eventCount: number, items: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getLecturerChapterLeaderboard(year, params = {}) {
+  const { data } = await api.get(`/lecturer/events/chapter/${year}/leaderboard`, { params })
+  return data.data
+}
+
+/**
+ * Get event leaderboard (lecturer view).
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ eventId: string, eventName: string, totalRounds: number, items: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getLecturerEventLeaderboard(eventId, params = {}) {
+  const { data } = await api.get(`/lecturer/events/${eventId}/leaderboard`, { params })
+  return data.data
+}
+
+/**
+ * Get round leaderboard (lecturer view).
+ * @param {string} roundId
+ * @param {Object} [params]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ roundId: string, roundName: string, eventName: string, items: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getLecturerRoundLeaderboard(roundId, params = {}) {
+  const { data } = await api.get(`/lecturer/rounds/${roundId}/leaderboard`, { params })
+  return data.data
+}
