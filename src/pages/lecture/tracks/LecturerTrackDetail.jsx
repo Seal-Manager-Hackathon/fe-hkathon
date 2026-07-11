@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Calendar, Clock, Users, Flag, FileText } from 'lucide-react'
+import { Calendar, Clock, Users, Flag, FileText, BookOpen } from 'lucide-react'
 import { getLecturerTrackDetail, getLecturerEventDetail } from '../../../api/lecturer'
 import Badge from '../../../components/Badge'
 import RichTextViewer from '../../../components/RichTextViewer'
@@ -70,6 +70,9 @@ export default function LecturerTrackDetail() {
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{track.title}</h1>
             <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
+            <Link to={`/lecture/tracks/${trackId}/topics`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f3e5f5] px-3 py-1.5 text-[13px] font-semibold text-[#7b1fa2] transition-colors hover:bg-[#e1bee7]">
+              <BookOpen className="h-3.5 w-3.5" /> Topics
+            </Link>
           </div>
         </div>
       </div>

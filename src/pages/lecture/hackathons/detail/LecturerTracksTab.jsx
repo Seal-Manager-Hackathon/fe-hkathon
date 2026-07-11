@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { FileText, CircleCheck, Calendar, Users, Eye } from 'lucide-react'
+import { FileText, CircleCheck, Calendar, Users, Eye, BookOpen } from 'lucide-react'
 import BaseTable from '../../../../components/BaseTable'
 import Badge from '../../../../components/Badge'
 import { getLecturerMyTracks } from '../../../../api/lecturer'
@@ -46,9 +46,14 @@ export default function LecturerTracksTab({ eventId }) {
     { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
     { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] font-semibold text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p> },
     { key: 'actions', header: '', headerClassName: 'text-right', className: 'text-right', render: (row) => (
-      <Link to={`/lecture/tracks/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2.5 py-1.5 text-[13px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]">
-        <Eye className="h-3.5 w-3.5" /> View
-      </Link>
+      <div className="flex items-center justify-end gap-2">
+        <Link to={`/lecture/tracks/${row.id}/topics`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f3e5f5] px-3 py-1.5 text-[13px] font-semibold text-[#7b1fa2] transition-colors hover:bg-[#e1bee7]">
+          <BookOpen className="h-3.5 w-3.5" /> Topics
+        </Link>
+        <Link to={`/lecture/tracks/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2.5 py-1.5 text-[13px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]">
+          <Eye className="h-3.5 w-3.5" /> View
+        </Link>
+      </div>
     )},
   ]
 

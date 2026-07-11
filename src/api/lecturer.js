@@ -270,3 +270,30 @@ export async function getLecturerTrackDetail(trackId) {
   const { data } = await api.get(`/lecturer/tracks/${trackId}`)
   return data.data
 }
+
+// ============================ TOPICS ============================
+
+/**
+ * Get topics for a track (lecturer view).
+ * Only returns active topics (isDisable = false).
+ * @param {string} trackId
+ * @param {Object} [params]
+ * @param {string} [params.Keyword]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ topics: Array, totalCount: number }>}
+ */
+export async function getLecturerTopics(trackId, params = {}) {
+  const { data } = await api.get(`/lecturer/tracks/${trackId}/topics`, { params })
+  return data.data
+}
+
+/**
+ * Get topic detail by ID (lecturer view).
+ * @param {string} topicId
+ * @returns {Promise<object>}
+ */
+export async function getLecturerTopicDetail(topicId) {
+  const { data } = await api.get(`/lecturer/topics/${topicId}`)
+  return data.data
+}
