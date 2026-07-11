@@ -178,3 +178,29 @@ export async function getLecturerRoundDetail(roundId) {
   const { data } = await api.get(`/lecturer/rounds/${roundId}`)
   return data.data
 }
+
+// ============================ REGISTER TEAMS ============================
+
+/**
+ * Get paginated register teams for an event (lecturer view).
+ * Supports keyword, status, isBanned, isDisable, round, track, topic filters.
+ * Mirrors admin GET /api/v1/admin/events/{eventId}/register-teams.
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @param {string} [params.Keyword]
+ * @param {'Pending'|'Approved'|'Rejected'|'Banned'} [params.Status]
+ * @param {boolean} [params.IsBanned]
+ * @param {boolean} [params.IsDisable]
+ * @param {string} [params.FromDate]
+ * @param {string} [params.ToDate]
+ * @param {string} [params.RoundId]
+ * @param {string} [params.TrackId]
+ * @param {string} [params.TopicId]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ registerTeams: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getLecturerRegisterTeams(eventId, params = {}) {
+  const { data } = await api.get(`/lecturer/events/${eventId}/register-teams`, { params })
+  return data.data
+}
