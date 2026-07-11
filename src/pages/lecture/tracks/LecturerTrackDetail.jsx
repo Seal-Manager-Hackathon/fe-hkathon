@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Calendar, Clock, Users, Flag, FileText } from 'lucide-react'
-import { getLecturerTrackDetail } from '../../../api/lecturer'
+import { getLecturerTrackDetail, getLecturerEventDetail } from '../../../api/lecturer'
 import Badge from '../../../components/Badge'
 import RichTextViewer from '../../../components/RichTextViewer'
 import CardPanel from '../../../components/CardPanel'
 import InfoRow from '../../../components/InfoRow'
+import EventInfoCard from '../../../components/EventInfoCard'
 import { formatDateTime } from '../../../utils/format'
 
 const roleColors = {
@@ -16,6 +17,7 @@ const roleColors = {
 export default function LecturerTrackDetail() {
   const { trackId } = useParams()
   const [track, setTrack] = useState(null)
+  const [event, setEvent] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -25,7 +27,12 @@ export default function LecturerTrackDetail() {
       setLoading(true); setError('')
       try {
         const data = await getLecturerTrackDetail(trackId)
-        if (!cancelled) setTrack(data)
+        if (!cancelled) {
+          setTrack(data)
+          if (data?.eventId) {
+            try { const ev = await getLecturerEventDetail(data.eventId); if (!cancelled) setEvent(ev) } catch {}
+          }
+        }
       } catch (err) {
         if (!cancelled) setError(err?.response?.data?.message || 'Failed to load track.')
       } finally {
@@ -63,9 +70,6 @@ export default function LecturerTrackDetail() {
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">{track.title}</h1>
             <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
-            {track.eventRoleName && (
-              <Badge label={track.eventRoleName} className={roleColors[track.eventRoleName] || 'bg-[#f5f5f5] text-[#757575]'} />
-            )}
           </div>
         </div>
       </div>
@@ -80,7 +84,7 @@ export default function LecturerTrackDetail() {
               <InfoRow label="Registered Teams" icon={Flag}>
                 <p className="text-[14px] font-semibold text-[#1f2f3a]">{track.registerTeamCount ?? 0}</p>
               </InfoRow>
-              <InfoRow label="Your Role" icon={FileText}>
+              <InfoRow label="Role" icon={FileText}>
                 <Badge label={track.eventRoleName || '—'} className={track.eventRoleName ? (roleColors[track.eventRoleName] || 'bg-[#f5f5f5] text-[#757575]') : 'bg-[#f5f5f5] text-[#757575]'} />
               </InfoRow>
               <InfoRow label="Created At" icon={Calendar}>
@@ -98,6 +102,8 @@ export default function LecturerTrackDetail() {
             </div>
           </CardPanel>
         </div>
+
+        <EventInfoCard event={event} detailLinkPrefix="/lecture" />
       </div>
     </div>
   )

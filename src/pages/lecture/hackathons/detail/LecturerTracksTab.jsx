@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Ban, FileText, CircleCheck, Calendar, Users, Eye } from 'lucide-react'
+import { FileText, CircleCheck, Calendar, Users, Eye } from 'lucide-react'
 import BaseTable from '../../../../components/BaseTable'
-import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
 import { getLecturerMyTracks } from '../../../../api/lecturer'
 import { formatDateTime } from '../../../../utils/format'
@@ -31,8 +30,6 @@ export default function LecturerTracksTab({ eventId }) {
 
   useEffect(() => { fetchTracks() }, [fetchTracks])
 
-  const eventRoleName = tracks.length > 0 ? tracks[0].eventRoleName : null
-
   const roleColors = {
     Judge: 'bg-[#e8f5e9] text-[#2e7d32]',
     Mentor: 'bg-[#e3f2fd] text-[#1565c0]',
@@ -41,6 +38,9 @@ export default function LecturerTracksTab({ eventId }) {
   const columns = [
     { key: 'title', header: 'Track Title', headerIcon: FileText, render: (row) => (
       <Link to={`/lecture/tracks/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.title}</Link>
+    )},
+    { key: 'role', header: 'Role', headerIcon: CircleCheck, render: (row) => (
+      <Badge label={row.eventRoleName || '—'} className={row.eventRoleName ? (roleColors[row.eventRoleName] || 'bg-[#f5f5f5] text-[#757575]') : 'bg-[#f5f5f5] text-[#757575]'} />
     )},
     { key: 'maxTeam', header: 'Max Teams', headerIcon: Users, render: (row) => <span className="text-[13px] font-semibold text-[#1f2f3a]">{row.maxTeam ?? '—'}</span> },
     { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
@@ -54,14 +54,8 @@ export default function LecturerTracksTab({ eventId }) {
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4">
         <h3 className="text-[15px] font-bold text-[#1f2f3a]">My Assigned Tracks</h3>
-        {eventRoleName && (
-          <Badge
-            label={eventRoleName}
-            className={roleColors[eventRoleName] || 'bg-[#f5f5f5] text-[#757575]'}
-          />
-        )}
       </div>
 
       {error && (
