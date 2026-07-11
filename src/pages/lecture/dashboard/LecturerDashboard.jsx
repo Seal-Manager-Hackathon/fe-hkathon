@@ -28,9 +28,6 @@ export default function LecturerDashboard() {
   const {
     counts,
     recentEvents,
-    recentUsers,
-    recentNotifications,
-    recentReports,
   } = useLecturerDashboardData()
 
   const resolvedSections = statSections.map((section) => {

@@ -91,6 +91,25 @@ export async function getLecturerEvents(params = {}) {
 }
 
 /**
+ * Get events assigned to the current lecturer via AssignEvents (Role = Judge/Mentor).
+ * Auto-excludes Draft events. Returns all events including disabled ones.
+ * Mirrors admin GET /api/v1/admin/events.
+ * @param {Object} params
+ * @param {string} [params.Keyword]
+ * @param {'Published'|'Closed'} [params.Status]
+ * @param {boolean} [params.IsDisable]
+ * @param {string} [params.FromDate]
+ * @param {string} [params.ToDate]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ events: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getLecturerMyLecturerEvents(params = {}) {
+  const { data } = await api.get('/lecturer/events/my-lecturer', { params })
+  return data.data
+}
+
+/**
  * Get event detail by ID (lecturer must be assigned to the event).
  * Mirrors admin GET /api/v1/admin/events/{eventId}.
  * @param {string} eventId

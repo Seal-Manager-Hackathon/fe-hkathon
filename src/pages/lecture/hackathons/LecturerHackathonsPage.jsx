@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Trophy, Search, CircleDot, Calendar } from 'lucide-react'
+import { Trophy, Search, CircleDot, Calendar, Star } from 'lucide-react'
 import Badge from '../../../components/Badge'
 import FilterBar from '../../../components/FilterBar'
 import BaseTable from '../../../components/BaseTable'
-import { getLecturerEvents } from '../../../api/lecturer'
+import { getLecturerMyLecturerEvents } from '../../../api/lecturer'
 import { formatDateTime } from '../../../utils/format'
 
 const PAGE_SIZE = 10
@@ -47,7 +47,7 @@ export default function LecturerHackathonsPage() {
       if (filters.status) params.Status = filters.status
       if (filters.fromDate) params.FromDate = new Date(filters.fromDate).toISOString()
       if (filters.toDate) params.ToDate = new Date(filters.toDate).toISOString()
-      const result = await getLecturerEvents(params)
+      const result = await getLecturerMyLecturerEvents(params)
       setEvents(result.events || [])
       setTotalCount(result.totalCount || 0)
     } catch (err) {
@@ -83,9 +83,15 @@ export default function LecturerHackathonsPage() {
       ),
     },
     {
-      key: 'season',
-      header: 'Season',
-      render: (row) => <span className="text-[13px] text-[#1f2f3a]">{row.season || '—'}</span>,
+      key: 'role',
+      header: 'Role',
+      headerIcon: Star,
+      render: (row) => <Badge label={row.eventRoleName || '—'} className={roleBadge[row.eventRoleName] || 'bg-[#f5f5f5] text-[#757575]'} />,
+    },
+    {
+      key: 'createdAt',
+      header: 'Created',
+      render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p>,
     },
     {
       key: 'startTime',
