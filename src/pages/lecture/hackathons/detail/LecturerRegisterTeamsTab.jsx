@@ -113,8 +113,14 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
         ? <Link to={`/lecture/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName || '—'}</Link>
         : <Link to={`/lecture/register-teams/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName || '—'}</Link>
     )},
-    { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => <span className="text-[13px] font-semibold text-[#1f2f3a]">{row.trackName || '—'}</span> },
-    { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => <span className="text-[13px] font-semibold text-[#1f2f3a]">{row.topicTitle || '—'}</span> },
+    { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => row.trackId
+      ? <Link to={`/lecture/tracks/${row.trackId}`} className="text-[13px] font-semibold text-[#064f5d] hover:underline">{row.trackName || '—'}</Link>
+      : <span className="text-[13px] text-gray-400">—</span>
+    },
+    { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => row.topicId && row.trackId
+      ? <Link to={`/lecture/tracks/${row.trackId}/topics`} className="text-[13px] font-semibold text-[#064f5d] hover:underline">{row.topicTitle || '—'}</Link>
+      : <span className="text-[13px] text-gray-400">—</span>
+    },
     { key: 'roundName', header: 'Round', headerIcon: Layers, render: (row) => row.roundId
       ? <Link to={`/lecture/rounds/${row.roundId}`} className="text-[13px] font-semibold text-[#064f5d] hover:underline">{row.roundName || '—'}</Link>
       : <span className="text-[13px] text-gray-400">—</span>
