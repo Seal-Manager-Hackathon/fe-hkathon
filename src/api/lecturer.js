@@ -401,3 +401,28 @@ export async function getLecturerRoundLeaderboard(roundId, params = {}) {
   const { data } = await api.get(`/lecturer/rounds/${roundId}/leaderboard`, { params })
   return data.data
 }
+
+// ============================ MENTOR NOTIFICATIONS ============================
+
+/**
+ * Get mentor notifications for a track (lecturer/mentor view).
+ * @param {string} trackId
+ * @param {Object} [params]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ notifications: Array, totalCount: number }>}
+ */
+export async function getLecturerMentorNotifications(trackId, params = {}) {
+  const { data } = await api.get(`/mentor/tracks/${trackId}/mentor-notifications`, { params })
+  return data.data
+}
+
+/**
+ * Get mentor notification detail by ID.
+ * @param {string} notificationId
+ * @returns {Promise<object>}
+ */
+export async function getLecturerMentorNotificationDetail(notificationId) {
+  const { data } = await api.get(`/mentor/mentor-notifications/${notificationId}`)
+  return data.data
+}

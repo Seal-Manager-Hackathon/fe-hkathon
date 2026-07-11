@@ -102,6 +102,7 @@ const LecturerTopicsList = lazy(() => import('../pages/lecture/tracks/LecturerTo
 const LecturerTopicDetail = lazy(() => import('../pages/lecture/tracks/LecturerTopicDetail'))
 const LecturerAwardDetail = lazy(() => import('../pages/lecture/awards/LecturerAwardDetail'))
 const LecturerChapterLeaderboardPage = lazy(() => import('../pages/lecture/leaderboard/LecturerChapterLeaderboardPage'))
+const LecturerTrackNotificationsPage = lazy(() => import('../pages/lecture/tracks/LecturerTrackNotificationsPage'))
 
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
@@ -240,6 +241,7 @@ export const routes = [
       { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerTrackDetail /></Suspense> },
       { path: 'topics', element: <Suspense fallback={<RouteFallback />}><LecturerTopicsList /></Suspense> },
       { path: 'topics/:topicId', element: <Suspense fallback={<RouteFallback />}><LecturerTopicDetail /></Suspense> },
+      { path: 'notifications', element: <Suspense fallback={<RouteFallback />}><LecturerTrackNotificationsPage /></Suspense> },
     ]},
     { path: 'profile', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><StaffProfile /></Suspense> },
