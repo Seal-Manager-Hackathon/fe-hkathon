@@ -316,3 +316,30 @@ export async function getLecturerTopicDetail(topicId) {
   const { data } = await api.get(`/lecturer/topics/${topicId}`)
   return data.data
 }
+
+// ============================ AWARDS ============================
+
+/**
+ * Get awards for an event (lecturer view).
+ * Only returns active awards (isDisable = false).
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @param {string} [params.Keyword]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ awards: Array, totalCount: number }>}
+ */
+export async function getLecturerAwards(eventId, params = {}) {
+  const { data } = await api.get(`/lecturer/events/${eventId}/awards`, { params })
+  return data.data
+}
+
+/**
+ * Get award detail by ID (lecturer view).
+ * @param {string} awardId
+ * @returns {Promise<object>}
+ */
+export async function getLecturerAwardDetail(awardId) {
+  const { data } = await api.get(`/lecturer/awards/${awardId}`)
+  return data.data
+}

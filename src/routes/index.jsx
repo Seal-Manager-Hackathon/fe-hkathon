@@ -100,6 +100,7 @@ const LecturerTeamDetail = lazy(() => import('../pages/lecture/teams/LecturerTea
 const LecturerTrackDetail = lazy(() => import('../pages/lecture/tracks/LecturerTrackDetail'))
 const LecturerTopicsList = lazy(() => import('../pages/lecture/tracks/LecturerTopicsList'))
 const LecturerTopicDetail = lazy(() => import('../pages/lecture/tracks/LecturerTopicDetail'))
+const LecturerAwardDetail = lazy(() => import('../pages/lecture/awards/LecturerAwardDetail'))
 
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
@@ -219,6 +220,7 @@ export const routes = [
     { path: 'hackathons', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerHackathonsPage /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><LecturerHackathonDetail /></Suspense> },
+      { path: ':id/awards/:awardId', element: <Suspense fallback={<RouteFallback />}><LecturerAwardDetail /></Suspense> },
     ]},
     { path: 'rounds/:roundId', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerRoundDetail /></Suspense> },
