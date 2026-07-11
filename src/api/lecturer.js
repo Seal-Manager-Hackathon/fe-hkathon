@@ -1,5 +1,78 @@
 import api from '../libs/api'
 
+// ============================ DASHBOARD ============================
+
+/**
+ * Count events by optional status filter.
+ * @param {'Draft'|'Published'|'Closed'} [status]
+ * @returns {Promise<{ total: number }>}
+ */
+export async function getLecturerEventsCount(status) {
+  const params = status ? { Status: status } : {}
+  const { data } = await api.get('/lecturer/events/count', { params })
+  return data.data
+}
+
+/**
+ * Count users by optional role filter.
+ * @param {'Student'|'Lecturer'|'Staff'|'Admin'} [role]
+ * @returns {Promise<{ total: number }>}
+ */
+export async function getLecturerUsersCount(role) {
+  const params = role ? { Role: role } : {}
+  const { data } = await api.get('/lecturer/users/count', { params })
+  return data.data
+}
+
+/**
+ * Count teams by optional IsDisable filter.
+ * @param {boolean} [isDisable]
+ * @returns {Promise<{ total: number }>}
+ */
+export async function getLecturerTeamsCount(isDisable) {
+  const params = isDisable !== undefined ? { IsDisable: isDisable } : {}
+  const { data } = await api.get('/lecturer/teams/count', { params })
+  return data.data
+}
+
+/**
+ * Get 5 most recent events.
+ * @returns {Promise<{ events: Array }>}
+ */
+export async function getLecturerRecentEvents() {
+  const { data } = await api.get('/lecturer/events/recent')
+  return data.data
+}
+
+/**
+ * Get 5 most recent users.
+ * @returns {Promise<{ users: Array }>}
+ */
+export async function getLecturerRecentUsers() {
+  const { data } = await api.get('/lecturer/users/recent')
+  return data.data
+}
+
+/**
+ * Get 5 most recent notifications.
+ * @returns {Promise<{ notifications: Array }>}
+ */
+export async function getLecturerRecentNotifications() {
+  const { data } = await api.get('/lecturer/notifications/recent')
+  return data.data
+}
+
+/**
+ * Get 5 most recent reports.
+ * @returns {Promise<{ reports: Array }>}
+ */
+export async function getLecturerRecentReports() {
+  const { data } = await api.get('/lecturer/reports/recent')
+  return data.data
+}
+
+// ============================ EVENTS ============================
+
 /**
  * Get paginated events assigned to the current lecturer (Judge/Mentor).
  * Mirrors admin GET /api/v1/admin/events.
