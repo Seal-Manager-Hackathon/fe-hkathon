@@ -111,15 +111,15 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
     { key: 'teamName', header: 'Team', headerIcon: Users, render: (row) => (
       <Link to={`/lecture/register-teams/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName || '—'}</Link>
     )},
-    { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => <span className="text-[13px] text-[#1f2f3a]">{row.trackName || '—'}</span> },
-    { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => <span className="text-[13px] text-[#1f2f3a]">{row.topicTitle || '—'}</span> },
+    { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => <span className="text-[13px] font-semibold text-[#1f2f3a]">{row.trackName || '—'}</span> },
+    { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => <span className="text-[13px] font-semibold text-[#1f2f3a]">{row.topicTitle || '—'}</span> },
     { key: 'roundName', header: 'Round', headerIcon: Layers, render: (row) => row.roundId
-      ? <Link to={`/lecture/rounds/${row.roundId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.roundName || '—'}</Link>
+      ? <Link to={`/lecture/rounds/${row.roundId}`} className="text-[13px] font-semibold text-[#064f5d] hover:underline">{row.roundName || '—'}</Link>
       : <span className="text-[13px] text-gray-400">—</span>
     },
     { key: 'isBanned', header: 'Banned', headerIcon: Ban, render: (row) => row.isBanned ? <Badge label="Yes" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" /> },
     { key: 'status', header: 'Status', headerIcon: CircleCheck, render: (row) => <Badge label={row.status} className={statusBadge[row.status] || 'bg-gray-50 text-gray-600'} /> },
-    { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p> },
+    { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] font-semibold text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p> },
     {
       key: 'actions', header: '', headerClassName: 'text-right', className: 'text-right',
       render: (row) => (
