@@ -204,3 +204,14 @@ export async function getLecturerRegisterTeams(eventId, params = {}) {
   const { data } = await api.get(`/lecturer/events/${eventId}/register-teams`, { params })
   return data.data
 }
+
+/**
+ * Get register team detail by ID (lecturer view).
+ * Returns full info including event, team, track, topic, members.
+ * @param {string} registerTeamId
+ * @returns {Promise<object>}
+ */
+export async function getLecturerRegisterTeamDetail(registerTeamId) {
+  const { data } = await api.get(`/lecturer/register-teams/${registerTeamId}`)
+  return data.data
+}
