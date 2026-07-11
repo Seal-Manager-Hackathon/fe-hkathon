@@ -48,7 +48,7 @@ export default function HackathonManagement() {
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Hackathons</h1>
+          <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">My Hackathons</h1>
           <p className="mt-1 text-[14px] sm:text-[15px] text-gray-500">Manage all {totalCount} hackathon events.</p>
         </div>
       </div>

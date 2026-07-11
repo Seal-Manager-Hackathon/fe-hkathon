@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext'
 
 const LECTURER_NAV_ITEMS = [
   { key: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', to: '/lecture' },
-  { key: 'hackathons', label: 'My Events', icon: 'Trophy', to: '/lecture/hackathons' },
+  { key: 'hackathons', label: 'My Hackathons', icon: 'Trophy', to: '/lecture/hackathons' },
   { key: 'teams', label: 'Teams', icon: 'UserRound', to: '/lecture/teams' },
   { key: 'leaderboard', label: 'Leaderboard', icon: 'BarChart3', to: '/lecture/leaderboard' },
 ]

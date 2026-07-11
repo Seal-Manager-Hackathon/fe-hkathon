@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext'
 
 const STAFF_NAV_ITEMS = [
   { key: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', to: '/staff' },
-  { key: 'hackathons', label: 'Hackathons', icon: 'Trophy', to: '/staff/hackathons' },
+  { key: 'hackathons', label: 'My Hackathons', icon: 'Trophy', to: '/staff/hackathons' },
   { key: 'leaderboard', label: 'Leaderboard', icon: 'BarChart3', to: '/staff/leaderboard' },
   { key: 'teams', label: 'Teams', icon: 'UserRound', to: '/staff/teams' },
   { key: 'users', label: 'Users', icon: 'Users', to: '/staff/users' },

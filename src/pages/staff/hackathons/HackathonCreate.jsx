@@ -60,7 +60,7 @@ export default function HackathonCreate() {
   return (
     <EntityFormPage
       backUrl="/staff/hackathons"
-      backLabel="Back to Hackathons"
+      backLabel="Back to My Hackathons"
       title="Create Hackathon"
       description=""
       saveLabel="Create Hackathon"

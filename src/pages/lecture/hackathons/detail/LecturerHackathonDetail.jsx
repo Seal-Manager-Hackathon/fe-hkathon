@@ -1,28 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { Info, Layers, FolderKanban, Trophy, Users, UserCheck, Send, BarChart3 } from 'lucide-react'
-import { getEventDetail } from '../../../api/staff'
-import OverviewTab from './OverviewTab'
-import RoundsTab from './rounds/RoundsTab'
-import TracksTab from './tracks/TracksTab'
-import AwardsTab from './awards/AwardsTab'
-import AssignTab from './assign/AssignTab'
-import RegisterTeamsTab from './register-teams/RegisterTeamsTab'
-import SubmissionsTab from './submissions/SubmissionsTab'
-import EventLeaderboardTab from './leaderboard/EventLeaderboardTab'
+import { Info, Layers, Users, Trophy, BarChart3, Send } from 'lucide-react'
+import { getLecturerEventDetail } from '../../../../api/lecturer'
+import LecturerOverviewTab from './LecturerOverviewTab'
+import LecturerRoundsTab from './LecturerRoundsTab'
 
 const TABS = [
   { key: 'Overview', icon: <Info className="h-4 w-4" /> },
   { key: 'Rounds', icon: <Layers className="h-4 w-4" /> },
-  { key: 'Tracks', icon: <FolderKanban className="h-4 w-4" /> },
-  { key: 'Awards', icon: <Trophy className="h-4 w-4" /> },
-  { key: 'Assignments', icon: <UserCheck className="h-4 w-4" /> },
-  { key: 'Register Teams', icon: <Users className="h-4 w-4" /> },
-  { key: 'Submissions', icon: <Send className="h-4 w-4" /> },
+  { key: 'Teams', icon: <Users className="h-4 w-4" /> },
   { key: 'Leaderboard', icon: <BarChart3 className="h-4 w-4" /> },
 ]
 
-export default function HackathonDetail() {
+export default function LecturerHackathonDetail() {
   const { id } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
   const [event, setEvent] = useState(null)
@@ -37,7 +27,7 @@ export default function HackathonDetail() {
     async function fetch() {
       setLoading(true); setError('')
       try {
-        const data = await getEventDetail(id)
+        const data = await getLecturerEventDetail(id)
         if (!cancelled) setEvent(data)
       } catch (err) {
         if (!cancelled) setError(err?.response?.data?.message || 'Failed to load event detail.')
@@ -63,26 +53,21 @@ export default function HackathonDetail() {
   )
 
   if (error) {
-    const isNotFound = error === 'Event Not Found' || error.includes('Not Found')
+    const isNotFound = error.includes('Not Found') || error.includes('404')
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center">
-        <p className="text-[18px] font-semibold text-gray-500">{isNotFound ? 'Event not found' : error}</p>
-        <Link to="/staff/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to My Hackathons</Link>
+        <p className="text-[18px] font-semibold text-gray-500">{isNotFound ? 'Event not found or you are not assigned.' : error}</p>
+        <Link to="/lecture/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to My Hackathons</Link>
       </div>
     )
   }
 
-  if (!event) return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center">
-      <p className="text-[18px] font-semibold text-gray-500">Event not found.</p>
-      <Link to="/staff/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to My Hackathons</Link>
-    </div>
-  )
+  if (!event) return null
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <div className="mb-6">
-        <Link to="/staff/hackathons" className="inline-flex cursor-pointer items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline">&larr; Back to My Hackathons</Link>
+      <div className="mb-4">
+        <Link to="/lecture/hackathons" className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] hover:underline">&larr; Back to My Hackathons</Link>
       </div>
 
       <div className="mb-6 flex gap-1 overflow-x-auto border-b border-[#e8ecf0]">
@@ -94,14 +79,10 @@ export default function HackathonDetail() {
         ))}
       </div>
 
-      {tab === 'Overview' && <OverviewTab event={event} />}
-      {tab === 'Rounds' && <RoundsTab eventId={id} />}
-      {tab === 'Tracks' && <TracksTab eventId={id} />}
-      {tab === 'Awards' && <AwardsTab eventId={id} />}
-      {tab === 'Assignments' && <AssignTab eventId={id} />}
-      {tab === 'Register Teams' && <RegisterTeamsTab eventId={id} />}
-      {tab === 'Submissions' && <SubmissionsTab eventId={id} />}
-      {tab === 'Leaderboard' && <EventLeaderboardTab eventId={id} />}
+      {tab === 'Overview' && <LecturerOverviewTab event={event} />}
+      {tab === 'Rounds' && <LecturerRoundsTab eventId={id} />}
+      {tab === 'Teams' && <LecturerTeamsTab eventId={id} />}
+      {tab === 'Leaderboard' && <LecturerLeaderboardTab eventId={id} />}
     </div>
   )
 }

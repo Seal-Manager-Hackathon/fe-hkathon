@@ -151,7 +151,7 @@ export default function HackathonEdit() {
       <div className="flex min-h-[60vh] flex-col items-center justify-center">
         <p className="text-[18px] font-semibold text-gray-500">{error}</p>
         <Link to="/staff/hackathons" className="mt-4 text-[14px] font-medium text-[#064f5d] hover:underline">
-          &larr; Back to Hackathons
+          &larr; Back to My Hackathons
         </Link>
       </div>
     )
