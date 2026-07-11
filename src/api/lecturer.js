@@ -44,6 +44,42 @@ export async function getLecturerEventDetail(eventId) {
   return data.data
 }
 
+// ============================ CRITERIA TEMPLATES ============================
+
+/**
+ * Get criteria templates for a round (lecturer view).
+ * Only returns active templates (isActive = true, isDisable = false).
+ * @param {string} roundId
+ * @param {Object} [params]
+ * @param {string} [params.keyword]
+ * @returns {Promise<{ templates: Array, totalCount: number }>}
+ */
+export async function getLecturerCriteriaTemplates(roundId, params = {}) {
+  const { data } = await api.get(`/lecturer/rounds/${roundId}/criteria-templates`, { params })
+  return data.data
+}
+
+/**
+ * Get criteria template detail by ID (lecturer view).
+ * @param {string} templateId
+ * @returns {Promise<object>}
+ */
+export async function getLecturerCriteriaTemplateDetail(templateId) {
+  const { data } = await api.get(`/lecturer/criteria-templates/${templateId}`)
+  return data.data
+}
+
+/**
+ * Get criteria items for a template (lecturer view).
+ * @param {string} templateId
+ * @param {Object} [params]
+ * @returns {Promise<{ items: Array, totalCount: number }>}
+ */
+export async function getLecturerCriteriaItems(templateId, params = {}) {
+  const { data } = await api.get(`/lecturer/criteria-templates/${templateId}/criteria-items`, { params })
+  return data.data
+}
+
 // ============================ ROUNDS ============================
 
 /**

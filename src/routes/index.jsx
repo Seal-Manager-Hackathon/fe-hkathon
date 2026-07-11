@@ -93,6 +93,8 @@ const LecturerDashboard = lazy(() => import('../pages/lecture/dashboard/Lecturer
 const LecturerHackathonsPage = lazy(() => import('../pages/lecture/hackathons/LecturerHackathonsPage'))
 const LecturerHackathonDetail = lazy(() => import('../pages/lecture/hackathons/detail/LecturerHackathonDetail'))
 const LecturerRoundDetail = lazy(() => import('../pages/lecture/rounds/LecturerRoundDetail'))
+const LecturerCriteriaTemplatesList = lazy(() => import('../pages/lecture/rounds/LecturerCriteriaTemplatesList'))
+const LecturerCriteriaTemplateDetail = lazy(() => import('../pages/lecture/rounds/LecturerCriteriaTemplateDetail'))
 
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
@@ -213,7 +215,11 @@ export const routes = [
       { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerHackathonsPage /></Suspense> },
       { path: ':id', element: <Suspense fallback={<RouteFallback />}><LecturerHackathonDetail /></Suspense> },
     ]},
-    { path: 'rounds/:roundId', element: <Suspense fallback={<RouteFallback />}><LecturerRoundDetail /></Suspense> },
+    { path: 'rounds/:roundId', children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerRoundDetail /></Suspense> },
+      { path: 'criteria-templates', element: <Suspense fallback={<RouteFallback />}><LecturerCriteriaTemplatesList /></Suspense> },
+      { path: 'criteria-templates/:templateId', element: <Suspense fallback={<RouteFallback />}><LecturerCriteriaTemplateDetail /></Suspense> },
+    ]},
     { path: 'teams', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
     { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
     { path: 'submissions', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
