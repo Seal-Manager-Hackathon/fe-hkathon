@@ -1,5 +1,7 @@
 import { lazy, Suspense } from 'react'
+import { Outlet } from 'react-router-dom'
 import RouteFallback from '../components/RouteFallback'
+import ProtectedRoute from '../components/ProtectedRoute'
 
 const StudentLayout = lazy(() => import('../layouts/StudentLayout'))
 
@@ -105,152 +107,198 @@ const LecturerChapterLeaderboardPage = lazy(() => import('../pages/lecture/leade
 const LecturerTrackNotificationsPage = lazy(() => import('../pages/lecture/tracks/LecturerTrackNotificationsPage'))
 
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
+const UnauthorizedPage = lazy(() => import('../pages/UnauthorizedPage'))
 
 export const routes = [
-  { path: '/', element: <Suspense fallback={<RouteFallback full />}><StudentLayout /></Suspense>, children: [
-    { path: 'hackathons', element: <Suspense fallback={<RouteFallback />}><HackathonsPage /></Suspense> },
-    { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><YearLeaderboardPage /></Suspense> },
+  {
+    path: '/', element: <Suspense fallback={<RouteFallback full />}><StudentLayout /></Suspense>, children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><HomePage /></Suspense> },
 
+      {
+        path: 'profile', element: <ProtectedRoute roles={['Student']}><Suspense fallback={<RouteFallback />}><Outlet /></Suspense></ProtectedRoute>, children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><ProfilePage /></Suspense> },
+          { path: 'edit', element: <Suspense fallback={<RouteFallback />}><ProfileEditPage /></Suspense> },
+        ]
+      },
 
-    { index: true, element: <Suspense fallback={<RouteFallback />}><HomePage /></Suspense> },
-    { path: 'profile', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><ProfilePage /></Suspense> },
-      { path: 'edit', element: <Suspense fallback={<RouteFallback />}><ProfileEditPage /></Suspense> },
-    ]},
-  ]},
-  { path: '/admin', element: <Suspense fallback={<RouteFallback full />}><AdminLayout /></Suspense>, children: [
-    { index: true, element: <Suspense fallback={<RouteFallback />}><AdminDashboard /></Suspense> },
-    { path: 'hackathons', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><HackathonManagement /></Suspense> },
-      { path: 'create', element: <Suspense fallback={<RouteFallback />}><HackathonCreate /></Suspense> },
-      { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><HackathonEdit /></Suspense> },
-      { path: ':id', element: <Suspense fallback={<RouteFallback />}><HackathonDetail /></Suspense> },
-      { path: ':eventId/rounds/create', element: <Suspense fallback={<RouteFallback />}><RoundCreate /></Suspense> },
-      { path: ':eventId/awards/create', element: <Suspense fallback={<RouteFallback />}><AwardCreate /></Suspense> },
-      { path: ':eventId/awards/:awardId/edit', element: <Suspense fallback={<RouteFallback />}><AwardEdit /></Suspense> },
-    ]},
-    { path: 'awards/:awardId', element: <Suspense fallback={<RouteFallback />}><AwardDetail /></Suspense> },
-    { path: 'tracks/:trackId/topics/:topicId', element: <Suspense fallback={<RouteFallback />}><TopicDetail /></Suspense> },
-    { path: 'tracks/:trackId/topics', element: <Suspense fallback={<RouteFallback />}><TopicsManagement /></Suspense> },
-    { path: 'tracks/:trackId', element: <Suspense fallback={<RouteFallback />}><TrackDetail /></Suspense> },
-    { path: 'tracks/create', element: <Suspense fallback={<RouteFallback />}><TrackCreate /></Suspense> },
-    { path: 'tracks/:trackId/topics/:topicId/edit', element: <Suspense fallback={<RouteFallback />}><TopicEdit /></Suspense> },
-    { path: 'tracks/:trackId/topics/create', element: <Suspense fallback={<RouteFallback />}><TopicCreate /></Suspense> },
-    { path: 'tracks/:trackId/edit', element: <Suspense fallback={<RouteFallback />}><TrackEdit /></Suspense> },
-    { path: 'users', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><UsersManagement /></Suspense> },
-      { path: 'create', element: <Suspense fallback={<RouteFallback />}><UsersCreate /></Suspense> },
-      { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><UserEdit /></Suspense> },
-      { path: ':id', element: <Suspense fallback={<RouteFallback />}><UserDetail /></Suspense> },
-    ]},
-    { path: 'notifications', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><NotificationsManagement /></Suspense> },
-      { path: 'create', element: <Suspense fallback={<RouteFallback />}><NotificationsCreate /></Suspense> },
-      { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><NotificationEdit /></Suspense> },
-      { path: ':id', element: <Suspense fallback={<RouteFallback />}><NotificationDetail /></Suspense> },
-    ]},
-    { path: 'teams', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><TeamsManagement /></Suspense> },
-      { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><TeamEdit /></Suspense> },
-      { path: ':id', element: <Suspense fallback={<RouteFallback />}><TeamDetail /></Suspense> },
-    ]},
-    { path: 'reports', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><ReportsManagement /></Suspense> },
-      { path: ':id', element: <Suspense fallback={<RouteFallback />}><ReportDetail /></Suspense> },
-    ]},
-    { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><ChapterLeaderboardPage /></Suspense> },
-    { path: 'register-teams/:registerTeamId/edit', element: <Suspense fallback={<RouteFallback />}><RegisterTeamEdit /></Suspense> },
-    { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><RegisterTeamDetail /></Suspense> },
-    { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><SubmissionDetail /></Suspense> },
-    { path: 'rounds/:roundId/edit', element: <Suspense fallback={<RouteFallback />}><RoundEdit /></Suspense> },
-    { path: 'rounds/:roundId/criteria-templates/create', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplateCreate /></Suspense> },
-    { path: 'rounds/:roundId/criteria-templates/:templateId/edit', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplateEdit /></Suspense> },
-    { path: 'rounds/:roundId/criteria-templates/:templateId', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplateDetail /></Suspense> },
-    { path: 'rounds/:roundId/criteria-templates', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplatesManagement /></Suspense> },
-    { path: 'rounds/:roundId', element: <Suspense fallback={<RouteFallback />}><RoundDetail /></Suspense> },
-    { path: 'my-notifications', element: <Suspense fallback={<RouteFallback />}><MyNotifications /></Suspense> },
-    { path: 'profile', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><AdminProfile /></Suspense> },
-      { path: 'edit', element: <Suspense fallback={<RouteFallback />}><AdminProfileEdit /></Suspense> },
-    ]},
-  ]},
-  { path: '/staff', element: <Suspense fallback={<RouteFallback full />}><StaffLayout /></Suspense>, children: [
-    { index: true, element: <Suspense fallback={<RouteFallback />}><StaffDashboard /></Suspense> },
-    { path: 'hackathons', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffHackathonManagement /></Suspense> },
-      { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffHackathonDetail /></Suspense> },
-    ]},
-    { path: 'awards/:awardId', element: <Suspense fallback={<RouteFallback />}><StaffAwardDetail /></Suspense> },
-    { path: 'tracks/:trackId/topics/:topicId', element: <Suspense fallback={<RouteFallback />}><StaffTopicDetail /></Suspense> },
-    { path: 'tracks/:trackId/topics', element: <Suspense fallback={<RouteFallback />}><StaffTopicsManagement /></Suspense> },
-    { path: 'tracks/:trackId', element: <Suspense fallback={<RouteFallback />}><StaffTrackDetail /></Suspense> },
-    { path: 'rounds/:roundId/criteria-templates/create', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateCreate /></Suspense> },
-    { path: 'rounds/:roundId/criteria-templates/:templateId/edit', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateEdit /></Suspense> },
-    { path: 'rounds/:roundId/criteria-templates/:templateId', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateDetail /></Suspense> },
-    { path: 'rounds/:roundId/criteria-templates', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplatesManagement /></Suspense> },
-    { path: 'rounds/:roundId', element: <Suspense fallback={<RouteFallback />}><StaffRoundDetail /></Suspense> },
-    { path: 'users', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffUsersManagement /></Suspense> },
-      { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffUserDetail /></Suspense> },
-    ]},
-    { path: 'notifications', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffNotificationsManagement /></Suspense> },
-      { path: 'create', element: <Suspense fallback={<RouteFallback />}><StaffNotificationsCreate /></Suspense> },
-      { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><StaffNotificationEdit /></Suspense> },
-      { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffNotificationDetail /></Suspense> },
-    ]},
-    { path: 'teams', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffTeamsManagement /></Suspense> },
-      { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffTeamDetail /></Suspense> },
-    ]},
-    { path: 'reports', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffReportsManagement /></Suspense> },
-      { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffReportDetail /></Suspense> },
-    ]},
-    { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><StaffChapterLeaderboardPage /></Suspense> },
-    { path: 'register-teams/:registerTeamId/edit', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamEdit /></Suspense> },
-    { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamDetail /></Suspense> },
-    { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><StaffSubmissionDetail /></Suspense> },
-    { path: 'my-notifications', element: <Suspense fallback={<RouteFallback />}><StaffMyNotifications /></Suspense> },
-    { path: 'profile', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffProfile /></Suspense> },
-      { path: 'edit', element: <Suspense fallback={<RouteFallback />}><StaffProfileEdit /></Suspense> },
-    ]},
-  ]},
-  { path: '/lecture', element: <Suspense fallback={<RouteFallback full />}><LecturerLayout /></Suspense>, children: [
-    { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
-    { path: 'hackathons', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerHackathonsPage /></Suspense> },
-      { path: ':id', element: <Suspense fallback={<RouteFallback />}><LecturerHackathonDetail /></Suspense> },
-    ]},
-    { path: 'rounds/:roundId', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerRoundDetail /></Suspense> },
-      { path: 'criteria-templates', element: <Suspense fallback={<RouteFallback />}><LecturerCriteriaTemplatesList /></Suspense> },
-      { path: 'criteria-templates/:templateId', element: <Suspense fallback={<RouteFallback />}><LecturerCriteriaTemplateDetail /></Suspense> },
-    ]},
-    { path: 'teams', children: [
+      { path: 'hackathons', element: <Suspense fallback={<RouteFallback />}><HackathonsPage /></Suspense> },
+      { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><YearLeaderboardPage /></Suspense> }
+    ]
+  },
+  {
+    path: '/admin', element: <ProtectedRoute roles={['Admin']}><Suspense fallback={<RouteFallback full />}><AdminLayout /></Suspense></ProtectedRoute>, children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><AdminDashboard /></Suspense> },
+      {
+        path: 'hackathons', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><HackathonManagement /></Suspense> },
+          { path: 'create', element: <Suspense fallback={<RouteFallback />}><HackathonCreate /></Suspense> },
+          { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><HackathonEdit /></Suspense> },
+          { path: ':id', element: <Suspense fallback={<RouteFallback />}><HackathonDetail /></Suspense> },
+          { path: ':eventId/rounds/create', element: <Suspense fallback={<RouteFallback />}><RoundCreate /></Suspense> },
+          { path: ':eventId/awards/create', element: <Suspense fallback={<RouteFallback />}><AwardCreate /></Suspense> },
+          { path: ':eventId/awards/:awardId/edit', element: <Suspense fallback={<RouteFallback />}><AwardEdit /></Suspense> },
+        ]
+      },
+      { path: 'awards/:awardId', element: <Suspense fallback={<RouteFallback />}><AwardDetail /></Suspense> },
+      { path: 'tracks/:trackId/topics/:topicId', element: <Suspense fallback={<RouteFallback />}><TopicDetail /></Suspense> },
+      { path: 'tracks/:trackId/topics', element: <Suspense fallback={<RouteFallback />}><TopicsManagement /></Suspense> },
+      { path: 'tracks/:trackId', element: <Suspense fallback={<RouteFallback />}><TrackDetail /></Suspense> },
+      { path: 'tracks/create', element: <Suspense fallback={<RouteFallback />}><TrackCreate /></Suspense> },
+      { path: 'tracks/:trackId/topics/:topicId/edit', element: <Suspense fallback={<RouteFallback />}><TopicEdit /></Suspense> },
+      { path: 'tracks/:trackId/topics/create', element: <Suspense fallback={<RouteFallback />}><TopicCreate /></Suspense> },
+      { path: 'tracks/:trackId/edit', element: <Suspense fallback={<RouteFallback />}><TrackEdit /></Suspense> },
+      {
+        path: 'users', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><UsersManagement /></Suspense> },
+          { path: 'create', element: <Suspense fallback={<RouteFallback />}><UsersCreate /></Suspense> },
+          { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><UserEdit /></Suspense> },
+          { path: ':id', element: <Suspense fallback={<RouteFallback />}><UserDetail /></Suspense> },
+        ]
+      },
+      {
+        path: 'notifications', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><NotificationsManagement /></Suspense> },
+          { path: 'create', element: <Suspense fallback={<RouteFallback />}><NotificationsCreate /></Suspense> },
+          { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><NotificationEdit /></Suspense> },
+          { path: ':id', element: <Suspense fallback={<RouteFallback />}><NotificationDetail /></Suspense> },
+        ]
+      },
+      {
+        path: 'teams', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><TeamsManagement /></Suspense> },
+          { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><TeamEdit /></Suspense> },
+          { path: ':id', element: <Suspense fallback={<RouteFallback />}><TeamDetail /></Suspense> },
+        ]
+      },
+      {
+        path: 'reports', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><ReportsManagement /></Suspense> },
+          { path: ':id', element: <Suspense fallback={<RouteFallback />}><ReportDetail /></Suspense> },
+        ]
+      },
+      { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><ChapterLeaderboardPage /></Suspense> },
+      { path: 'register-teams/:registerTeamId/edit', element: <Suspense fallback={<RouteFallback />}><RegisterTeamEdit /></Suspense> },
+      { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><RegisterTeamDetail /></Suspense> },
+      { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><SubmissionDetail /></Suspense> },
+      { path: 'rounds/:roundId/edit', element: <Suspense fallback={<RouteFallback />}><RoundEdit /></Suspense> },
+      { path: 'rounds/:roundId/criteria-templates/create', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplateCreate /></Suspense> },
+      { path: 'rounds/:roundId/criteria-templates/:templateId/edit', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplateEdit /></Suspense> },
+      { path: 'rounds/:roundId/criteria-templates/:templateId', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplateDetail /></Suspense> },
+      { path: 'rounds/:roundId/criteria-templates', element: <Suspense fallback={<RouteFallback />}><CriteriaTemplatesManagement /></Suspense> },
+      { path: 'rounds/:roundId', element: <Suspense fallback={<RouteFallback />}><RoundDetail /></Suspense> },
+      { path: 'my-notifications', element: <Suspense fallback={<RouteFallback />}><MyNotifications /></Suspense> },
+      {
+        path: 'profile', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><AdminProfile /></Suspense> },
+          { path: 'edit', element: <Suspense fallback={<RouteFallback />}><AdminProfileEdit /></Suspense> },
+        ]
+      },
+    ]
+  },
+  {
+    path: '/staff', element: <ProtectedRoute roles={['Staff']}><Suspense fallback={<RouteFallback full />}><StaffLayout /></Suspense></ProtectedRoute>, children: [
+      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffDashboard /></Suspense> },
+      {
+        path: 'hackathons', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><StaffHackathonManagement /></Suspense> },
+          { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffHackathonDetail /></Suspense> },
+        ]
+      },
+      { path: 'awards/:awardId', element: <Suspense fallback={<RouteFallback />}><StaffAwardDetail /></Suspense> },
+      { path: 'tracks/:trackId/topics/:topicId', element: <Suspense fallback={<RouteFallback />}><StaffTopicDetail /></Suspense> },
+      { path: 'tracks/:trackId/topics', element: <Suspense fallback={<RouteFallback />}><StaffTopicsManagement /></Suspense> },
+      { path: 'tracks/:trackId', element: <Suspense fallback={<RouteFallback />}><StaffTrackDetail /></Suspense> },
+      { path: 'rounds/:roundId/criteria-templates/create', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateCreate /></Suspense> },
+      { path: 'rounds/:roundId/criteria-templates/:templateId/edit', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateEdit /></Suspense> },
+      { path: 'rounds/:roundId/criteria-templates/:templateId', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplateDetail /></Suspense> },
+      { path: 'rounds/:roundId/criteria-templates', element: <Suspense fallback={<RouteFallback />}><StaffCriteriaTemplatesManagement /></Suspense> },
+      { path: 'rounds/:roundId', element: <Suspense fallback={<RouteFallback />}><StaffRoundDetail /></Suspense> },
+      {
+        path: 'users', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><StaffUsersManagement /></Suspense> },
+          { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffUserDetail /></Suspense> },
+        ]
+      },
+      {
+        path: 'notifications', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><StaffNotificationsManagement /></Suspense> },
+          { path: 'create', element: <Suspense fallback={<RouteFallback />}><StaffNotificationsCreate /></Suspense> },
+          { path: ':id/edit', element: <Suspense fallback={<RouteFallback />}><StaffNotificationEdit /></Suspense> },
+          { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffNotificationDetail /></Suspense> },
+        ]
+      },
+      {
+        path: 'teams', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><StaffTeamsManagement /></Suspense> },
+          { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffTeamDetail /></Suspense> },
+        ]
+      },
+      {
+        path: 'reports', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><StaffReportsManagement /></Suspense> },
+          { path: ':id', element: <Suspense fallback={<RouteFallback />}><StaffReportDetail /></Suspense> },
+        ]
+      },
+      { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><StaffChapterLeaderboardPage /></Suspense> },
+      { path: 'register-teams/:registerTeamId/edit', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamEdit /></Suspense> },
+      { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><StaffRegisterTeamDetail /></Suspense> },
+      { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><StaffSubmissionDetail /></Suspense> },
+      { path: 'my-notifications', element: <Suspense fallback={<RouteFallback />}><StaffMyNotifications /></Suspense> },
+      {
+        path: 'profile', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><StaffProfile /></Suspense> },
+          { path: 'edit', element: <Suspense fallback={<RouteFallback />}><StaffProfileEdit /></Suspense> },
+        ]
+      },
+    ]
+  },
+  {
+    path: '/lecture', element: <ProtectedRoute roles={['Lecturer']}><Suspense fallback={<RouteFallback full />}><LecturerLayout /></Suspense></ProtectedRoute>, children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
-      { path: ':teamId', element: <Suspense fallback={<RouteFallback />}><LecturerTeamDetail /></Suspense> },
-    ]},
-    { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><LecturerChapterLeaderboardPage /></Suspense> },
-    { path: 'submissions', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
-    { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
-    { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><LecturerRegisterTeamDetail /></Suspense> },
-    { path: 'awards/:awardId', element: <Suspense fallback={<RouteFallback />}><LecturerAwardDetail /></Suspense> },
-    { path: 'tracks/:trackId', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerTrackDetail /></Suspense> },
-      { path: 'topics', element: <Suspense fallback={<RouteFallback />}><LecturerTopicsList /></Suspense> },
-      { path: 'topics/:topicId', element: <Suspense fallback={<RouteFallback />}><LecturerTopicDetail /></Suspense> },
-      { path: 'notifications', element: <Suspense fallback={<RouteFallback />}><LecturerTrackNotificationsPage /></Suspense> },
-    ]},
-    { path: 'profile', children: [
-      { index: true, element: <Suspense fallback={<RouteFallback />}><StaffProfile /></Suspense> },
-      { path: 'edit', element: <Suspense fallback={<RouteFallback />}><StaffProfileEdit /></Suspense> },
-    ]},
-  ]},
+      {
+        path: 'hackathons', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerHackathonsPage /></Suspense> },
+          { path: ':id', element: <Suspense fallback={<RouteFallback />}><LecturerHackathonDetail /></Suspense> },
+        ]
+      },
+      {
+        path: 'rounds/:roundId', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerRoundDetail /></Suspense> },
+          { path: 'criteria-templates', element: <Suspense fallback={<RouteFallback />}><LecturerCriteriaTemplatesList /></Suspense> },
+          { path: 'criteria-templates/:templateId', element: <Suspense fallback={<RouteFallback />}><LecturerCriteriaTemplateDetail /></Suspense> },
+        ]
+      },
+      {
+        path: 'teams', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
+          { path: ':teamId', element: <Suspense fallback={<RouteFallback />}><LecturerTeamDetail /></Suspense> },
+        ]
+      },
+      { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><LecturerChapterLeaderboardPage /></Suspense> },
+      { path: 'submissions', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
+      { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
+      { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><LecturerRegisterTeamDetail /></Suspense> },
+      { path: 'awards/:awardId', element: <Suspense fallback={<RouteFallback />}><LecturerAwardDetail /></Suspense> },
+      {
+        path: 'tracks/:trackId', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerTrackDetail /></Suspense> },
+          { path: 'topics', element: <Suspense fallback={<RouteFallback />}><LecturerTopicsList /></Suspense> },
+          { path: 'topics/:topicId', element: <Suspense fallback={<RouteFallback />}><LecturerTopicDetail /></Suspense> },
+          { path: 'notifications', element: <Suspense fallback={<RouteFallback />}><LecturerTrackNotificationsPage /></Suspense> },
+        ]
+      },
+      {
+        path: 'profile', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><StaffProfile /></Suspense> },
+          { path: 'edit', element: <Suspense fallback={<RouteFallback />}><StaffProfileEdit /></Suspense> },
+        ]
+      },
+    ]
+  },
 
   { path: '/login', element: <Suspense fallback={<RouteFallback full />}><LoginPage /></Suspense> },
   { path: '/register', element: <Suspense fallback={<RouteFallback full />}><RegisterPage /></Suspense> },
   { path: '/verify-email', element: <Suspense fallback={<RouteFallback full />}><VerifyEmailPage /></Suspense> },
+  { path: '/unauthorized', element: <Suspense fallback={<RouteFallback full />}><UnauthorizedPage /></Suspense> },
   { path: '*', element: <Suspense fallback={<RouteFallback full />}><NotFoundPage /></Suspense> },
 ]
