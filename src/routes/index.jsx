@@ -97,6 +97,7 @@ const LecturerCriteriaTemplatesList = lazy(() => import('../pages/lecture/rounds
 const LecturerCriteriaTemplateDetail = lazy(() => import('../pages/lecture/rounds/LecturerCriteriaTemplateDetail'))
 const LecturerRegisterTeamDetail = lazy(() => import('../pages/lecture/register-teams/LecturerRegisterTeamDetail'))
 const LecturerTeamDetail = lazy(() => import('../pages/lecture/teams/LecturerTeamDetail'))
+const LecturerTrackDetail = lazy(() => import('../pages/lecture/tracks/LecturerTrackDetail'))
 
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
@@ -230,6 +231,7 @@ export const routes = [
     { path: 'submissions', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
     { path: 'submissions/:submissionId', element: <Suspense fallback={<RouteFallback />}><LecturerDashboard /></Suspense> },
     { path: 'register-teams/:registerTeamId', element: <Suspense fallback={<RouteFallback />}><LecturerRegisterTeamDetail /></Suspense> },
+    { path: 'tracks/:trackId', element: <Suspense fallback={<RouteFallback />}><LecturerTrackDetail /></Suspense> },
     { path: 'profile', children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><StaffProfile /></Suspense> },
       { path: 'edit', element: <Suspense fallback={<RouteFallback />}><StaffProfileEdit /></Suspense> },

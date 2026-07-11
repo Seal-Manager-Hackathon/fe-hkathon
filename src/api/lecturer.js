@@ -235,3 +235,38 @@ export async function getLecturerRegisterTeamDetail(registerTeamId) {
   const { data } = await api.get(`/lecturer/register-teams/${registerTeamId}`)
   return data.data
 }
+
+// ============================ TRACKS ============================
+
+/**
+ * Get my assigned tracks for an event (lecturer view).
+ * Only returns active tracks with event role info.
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{
+ *   tracks: Array<{
+ *     id: string, eventId: string, title: string, description: string,
+ *     maxTeam: number, isDisable: boolean,
+ *     eventRoleId: string, eventRoleName: string,
+ *     createdAt: string, updatedAt: string,
+ *   }>,
+ *   totalCount: number, pageIndex: number, pageSize: number
+ * }>}
+ */
+export async function getLecturerMyTracks(eventId, params = {}) {
+  const { data } = await api.get(`/lecturer/events/${eventId}/my-tracks`, { params })
+  return data.data
+}
+
+/**
+ * Get track detail by ID (lecturer view).
+ * Includes registerTeamCount and eventRoleName.
+ * @param {string} trackId
+ * @returns {Promise<object>}
+ */
+export async function getLecturerTrackDetail(trackId) {
+  const { data } = await api.get(`/lecturer/tracks/${trackId}`)
+  return data.data
+}
