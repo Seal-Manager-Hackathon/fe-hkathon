@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { Info, Layers, Users, Trophy, BarChart3, Send } from 'lucide-react'
+import { Info, Layers } from 'lucide-react'
 import { getLecturerEventDetail } from '../../../../api/lecturer'
 import LecturerOverviewTab from './LecturerOverviewTab'
 import LecturerRoundsTab from './LecturerRoundsTab'
@@ -8,8 +8,6 @@ import LecturerRoundsTab from './LecturerRoundsTab'
 const TABS = [
   { key: 'Overview', icon: <Info className="h-4 w-4" /> },
   { key: 'Rounds', icon: <Layers className="h-4 w-4" /> },
-  { key: 'Teams', icon: <Users className="h-4 w-4" /> },
-  { key: 'Leaderboard', icon: <BarChart3 className="h-4 w-4" /> },
 ]
 
 export default function LecturerHackathonDetail() {
@@ -81,8 +79,6 @@ export default function LecturerHackathonDetail() {
 
       {tab === 'Overview' && <LecturerOverviewTab event={event} />}
       {tab === 'Rounds' && <LecturerRoundsTab eventId={id} />}
-      {tab === 'Teams' && <LecturerTeamsTab eventId={id} />}
-      {tab === 'Leaderboard' && <LecturerLeaderboardTab eventId={id} />}
     </div>
   )
 }
