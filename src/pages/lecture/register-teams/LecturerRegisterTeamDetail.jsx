@@ -97,7 +97,7 @@ export default function LecturerRegisterTeamDetail() {
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-4">
         <Link to={data.eventId ? `/lecture/hackathons/${data.eventId}?tab=Register%20Teams` : '/lecture/hackathons'} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] hover:underline">
-          <ArrowLeft className="h-4 w-4" /> Back
+          <ArrowLeft className="h-4 w-4" /> Back to Hackathons
         </Link>
       </div>
 

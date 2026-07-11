@@ -160,7 +160,7 @@ export default function RegisterTeamDetail() {
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-4">
-        <Link to={data.eventId ? `/staff/hackathons/${data.eventId}?tab=Register Teams` : '/staff/hackathons'} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] hover:underline"><ArrowLeft className="h-4 w-4" /> Back</Link>
+        <Link to={data.eventId ? `/staff/hackathons/${data.eventId}?tab=Register Teams` : '/staff/hackathons'} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] hover:underline"><ArrowLeft className="h-4 w-4" /> Back to Hackathons</Link>
       </div>
 
       <div className="mb-6 rounded-2xl border border-[#e8ecf0] bg-white overflow-hidden shadow-sm">
