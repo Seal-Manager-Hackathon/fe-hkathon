@@ -65,15 +65,15 @@ export default function LecturerRoundsSection({ eventId }) {
       className: 'text-right',
       render: (row) => (
         <div className="flex items-center justify-end gap-2">
-          <button onClick={() => setLeaderboardTarget(row)} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f3e5f5] px-3 py-1.5 text-[13px] font-semibold text-[#7b1fa2] transition-colors hover:bg-[#e1bee7]">
-            <BarChart3 className="h-3.5 w-3.5" /> Leaderboard
-          </button>
-          <Link to={`/lecture/rounds/${row.id}/criteria-templates`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] transition-colors hover:bg-[#ffe0b2]">
-            <ClipboardList className="h-3.5 w-3.5" /> Criteria
-          </Link>
           <Link to={`/lecture/rounds/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2.5 py-1.5 text-[13px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]">
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
+          <Link to={`/lecture/rounds/${row.id}/criteria-templates`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] transition-colors hover:bg-[#ffe0b2]">
+            <ClipboardList className="h-3.5 w-3.5" /> Criteria
+          </Link>
+          <button onClick={() => setLeaderboardTarget(row)} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f3e5f5] px-3 py-1.5 text-[13px] font-semibold text-[#7b1fa2] transition-colors hover:bg-[#e1bee7]">
+            <BarChart3 className="h-3.5 w-3.5" /> Leaderboard
+          </button>
         </div>
       ),
     },
