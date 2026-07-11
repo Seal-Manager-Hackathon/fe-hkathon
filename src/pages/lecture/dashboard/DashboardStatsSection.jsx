@@ -1,13 +1,11 @@
 import {
-  Trophy, Users, Play, Flag,
-  CheckCircle, XCircle, Clock,
+  Trophy, Users, CheckCircle, XCircle, Layers, Clock,
 } from 'lucide-react'
 import StatCard from '../../../components/StatCard'
 import SectionTitle from '../../../components/SectionTitle'
 
 const iconMap = {
-  Trophy, Users, Play, Flag,
-  CheckCircle, XCircle, Clock,
+  Trophy, Users, CheckCircle, XCircle, Layers, Clock,
 }
 
 /**
@@ -15,7 +13,7 @@ const iconMap = {
  */
 export default function DashboardStatsSection({ section }) {
   const viewAllMap = {
-    'My Events': '/lecture/hackathons',
+    Hackathons: '/lecture/hackathons',
   }
 
   return (

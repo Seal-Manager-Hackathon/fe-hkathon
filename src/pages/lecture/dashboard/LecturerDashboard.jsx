@@ -1,4 +1,4 @@
-import { Trophy, Users, BarChart3, ChevronRight } from 'lucide-react'
+import { Trophy, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useLecturerDashboardData } from '../../../hooks/useLecturerDashboardData'
 import DashboardStatsSection from './DashboardStatsSection'
@@ -14,12 +14,12 @@ const statusBadge = {
 
 const statSections = [
   {
-    title: 'My Events',
+    title: 'Hackathons',
     items: [
-      { label: 'Total Events', icon: 'Trophy', color: 'bg-[#e3f2fd] text-[#1565c0]' },
-      { label: 'Ongoing', icon: 'Play', color: 'bg-[#e8f5e9] text-[#2e7d32]' },
-      { label: 'Upcoming', icon: 'Clock', color: 'bg-[#e3f2fd] text-[#1565c0]' },
-      { label: 'Completed', icon: 'Flag', color: 'bg-[#e0f2f1] text-[#00695c]' },
+      { label: 'Total Hackathons', icon: 'Trophy', color: 'bg-[#e3f2fd] text-[#1565c0]' },
+      { label: 'Published Hackathons', icon: 'CheckCircle', color: 'bg-[#e8f5e9] text-[#2e7d32]' },
+      { label: 'Draft Hackathons', icon: 'Layers', color: 'bg-[#f5f5f5] text-[#757575]' },
+      { label: 'Closed Hackathons', icon: 'XCircle', color: 'bg-[#e0f2f1] text-[#00695c]' },
     ],
   },
 ]
@@ -30,11 +30,11 @@ export default function LecturerDashboard() {
   const resolvedSections = statSections.map((section) => {
     const merged = { ...section }
     const mapLabels = {
-      'My Events': {
-        'Total Events': counts.totalEvents,
-        'Ongoing': counts.ongoingEvents,
-        'Upcoming': counts.upcomingEvents,
-        'Completed': counts.completedEvents,
+      Hackathons: {
+        'Total Hackathons': counts.totalEvents,
+        'Published Hackathons': counts.publishedEvents,
+        'Draft Hackathons': counts.draftEvents,
+        'Closed Hackathons': counts.closedEvents,
       },
     }
     const map = mapLabels[section.title]
@@ -62,7 +62,7 @@ export default function LecturerDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid grid-cols-1 gap-6">
         {/* Recent Events */}
         <div>
           <SectionTitle>Recent Activity</SectionTitle>
@@ -117,34 +117,6 @@ export default function LecturerDashboard() {
           </div>
         </div>
 
-        {/* Quick Links */}
-        <div className="space-y-6">
-          <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
-            <div className="border-b border-[#f0f0f0] px-5 py-4">
-              <h3 className="text-[15px] font-bold text-[#1f2f3a]">Quick Actions</h3>
-            </div>
-            <div className="divide-y divide-[#f5f5f5]">
-              <Link
-                to="/lecture/hackathons"
-                className="flex items-center gap-3 px-5 py-3.5 text-[14px] font-semibold text-[#064f5d] transition-colors hover:bg-[#fafbfc]"
-              >
-                <Trophy className="h-4 w-4 text-[#1565c0]" /> Browse My Events <ChevronRight className="ml-auto h-4 w-4 text-gray-300" />
-              </Link>
-              <Link
-                to="/lecture/teams"
-                className="flex items-center gap-3 px-5 py-3.5 text-[14px] font-semibold text-[#064f5d] transition-colors hover:bg-[#fafbfc]"
-              >
-                <Users className="h-4 w-4 text-[#2e7d32]" /> View Teams <ChevronRight className="ml-auto h-4 w-4 text-gray-300" />
-              </Link>
-              <Link
-                to="/lecture/leaderboard"
-                className="flex items-center gap-3 px-5 py-3.5 text-[14px] font-semibold text-[#064f5d] transition-colors hover:bg-[#fafbfc]"
-              >
-                <BarChart3 className="h-4 w-4 text-[#7b1fa2]" /> Leaderboard <ChevronRight className="ml-auto h-4 w-4 text-gray-300" />
-              </Link>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )
