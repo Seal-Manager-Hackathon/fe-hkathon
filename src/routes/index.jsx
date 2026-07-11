@@ -106,6 +106,8 @@ const LecturerAwardDetail = lazy(() => import('../pages/lecture/awards/LecturerA
 const LecturerChapterLeaderboardPage = lazy(() => import('../pages/lecture/leaderboard/LecturerChapterLeaderboardPage'))
 const LecturerTrackNotificationsPage = lazy(() => import('../pages/lecture/tracks/LecturerTrackNotificationsPage'))
 
+const ForgotPasswordPage = lazy(() => import('../pages/auth/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('../pages/auth/ResetPasswordPage'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 const UnauthorizedPage = lazy(() => import('../pages/UnauthorizedPage'))
 
@@ -298,6 +300,8 @@ export const routes = [
 
   { path: '/login', element: <Suspense fallback={<RouteFallback full />}><LoginPage /></Suspense> },
   { path: '/register', element: <Suspense fallback={<RouteFallback full />}><RegisterPage /></Suspense> },
+  { path: '/forgot-password', element: <Suspense fallback={<RouteFallback full />}><ForgotPasswordPage /></Suspense> },
+  { path: '/reset-password', element: <Suspense fallback={<RouteFallback full />}><ResetPasswordPage /></Suspense> },
   { path: '/verify-email', element: <Suspense fallback={<RouteFallback full />}><VerifyEmailPage /></Suspense> },
   { path: '/unauthorized', element: <Suspense fallback={<RouteFallback full />}><UnauthorizedPage /></Suspense> },
   { path: '*', element: <Suspense fallback={<RouteFallback full />}><NotFoundPage /></Suspense> },

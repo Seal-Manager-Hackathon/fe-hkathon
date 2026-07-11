@@ -31,6 +31,27 @@ export async function verifyEmail({ token }) {
 }
 
 /**
+ * Send forgot-password email.
+ * Always returns success (200) even if email doesn't exist — prevents email enumeration.
+ * @param {{ email: string }} payload
+ * @returns {Promise<null>}
+ */
+export async function forgotPassword({ email }) {
+  const { data } = await api.post('/auth/forgot-password', { email })
+  return data.data
+}
+
+/**
+ * Reset password using token from email.
+ * @param {{ token: string, newPassword: string }} payload
+ * @returns {Promise<null>}
+ */
+export async function resetPassword({ token, newPassword }) {
+  const { data } = await api.post('/auth/reset-password', { token, newPassword })
+  return data.data
+}
+
+/**
  * Get the currently authenticated user from the stored token.
  * @returns {Promise<object>} user object
  */
