@@ -1,4 +1,4 @@
-import { Calendar, Clock, Users, Hash, Flag, UserPlus, FileText } from 'lucide-react'
+import { Calendar, Clock, Users, Hash, Flag, UserPlus, FileText, Star } from 'lucide-react'
 import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
 import { formatDateTime } from '../../../../utils/format'
@@ -11,6 +11,7 @@ export const statusBadge = {
 
 export default function LecturerOverviewTab({ event }) {
   const cards = [
+    { label: 'Role', value: event.eventRoleName || '—', icon: <Star className="h-5 w-5 text-[#7b1fa2]" />, bg: 'bg-purple-50' },
     { label: 'Season', value: event.season || '—', icon: <Flag className="h-5 w-5 text-[#ef6c00]" />, bg: 'bg-orange-50' },
     { label: 'Start Time', value: formatDateTime(event.startTime), icon: <Calendar className="h-5 w-5 text-[#1565c0]" />, bg: 'bg-blue-50' },
     { label: 'End Time', value: formatDateTime(event.endTime), icon: <Calendar className="h-5 w-5 text-[#c62828]" />, bg: 'bg-red-50' },
