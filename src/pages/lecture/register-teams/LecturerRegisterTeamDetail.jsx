@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, Shield, Ban, Layers, ExternalLink } from 'lucide-react'
+import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, Shield, Ban, Layers, Lock, ExternalLink } from 'lucide-react'
 import { getLecturerRegisterTeamDetail } from '../../../api/lecturer'
 import { formatDateTime } from '../../../utils/format'
 import Badge from '../../../components/Badge'
@@ -116,6 +116,7 @@ export default function LecturerRegisterTeamDetail() {
         </div>
         <div className="flex flex-wrap gap-4 border-t border-[#e8ecf0] bg-[#fafbfc] px-6 py-3 sm:px-8">
           <QuickStat icon={Trophy} label="Event" value={data.eventName || '—'} href={data.eventId ? `/lecture/hackathons/${data.eventId}` : null} />
+          <QuickStat icon={Users} label="Team" value={data.teamName || '—'} href={data.teamId ? `/lecture/teams/${data.teamId}` : null} />
           <QuickStat icon={FileText} label="Track" value={data.trackTitle || '—'} />
           <QuickStat icon={FileText} label="Topic" value={data.topicTitle || '—'} />
           <QuickStat icon={Layers} label="Round" value={data.roundName || '—'} href={data.roundId ? `/lecture/rounds/${data.roundId}` : null} />
@@ -163,6 +164,40 @@ export default function LecturerRegisterTeamDetail() {
         </div>
 
         <div className="space-y-5">
+          <CardPanel title="Event & Track">
+            <div className="divide-y divide-[#f5f5f5]">
+              <InfoRow label="Event" icon={Trophy}>
+                {data.eventId ? <Link to={`/lecture/hackathons/${data.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.eventName}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.eventName || '—'}</span>}
+              </InfoRow>
+              <InfoRow label="Track" icon={FileText}>
+                <span className="text-[14px] text-[#1f2f3a]">{data.trackTitle || '—'}</span>
+              </InfoRow>
+              <InfoRow label="Topic" icon={FileText}>
+                <span className="text-[14px] text-[#1f2f3a]">{data.topicTitle || '—'}</span>
+              </InfoRow>
+              <InfoRow label="Round" icon={Layers}>
+                {data.roundId ? <Link to={`/lecture/rounds/${data.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.roundName || '—'}</Link> : <span className="text-[14px] text-gray-400">—</span>}
+              </InfoRow>
+            </div>
+          </CardPanel>
+
+          <CardPanel title="Team">
+            <div className="divide-y divide-[#f5f5f5]">
+              <InfoRow label="Team" icon={Users}>
+                {data.teamId ? <Link to={`/lecture/teams/${data.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.teamName}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.teamName || '—'}</span>}
+              </InfoRow>
+              <InfoRow label="Locked" icon={Lock}>
+                {data.teamCanEdit ? <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" /> : <Badge label="Yes" className="bg-[#ffcdd2] text-[#e65100]" />}
+              </InfoRow>
+              <InfoRow label="Status" icon={Shield}>
+                {data.teamIsDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
+              </InfoRow>
+              <InfoRow label="Created" icon={Calendar}>
+                <span className="text-[14px] text-[#1f2f3a]">{data.teamCreatedAt ? formatDateTime(data.teamCreatedAt) : '—'}</span>
+              </InfoRow>
+            </div>
+          </CardPanel>
+
           <CardPanel title="Timestamps">
             <div className="divide-y divide-[#f5f5f5]">
               <InfoRow label="Registered" icon={Calendar}>

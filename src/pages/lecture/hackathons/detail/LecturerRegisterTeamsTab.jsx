@@ -109,7 +109,9 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
 
   const columns = [
     { key: 'teamName', header: 'Team', headerIcon: Users, render: (row) => (
-      <Link to={`/lecture/register-teams/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName || '—'}</Link>
+      row.teamId
+        ? <Link to={`/lecture/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName || '—'}</Link>
+        : <Link to={`/lecture/register-teams/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.teamName || '—'}</Link>
     )},
     { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => <span className="text-[13px] font-semibold text-[#1f2f3a]">{row.trackName || '—'}</span> },
     { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => <span className="text-[13px] font-semibold text-[#1f2f3a]">{row.topicTitle || '—'}</span> },

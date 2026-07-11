@@ -153,6 +153,26 @@ export async function getLecturerCriteriaItems(templateId, params = {}) {
   return data.data
 }
 
+// ============================ TEAMS ============================
+
+/**
+ * Get team detail by ID (lecturer view).
+ * @param {string} teamId
+ * @returns {Promise<{
+ *   id: string,
+ *   name: string,
+ *   canEdit: boolean,
+ *   isDisable: boolean,
+ *   createdAt: string,
+ *   updatedAt: string,
+ *   members: Array,
+ * }>}
+ */
+export async function getLecturerTeamDetail(teamId) {
+  const { data } = await api.get(`/lecturer/teams/${teamId}`)
+  return data.data
+}
+
 // ============================ ROUNDS ============================
 
 /**
