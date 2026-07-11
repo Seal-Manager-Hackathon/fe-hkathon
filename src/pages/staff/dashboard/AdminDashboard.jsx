@@ -4,9 +4,9 @@ import DashboardStatsSection from './DashboardStatsSection'
 import RecentActivityPanel from './RecentActivityPanel'
 
 const statusBadge = {
-  Ongoing: 'bg-[#e8f5e9] text-[#2e7d32]',
-  Upcoming: 'bg-[#e3f2fd] text-[#1565c0]',
-  Completed: 'bg-[#e0f2f1] text-[#00695c]',
+  Published: 'bg-[#e8f5e9] text-[#2e7d32]',
+  Draft: 'bg-[#f5f5f5] text-[#757575]',
+  Closed: 'bg-[#e0f2f1] text-[#00695c]',
 }
 
 const statSections = [
@@ -14,9 +14,9 @@ const statSections = [
     title: 'Hackathons',
     items: [
       { label: 'Total Hackathons', icon: 'Trophy', color: 'bg-[#e3f2fd] text-[#1565c0]' },
-      { label: 'Ongoing', icon: 'Play', color: 'bg-[#e8f5e9] text-[#2e7d32]' },
-      { label: 'Upcoming', icon: 'Clock', color: 'bg-[#e3f2fd] text-[#1565c0]' },
-      { label: 'Completed', icon: 'Flag', color: 'bg-[#e0f2f1] text-[#00695c]' },
+      { label: 'Published Hackathons', icon: 'CheckCircle', color: 'bg-[#e8f5e9] text-[#2e7d32]' },
+      { label: 'Draft Hackathons', icon: 'Layers', color: 'bg-[#f5f5f5] text-[#757575]' },
+      { label: 'Closed Hackathons', icon: 'XCircle', color: 'bg-[#e0f2f1] text-[#00695c]' },
     ],
   },
   {
@@ -53,9 +53,9 @@ export default function AdminDashboard() {
     const mapLabels = {
       Hackathons: {
         'Total Hackathons': counts.totalEvents,
-        'Ongoing': counts.publishedEvents,
-        'Upcoming': counts.draftEvents,
-        'Completed': counts.closedEvents,
+        'Published Hackathons': counts.publishedEvents,
+        'Draft Hackathons': counts.draftEvents,
+        'Closed Hackathons': counts.closedEvents,
       },
       Users: {
         'Total Users': counts.totalUsers,
@@ -85,7 +85,7 @@ export default function AdminDashboard() {
       <div className="mb-8">
         <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Dashboard</h1>
         <p className="mt-1 text-[15px] text-gray-500">
-          Welcome back, Staff. Here&apos;s your overview.
+          Welcome back, Staff. Here&apos;s what&apos;s happening.
         </p>
       </div>
 
