@@ -372,6 +372,23 @@ export async function getLecturerEventLeaderboard(eventId, params = {}) {
   return data.data
 }
 
+// ============================ ASSIGN ============================
+
+/**
+ * Get users assigned to an event (lecturer view).
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @param {string} [params.Keyword]
+ * @param {string} [params.EventRole]
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ items: Array, totalCount: number }>}
+ */
+export async function getLecturerEventAssign(eventId, params = {}) {
+  const { data } = await api.get(`/lecturer/events/${eventId}/assign`, { params })
+  return data.data
+}
+
 /**
  * Get round leaderboard (lecturer view).
  * @param {string} roundId
