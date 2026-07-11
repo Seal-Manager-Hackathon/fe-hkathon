@@ -75,7 +75,7 @@ export default function NotificationDropdown({
 
       <Link
         to={viewAllTo}
-        className="inline-flex cursor-pointer items-center justify-center gap-1.5 border-t border-[#f0f0f0] px-5 py-3 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]/50"
+        className="flex w-full cursor-pointer items-center justify-center gap-1.5 border-t border-[#f0f0f0] px-5 py-3 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]/50"
       >
         View all notifications <ArrowRight className="h-3 w-3" />
       </Link>
