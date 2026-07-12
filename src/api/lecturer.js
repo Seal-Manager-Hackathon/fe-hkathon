@@ -402,6 +402,18 @@ export async function getLecturerRoundLeaderboard(roundId, params = {}) {
   return data.data
 }
 
+/**
+ * Create a mentor notification for a track (mentor/lecturer).
+ * POST /api/v1/mentor/tracks/{trackId}/mentor-notifications
+ * @param {string} trackId
+ * @param {{ title: string, description: string }} payload
+ * @returns {Promise<{ notificationId: string, title: string, description: string, assignTrackId: string, createdAt: string }>}
+ */
+export async function createLecturerMentorNotification(trackId, payload) {
+  const { data } = await api.post(`/mentor/tracks/${trackId}/mentor-notifications`, payload)
+  return data.data
+}
+
 // ============================ MENTOR NOTIFICATIONS ============================
 
 /**

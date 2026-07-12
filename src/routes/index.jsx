@@ -105,6 +105,7 @@ const LecturerTopicDetail = lazy(() => import('../pages/lecture/tracks/LecturerT
 const LecturerAwardDetail = lazy(() => import('../pages/lecture/awards/LecturerAwardDetail'))
 const LecturerChapterLeaderboardPage = lazy(() => import('../pages/lecture/leaderboard/LecturerChapterLeaderboardPage'))
 const LecturerTrackNotificationsPage = lazy(() => import('../pages/lecture/tracks/LecturerTrackNotificationsPage'))
+const LecturerTrackNotificationCreate = lazy(() => import('../pages/lecture/tracks/LecturerTrackNotificationCreate'))
 
 const ForgotPasswordPage = lazy(() => import('../pages/auth/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('../pages/auth/ResetPasswordPage'))
@@ -287,6 +288,7 @@ export const routes = [
           { path: 'topics', element: <Suspense fallback={<RouteFallback />}><LecturerTopicsList /></Suspense> },
           { path: 'topics/:topicId', element: <Suspense fallback={<RouteFallback />}><LecturerTopicDetail /></Suspense> },
           { path: 'notifications', element: <Suspense fallback={<RouteFallback />}><LecturerTrackNotificationsPage /></Suspense> },
+          { path: 'notifications/create', element: <Suspense fallback={<RouteFallback />}><LecturerTrackNotificationCreate /></Suspense> },
         ]
       },
       {

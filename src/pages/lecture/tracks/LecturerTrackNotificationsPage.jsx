@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Bell, Calendar, Eye, X } from 'lucide-react'
+import { ArrowLeft, Bell, Calendar, Eye, X, Plus } from 'lucide-react'
 import BaseTable from '../../../components/BaseTable'
 import RichTextViewer from '../../../components/RichTextViewer'
 import { getLecturerMentorNotifications, getLecturerMentorNotificationDetail } from '../../../api/lecturer'
@@ -134,9 +134,17 @@ export default function LecturerTrackNotificationsPage() {
         </Link>
       </div>
 
-      <div className="mb-6">
-        <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Mentor Notifications</h1>
-        <p className="mt-1 text-[14px] text-gray-500">Notifications sent for this track.</p>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-[22px] font-bold text-[#1f2f3a] sm:text-[28px]">Mentor Notifications</h1>
+          <p className="mt-1 text-[14px] text-gray-500">Notifications sent for this track.</p>
+        </div>
+        <Link
+          to={`/lecture/tracks/${trackId}/notifications/create`}
+          className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg bg-[#064f5d] px-3 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-4 sm:py-2.5 sm:text-[14px]"
+        >
+          <Plus className="h-4 w-4" /> Create Notification
+        </Link>
       </div>
 
       {error && (
