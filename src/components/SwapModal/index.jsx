@@ -100,6 +100,7 @@ export default function SwapModal({
       onClose(true)
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to swap.')
+    } finally {
       setSwappingId(null)
     }
   }
