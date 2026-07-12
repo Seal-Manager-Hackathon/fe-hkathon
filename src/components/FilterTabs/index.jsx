@@ -1,16 +1,16 @@
 import { cn } from '../../utils/cn';
 
-const FILTERS = [
+const DEFAULT_FILTERS = [
   { key: 'all', label: 'All' },
   { key: 'published', label: 'Published' },
   { key: 'ongoing', label: 'Ongoing' },
   { key: 'closed', label: 'Closed' },
 ];
 
-export default function FilterTabs({ activeFilter, onChange }) {
+export default function FilterTabs({ activeFilter, onChange, filters = DEFAULT_FILTERS }) {
   return (
     <div className="flex flex-wrap gap-2">
-      {FILTERS.map((f) => (
+      {filters.map((f) => (
         <button
           key={f.key}
           type="button"

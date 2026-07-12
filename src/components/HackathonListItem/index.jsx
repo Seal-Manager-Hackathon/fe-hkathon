@@ -72,20 +72,26 @@ export default function HackathonListItem({ hackathon }) {
             {statusCfg.label}
           </span>
 
-          <span className="inline-flex items-center gap-1 text-[12px] text-[#5a6a73]">
-            <ModeIcon size={13} />
-            {modeCfg.label}
-          </span>
+          {hackathon.mode && (
+            <span className="inline-flex items-center gap-1 text-[12px] text-[#5a6a73]">
+              <ModeIcon size={13} />
+              {modeCfg.label}
+            </span>
+          )}
 
-          <span className="inline-flex items-center gap-1 text-[12px] text-[#5a6a73]">
-            <Layers size={13} />
-            {hackathon.rounds} {hackathon.rounds === 1 ? 'round' : 'rounds'}
-          </span>
+          {hackathon.rounds != null && (
+            <span className="inline-flex items-center gap-1 text-[12px] text-[#5a6a73]">
+              <Layers size={13} />
+              {hackathon.rounds} {hackathon.rounds === 1 ? 'round' : 'rounds'}
+            </span>
+          )}
 
-          <span className="inline-flex items-center gap-1 text-[12px] text-[#5a6a73]">
-            <CalendarClock size={13} />
-            {hackathon.remainingText}
-          </span>
+          {hackathon.remainingText && (
+            <span className="inline-flex items-center gap-1 text-[12px] text-[#5a6a73]">
+              <CalendarClock size={13} />
+              {hackathon.remainingText}
+            </span>
+          )}
         </div>
       </div>
 
