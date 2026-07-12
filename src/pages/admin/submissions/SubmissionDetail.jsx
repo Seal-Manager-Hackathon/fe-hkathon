@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, FileText, Calendar, Clock, Users, User, CircleCheck, Send, ExternalLink, FolderKanban, Layers, Star, Eye, Info, Lock, ChevronRight, Trophy, X } from 'lucide-react'
-import { getSubmissionDetail, getTeamDetail, getSubmissionGraderScores, getRegisterTeamDetail, getScoreDetail, getScoreItems, getScoreItemDetail } from '../../../api/admin'
+import { getSubmissionDetail, getTeamDetail, getSubmissionGraderScores, getRegisterTeamDetail, getScoreDetail, getScoreItems, getScoreItemDetail, getCriteriaTemplates, getCriteriaItems } from '../../../api/admin'
 import { formatDateTime } from '../../../utils/format'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
@@ -49,6 +49,7 @@ function TabBtn({ active, icon: Icon, label, color, onClick }) {
     blue:   { bg: 'from-blue-50 to-white', text: 'text-blue-700', bar: 'bg-blue-500', icon: 'text-blue-500' },
     amber:  { bg: 'from-amber-50 to-white', text: 'text-amber-700', bar: 'bg-amber-500', icon: 'text-amber-500' },
     green:  { bg: 'from-emerald-50 to-white', text: 'text-emerald-700', bar: 'bg-emerald-500', icon: 'text-emerald-500' },
+    purple: { bg: 'from-purple-50 to-white', text: 'text-purple-700', bar: 'bg-purple-500', icon: 'text-purple-500' },
   }[color] || { bg: 'from-blue-50 to-white', text: 'text-blue-700', bar: 'bg-blue-500', icon: 'text-blue-500' }
   return (
     <button
@@ -232,6 +233,36 @@ function SidebarCard({ icon: Icon, title, viewTo, children }) {
 function SubmissionTabs({ data, graderScores, graderTotal, graderPage, graderLoading, onGraderPageChange, eventId }) {
   const [tab, setTab] = useState('content')
   const [selectedScoreId, setSelectedScoreId] = useState(null)
+  const [criteriaTemplates, setCriteriaTemplates] = useState([])
+  const [criteriaTemplateItems, setCriteriaTemplateItems] = useState({})
+  const [criteriaLoading, setCriteriaLoading] = useState(false)
+
+  useEffect(() => {
+    if (tab !== 'criteria' || !data?.roundId) return
+    let cancelled = false
+    async function fetch() {
+      setCriteriaLoading(true)
+      try {
+        const result = await getCriteriaTemplates(data.roundId, { PageSize: 100 })
+        const templates = result.templates || []
+        if (cancelled) return
+        setCriteriaTemplates(templates)
+        // Fetch items for each template
+        const itemsMap = {}
+        await Promise.all(templates.map(async (tpl) => {
+          try {
+            const itemsResult = await getCriteriaItems(tpl.id, { PageSize: 100 })
+            itemsMap[tpl.id] = itemsResult.items || []
+          } catch {}
+        }))
+        if (!cancelled) setCriteriaTemplateItems(itemsMap)
+      } catch {} finally {
+        if (!cancelled) setCriteriaLoading(false)
+      }
+    }
+    fetch()
+    return () => { cancelled = true }
+  }, [tab, data?.roundId])
 
   const graderColumns = [
     { key: 'grader', header: 'Grader', headerIcon: User,
@@ -289,6 +320,7 @@ function SubmissionTabs({ data, graderScores, graderTotal, graderPage, graderLoa
         <TabBtn active={tab === 'content'} icon={Eye} label="Content" color="blue" onClick={() => setTab('content')} />
         <TabBtn active={tab === 'info'} icon={Info} label="Information" color="amber" onClick={() => setTab('info')} />
         <TabBtn active={tab === 'score'} icon={Star} label="Judge Scores" color="green" onClick={() => setTab('score')} />
+        <TabBtn active={tab === 'criteria'} icon={FileText} label="Criteria Template" color="purple" onClick={() => setTab('criteria')} />
       </div>
 
       {tab === 'content' && (
@@ -340,6 +372,69 @@ function SubmissionTabs({ data, graderScores, graderTotal, graderPage, graderLoa
           <BaseTable borderless columns={graderColumns} data={graderScores} page={graderPage} pageSize={GRADER_PAGE_SIZE}
             total={graderTotal} onPageChange={onGraderPageChange} loading={graderLoading}
             serverSide emptyText="No scores." keyExtractor={(row) => row.scoreId} minWidth="600px" />
+        )
+      )}
+
+      {tab === 'criteria' && (
+        criteriaLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="space-y-3 w-full max-w-md px-5">
+              <div className="h-5 w-3/4 animate-pulse rounded bg-gray-200" />
+              <div className="h-16 animate-pulse rounded bg-gray-100" />
+              <div className="h-16 animate-pulse rounded bg-gray-100" />
+            </div>
+          </div>
+        ) : !data?.roundId ? (
+          <div className="flex flex-col items-center justify-center py-12">
+            <FileText className="mb-3 h-10 w-10 text-gray-300" />
+            <p className="text-[14px] text-gray-400">No round associated with this submission.</p>
+          </div>
+        ) : criteriaTemplates.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12">
+            <FileText className="mb-3 h-10 w-10 text-gray-300" />
+            <p className="text-[14px] text-gray-400">No criteria templates for this round.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-[#f0f0f0]">
+            {criteriaTemplates.map((tpl) => {
+              const items = criteriaTemplateItems[tpl.id] || []
+              return (
+                <div key={tpl.id} className="px-5 py-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <Link
+                      to={`/admin/rounds/${data.roundId}/criteria-templates/${tpl.id}`}
+                      className="text-[15px] font-bold text-[#064f5d] hover:underline"
+                    >
+                      {tpl.title || tpl.name}
+                    </Link>
+                    {tpl.isActive && <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
+                  </div>
+                  {items.length > 0 ? (
+                    <div className="rounded-lg border border-[#e8ecf0] overflow-hidden">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="bg-[#fafbfc]">
+                            <th className="px-4 py-2 text-left text-[12px] font-bold uppercase text-slate-500">Criteria</th>
+                            <th className="px-4 py-2 text-left text-[12px] font-bold uppercase text-slate-500 w-32">Max Score</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#f0f0f0]">
+                          {items.map((item) => (
+                            <tr key={item.id} className="hover:bg-[#fafbfc]">
+                              <td className="px-4 py-2.5 text-[14px] font-medium text-[#1f2f3a]">{item.name || item.criteriaName || '—'}</td>
+                              <td className="px-4 py-2.5 text-[14px] font-bold text-[#064f5d]">{item.score != null ? item.score : '—'}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="text-[13px] text-gray-400 italic">No criteria items.</p>
+                  )}
+                </div>
+              )
+            })}
+          </div>
         )
       )}
     </div>
