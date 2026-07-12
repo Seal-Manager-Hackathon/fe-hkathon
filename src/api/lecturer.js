@@ -465,10 +465,12 @@ export async function restoreLecturerMentorNotification(notificationId) {
 
 /**
  * Get round submissions for a judge — paginated, optionally filtered by track.
+ * Each item's lastSubmission.status is Submitted, Graded, or Failed.
  * GET /api/v1/judge/rounds/{roundId}/submissions
  * @param {string} roundId
  * @param {Object} [params]
  * @param {string} [params.trackId] — filter by track
+ * @param {boolean} [params.isGraded] — filter retained by the API
  * @param {number} [params.PageIndex]
  * @param {number} [params.PageSize]
  * @returns {Promise<{ items: Array, totalCount: number, pageIndex: number, pageSize: number }>}
@@ -480,6 +482,7 @@ export async function getJudgeRoundSubmissions(roundId, params = {}) {
 
 /**
  * Get submission detail for a judge.
+ * Response status is Submitted, Graded, or Failed.
  * GET /api/v1/judge/submissions/{submissionId}
  * @param {string} submissionId
  * @returns {Promise<object>}

@@ -10,9 +10,10 @@ import { formatDateTime } from '../../../utils/format'
 
 const PAGE_SIZE = 10
 
-const gradingBadge = {
-  Pending: 'bg-amber-50 text-amber-700 border border-amber-200',
-  Graded: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+const statusBadge = {
+  Submitted: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  Graded: 'bg-blue-50 text-blue-700 border border-blue-200',
+  Failed: 'bg-rose-50 text-rose-700 border border-rose-200',
 }
 
 export default function JudgeRoundSubmissionsPage() {
@@ -105,12 +106,14 @@ export default function JudgeRoundSubmissionsPage() {
       ) : <span className="text-[13px] text-gray-400">—</span>,
     },
     {
-      key: 'gradingStatus',
+      key: 'status',
       header: 'Status',
       headerIcon: CircleCheck,
-      render: (row) => (
-        <Badge label={row.gradingStatus || 'Pending'} className={gradingBadge[row.gradingStatus] || gradingBadge.Pending} />
-      ),
+      render: (row) => {
+        const status = row.lastSubmission?.status
+        if (!status) return <span className="text-[13px] text-gray-400">—</span>
+        return <Badge label={status} className={statusBadge[status] || 'bg-gray-50 text-gray-600'} />
+      },
     },
     {
       key: 'totalScore',

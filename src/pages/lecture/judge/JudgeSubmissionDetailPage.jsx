@@ -12,8 +12,8 @@ import RichTextViewer from '../../../components/RichTextViewer'
 
 const statusBadge = {
   Submitted: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-  Grading: 'bg-amber-50 text-amber-700 border border-amber-200',
   Graded: 'bg-blue-50 text-blue-700 border border-blue-200',
+  Failed: 'bg-rose-50 text-rose-700 border border-rose-200',
 }
 
 function LoadingSkeleton() {
