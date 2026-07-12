@@ -389,15 +389,15 @@ function SubmissionTabs({ data, graderScores, graderTotal, graderPage, graderLoa
             <FileText className="mb-3 h-10 w-10 text-gray-300" />
             <p className="text-[14px] text-gray-400">No round associated with this submission.</p>
           </div>
-        ) : criteriaTemplates.length === 0 ? (
+        ) : criteriaTemplates.filter(tpl => tpl.isActive).length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12">
             <FileText className="mb-3 h-10 w-10 text-gray-300" />
-            <p className="text-[14px] text-gray-400">No criteria templates for this round.</p>
+            <p className="text-[14px] text-gray-400">No active criteria templates for this round.</p>
           </div>
         ) : (
           <div className="divide-y divide-[#f0f0f0]">
-            {criteriaTemplates.map((tpl) => {
-              const items = criteriaTemplateItems[tpl.id] || []
+            {criteriaTemplates.filter(tpl => tpl.isActive).map((tpl) => {
+              const items = (criteriaTemplateItems[tpl.id] || []).filter(item => !item.isDisable)
               return (
                 <div key={tpl.id} className="px-5 py-4">
                   <div className="mb-3 flex items-center justify-between">
@@ -407,7 +407,7 @@ function SubmissionTabs({ data, graderScores, graderTotal, graderPage, graderLoa
                     >
                       {tpl.title || tpl.name}
                     </Link>
-                    {tpl.isActive && <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
+                    <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
                   </div>
                   {items.length > 0 ? (
                     <div className="rounded-lg border border-[#e8ecf0] overflow-hidden">
