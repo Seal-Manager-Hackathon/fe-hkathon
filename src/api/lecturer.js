@@ -438,3 +438,25 @@ export async function getLecturerMentorNotificationDetail(notificationId) {
   const { data } = await api.get(`/mentor/mentor-notifications/${notificationId}`)
   return data.data
 }
+
+/**
+ * Soft-delete a mentor notification.
+ * POST /api/v1/mentor/mentor-notifications/{mentorNotificationId}/delete
+ * @param {string} notificationId
+ * @returns {Promise<null>}
+ */
+export async function deleteLecturerMentorNotification(notificationId) {
+  const { data } = await api.post(`/mentor/mentor-notifications/${notificationId}/delete`)
+  return data.data
+}
+
+/**
+ * Restore a soft-deleted mentor notification.
+ * POST /api/v1/mentor/mentor-notifications/{mentorNotificationId}/restore
+ * @param {string} notificationId
+ * @returns {Promise<null>}
+ */
+export async function restoreLecturerMentorNotification(notificationId) {
+  const { data } = await api.post(`/mentor/mentor-notifications/${notificationId}/restore`)
+  return data.data
+}

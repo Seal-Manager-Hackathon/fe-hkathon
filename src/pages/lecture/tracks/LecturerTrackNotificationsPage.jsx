@@ -1,10 +1,17 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Bell, Calendar, Eye, X, Plus } from 'lucide-react'
+import { ArrowLeft, Bell, Calendar, Eye, X, Plus, Trash2, RotateCcw, CircleCheck } from 'lucide-react'
 import BaseTable from '../../../components/BaseTable'
 import RichTextViewer from '../../../components/RichTextViewer'
-import { getLecturerMentorNotifications, getLecturerMentorNotificationDetail } from '../../../api/lecturer'
+import Badge from '../../../components/Badge'
+import {
+  getLecturerMentorNotifications,
+  getLecturerMentorNotificationDetail,
+  deleteLecturerMentorNotification,
+  restoreLecturerMentorNotification,
+} from '../../../api/lecturer'
 import { formatDateTime, formatDate } from '../../../utils/format'
+import { toast, confirm } from '../../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -76,6 +83,11 @@ function DetailModal({ open, notificationId, onClose }) {
   )
 }
 
+const deleteBtnClass =
+  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2]'
+const restoreBtnClass =
+  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9]'
+
 export default function LecturerTrackNotificationsPage() {
   const { trackId } = useParams()
   const [items, setItems] = useState([])
@@ -100,12 +112,51 @@ export default function LecturerTrackNotificationsPage() {
 
   useEffect(() => { fetch(1) }, [fetch])
 
+  async function handleDelete(row) {
+    const ok = await confirm('Delete Notification', `Are you sure you want to delete "${row.title}"?`)
+    if (!ok) return
+    try {
+      await deleteLecturerMentorNotification(row.id)
+      toast.success('Notification deleted')
+      fetch(pageIndex)
+    } catch (err) {
+      const msg = err?.response?.data?.message
+      if (msg?.toLowerCase().includes('already disabled')) {
+        toast.error('This notification has already been deleted.')
+      } else {
+        toast.error(msg || 'Failed to delete notification.')
+      }
+    }
+  }
+
+  async function handleRestore(row) {
+    const ok = await confirm('Restore Notification', `Are you sure you want to restore "${row.title}"?`)
+    if (!ok) return
+    try {
+      await restoreLecturerMentorNotification(row.id)
+      toast.success('Notification restored')
+      fetch(pageIndex)
+    } catch (err) {
+      const msg = err?.response?.data?.message
+      if (msg?.toLowerCase().includes('already active')) {
+        toast.error('This notification is already active.')
+      } else {
+        toast.error(msg || 'Failed to restore notification.')
+      }
+    }
+  }
+
   const columns = [
     {
       key: 'title',
       header: 'Title',
       headerIcon: Bell,
-      render: (row) => <span className="text-[14px] font-semibold text-[#1f2f3a]">{row.title}</span>,
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <span className="text-[14px] font-semibold text-[#1f2f3a]">{row.title}</span>
+          {row.isDisable && <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />}
+        </div>
+      ),
     },
     {
       key: 'createdAt',
@@ -115,13 +166,25 @@ export default function LecturerTrackNotificationsPage() {
     },
     {
       key: 'actions',
-      header: '',
+      header: 'Actions',
+      headerIcon: CircleCheck,
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => (
-        <button onClick={() => setDetailTarget(row.id)} className={viewBtnClass}>
-          <Eye className="h-3.5 w-3.5" /> View
-        </button>
+        <div className="flex items-center justify-end gap-2">
+          <button onClick={() => setDetailTarget(row.id)} className={viewBtnClass}>
+            <Eye className="h-3.5 w-3.5" /> View
+          </button>
+          {row.isDisable ? (
+            <button onClick={() => handleRestore(row)} className={restoreBtnClass}>
+              <RotateCcw className="h-3.5 w-3.5" /> Restore
+            </button>
+          ) : (
+            <button onClick={() => handleDelete(row)} className={deleteBtnClass}>
+              <Trash2 className="h-3.5 w-3.5" /> Delete
+            </button>
+          )}
+        </div>
       ),
     },
   ]
