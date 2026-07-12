@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, FileText, Calendar, Clock, Users, User, CircleCheck, Send, ExternalLink, FolderKanban, Layers, Star, Eye, Info, Lock, ChevronRight, Trophy } from 'lucide-react'
 import { getJudgeSubmissionDetail, getLecturerCriteriaTemplates, getLecturerCriteriaItems } from '../../../api/lecturer'
+import GradeSubmissionModal from '../../../components/GradeSubmissionModal'
 import { formatDateTime } from '../../../utils/format'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
@@ -79,6 +80,7 @@ export default function JudgeSubmissionDetailPage() {
   const [criteriaTemplates, setCriteriaTemplates] = useState([])
   const [criteriaTemplateItems, setCriteriaTemplateItems] = useState({})
   const [criteriaLoading, setCriteriaLoading] = useState(false)
+  const [gradeModalOpen, setGradeModalOpen] = useState(false)
 
   useEffect(() => {
     if (!submissionId) return
@@ -140,7 +142,7 @@ export default function JudgeSubmissionDetailPage() {
 
       {/* Hero */}
       <div className="mb-6 overflow-hidden rounded-2xl border border-[#e8ecf0] bg-white shadow-sm">
-        <div className="bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-6 py-5 sm:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-6 py-5 sm:px-8">
           <div className="flex items-center gap-4">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/15 shadow-inner">
               <Send className="h-6 w-6 text-white" />
@@ -155,6 +157,13 @@ export default function JudgeSubmissionDetailPage() {
               </p>
             </div>
           </div>
+          <button
+            type="button"
+            onClick={() => setGradeModalOpen(true)}
+            className="mt-3 sm:mt-0 inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 text-[14px] font-semibold text-white backdrop-blur-sm border border-white/20 hover:bg-white/25 active:scale-[0.97]"
+          >
+            <Star className="h-4 w-4" /> Grade
+          </button>
         </div>
       </div>
 
@@ -307,6 +316,17 @@ export default function JudgeSubmissionDetailPage() {
           </SidebarCard>
         </div>
       </div>
+
+      <GradeSubmissionModal
+        open={gradeModalOpen}
+        onClose={() => setGradeModalOpen(false)}
+        submissionId={submissionId}
+        roundId={data?.roundId}
+        onSuccess={() => {
+          // Refresh submission data after successful grade
+          getJudgeSubmissionDetail(submissionId).then(setData).catch(() => {})
+        }}
+      />
     </div>
   )
 }

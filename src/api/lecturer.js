@@ -488,3 +488,15 @@ export async function getJudgeSubmissionDetail(submissionId) {
   const { data } = await api.get(`/judge/submissions/${submissionId}`)
   return data.data
 }
+
+/**
+ * Grade a submission as a judge.
+ * POST /api/v1/judge/submissions/{submissionId}/scores
+ * @param {string} submissionId
+ * @param {{ scores: Array<{ criteriaItemId: string, score: number, comment?: string }> }} payload
+ * @returns {Promise<{ scoreId: string, totalScore: number, scoreItems: Array }>}
+ */
+export async function gradeJudgeSubmission(submissionId, payload) {
+  const { data } = await api.post(`/judge/submissions/${submissionId}/scores`, payload)
+  return data.data
+}

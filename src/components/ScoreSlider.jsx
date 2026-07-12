@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 
+const DEFAULT_MAX = 100
 const MARKS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
 const SCORE_COLORS = {
@@ -14,11 +15,12 @@ function getColors(pct) {
   return SCORE_COLORS.high
 }
 
-export default function ScoreSlider({ value, onChange }) {
+export default function ScoreSlider({ value, onChange, max = DEFAULT_MAX }) {
   const [dragging, setDragging] = useState(false)
   const trackRef = useRef(null)
 
-  const pct = Math.min(100, Math.max(0, value))
+  const clamped = Math.min(max, Math.max(0, value))
+  const pct = max > 0 ? (clamped / max) * 100 : 0
   const colors = useMemo(() => getColors(pct), [pct])
 
   const updateFromClientX = useCallback((clientX) => {
@@ -26,10 +28,10 @@ export default function ScoreSlider({ value, onChange }) {
     const rect = trackRef.current.getBoundingClientRect()
     const x = clientX - rect.left
     const w = rect.width
-    const raw = Math.round((x / w) * 100)
-    const clamped = Math.min(100, Math.max(0, raw))
+    const raw = Math.round((x / w) * max)
+    const clamped = Math.min(max, Math.max(0, raw))
     onChange(clamped)
-  }, [onChange])
+  }, [onChange, max])
 
   const handlePointerDown = useCallback((e) => {
     setDragging(true)
@@ -78,7 +80,7 @@ export default function ScoreSlider({ value, onChange }) {
           </div>
           {/* bubble */}
           <div className={`absolute -top-9 left-1/2 -translate-x-1/2 rounded-lg ${colors.bubble} px-2.5 py-1 text-[12px] font-bold text-white shadow-lg`}>
-            {pct}
+            {clamped}
             <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 h-2 w-2 rotate-45 ${colors.bubble}`} />
           </div>
         </div>
@@ -86,7 +88,7 @@ export default function ScoreSlider({ value, onChange }) {
       {/* scale */}
       <div className="flex justify-between px-0.5">
         {MARKS.filter((_, i) => i % 2 === 0).map((m) => (
-          <span key={m} className="text-[10px] font-medium text-slate-400">{m}</span>
+          <span key={m} className="text-[10px] font-medium text-slate-400">{Math.round((m / 100) * max)}</span>
         ))}
       </div>
     </div>
