@@ -477,3 +477,14 @@ export async function getJudgeRoundSubmissions(roundId, params = {}) {
   const { data } = await api.get(`/judge/rounds/${roundId}/submissions`, { params })
   return data.data
 }
+
+/**
+ * Get submission detail for a judge.
+ * GET /api/v1/judge/submissions/{submissionId}
+ * @param {string} submissionId
+ * @returns {Promise<object>}
+ */
+export async function getJudgeSubmissionDetail(submissionId) {
+  const { data } = await api.get(`/judge/submissions/${submissionId}`)
+  return data.data
+}

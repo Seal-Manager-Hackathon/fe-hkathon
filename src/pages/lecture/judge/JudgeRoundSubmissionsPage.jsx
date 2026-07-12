@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
-import { ArrowLeft, Send, Users, User, FolderKanban, FileText, Star, CircleCheck, Calendar, Eye, ExternalLink, Layers } from 'lucide-react'
+import { ArrowLeft, Send, Users, User, FolderKanban, FileText, Star, CircleCheck, Calendar, Eye } from 'lucide-react'
 import BaseTable from '../../../components/BaseTable'
 import Badge from '../../../components/Badge'
 import Avatar from '../../../components/Avatar'
@@ -129,23 +129,7 @@ export default function JudgeRoundSubmissionsPage() {
       render: (row) => {
         const ls = row.lastSubmission
         if (!ls) return <span className="text-[13px] text-gray-400">—</span>
-        return (
-          <div>
-            {ls.url ? (
-              <a
-                href={ls.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-[13px] font-medium text-[#064f5d] hover:underline"
-              >
-                <ExternalLink className="h-3 w-3" /> Open
-              </a>
-            ) : (
-              <span className="text-[13px] text-[#1f2f3a]">—</span>
-            )}
-            <p className="text-[11px] text-gray-400">{formatDateTime(ls.submittedAt)}</p>
-          </div>
-        )
+        return <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(ls.submittedAt)}</p>
       },
     },
     {
