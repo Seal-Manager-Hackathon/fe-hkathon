@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, FileText, Calendar, Clock, Users, User, CircleCheck, Send, ExternalLink, FolderKanban, Layers, Star, Eye, Info, Lock, ChevronRight, Trophy } from 'lucide-react'
-import { getJudgeSubmissionDetail } from '../../../api/lecturer'
+import { getJudgeSubmissionDetail, getLecturerCriteriaTemplates, getLecturerCriteriaItems } from '../../../api/lecturer'
 import { formatDateTime } from '../../../utils/format'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
@@ -76,6 +76,9 @@ export default function JudgeSubmissionDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [tab, setTab] = useState('content')
+  const [criteriaTemplates, setCriteriaTemplates] = useState([])
+  const [criteriaTemplateItems, setCriteriaTemplateItems] = useState({})
+  const [criteriaLoading, setCriteriaLoading] = useState(false)
 
   useEffect(() => {
     if (!submissionId) return
@@ -92,6 +95,33 @@ export default function JudgeSubmissionDetailPage() {
     fetch()
     return () => { cancelled = true }
   }, [submissionId])
+
+  // Fetch criteria when switching to that tab
+  useEffect(() => {
+    if (tab !== 'criteria' || !data?.roundId) return
+    let cancelled = false
+    async function fetch() {
+      setCriteriaLoading(true)
+      try {
+        const result = await getLecturerCriteriaTemplates(data.roundId, { PageSize: 100 })
+        const templates = result.templates || []
+        if (cancelled) return
+        setCriteriaTemplates(templates)
+        const itemsMap = {}
+        await Promise.all(templates.map(async (tpl) => {
+          try {
+            const itemsResult = await getLecturerCriteriaItems(tpl.id, { PageSize: 100 })
+            itemsMap[tpl.id] = itemsResult.items || []
+          } catch {}
+        }))
+        if (!cancelled) setCriteriaTemplateItems(itemsMap)
+      } catch {} finally {
+        if (!cancelled) setCriteriaLoading(false)
+      }
+    }
+    fetch()
+    return () => { cancelled = true }
+  }, [tab, data?.roundId])
 
   if (loading) return <LoadingSkeleton />
   if (error) {
@@ -136,6 +166,7 @@ export default function JudgeSubmissionDetailPage() {
             <div className="flex bg-gradient-to-r from-slate-50 to-white">
               <TabBtn active={tab === 'content'} icon={Eye} label="Content" color="blue" onClick={() => setTab('content')} />
               <TabBtn active={tab === 'info'} icon={Info} label="Information" color="amber" onClick={() => setTab('info')} />
+              <TabBtn active={tab === 'criteria'} icon={FileText} label="Criteria Template" color="purple" onClick={() => setTab('criteria')} />
             </div>
 
             {tab === 'content' && (
@@ -178,6 +209,64 @@ export default function JudgeSubmissionDetailPage() {
                   <span className="text-[14px] text-[#1f2f3a]">{formatDateTime(data.updatedAt)}</span>
                 </InfoRow>
               </div>
+            )}
+
+            {tab === 'criteria' && (
+              criteriaLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="space-y-3 w-full max-w-md px-5">
+                    <div className="h-5 w-3/4 animate-pulse rounded bg-gray-200" />
+                    <div className="h-16 animate-pulse rounded bg-gray-100" />
+                    <div className="h-16 animate-pulse rounded bg-gray-100" />
+                  </div>
+                </div>
+              ) : !data?.roundId ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <FileText className="mb-3 h-10 w-10 text-gray-300" />
+                  <p className="text-[14px] text-gray-400">No round associated with this submission.</p>
+                </div>
+              ) : criteriaTemplates.filter(tpl => tpl.isActive).length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <FileText className="mb-3 h-10 w-10 text-gray-300" />
+                  <p className="text-[14px] text-gray-400">No active criteria templates for this round.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-[#f0f0f0]">
+                  {criteriaTemplates.filter(tpl => tpl.isActive).map((tpl) => {
+                    const items = (criteriaTemplateItems[tpl.id] || []).filter(item => !item.isDisable)
+                    return (
+                      <div key={tpl.id} className="px-5 py-4">
+                        <div className="mb-3 flex items-center justify-between">
+                          <span className="text-[15px] font-bold text-[#064f5d]">{tpl.title || tpl.name}</span>
+                          <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />
+                        </div>
+                        {items.length > 0 ? (
+                          <div className="rounded-lg border border-[#e8ecf0] overflow-hidden">
+                            <table className="w-full">
+                              <thead>
+                                <tr className="bg-[#fafbfc]">
+                                  <th className="px-4 py-2 text-left text-[12px] font-bold uppercase text-slate-500">Criteria</th>
+                                  <th className="px-4 py-2 text-left text-[12px] font-bold uppercase text-slate-500 w-32">Max Score</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-[#f0f0f0]">
+                                {items.map((item) => (
+                                  <tr key={item.id} className="hover:bg-[#fafbfc]">
+                                    <td className="px-4 py-2.5 text-[14px] font-medium text-[#1f2f3a]">{item.name || item.criteriaName || '—'}</td>
+                                    <td className="px-4 py-2.5 text-[14px] font-bold text-[#064f5d]">{item.score != null ? item.score : '—'}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <p className="text-[13px] text-gray-400 italic">No criteria items.</p>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )
             )}
           </div>
         </div>
