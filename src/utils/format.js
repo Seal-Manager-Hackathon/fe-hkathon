@@ -23,10 +23,7 @@ export function formatDate(iso, fallback = '—') {
  */
 export function formatDateTime(iso, fallback = '—') {
   if (!iso) return fallback
-  try {
-    const d = new Date(iso)
-    return d.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
-  } catch {
-    return iso
-  }
+
+  const d = new Date(iso)
+  return d.toUTCString();
 }
