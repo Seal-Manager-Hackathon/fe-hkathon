@@ -88,7 +88,7 @@ export default function LecturerHackathonDetail() {
       </div>
 
       {tab === 'Overview' && <LecturerOverviewTab event={event} />}
-      {tab === 'Rounds' && <LecturerRoundsTab eventId={id} />}
+      {tab === 'Rounds' && <LecturerRoundsTab eventId={id} eventRoleName={event.eventRoleName} />}
       {tab === 'Tracks' && <LecturerTracksTab eventId={id} />}
       {tab === 'Awards' && <LecturerAwardsTab eventId={id} />}
       {tab === 'Assignment' && <LecturerAssignTab eventId={id} />}

@@ -460,3 +460,20 @@ export async function restoreLecturerMentorNotification(notificationId) {
   const { data } = await api.post(`/mentor/mentor-notifications/${notificationId}/restore`)
   return data.data
 }
+
+// ============================ JUDGE SUBMISSIONS ============================
+
+/**
+ * Get round submissions for a judge — paginated, optionally filtered by track.
+ * GET /api/v1/judge/rounds/{roundId}/submissions
+ * @param {string} roundId
+ * @param {Object} [params]
+ * @param {string} [params.trackId] — filter by track
+ * @param {number} [params.PageIndex]
+ * @param {number} [params.PageSize]
+ * @returns {Promise<{ items: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getJudgeRoundSubmissions(roundId, params = {}) {
+  const { data } = await api.get(`/judge/rounds/${roundId}/submissions`, { params })
+  return data.data
+}

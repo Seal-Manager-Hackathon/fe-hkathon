@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Hash, Calendar, Play, Flag, Users, CircleCheck, Eye, Layers, ClipboardList, BarChart3 } from 'lucide-react'
+import { Search, Hash, Calendar, Play, Flag, Users, CircleCheck, Eye, Layers, ClipboardList, BarChart3, Send } from 'lucide-react'
 import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
 import BaseTable from '../../../../components/BaseTable'
@@ -8,7 +8,8 @@ import RoundLeaderboardModal from '../../../../components/RoundLeaderboardModal'
 import { getLecturerRounds, getLecturerRoundLeaderboard } from '../../../../api/lecturer'
 import { formatDateTime } from '../../../../utils/format'
 
-export default function LecturerRoundsSection({ eventId }) {
+export default function LecturerRoundsSection({ eventId, eventRoleName }) {
+  const isJudge = eventRoleName === 'Judge'
   const [rounds, setRounds] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -74,6 +75,11 @@ export default function LecturerRoundsSection({ eventId }) {
           <button onClick={() => setLeaderboardTarget(row)} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f3e5f5] px-3 py-1.5 text-[13px] font-semibold text-[#7b1fa2] transition-colors hover:bg-[#e1bee7]">
             <BarChart3 className="h-3.5 w-3.5" /> Leaderboard
           </button>
+          {isJudge && (
+            <Link to={`/lecture/rounds/${row.id}/submissions?eventId=${eventId}`} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-1.5 text-[13px] font-semibold text-[#1565c0] transition-colors hover:bg-[#bbdefb]">
+              <Send className="h-3.5 w-3.5" /> Submissions
+            </Link>
+          )}
         </div>
       ),
     },

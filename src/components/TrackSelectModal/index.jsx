@@ -1,12 +1,10 @@
 import { useMemo, useCallback } from 'react'
-import { Search, Ban, Calendar, Play, Flag, Users, CircleCheck } from 'lucide-react'
+import { Search, Users, CircleCheck, Ban } from 'lucide-react'
 import Badge from '../Badge'
-import { formatDateTime } from '../../utils/format'
-import { getTracks } from '../../api/admin'
 import TableSelectModal from '../TableSelectModal'
 
 const FILTER_DEFS = [
-  { type: 'search', key: 'keyword', label: 'Track Title', icon: Search, placeholder: 'Search track title...' },
+  { type: 'search', key: 'keyword', label: 'Track Name', icon: Search, placeholder: 'Search track name...' },
   { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban,
     options: [
       { value: '', label: 'All' },
@@ -20,29 +18,26 @@ const DEFAULT_FILTER_VALUES = { keyword: '', isDisable: '' }
 
 function buildQuery(filters, page) {
   const q = { PageIndex: page, PageSize: 5 }
-  if (filters.keyword) q.Keyword = filters.keyword
+  if (filters.keyword)        q.Keyword = filters.keyword
   if (filters.isDisable !== '') q.IsDisable = filters.isDisable === 'true'
   return q
 }
 
-export default function TrackSelectModal({ open, onClose, eventId, selectedTrackId, onSelect }) {
+const trackStatusBadge = {
+  false: 'bg-[#e8f5e9] text-[#2e7d32]',
+  true: 'bg-[#fce4ec] text-[#c62828]',
+}
+
+export default function TrackSelectModal({ open, onClose, eventId, selectedTrackId, onSelect, fetchTracks }) {
   const fetchFn = useCallback(async (q) => {
-    const result = await getTracks(eventId, q)
+    const result = await fetchTracks(eventId, q)
     return { items: result.tracks || [], totalCount: result.totalCount || 0 }
-  }, [eventId])
+  }, [eventId, fetchTracks])
 
   const columns = useMemo(() => [
     {
-      key: 'title', header: 'Track Title', headerIcon: Calendar,
+      key: 'title', header: 'Track Title', headerIcon: Search,
       render: (row) => <span className="text-[14px] font-semibold text-[#1f2f3a]">{row.title}</span>,
-    },
-    {
-      key: 'startDate', header: 'Start', headerIcon: Play,
-      render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.startDate)}</p>,
-    },
-    {
-      key: 'endDate', header: 'End', headerIcon: Flag,
-      render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.endDate)}</p>,
     },
     {
       key: 'maxTeam', header: 'Max Teams', headerIcon: Users,
@@ -50,9 +45,12 @@ export default function TrackSelectModal({ open, onClose, eventId, selectedTrack
     },
     {
       key: 'status', header: 'Status', headerIcon: CircleCheck,
-      render: (row) => row.isDisable
-        ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" />
-        : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />,
+      render: (row) => (
+        <Badge
+          label={row.isDisable ? 'Deleted' : 'Active'}
+          className={trackStatusBadge[row.isDisable] || 'bg-gray-50 text-gray-600'}
+        />
+      ),
     },
   ], [])
 

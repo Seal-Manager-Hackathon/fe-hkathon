@@ -106,6 +106,7 @@ const LecturerAwardDetail = lazy(() => import('../pages/lecture/awards/LecturerA
 const LecturerChapterLeaderboardPage = lazy(() => import('../pages/lecture/leaderboard/LecturerChapterLeaderboardPage'))
 const LecturerTrackNotificationsPage = lazy(() => import('../pages/lecture/tracks/LecturerTrackNotificationsPage'))
 const LecturerTrackNotificationCreate = lazy(() => import('../pages/lecture/tracks/LecturerTrackNotificationCreate'))
+const JudgeRoundSubmissionsPage = lazy(() => import('../pages/lecture/judge/JudgeRoundSubmissionsPage'))
 
 const ForgotPasswordPage = lazy(() => import('../pages/auth/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('../pages/auth/ResetPasswordPage'))
@@ -269,6 +270,7 @@ export const routes = [
           { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerRoundDetail /></Suspense> },
           { path: 'criteria-templates', element: <Suspense fallback={<RouteFallback />}><LecturerCriteriaTemplatesList /></Suspense> },
           { path: 'criteria-templates/:templateId', element: <Suspense fallback={<RouteFallback />}><LecturerCriteriaTemplateDetail /></Suspense> },
+          { path: 'submissions', element: <Suspense fallback={<RouteFallback />}><JudgeRoundSubmissionsPage /></Suspense> },
         ]
       },
       {
