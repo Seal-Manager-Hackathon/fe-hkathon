@@ -5,6 +5,7 @@ import { getUserDetail, updateUser } from '../../../api/admin'
 import FormActions from '../../../components/FormActions'
 import { getErrorMessage } from '../../../utils/error'
 import { toast } from '../../../utils/toast'
+import { getUserRoleId } from '../../../utils/userRoleId'
 import UserEditAvatar from './UserEditAvatar'
 import UserEditForm from './UserEditForm'
 
@@ -38,6 +39,7 @@ export default function UserEdit() {
       try {
         const data = await getUserDetail(id)
         if (!cancelled) {
+          const userIdInfo = getUserRoleId(data)
           setUser(data)
           setForm({
             firstName: data.firstName || '',
@@ -46,7 +48,7 @@ export default function UserEdit() {
             bio: data.bio || '',
             address: data.address || '',
             dateOfBirth: data.dateOfBirth ? data.dateOfBirth.slice(0, 10) : '',
-            studentId: data.studentId || '',
+            studentId: userIdInfo.value,
             college: data.college || '',
           })
           setAvatarPreview(data.avatarUrl || '')
@@ -85,7 +87,7 @@ export default function UserEdit() {
       if (form.phoneNumber !== (user.phoneNumber || '')) fd.append('PhoneNumber', form.phoneNumber)
       if (form.bio !== (user.bio || '')) fd.append('Bio', form.bio)
       if (form.address !== (user.address || '')) fd.append('Address', form.address)
-      if (form.studentId !== (user.studentId || '')) fd.append('StudentId', form.studentId)
+      if (form.studentId !== getUserRoleId(user).value) fd.append('StudentId', form.studentId)
       if (form.college !== (user.college || '')) fd.append('College', form.college)
 
       const origDob = user.dateOfBirth ? user.dateOfBirth.slice(0, 10) : ''
@@ -157,7 +159,7 @@ export default function UserEdit() {
         onRemove={removeAvatar}
       />
 
-      <UserEditForm form={form} onChange={updateField} />
+      <UserEditForm form={form} onChange={updateField} role={user?.role} />
 
       <FormActions
         onSave={handleSave}

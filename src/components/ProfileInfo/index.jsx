@@ -6,11 +6,13 @@ import InfoRow from '../InfoRow'
 import Avatar from '../Avatar'
 import { formatDateTime } from '../../utils/format'
 import { roleBadge } from '../../constants/commonOptions'
+import { getUserRoleId } from '../../utils/userRoleId'
 
 export default function ProfileInfo({ user, editTo, children }) {
   const displayName = user?.firstName
     ? `${user.firstName} ${user.lastName || ''}`.trim()
     : user?.role === 'Admin' ? 'Admin' : 'User'
+  const userIdInfo = getUserRoleId(user)
 
   return (
     <>
@@ -41,6 +43,9 @@ export default function ProfileInfo({ user, editTo, children }) {
         <div className="divide-y divide-[#f5f5f5]">
           <InfoRow label="User ID" icon={Hash}>
             <p className="text-[14px] font-mono text-[13px] text-gray-500">{user?.id?.slice(0, 8) || '—'}</p>
+          </InfoRow>
+          <InfoRow label={userIdInfo.label} icon={Hash}>
+            <p className="text-[14px] font-mono text-[13px] text-[#1f2f3a]">{userIdInfo.value || '—'}</p>
           </InfoRow>
           <InfoRow label="Full Name" icon={UserCheck}><p className="text-[14px] font-medium text-[#1f2f3a]">{displayName}</p></InfoRow>
           <InfoRow label="Email" icon={Mail}><p className="text-[14px] text-[#064f5d]">{user?.email || '—'}</p></InfoRow>

@@ -31,7 +31,9 @@ const FIELDS = [
  *   onChange: (field: string, value: string) => void,
  * }} props
  */
-export default function UserEditForm({ form, onChange }) {
+export default function UserEditForm({ form, onChange, role }) {
+  const idLabel = role === 'Lecturer' ? 'Lecture ID' : role === 'Staff' ? 'Staff ID' : 'Student ID'
+
   return (
     <>
 
@@ -40,7 +42,7 @@ export default function UserEditForm({ form, onChange }) {
           {FIELDS.map((row, ri) => (
             <div key={ri} className={`grid grid-cols-1 gap-4 ${row.length > 1 ? 'sm:grid-cols-2' : ''}`}>
               {row.map((field) => (
-                <FormField key={field.key} label={field.label} icon={field.icon}>
+                <FormField key={field.key} label={field.key === 'studentId' ? idLabel : field.label} icon={field.icon}>
                   {field.type === 'textarea' ? (
                     <textarea
                       value={form[field.key] || ''}

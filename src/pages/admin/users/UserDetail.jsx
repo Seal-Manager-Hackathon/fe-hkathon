@@ -7,6 +7,7 @@ import {
 import { getUserDetail, getUserEvents } from '../../../api/admin'
 import { roleBadge } from '../../../constants/commonOptions'
 import { formatDateTime } from '../../../utils/format'
+import { getUserRoleId } from '../../../utils/userRoleId'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
 import InfoRow from '../../../components/InfoRow'
@@ -92,6 +93,7 @@ export default function UserDetail() {
 
   const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email
   const isDisabled = user.isDisable
+  const userIdInfo = getUserRoleId(user)
 
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
@@ -113,7 +115,7 @@ export default function UserDetail() {
             <InfoRow label="Address" icon={MapPin}><p className="text-[14px] text-[#1f2f3a]">{user.address || '—'}</p></InfoRow>
             <InfoRow label="Bio" icon={FileText}><p className="text-[14px] text-[#1f2f3a] whitespace-pre-wrap">{user.bio || '—'}</p></InfoRow>
             <InfoRow label="College" icon={GraduationCap}><p className="text-[14px] text-[#1f2f3a]">{user.college || '—'}</p></InfoRow>
-            <InfoRow label="Student ID" icon={Hash}><p className="text-[14px] font-mono text-[13px] text-[#1f2f3a]">{user.studentId || '—'}</p></InfoRow>
+            <InfoRow label={userIdInfo.label} icon={Hash}><p className="text-[14px] font-mono text-[13px] text-[#1f2f3a]">{userIdInfo.value || '—'}</p></InfoRow>
             <InfoRow label="Role" icon={Shield}><Badge label={user.role} className={roleBadge[user.role] || ''} /></InfoRow>
           </div>
         </CardPanel>
