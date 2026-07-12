@@ -131,6 +131,17 @@ export async function getUserEvents(userId, params = {}) {
 }
 
 /**
+ * Get events assigned to a Staff or Lecturer user.
+ * @param {string} userId
+ * @param {Object} params
+ * @returns {Promise<{ events: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getUserAssignEvents(userId, params = {}) {
+  const { data } = await api.get(`/admin/users/${userId}/assign-events`, { params })
+  return data.data
+}
+
+/**
  * Update user by ID. Sends multipart/form-data.
  * Only included fields are updated; omitted fields remain unchanged.
  * @param {string} userId

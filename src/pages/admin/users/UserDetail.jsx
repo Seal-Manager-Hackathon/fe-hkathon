@@ -4,7 +4,7 @@ import {
   Mail, Shield, Calendar, Hash, GraduationCap, BadgeCheck,
   Phone, MapPin, AlertTriangle, Clock, FileText,
 } from 'lucide-react'
-import { getUserDetail, getUserEvents } from '../../../api/admin'
+import { getUserAssignEvents, getUserDetail, getUserEvents } from '../../../api/admin'
 import { roleBadge } from '../../../constants/commonOptions'
 import { formatDateTime } from '../../../utils/format'
 import { getUserRoleId } from '../../../utils/userRoleId'
@@ -13,6 +13,7 @@ import CardPanel from '../../../components/CardPanel'
 import InfoRow from '../../../components/InfoRow'
 import UserDetailHeader from './UserDetailHeader'
 import UserDetailEvents from './UserDetailEvents'
+import UserDetailAssignEvents from './UserDetailAssignEvents'
 
 const PAGE_SIZE = 10
 
@@ -28,6 +29,14 @@ export default function UserDetail() {
   const [eventPage, setEventPage] = useState(1)
   const [eventKeyword, setEventKeyword] = useState('')
 
+  const [assignEvents, setAssignEvents] = useState([])
+  const [assignEventsTotal, setAssignEventsTotal] = useState(0)
+  const [assignEventsLoading, setAssignEventsLoading] = useState(false)
+  const [assignEventsError, setAssignEventsError] = useState('')
+  const [assignEventPage, setAssignEventPage] = useState(1)
+  const [assignEventKeyword, setAssignEventKeyword] = useState('')
+  const [assignEventRole, setAssignEventRole] = useState('')
+
   const fetchEvents = useCallback(async () => {
     setEventsLoading(true)
     try {
@@ -39,6 +48,25 @@ export default function UserDetail() {
     } catch {}
     finally { setEventsLoading(false) }
   }, [id, eventPage, eventKeyword])
+
+  const fetchAssignEvents = useCallback(async () => {
+    setAssignEventsLoading(true)
+    setAssignEventsError('')
+    try {
+      const params = { PageIndex: assignEventPage, PageSize: PAGE_SIZE }
+      if (assignEventKeyword) params.Keyword = assignEventKeyword
+      if (assignEventRole) params.EventRole = assignEventRole
+      const result = await getUserAssignEvents(id, params)
+      setAssignEvents(result.events || [])
+      setAssignEventsTotal(result.totalCount || 0)
+    } catch (err) {
+      setAssignEventsError(err?.response?.data?.message || 'Failed to load assigned events.')
+      setAssignEvents([])
+      setAssignEventsTotal(0)
+    } finally {
+      setAssignEventsLoading(false)
+    }
+  }, [id, assignEventPage, assignEventKeyword, assignEventRole])
 
   useEffect(() => {
     let cancelled = false
@@ -54,7 +82,10 @@ export default function UserDetail() {
     fetch(); return () => { cancelled = true }
   }, [id])
 
-  useEffect(() => { if (user) fetchEvents() }, [fetchEvents, user])
+  useEffect(() => {
+    if (user?.role === 'Student') fetchEvents()
+    if (user?.role === 'Lecturer' || user?.role === 'Staff') fetchAssignEvents()
+  }, [fetchAssignEvents, fetchEvents, user])
 
   if (loading) {
     return (
@@ -137,16 +168,42 @@ export default function UserDetail() {
         </CardPanel>
       </div>
 
-      <UserDetailEvents
-        events={events}
-        eventsTotal={eventsTotal}
-        eventsLoading={eventsLoading}
-        eventPage={eventPage}
-        eventKeyword={eventKeyword}
-        onPageChange={setEventPage}
-        onFilterChange={(key, val) => { setEventKeyword(val); setEventPage(1) }}
-        onFilterReset={() => { setEventKeyword(''); setEventPage(1) }}
-      />
+      {user.role === 'Student' && (
+        <UserDetailEvents
+          events={events}
+          eventsTotal={eventsTotal}
+          eventsLoading={eventsLoading}
+          eventPage={eventPage}
+          eventKeyword={eventKeyword}
+          onPageChange={setEventPage}
+          onFilterChange={(key, val) => { setEventKeyword(val); setEventPage(1) }}
+          onFilterReset={() => { setEventKeyword(''); setEventPage(1) }}
+        />
+      )}
+
+      {(user.role === 'Lecturer' || user.role === 'Staff') && (
+        <UserDetailAssignEvents
+          userRole={user.role}
+          events={assignEvents}
+          total={assignEventsTotal}
+          loading={assignEventsLoading}
+          error={assignEventsError}
+          page={assignEventPage}
+          keyword={assignEventKeyword}
+          eventRole={assignEventRole}
+          onPageChange={setAssignEventPage}
+          onFilterChange={(key, val) => {
+            if (key === 'keyword') setAssignEventKeyword(val)
+            if (key === 'eventRole') setAssignEventRole(val)
+            setAssignEventPage(1)
+          }}
+          onFilterReset={() => {
+            setAssignEventKeyword('')
+            setAssignEventRole('')
+            setAssignEventPage(1)
+          }}
+        />
+      )}
     </div>
   )
 }
