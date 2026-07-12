@@ -137,7 +137,7 @@ export async function getUserEvents(userId, params = {}) {
  * @returns {Promise<{ events: Array, totalCount: number, pageIndex: number, pageSize: number }>}
  */
 export async function getUserAssignEvents(userId, params = {}) {
-  const { data } = await api.get(`/admin/users/${userId}/assign-events`, { params })
+  const { data } = await api.get(`/admin/assign/users/${userId}/assign-events`, { params })
   return data.data
 }
 
