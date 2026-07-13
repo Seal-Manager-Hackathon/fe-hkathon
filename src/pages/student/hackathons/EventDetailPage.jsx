@@ -1059,79 +1059,83 @@ export default function EventDetailPage() {
           </Link>
 
           {/* ========== Info card ========== */}
-          <div className="mb-8 overflow-hidden rounded-xl border border-[#d7e0e5] bg-white shadow-[0_1px_4px_rgba(31,47,58,0.04)]">
-            <div className="flex flex-col gap-6 px-6 py-6 sm:flex-row sm:items-start sm:gap-7 sm:px-8 sm:py-7">
-              {/* Avatar */}
-              <div className="relative shrink-0 self-center sm:self-start">
-                <div className="flex h-[68px] w-[68px] items-center justify-center rounded-2xl bg-gradient-to-br from-[#1565c0] via-[#1976d2] to-[#42a5f5] text-[22px] font-bold leading-none tracking-wide text-white shadow-md sm:h-[76px] sm:w-[76px] sm:text-[26px] sm:rounded-[18px]">
-                  {initials}
+          <div className="mb-8 overflow-hidden rounded-xl border border-[#d7e0e5] bg-gradient-to-r from-[#064f5d] via-[#0a6e7d] to-[#0d8a9a] shadow-[0_4px_16px_rgba(6,79,93,0.12)]">
+            <div className="relative px-6 py-6 sm:px-8 sm:py-7">
+              <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/[0.04]" />
+              <div className="pointer-events-none absolute -bottom-8 -left-8 h-28 w-28 rounded-full bg-white/[0.03]" />
+              <div className="relative flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-7">
+                {/* Avatar */}
+                <div className="relative shrink-0 self-center sm:self-start">
+                  <div className="flex h-[68px] w-[68px] items-center justify-center rounded-2xl bg-white/20 text-[22px] font-bold leading-none tracking-wide text-white shadow-md backdrop-blur sm:h-[76px] sm:w-[76px] sm:text-[26px] sm:rounded-[18px]">
+                    {initials}
+                  </div>
+                  <span
+                    className={cn(
+                      'absolute -bottom-0.5 -right-0.5 h-[18px] w-[18px] rounded-full border-[3px] border-white',
+                      relative.dot,
+                    )}
+                  />
                 </div>
-                <span
-                  className={cn(
-                    'absolute -bottom-0.5 -right-0.5 h-[18px] w-[18px] rounded-full border-[3px] border-white',
-                    relative.dot,
-                  )}
-                />
-              </div>
 
-              {/* Right content */}
-              <div className="flex min-w-0 flex-1 flex-col gap-5">
-                {/* Title section */}
-                <div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <h1 className="text-[24px] font-bold leading-tight text-[#1f2f3a] sm:text-[28px]">
-                      {event.name}
-                    </h1>
-                    <span
-                      className={cn(
-                        'inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold',
-                        statusStyle.cls,
+                {/* Right content */}
+                <div className="flex min-w-0 flex-1 flex-col gap-5">
+                  {/* Title section */}
+                  <div>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <h1 className="text-[24px] font-bold leading-tight text-white sm:text-[28px]">
+                        {event.name}
+                      </h1>
+                      <span
+                        className={cn(
+                          'inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold',
+                          statusStyle.cls,
+                        )}
+                      >
+                        {statusStyle.label}
+                      </span>
+                      {event.isDisable && (
+                        <span className="inline-flex items-center rounded-full bg-[#fce4ec] px-2.5 py-0.5 text-[11px] font-semibold text-[#c62828] ring-1 ring-[#ef9a9a]">
+                          Deleted
+                        </span>
                       )}
-                    >
-                      {statusStyle.label}
-                    </span>
-                    {event.isDisable && (
-                      <span className="inline-flex items-center rounded-full bg-[#fce4ec] px-2.5 py-0.5 text-[11px] font-semibold text-[#c62828] ring-1 ring-[#ef9a9a]">
-                        Deleted
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[13px] text-[#5a6a73]">
-                    {event.season && (
-                      <span className="inline-flex items-center gap-1.5">
-                        <Flag size={14} className="text-[#f59e0b]" />
-                        {event.season}
-                      </span>
-                    )}
-                    <span className="inline-flex items-center gap-1.5">
-                      <BarChart3 size={14} className="text-[#06b6d4]" />
-                      {event.numberRound ?? 0} {event.numberRound === 1 ? 'Round' : 'Rounds'}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <span className={cn('h-1.5 w-1.5 rounded-full', relative.dot)} />
-                      <span className={cn('font-medium', relative.color)}>{relative.label}</span>
-                    </span>
-                  </div>
-                </div>
-
-                {/* Info rows: Timeline + Constraints */}
-                <div className="space-y-2">
-                  {GROUP_INFO.map((group) => (
-                    <div key={group.key} className="flex flex-wrap gap-x-5 gap-y-1">
-                      {group.items.map((key) => {
-                        const meta = ITEM_META[key]
-                        const Icon = meta.icon
-                        return (
-                          <span key={key} className="inline-flex items-center gap-1.5">
-                            <Icon size={12} className="shrink-0 text-[#8a9ba6]" />
-                            <span className="text-[12px] text-[#5a6a73]">{meta.label}:</span>
-                            <span className="text-[13px] font-semibold text-[#1f2f3a]">{getCardValue(event, key)}</span>
-                          </span>
-                        )
-                      })}
                     </div>
-                  ))}
+
+                    <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[13px] text-[#80deea]">
+                      {event.season && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <Flag size={14} className="text-[#ffca28]" />
+                          {event.season}
+                        </span>
+                      )}
+                      <span className="inline-flex items-center gap-1.5">
+                        <BarChart3 size={14} className="text-[#80deea]" />
+                        {event.numberRound ?? 0} {event.numberRound === 1 ? 'Round' : 'Rounds'}
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className={cn('h-1.5 w-1.5 rounded-full', relative.dot)} />
+                        <span className={cn('font-medium', relative.color === 'text-blue-600' ? 'text-blue-200' : relative.color === 'text-emerald-600' ? 'text-emerald-200' : 'text-slate-300')}>{relative.label}</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Info rows: Timeline + Constraints */}
+                  <div className="space-y-2">
+                    {GROUP_INFO.map((group) => (
+                      <div key={group.key} className="flex flex-wrap gap-x-5 gap-y-1">
+                        {group.items.map((key) => {
+                          const meta = ITEM_META[key]
+                          const Icon = meta.icon
+                          return (
+                            <span key={key} className="inline-flex items-center gap-1.5">
+                              <Icon size={12} className="shrink-0 text-[#80deea]" />
+                              <span className="text-[12px] text-[#b2ebf2]">{meta.label}:</span>
+                              <span className="text-[13px] font-semibold text-white">{getCardValue(event, key)}</span>
+                            </span>
+                          )
+                        })}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

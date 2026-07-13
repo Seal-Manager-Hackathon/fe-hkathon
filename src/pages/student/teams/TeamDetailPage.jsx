@@ -186,76 +186,80 @@ export default function TeamDetailPage() {
       )}
 
       {/* Header card */}
-      <div className="mb-6 overflow-hidden rounded-xl border border-[#d7e0e5] bg-white">
-        <div className="flex flex-col gap-5 px-6 py-6 sm:flex-row sm:items-start sm:gap-6 sm:px-7 sm:py-7">
-          {/* Avatar */}
-          <div className="relative shrink-0 self-center sm:self-start">
-            <div className="flex h-[60px] w-[60px] items-center justify-center rounded-2xl bg-gradient-to-br from-[#1565c0] to-[#42a5f5] text-[18px] font-bold leading-none tracking-wide text-white shadow-sm sm:h-[68px] sm:w-[68px] sm:text-[22px]">
-              {detail?.name ? detail.name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase() : '?'}
-            </div>
-          </div>
-
-          {/* Right */}
-          <div className="flex min-w-0 flex-1 flex-col gap-4">
-            {/* Title row */}
-            <div>
-              <div className="flex flex-wrap items-center gap-3">
-                {editingName ? (
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={newName}
-                      onChange={(e) => setNewName(e.target.value)}
-                      className="rounded-lg border border-[#d7e0e5] px-3 py-1.5 text-[18px] font-bold text-[#1f2f3a] outline-none focus:border-[#1565c0] sm:text-[22px]"
-                      autoFocus
-                    />
-                    <button onClick={handleUpdateName} className="cursor-pointer rounded-lg p-1.5 text-green-600 hover:bg-green-50"><Check size={18} /></button>
-                    <button onClick={() => setEditingName(false)} className="cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-100"><X size={18} /></button>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-3">
-                    <h1 className="text-[22px] font-bold leading-tight text-[#1f2f3a] sm:text-[26px]">{detail?.name}</h1>
-                    <button
-                      onClick={() => { setNewName(detail?.name || ''); setEditingName(true) }}
-                      className="cursor-pointer rounded-lg p-1.5 text-[#8a9ba6] transition-colors hover:bg-gray-100 hover:text-[#1565c0]"
-                      title="Rename team"
-                    >
-                      <Edit3 size={15} />
-                    </button>
-                  </div>
-                )}
-              </div>
-              <div className="mt-1.5 flex flex-wrap items-center gap-x-5 gap-y-1 text-[13px] text-[#5a6a73]">
-                <span className="inline-flex items-center gap-1.5">
-                  <Users size={14} className="text-[#8a9ba6]" />
-                  {detail?.members?.length || 0} member{(detail?.members?.length || 0) !== 1 ? 's' : ''}
-                </span>
+      <div className="mb-6 overflow-hidden rounded-xl border border-[#d7e0e5] bg-gradient-to-r from-[#064f5d] via-[#0a6e7d] to-[#0d8a9a] shadow-[0_4px_16px_rgba(6,79,93,0.12)]">
+        <div className="relative px-6 py-6 sm:px-7 sm:py-7">
+          <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/[0.04]" />
+          <div className="pointer-events-none absolute -bottom-8 -left-8 h-28 w-28 rounded-full bg-white/[0.03]" />
+          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
+            {/* Avatar */}
+            <div className="relative shrink-0 self-center sm:self-start">
+              <div className="flex h-[60px] w-[60px] items-center justify-center rounded-2xl bg-white/20 text-[18px] font-bold leading-none tracking-wide text-white shadow-sm backdrop-blur sm:h-[68px] sm:w-[68px] sm:text-[22px]">
+                {detail?.name ? detail.name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase() : '?'}
               </div>
             </div>
 
-            {/* Action buttons */}
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setShowInviteModal(true)}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#1565c0] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1]"
-              >
-                <Send size={14} />
-                Invite
-              </button>
-              <button
-                onClick={handleLeave}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[13px] font-semibold text-[#e65100] transition-colors hover:bg-[#fff3e0]"
-              >
-                <LogOut size={14} />
-                Leave
-              </button>
-              <button
-                onClick={handleDisband}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[13px] font-semibold text-[#dc2626] transition-colors hover:bg-[#fee2e2]"
-              >
-                <Users size={14} />
-                Disband
-              </button>
+            {/* Right */}
+            <div className="flex min-w-0 flex-1 flex-col gap-4">
+              {/* Title row */}
+              <div>
+                <div className="flex flex-wrap items-center gap-3">
+                  {editingName ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        className="rounded-lg border border-white/30 bg-white/10 px-3 py-1.5 text-[18px] font-bold text-white outline-none backdrop-blur focus:border-white/60 sm:text-[22px]"
+                        autoFocus
+                      />
+                      <button onClick={handleUpdateName} className="cursor-pointer rounded-lg p-1.5 text-green-300 hover:bg-white/10"><Check size={18} /></button>
+                      <button onClick={() => setEditingName(false)} className="cursor-pointer rounded-lg p-1.5 text-white/60 hover:bg-white/10"><X size={18} /></button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <h1 className="text-[22px] font-bold leading-tight text-white sm:text-[26px]">{detail?.name}</h1>
+                      <button
+                        onClick={() => { setNewName(detail?.name || ''); setEditingName(true) }}
+                        className="cursor-pointer rounded-lg p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+                        title="Rename team"
+                      >
+                        <Edit3 size={15} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-5 gap-y-1 text-[13px] text-[#80deea]">
+                  <span className="inline-flex items-center gap-1.5">
+                    <Users size={14} />
+                    {detail?.members?.length || 0} member{(detail?.members?.length || 0) !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setShowInviteModal(true)}
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-white/20 px-4 py-2 text-[13px] font-semibold text-white backdrop-blur transition-colors hover:bg-white/30"
+                >
+                  <Send size={14} />
+                  Invite
+                </button>
+                <button
+                  onClick={handleLeave}
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-semibold text-white/90 backdrop-blur transition-colors hover:bg-white/20"
+                >
+                  <LogOut size={14} />
+                  Leave
+                </button>
+                <button
+                  onClick={handleDisband}
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-red-400/30 bg-red-500/20 px-4 py-2 text-[13px] font-semibold text-red-200 backdrop-blur transition-colors hover:bg-red-500/30"
+                >
+                  <Users size={14} />
+                  Disband
+                </button>
+              </div>
             </div>
           </div>
         </div>

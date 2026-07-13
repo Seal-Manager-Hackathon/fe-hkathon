@@ -110,10 +110,10 @@ export default function StudentTeamsPage() {
           {teams.map((team) => (
             <div
               key={team.teamId}
-              className="flex flex-col gap-3 rounded-xl border border-[#d7e0e5] bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+              className="flex flex-col gap-3 rounded-xl border border-[#d7e0e5] bg-[#f8fafb] px-5 py-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#1565c0]/20 hover:shadow-[0_8px_24px_rgba(21,101,192,0.08)] sm:flex-row sm:items-center sm:justify-between sm:gap-4"
             >
               <div className="flex items-center gap-4 min-w-0 flex-1">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#e3f2fd] text-[#1565c0]">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1565c0] to-[#42a5f5] text-white shadow-sm">
                   <Users size={20} />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -136,9 +136,9 @@ export default function StudentTeamsPage() {
               </div>
               <Link
                 to={`/teams/${team.teamId}`}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#1565c0] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1]"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#1565c0] px-5 py-2.5 text-[13px] font-semibold text-white shadow-[0_2px_8px_rgba(21,101,192,0.2)] transition-all duration-200 hover:bg-[#0d47a1] hover:shadow-[0_4px_12px_rgba(21,101,192,0.3)] active:scale-[0.97]"
               >
-                View
+                View Team
               </Link>
             </div>
           ))}
