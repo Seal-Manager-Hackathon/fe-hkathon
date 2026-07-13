@@ -6,7 +6,7 @@ import {
 } from 'lucide-react'
 import { getStudentEventDetail } from '../../../api/student'
 import RichTextViewer from '../../../components/RichTextViewer'
-import { formatDate } from '../../../utils/format'
+import { formatDate, formatDateTime } from '../../../utils/format'
 import { cn } from '../../../utils/cn'
 
 /* ------------------------------------------------------------------ */
@@ -65,7 +65,7 @@ function getCardValue(event, key) {
     case 'startTime':
     case 'endTime':
     case 'registerLimitTime':
-      return event[key] ? formatDate(event[key]) : '—'
+      return event[key] ? formatDateTime(event[key]) : '—'
     case 'limitTeam':
     case 'numberRound':
       return event[key] ?? '—'
