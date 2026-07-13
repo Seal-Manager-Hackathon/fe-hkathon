@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Calendar, Layers, Users } from 'lucide-react'
+import { Calendar, Layers } from 'lucide-react'
 import { cn } from '../../utils/cn'
 import { formatDate } from '../../utils/format'
 
@@ -61,25 +61,11 @@ export default function PopularHackathonCard({ hackathon }) {
   const statusCfg = STATUS_CONFIG[hackathon.status] || STATUS_CONFIG.Closed
   const relative = getRelativeTime(hackathon.startTime, hackathon.endTime)
   const initials = getInitials(hackathon.name)
-  const labelBg = hackathon.label === 'ACTIVE' ? 'bg-[#ffca28]' : 'bg-[#5b8def]'
-
   return (
     <Link
       to={`/hackathons/${hackathon.id}`}
-      className="group flex cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
+      className="group flex cursor-pointer overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5"
     >
-      {/* Label stripe */}
-      <div className={cn('flex w-[36px] shrink-0 items-center justify-center', labelBg)}>
-        <span
-          className={cn(
-            'text-[10px] font-extrabold tracking-wider [writing-mode:vertical-rl]',
-            hackathon.label === 'ACTIVE' ? 'text-[#064f5d]' : 'text-white'
-          )}
-        >
-          {hackathon.label}
-        </span>
-      </div>
-
       {/* Thumbnail */}
       <div
         className={cn(
