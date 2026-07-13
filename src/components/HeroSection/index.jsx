@@ -18,11 +18,11 @@ export default function HeroSection() {
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
             <Link
-              to="/teams/create"
+              to="/teams"
               className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#ffca28] px-6 py-3 text-[15px] font-semibold text-[#064f5d] transition-colors hover:bg-[#f5bf1b]"
             >
               <Users className="h-4 w-4" />
-              Create Team
+              My Teams
             </Link>
             <Link
               to="/hackathons"
