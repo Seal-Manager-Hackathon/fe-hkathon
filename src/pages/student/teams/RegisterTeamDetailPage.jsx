@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Users, Calendar, Crown, FileText, Clock,
-  Info, UserRound,
+  Info, UserRound, Layers, Award, MapPin,
 } from 'lucide-react'
 import {
   getStudentRegisterTeamDetail,
@@ -15,7 +15,9 @@ import { cn } from '../../../utils/cn'
 const TABS = [
   { key: 'overview', label: 'Overview', icon: Info },
   { key: 'members', label: 'Members', icon: Users },
-  { key: 'description', label: 'Description', icon: FileText },
+  { key: 'rounds', label: 'Rounds', icon: Layers },
+  { key: 'awards', label: 'Awards', icon: Award },
+  { key: 'leaderboard', label: 'Leaderboard', icon: MapPin },
 ]
 
 export default function RegisterTeamDetailPage() {
@@ -54,7 +56,7 @@ export default function RegisterTeamDetailPage() {
         <div className="mb-6 h-7 w-48 animate-pulse rounded bg-gray-200" />
         <div className="rounded-xl border border-[#d7e0e5] bg-white p-6">
           <div className="mb-6 flex gap-4">
-            {[1, 2, 3].map((i) => <div key={i} className="h-10 w-28 animate-pulse rounded-lg bg-gray-200" />)}
+            {[1, 2, 3, 4, 5].map((i) => <div key={i} className="h-10 w-24 animate-pulse rounded-lg bg-gray-200" />)}
           </div>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => <div key={i} className="h-12 animate-pulse rounded-lg bg-gray-100" />)}
@@ -119,20 +121,12 @@ export default function RegisterTeamDetailPage() {
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
                 className={cn(
-                  'relative flex items-center gap-2 px-5 py-3.5 text-[14px] font-medium cursor-pointer whitespace-nowrap transition-colors',
+                  'relative flex items-center gap-2 px-4 py-3 text-[13px] font-medium cursor-pointer whitespace-nowrap transition-colors sm:px-5',
                   activeTab === tab.key ? 'text-[#1565c0]' : 'text-[#7a8e99] hover:text-[#1f2f3a]',
                 )}
               >
                 <Icon size={16} />
                 {tab.label}
-                {tab.key === 'members' && detail.members && (
-                  <span className={cn(
-                    'inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none',
-                    activeTab === 'members' ? 'bg-[#1565c0] text-white' : 'bg-[#e8ecf0] text-[#7a8e99]',
-                  )}>
-                    {detail.members.length}
-                  </span>
-                )}
                 {activeTab === tab.key && (
                   <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#1565c0]" />
                 )}
@@ -144,13 +138,23 @@ export default function RegisterTeamDetailPage() {
         {/* Tab content */}
         <div className="p-6">
           {activeTab === 'overview' && (
-            <div className="divide-y divide-[#f0f4f8] rounded-xl border border-[#e8ecf0]">
-              <DetailRow icon={Calendar} label="Event" value={detail.eventName} accent="#3b82f6" />
-              <DetailRow icon={Users} label="Team" value={detail.teamName} accent="#10b981" />
-              {detail.roundName && <DetailRow icon={Clock} label="Round" value={`#${detail.roundNo} ${detail.roundName}`} accent="#f59e0b" />}
-              {detail.trackTitle && <DetailRow icon={FileText} label="Track" value={detail.trackTitle} accent="#8b5cf6" />}
-              {detail.topicTitle && <DetailRow icon={FileText} label="Topic" value={detail.topicTitle} accent="#8b5cf6" />}
-              <DetailRow icon={Calendar} label="Registered" value={formatDateTime(detail.createdAt)} accent="#8a9ba6" />
+            <div className="space-y-5">
+              <div className="divide-y divide-[#f0f4f8] rounded-xl border border-[#e8ecf0]">
+                <DetailRow icon={Calendar} label="Event" value={detail.eventName} accent="#3b82f6" />
+                <DetailRow icon={Users} label="Team" value={detail.teamName} accent="#10b981" />
+                {detail.roundName && <DetailRow icon={Clock} label="Round" value={`#${detail.roundNo} ${detail.roundName}`} accent="#f59e0b" />}
+                {detail.trackTitle && <DetailRow icon={FileText} label="Track" value={detail.trackTitle} accent="#8b5cf6" />}
+                {detail.topicTitle && <DetailRow icon={FileText} label="Topic" value={detail.topicTitle} accent="#8b5cf6" />}
+                <DetailRow icon={Calendar} label="Registered" value={formatDateTime(detail.createdAt)} accent="#8a9ba6" />
+              </div>
+              {detail.description && (
+                <div>
+                  <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Description</p>
+                  <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4">
+                    <RichTextViewer content={detail.description} />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -183,18 +187,36 @@ export default function RegisterTeamDetailPage() {
             </div>
           )}
 
-          {activeTab === 'description' && (
-            <div>
-              {detail.description ? (
-                <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-5">
-                  <RichTextViewer content={detail.description} />
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <FileText size={24} className="mb-2 text-[#8a9ba6]" />
-                  <p className="text-[13px] text-[#7a8e99]">No description provided.</p>
-                </div>
-              )}
+          {activeTab === 'rounds' && (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Layers size={32} className="mb-3 text-[#8a9ba6]" />
+              <p className="text-[15px] font-medium text-[#1f2f3a]">Rounds</p>
+              <p className="mt-1 text-[13px] text-[#7a8e99]">View round information in the event detail page.</p>
+              <Link to={`/hackathons/${detail.eventId}`} className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-[#1565c0] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1]">
+                View Event
+              </Link>
+            </div>
+          )}
+
+          {activeTab === 'awards' && (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Award size={32} className="mb-3 text-[#8a9ba6]" />
+              <p className="text-[15px] font-medium text-[#1f2f3a]">Awards</p>
+              <p className="mt-1 text-[13px] text-[#7a8e99]">View award information in the event detail page.</p>
+              <Link to={`/hackathons/${detail.eventId}`} className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-[#1565c0] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1]">
+                View Event
+              </Link>
+            </div>
+          )}
+
+          {activeTab === 'leaderboard' && (
+            <div className="flex flex-col items-center justify-center py-12">
+              <MapPin size={32} className="mb-3 text-[#8a9ba6]" />
+              <p className="text-[15px] font-medium text-[#1f2f3a]">Leaderboard</p>
+              <p className="mt-1 text-[13px] text-[#7a8e99]">View leaderboard in the event detail page.</p>
+              <Link to={`/hackathons/${detail.eventId}`} className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-[#1565c0] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1]">
+                View Event
+              </Link>
             </div>
           )}
         </div>
