@@ -242,12 +242,12 @@ export default function NextRoundModal({
                 <button onClick={() => handleAdvance(row)} disabled={busy}
                   className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] disabled:opacity-50 w-[85px]"
                 >
-                  {advancing ? (<><Loader2 className="h-3.5 w-3.5 animate-spin" />Up...</>) : (<>Up<ChevronUp className="h-3.5 w-3.5" /></>)}
+                  {advancing ? (<><Loader2 className="h-3.5 w-3.5 animate-spin" />Next...</>) : (<>Next<ChevronUp className="h-3.5 w-3.5" /></>)}
                 </button>
                 <button onClick={() => handleRevert(row)} disabled={busy}
                   className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fff3e0] px-3 py-1.5 text-[13px] font-semibold text-[#e65100] transition-colors hover:bg-[#ffe0b2] disabled:opacity-50 w-[85px]"
                 >
-                  {reverting ? (<><Loader2 className="h-3.5 w-3.5 animate-spin" />Down...</>) : (<>Down<ChevronDown className="h-3.5 w-3.5" /></>)}
+                  {reverting ? (<><Loader2 className="h-3.5 w-3.5 animate-spin" />Back...</>) : (<>Back<ChevronDown className="h-3.5 w-3.5" /></>)}
                 </button>
               </>
             ) : null}
