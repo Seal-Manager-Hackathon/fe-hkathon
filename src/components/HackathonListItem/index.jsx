@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
-import { MapPin, Globe, Monitor, Layers, CalendarClock } from 'lucide-react';
+import { MapPin, Globe, Monitor, Layers, Calendar, CalendarClock } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { formatDate } from '../../utils/format';
 
 const THEME_GRADIENTS = {
   blue: 'from-blue-600 to-blue-800',
@@ -89,6 +90,16 @@ export default function HackathonListItem({ hackathon, to }) {
             </span>
           )}
         </div>
+
+        {/* Date range */}
+        {(hackathon.startTime || hackathon.endTime) && (
+          <div className="flex flex-wrap items-center gap-2 text-[12px] text-[#5a6a73] mt-1">
+            <Calendar size={13} className="shrink-0" />
+            {hackathon.startTime && <span>{formatDate(hackathon.startTime)}</span>}
+            {hackathon.startTime && hackathon.endTime && <span className="text-[#b0bec5]">–</span>}
+            {hackathon.endTime && <span>{formatDate(hackathon.endTime)}</span>}
+          </div>
+        )}
       </div>
 
       {/* CTA */}

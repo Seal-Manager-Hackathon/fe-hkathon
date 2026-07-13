@@ -30,6 +30,8 @@ function normalizeEvent(event) {
     shortName: event.name,
     status: event.status,
     themeColor: THEME_COLORS[colorIndex],
+    startTime: event.startTime,
+    endTime: event.endTime,
   }
 }
 
