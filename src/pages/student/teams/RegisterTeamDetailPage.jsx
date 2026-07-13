@@ -20,8 +20,6 @@ import Pagination from '../../../components/Pagination'
 
 const TABS = [
   { key: 'overview', label: 'Overview', icon: Info },
-  { key: 'description', label: 'Description', icon: FileText },
-  { key: 'members', label: 'Members', icon: Users },
   { key: 'rounds', label: 'Rounds', icon: Layers },
   { key: 'awards', label: 'Awards', icon: Award },
   { key: 'assignments', label: 'Assignments', icon: UsersRound },
@@ -158,8 +156,6 @@ export default function RegisterTeamDetailPage() {
           {/* Tab content */}
           <div className="p-6">
             {activeTab === 'overview' && <OverviewTab detail={detail} />}
-            {activeTab === 'description' && <DescriptionTab detail={detail} />}
-            {activeTab === 'members' && <MembersTab members={detail.members} />}
             {activeTab === 'rounds' && <RoundsTab eventId={detail.eventId} />}
             {activeTab === 'awards' && <AwardsTab eventId={detail.eventId} />}
             {activeTab === 'assignments' && <AssignmentsTab eventId={detail.eventId} />}
@@ -184,65 +180,49 @@ function OverviewTab({ detail }) {
         {detail.roundName && <DetailRow icon={Clock} label="Round" value={`#${detail.roundNo} ${detail.roundName}`} accent="#f59e0b" />}
         {detail.trackTitle && <DetailRow icon={FileText} label="Track" value={detail.trackTitle} accent="#8b5cf6" />}
         {detail.topicTitle && <DetailRow icon={FileText} label="Topic" value={detail.topicTitle} accent="#8b5cf6" />}
-        <DetailRow icon={Users} label="Members" value={detail.members?.length || 0} accent="#10b981" />
         <DetailRow icon={Calendar} label="Registered" value={formatDateTime(detail.createdAt)} accent="#8a9ba6" />
       </div>
-    </div>
-  )
-}
 
-/* ================================================================== */
-/*  Description                                                        */
-/* ================================================================== */
-
-function DescriptionTab({ detail }) {
-  return (
-    <div>
-      {detail.description ? (
-        <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-5">
-          <RichTextViewer content={detail.description} />
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-12">
-          <FileText size={24} className="mb-2 text-[#8a9ba6]" />
-          <p className="text-[13px] text-[#7a8e99]">No description provided.</p>
-        </div>
-      )}
-    </div>
-  )
-}
-
-/* ================================================================== */
-/*  Members                                                            */
-/* ================================================================== */
-
-function MembersTab({ members }) {
-  return (
-    <div className="space-y-2.5">
-      {members && members.length > 0 ? (
-        members.map((m) => (
-          <div key={m.userId} className="flex items-center gap-4 rounded-xl border border-[#e8ecf0] bg-white px-4 py-3 transition-colors hover:border-[#d7e0e5]">
-            <Avatar src={m.avatarUrl} name={`${m.firstName} ${m.lastName}`} size="h-10 w-10" textSize="text-[14px]" />
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2.5">
-                <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{m.firstName} {m.lastName}</p>
-                {m.isLeader && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[#fff3e0] px-2.5 py-0.5 text-[10px] font-semibold text-[#e65100] ring-1 ring-orange-200/60">
-                    <Crown size={10} />
-                    Leader
-                  </span>
-                )}
+      {/* Members */}
+      {detail.members && detail.members.length > 0 && (
+        <div>
+          <p className="mb-3 text-[13px] font-bold text-[#1f2f3a]">{detail.members.length} Member{detail.members.length !== 1 ? 's' : ''}</p>
+          <div className="space-y-2.5">
+            {detail.members.map((m) => (
+              <div key={m.userId} className="flex items-center gap-4 rounded-xl border border-[#e8ecf0] bg-white px-4 py-3">
+                <Avatar src={m.avatarUrl} name={`${m.firstName} ${m.lastName}`} size="h-10 w-10" textSize="text-[14px]" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2.5">
+                    <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{m.firstName} {m.lastName}</p>
+                    {m.isLeader && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[#fff3e0] px-2.5 py-0.5 text-[10px] font-semibold text-[#e65100] ring-1 ring-orange-200/60">
+                        <Crown size={10} />
+                        Leader
+                      </span>
+                    )}
+                  </div>
+                  <p className="truncate text-[12px] text-[#8a9ba6]">{m.email}</p>
+                </div>
               </div>
-              <p className="truncate text-[12px] text-[#8a9ba6]">{m.email}</p>
-            </div>
+            ))}
           </div>
-        ))
-      ) : (
-        <div className="flex flex-col items-center justify-center py-8">
-          <UserRound size={24} className="mb-2 text-[#8a9ba6]" />
-          <p className="text-[13px] text-[#7a8e99]">No members found.</p>
         </div>
       )}
+
+      {/* Description */}
+      <div>
+        <p className="mb-3 text-[13px] font-bold text-[#1f2f3a]">Description</p>
+        {detail.description ? (
+          <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-5">
+            <RichTextViewer content={detail.description} />
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-[#e8ecf0] bg-[#fafbfc] py-12">
+            <FileText size={24} className="mb-2 text-[#8a9ba6]" />
+            <p className="text-[13px] text-[#7a8e99]">No description provided.</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
