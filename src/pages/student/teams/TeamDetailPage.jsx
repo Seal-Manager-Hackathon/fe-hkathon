@@ -20,10 +20,12 @@ import TeamEventsSection from './TeamEventsSection'
 import InviteModal from './InviteModal'
 import ChangeLeaderModal from './ChangeLeaderModal'
 import TeamInvitationsSection from './TeamInvitationsSection'
+import TeamRegistrationsSection from './TeamRegistrationsSection'
 
 const TABS = [
   { key: 'members', label: 'Members', icon: Users },
   { key: 'events', label: 'Events', icon: Calendar },
+  { key: 'registrations', label: 'Registrations', icon: FileText },
   { key: 'invitations', label: 'Invitations', icon: Send },
 ]
 
@@ -283,6 +285,7 @@ export default function TeamDetailPage() {
             <TeamMembersSection members={detail?.members} teamId={detail?.id} isCurrentUserLeader={isCurrentUserLeader} onKick={handleKick} />
           )}
           {activeTab === 'events' && <TeamEventsSection teamId={detail?.id} />}
+          {activeTab === 'registrations' && <TeamRegistrationsSection teamId={detail?.id} />}
           {activeTab === 'invitations' && <TeamInvitationsSection key={inviteVersion} teamId={detail?.id} />}
         </div>
       </div>
