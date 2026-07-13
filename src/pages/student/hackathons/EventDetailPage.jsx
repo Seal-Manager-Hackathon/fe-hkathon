@@ -211,7 +211,7 @@ function TabRounds({ eventId }) {
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2.5">
-                <h4 className="truncate text-[15px] font-bold text-[#1f2f3a]">{round.name}</h4>
+                <h4 className="truncate text-[15px] font-bold text-[#1f2f3a]">#{round.roundNo} {round.name}</h4>
               </div>
               <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-[#5a6a73]">
                 <span className="inline-flex items-center gap-1">

@@ -290,7 +290,7 @@ function RoundsTab({ eventId }) {
         {rounds.map((round) => (
           <div key={round.id} className="flex flex-col gap-3 rounded-xl border border-[#d7e0e5] bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0 flex-1">
-              <h4 className="truncate text-[15px] font-bold text-[#1f2f3a]">{round.name}</h4>
+              <h4 className="truncate text-[15px] font-bold text-[#1f2f3a]">#{round.roundNo} {round.name}</h4>
               <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-[#5a6a73]">
                 <span className="inline-flex items-center gap-1"><Calendar size={12} className="text-[#8a9ba6]" />{round.startTime ? formatDate(round.startTime) : '—'} – {round.endTime ? formatDate(round.endTime) : '—'}</span>
                 <span className="inline-flex items-center gap-1"><Users size={12} className="text-[#8a9ba6]" />{round.limitTeam ?? '—'} teams</span>
