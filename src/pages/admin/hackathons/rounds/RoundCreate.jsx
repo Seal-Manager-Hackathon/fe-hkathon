@@ -6,7 +6,7 @@ import EntityFormPage from '../../../../components/EntityFormPage'
 import { createRound, getEventDetail, getMaxRoundNo } from '../../../../api/admin'
 import { toast } from '../../../../utils/toast'
 import EventInfoCard from '../../../../components/EventInfoCard'
-import { formatDateTime } from '../../../../utils/format'
+import { formatDateTime, toUTCISO } from '../../../../utils/format'
 import Badge from '../../../../components/Badge'
 
 const INITIAL_FORM = {
@@ -57,11 +57,11 @@ export default function RoundCreate() {
     try {
       const payload = {
         name: form.name.trim(),
-        startTime: form.startTime + ':00.000Z',
-        endTime: form.endTime + ':00.000Z',
+        startTime: toUTCISO(form.startTime),
+        endTime: toUTCISO(form.endTime),
       }
-      if (form.startSubmission) payload.startSubmission = form.startSubmission + ':00.000Z'
-      if (form.endSubmission) payload.endSubmission = form.endSubmission + ':00.000Z'
+      if (form.startSubmission) payload.startSubmission = toUTCISO(form.startSubmission)
+      if (form.endSubmission) payload.endSubmission = toUTCISO(form.endSubmission)
       if (form.limitTeam !== '') payload.limitTeam = Number(form.limitTeam)
       await createRound(eventId, payload)
       toast.success('Round created successfully')

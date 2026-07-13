@@ -7,6 +7,7 @@ import RichTextEditor from '../../../components/RichTextEditor'
 import { createEvent } from '../../../api/staff'
 import { SEASON_OPTIONS_SELECT } from '../../../constants/commonOptions'
 import { toast } from '../../../utils/toast'
+import { toUTCISO } from '../../../utils/format'
 
 const INITIAL_FORM = {
   name: '',
@@ -37,12 +38,12 @@ export default function HackathonCreate() {
     try {
       const payload = {
         name: form.name.trim(),
-        startTime: form.startTime + ':00.000Z',
-        endTime: form.endTime + ':00.000Z',
+        startTime: toUTCISO(form.startTime),
+        endTime: toUTCISO(form.endTime),
       }
       if (form.description.trim()) payload.description = form.description.trim()
       if (form.season) payload.season = form.season
-      if (form.registerLimitTime) payload.registerLimitTime = form.registerLimitTime + ':00.000Z'
+      if (form.registerLimitTime) payload.registerLimitTime = toUTCISO(form.registerLimitTime)
       if (form.limitTeam !== '') payload.limitTeam = Number(form.limitTeam)
       if (form.minMember !== '') payload.minMember = Number(form.minMember)
       if (form.maxMember !== '') payload.maxMember = Number(form.maxMember)

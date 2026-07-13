@@ -7,13 +7,13 @@ import RichTextEditor from '../../../../components/RichTextEditor'
 import { getRoundDetail, getEventDetail, updateRound } from '../../../../api/admin'
 import { toast } from '../../../../utils/toast'
 import EventInfoCard from '../../../../components/EventInfoCard'
-import { formatDateTime } from '../../../../utils/format'
+import { formatDateTime, toUTCISO, toLocalDatetimeInput } from '../../../../utils/format'
 import Badge from '../../../../components/Badge'
 
 
 function toUtcDatetime(iso) {
   if (!iso) return ''
-  return new Date(iso).toISOString().slice(0, 16)
+  return toLocalDatetimeInput(iso)
 }
 
 export default function RoundEdit() {
@@ -66,10 +66,10 @@ export default function RoundEdit() {
       const payload = {}
       if (form.name.trim()) payload.name = form.name.trim()
       if (form.description !== undefined) payload.description = form.description || null
-      if (form.startTime) payload.startTime = form.startTime + ':00.000Z'
-      if (form.endTime) payload.endTime = form.endTime + ':00.000Z'
-      if (form.startSubmission) payload.startSubmission = form.startSubmission + ':00.000Z'
-      if (form.endSubmission) payload.endSubmission = form.endSubmission + ':00.000Z'
+      if (form.startTime) payload.startTime = toUTCISO(form.startTime)
+      if (form.endTime) payload.endTime = toUTCISO(form.endTime)
+      if (form.startSubmission) payload.startSubmission = toUTCISO(form.startSubmission)
+      if (form.endSubmission) payload.endSubmission = toUTCISO(form.endSubmission)
       if (form.limitTeam !== '') payload.limitTeam = Number(form.limitTeam)
 
       await updateRound(roundId, payload)

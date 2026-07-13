@@ -8,7 +8,7 @@ import RichTextEditor from '../../../components/RichTextEditor'
 import { getEventDetail, updateEvent } from '../../../api/staff'
 import { SEASON_OPTIONS_SELECT } from '../../../constants/commonOptions'
 import { toast } from '../../../utils/toast'
-import { formatDate } from '../../../utils/format'
+import { formatDate, toUTCISO, toLocalDatetimeInput } from '../../../utils/format'
 
 const STATUS_OPTIONS = [
   { value: 'Draft', label: 'Draft' },
@@ -74,11 +74,7 @@ export default function HackathonEdit() {
 
   function toUtcDatetime(iso) {
     if (!iso) return ''
-    try {
-      return new Date(iso).toISOString().slice(0, 16)
-    } catch {
-      return iso.slice(0, 16)
-    }
+    return toLocalDatetimeInput(iso)
   }
 
   function updateField(field, value) {
@@ -96,15 +92,15 @@ export default function HackathonEdit() {
       if (event && form.description !== (event.description || '')) payload.description = form.description
       if (event && form.season !== (event.season || '')) payload.season = form.season || null
       if (form.startTime) {
-        const st = form.startTime + ':00.000Z'
+        const st = toUTCISO(form.startTime)
         if (event && st !== event.startTime) payload.startTime = st
       }
       if (form.endTime) {
-        const et = form.endTime + ':00.000Z'
+        const et = toUTCISO(form.endTime)
         if (event && et !== event.endTime) payload.endTime = et
       }
       if (form.registerLimitTime) {
-        const rt = form.registerLimitTime + ':00.000Z'
+        const rt = toUTCISO(form.registerLimitTime)
         if (event && rt !== event.registerLimitTime) payload.registerLimitTime = rt
       } else if (event?.registerLimitTime) {
         payload.registerLimitTime = null
