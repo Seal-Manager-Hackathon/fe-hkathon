@@ -59,7 +59,7 @@ function FilterPickButton({ icon: Icon, label, name, allLabel, onClick }) {
 export default function NextRoundModal({
   open, onClose, eventId, roundId, roundName, roundNo,
   routePrefix = '/admin',
-  fetchTeams, onAdvance, onRevert, fetchTopics,
+  fetchTeams, onAdvance, onRevert, fetchTopics, fetchTracks,
 }) {
   const [items, setItems] = useState([])
   const [total, setTotal] = useState(0)
@@ -320,6 +320,7 @@ export default function NextRoundModal({
         open={trackModalOpen}
         onClose={() => setTrackModalOpen(false)}
         eventId={eventId}
+        fetchTracks={fetchTracks}
         selectedTrackId={filters.trackId}
         onSelect={(id, name) => {
           setFilter('trackId', id)
