@@ -189,19 +189,28 @@ export default function NextRoundModal({
     },
     {
       key: 'trackName', header: 'Track', headerIcon: FileText,
-      render: (row) => (
-        row.trackId
-          ? <Link to={`${routePrefix}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link>
-          : <span className="text-[13px] text-gray-400">—</span>
-      ),
+      render: (row) => {
+        const tid = row.trackId
+        const tname = row.trackName || row.trackTitle || '—'
+        return tid
+          ? <Link to={`${routePrefix}/tracks/${tid}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{tname}</Link>
+          : tname !== '—'
+            ? <span className="text-[13px] text-[#1f2f3a]">{tname}</span>
+            : <span className="text-[13px] text-gray-400">—</span>
+      },
     },
     {
       key: 'topicTitle', header: 'Topic', headerIcon: FileText,
-      render: (row) => (
-        row.topicId && row.trackId
-          ? <Link to={`${routePrefix}/tracks/${row.trackId}/topics`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.topicTitle || '—'}</Link>
-          : <span className="text-[13px] text-gray-400">—</span>
-      ),
+      render: (row) => {
+        const hasTopic = row.topicId
+        const tt = row.topicTitle || row.topicName || '—'
+        const tid = row.trackId
+        return hasTopic && tid
+          ? <Link to={`${routePrefix}/tracks/${tid}/topics`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{tt}</Link>
+          : hasTopic
+            ? <span className="text-[13px] text-[#1f2f3a]">{tt}</span>
+            : <span className="text-[13px] text-gray-400">—</span>
+      },
     },
     {
       key: 'roundName', header: 'Round', headerIcon: Layers,
@@ -324,7 +333,7 @@ export default function NextRoundModal({
         selectedTopicId={filters.topicId}
         onSelect={(id, name) => {
           setFilter('topicId', id)
-          setTrackName(name)
+          setTopicName(name)
         }}
         fetchTopics={fetchTopics}
       />
