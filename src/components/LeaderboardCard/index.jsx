@@ -69,16 +69,6 @@ export default function LeaderboardCard({ team }) {
         <h3 className="text-[15px] font-semibold text-[#1f2f3a] leading-tight">
           {team.name}
         </h3>
-        <div className="flex flex-wrap items-center gap-3 mt-1">
-          <span className="inline-flex items-center gap-1 text-[12px] text-[#5a6a73]">
-            <Calendar size={12} />
-            {team.participatedEvents} {team.participatedEvents === 1 ? 'event' : 'events'}
-          </span>
-          <span className="inline-flex items-center gap-1 text-[12px] text-[#5a6a73]">
-            <Layers size={12} />
-            {team.awards} {team.awards === 1 ? 'award' : 'awards'}
-          </span>
-        </div>
       </div>
 
       {/* Score */}

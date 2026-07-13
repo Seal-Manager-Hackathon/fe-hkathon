@@ -1,11 +1,32 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Trophy } from 'lucide-react';
 import { cn } from '../../../utils/cn';
-import { mockLeaderboardData, AVAILABLE_YEARS, CURRENT_YEAR } from '../../../data/mockLeaderboardData';
+import { getStudentLeaderboard } from '../../../api/student';
 import SeasonSwitcher from '../../../components/SeasonSwitcher';
 import LeaderboardList from '../../../components/LeaderboardList';
 import LeaderboardSkeleton from '../../../components/LeaderboardSkeleton';
 import EmptyLeaderboardState from '../../../components/EmptyLeaderboardState';
+import Pagination from '../../../components/Pagination';
+
+const CURRENT_YEAR = new Date().getFullYear();
+const AVAILABLE_YEARS = [CURRENT_YEAR - 2, CURRENT_YEAR - 1, CURRENT_YEAR, CURRENT_YEAR + 1, CURRENT_YEAR + 2];
+
+const AVATAR_COLORS = [
+  'bg-blue-600', 'bg-emerald-600', 'bg-violet-600', 'bg-rose-600',
+  'bg-amber-600', 'bg-cyan-600', 'bg-indigo-600', 'bg-teal-600',
+  'bg-orange-600', 'bg-green-600', 'bg-slate-600', 'bg-red-600',
+];
+
+function getInitials(name) {
+  if (!name) return '?';
+  return name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+}
+
+function getColor(id) {
+  if (!id) return AVATAR_COLORS[0];
+  const idx = String(id).split('').reduce((s, c) => s + c.charCodeAt(0), 0);
+  return AVATAR_COLORS[idx % AVATAR_COLORS.length];
+}
 
 const PODIUM_CONFIG = {
   gold: {
@@ -43,27 +64,53 @@ const PODIUM_CONFIG = {
   },
 };
 
-// Podium: 2nd (left) | 1st (center) | 3rd (right)
 const PODIUM_ORDER = ['silver', 'gold', 'bronze'];
+const PAGE_SIZE = 10;
 
 export default function YearLeaderboardPage() {
   const [selectedYear, setSelectedYear] = useState(CURRENT_YEAR);
-  const [isLoading, setIsLoading] = useState(true);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [data, setData] = useState(null);
+
+  const fetchData = useCallback(async (year, page) => {
+    setLoading(true);
+    setError('');
+    try {
+      const result = await getStudentLeaderboard(year, { PageIndex: page, PageSize: PAGE_SIZE });
+      setData(result);
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Không thể tải bảng xếp hạng.');
+      setData(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, [selectedYear]);
+    fetchData(selectedYear, pageIndex);
+  }, [selectedYear, pageIndex, fetchData]);
 
-  const yearData = useMemo(
-    () => mockLeaderboardData.find((d) => d.year === selectedYear),
-    [selectedYear]
-  );
+  const totalPages = data ? Math.ceil((data.totalCount || 0) / PAGE_SIZE) : 0;
 
-  const teams = yearData?.teams || [];
-  const top3 = useMemo(() => teams.filter(t => t.rank <= 3 && t.highlight), [teams]);
-  const restTeams = useMemo(() => teams.filter(t => t.rank > 3), [teams]);
+  const teams = useMemo(() => {
+    if (!data?.items) return [];
+    return data.items.map((item) => ({
+      id: item.teamId,
+      rank: item.rank,
+      name: item.teamName,
+      initials: getInitials(item.teamName),
+      avatarColor: getColor(item.teamId),
+      participatedEvents: item.eventCount,
+      awards: item.eventScores?.length || 0,
+      points: item.chapterScore,
+      highlight: item.rank === 1 ? 'gold' : item.rank === 2 ? 'silver' : item.rank === 3 ? 'bronze' : null,
+    }));
+  }, [data]);
+
+  const top3 = useMemo(() => teams.filter(t => t.highlight), [teams]);
+  const restTeams = useMemo(() => teams.filter(t => !t.highlight), [teams]);
 
   const top3Map = useMemo(() => {
     const map = {};
@@ -74,129 +121,82 @@ export default function YearLeaderboardPage() {
   const handleYearChange = (year) => {
     if (AVAILABLE_YEARS.includes(year)) {
       setSelectedYear(year);
+      setPageIndex(1);
     }
   };
 
   const handleBackToCurrent = () => {
     setSelectedYear(CURRENT_YEAR);
+    setPageIndex(1);
   };
 
   return (
     <div className="min-h-screen bg-[#f6f9fb]">
       <div className="mx-auto max-w-[1064px] px-4 py-8 sm:px-6 lg:px-8">
-        {/* ---- Header + Season Switcher ---- */}
+        {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6">
           <div>
-            <h1 className="text-[38px] font-semibold text-[#1f2f3a] tracking-[-0.5px] leading-tight max-sm:text-[30px]">
-              Year Leaderboard
-            </h1>
+            <h1 className="text-[38px] font-semibold text-[#1f2f3a] tracking-[-0.5px] leading-tight max-sm:text-[30px]">Year Leaderboard</h1>
             <p className="mt-1.5 text-[15px] text-[#5a6a73]">
-              Team rankings accumulated across all events in the season
+              {data ? `${data.eventCount || 0} events · ${data.totalCount || 0} teams` : 'Loading...'}
             </p>
           </div>
-          {!isLoading && (
-            <SeasonSwitcher
-              years={AVAILABLE_YEARS}
-              selectedYear={selectedYear}
-              currentYear={CURRENT_YEAR}
-              onChange={handleYearChange}
-            />
+          {!loading && (
+            <SeasonSwitcher years={AVAILABLE_YEARS} selectedYear={selectedYear} currentYear={CURRENT_YEAR} onChange={handleYearChange} />
           )}
         </div>
 
-        {/* ---- Top 3 Podium ---- */}
-        {!isLoading && top3.length > 0 && (
+        {/* Error */}
+        {error && (
+          <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>
+        )}
+
+        {/* Podium */}
+        {!loading && !error && top3.length > 0 && (
           <div className="flex items-end justify-center gap-3 sm:gap-5 mb-8 px-2">
             {PODIUM_ORDER.map((hl) => {
               const team = top3Map[hl];
               if (!team) return null;
               const cfg = PODIUM_CONFIG[hl];
               const isGold = hl === 'gold';
-
               return (
-                <div
-                  key={team.id}
-                  className={cn(
-                    'relative flex flex-col items-center rounded-2xl border-2 bg-gradient-to-b overflow-hidden w-full max-w-[200px] sm:max-w-[240px]',
-                    isGold ? 'sm:max-w-[260px]' : '',
-                    cfg.cardBg, cfg.border, cfg.shadow, cfg.height
-                  )}
-                >
-                  {/* Rank badge */}
-                  <div className={cn(
-                    'absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-gradient-to-r px-3 py-1 shadow-md',
-                    cfg.rankBg
-                  )}>
+                <div key={team.id} className={cn('relative flex flex-col items-center rounded-2xl border-2 bg-gradient-to-b overflow-hidden w-full max-w-[200px] sm:max-w-[240px]', isGold ? 'sm:max-w-[260px]' : '', cfg.cardBg, cfg.border, cfg.shadow, cfg.height)}>
+                  <div className={cn('absolute top-2 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-gradient-to-r px-3 py-1 shadow-md', cfg.rankBg)}>
                     <Trophy size={isGold ? 16 : 13} color="#fff" fill="#fff" />
-                    <span className={cn(
-                      'font-bold text-white',
-                      isGold ? 'text-[13px]' : 'text-[11px]'
-                    )}>{cfg.label}</span>
+                    <span className={cn('font-bold text-white', isGold ? 'text-[13px]' : 'text-[11px]')}>{cfg.label}</span>
                   </div>
-
-                  {/* Avatar */}
-                  <div className={cn(
-                    'flex items-center justify-center rounded-full text-white font-bold ring-4 ring-white/60 shadow-lg mt-8 mb-3',
-                    cfg.avatarSize, team.avatarColor
-                  )}>
-                    {team.initials}
-                  </div>
-
-                  {/* Team name */}
-                  <h3 className={cn(
-                    'font-bold text-[#1f2f3a] leading-tight text-center mb-1 px-2',
-                    isGold ? 'text-[16px]' : 'text-[14px]'
-                  )}>
-                    {team.name}
-                  </h3>
-
-                  {/* Score */}
-                  <p
-                    className={cn(cfg.scoreSize, 'font-extrabold leading-none mb-1')}
-                    style={{ color: cfg.textColor }}
-                  >
-                    {team.points.toFixed(1)}
-                  </p>
-                  <span className="text-[10px] font-semibold text-[#9ca3af] uppercase tracking-widest mb-3">
-                    Points
-                  </span>
-
-                  {/* Meta row */}
-                  <div className="flex items-center gap-3 pt-3 border-t border-black/5 w-full justify-center px-3">
-                    <span className="text-[11px] text-[#5a6a73]">
-                      <span className="font-semibold text-[#1f2f3a]">{team.participatedEvents}</span> evts
-                    </span>
-                    <span className="text-[11px] text-[#5a6a73]">
-                      <span className="font-semibold text-[#1f2f3a]">{team.awards}</span> awds
-                    </span>
-                  </div>
+                  <div className={cn('flex items-center justify-center rounded-full text-white font-bold ring-4 ring-white/60 shadow-lg mt-8 mb-3', cfg.avatarSize, team.avatarColor)}>{team.initials}</div>
+                  <h3 className={cn('font-bold text-[#1f2f3a] leading-tight text-center mb-1 px-2', isGold ? 'text-[16px]' : 'text-[14px]')}>{team.name}</h3>
+                  <p className={cn(cfg.scoreSize, 'font-extrabold leading-none mb-1')} style={{ color: cfg.textColor }}>{team.points.toFixed(1)}</p>
+                  <span className="text-[10px] font-semibold text-[#9ca3af] uppercase tracking-widest mb-3">Points</span>
                 </div>
               );
             })}
           </div>
         )}
 
-        {/* ---- List / Loading / Empty ---- */}
-        {isLoading ? (
+        {/* List */}
+        {loading ? (
           <div className="flex flex-col gap-2.5">
-            {Array.from({ length: 7 }).map((_, i) => (
-              <LeaderboardSkeleton key={i} />
-            ))}
+            {Array.from({ length: 7 }).map((_, i) => <LeaderboardSkeleton key={i} />)}
           </div>
-        ) : teams.length === 0 ? (
+        ) : !error && teams.length === 0 ? (
           <EmptyLeaderboardState onClickBack={handleBackToCurrent} />
-        ) : (
+        ) : !error && teams.length > 0 ? (
           <>
             {restTeams.length > 0 && (
               <div className="mb-3">
-                <h2 className="text-[15px] font-semibold text-[#5a6a73] uppercase tracking-wider">
-                  Other Rankings
-                </h2>
+                <h2 className="text-[15px] font-semibold text-[#5a6a73] uppercase tracking-wider">Other Rankings</h2>
               </div>
             )}
             <LeaderboardList teams={restTeams} />
+            {totalPages > 1 && (
+              <div className="mt-6">
+                <Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} />
+              </div>
+            )}
           </>
-        )}
+        ) : null}
       </div>
     </div>
   );

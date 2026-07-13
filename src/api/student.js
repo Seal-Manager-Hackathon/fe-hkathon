@@ -275,3 +275,12 @@ export async function rejectStudentInvitation(invitationId) {
   const { data } = await api.post(`/student/invitations/${invitationId}/reject`)
   return data.data
 }
+
+/* ------------------------------------------------------------------ */
+/*  Leaderboard                                                        */
+/* ------------------------------------------------------------------ */
+
+export async function getStudentLeaderboard(year, params = {}) {
+  const { data } = await api.get(`/student/events/chapter/${year}/leaderboard`, { params })
+  return data.data
+}
