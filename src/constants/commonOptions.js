@@ -95,6 +95,10 @@ export const reportTypeBadge = {
   Other: 'bg-[#e3f2fd] text-[#1565c0]',
 }
 
+export const REPORT_TYPE_OPTIONS = [
+  { value: 'Other', label: 'Other' },
+]
+
 /* ─── Notification TargetType ─── */
 export const TARGET_TYPE_OPTIONS = [
   { value: 'Personal', label: 'User' },

@@ -2,23 +2,17 @@ import { Link } from 'react-router-dom'
 import Badge from '../../../components/Badge'
 import NotificationTarget from '../../../components/NotificationTarget'
 import { formatDateTime } from '../../../utils/format'
-import { Eye, Edit, Trash2, RotateCcw, Bell, Target, Calendar, CircleCheck, MoreHorizontal } from 'lucide-react'
+import { Eye, Bell, Target, Calendar, CircleCheck, MoreHorizontal } from 'lucide-react'
 
 const actionBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f4f6f8] px-3 py-1.5 text-[13px] font-semibold text-[#064f5d] transition-colors hover:bg-[#e0f2f1]'
-const restoreBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] transition-colors hover:bg-[#c8e6c9] w-[92px]'
-const dangerBtnClass =
-  'inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] transition-colors hover:bg-[#ffcdd2] w-[92px]'
 
 /**
  * Builds table columns for the NotificationsManagement list.
  * @param {Object}     targetDetails - resolved user/team map keyed by userId / "team:teamId"
- * @param {function}   onDelete      - (notification) => void
- * @param {function}   onRestore     - (notification) => void
  * @returns {Array} column descriptors for BaseTable
  */
-export function notificationsColumns(targetDetails = {}, onDelete, onRestore) {
+export function notificationsColumns(targetDetails = {}) {
   return [
     {
       key: 'title',
@@ -73,20 +67,6 @@ export function notificationsColumns(targetDetails = {}, onDelete, onRestore) {
           <Link to={`/staff/notifications/${row.id}`} className={actionBtnClass}>
             <Eye className="h-3.5 w-3.5" /> View
           </Link>
-          {row.isDisable ? (
-            <button onClick={() => onRestore?.(row)} className={restoreBtnClass}>
-              <RotateCcw className="h-3.5 w-3.5" /> Restore
-            </button>
-          ) : (
-            <>
-              <Link to={`/staff/notifications/${row.id}/edit`} className={actionBtnClass}>
-                <Edit className="h-3.5 w-3.5" /> Edit
-              </Link>
-              <button onClick={() => onDelete?.(row)} className={dangerBtnClass}>
-                <Trash2 className="h-3.5 w-3.5" /> Delete
-              </button>
-            </>
-          )}
         </div>
       ),
     },

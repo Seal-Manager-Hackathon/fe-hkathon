@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { BellPlus } from 'lucide-react'
-import { getNotifications, getUserDetail, getTeamDetail, deleteNotification, restoreNotification } from '../../../api/staff'
+import { getNotifications, getUserDetail, getTeamDetail } from '../../../api/staff'
 import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import { notificationsFilters } from './NotificationsFilters'
 import { notificationsColumns } from './NotificationsColumns'
 import { useServerPagination } from '../../../hooks/useServerPagination'
-import { toast, confirm } from '../../../utils/toast'
+import { toast } from '../../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -85,32 +85,8 @@ export default function NotificationsManagement() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notifications])
 
-  async function handleDelete(n) {
-    const ok = await confirm('Delete Notification', `Are you sure you want to delete "${n.title}"?`)
-    if (!ok) return
-    try {
-      await deleteNotification(n.id)
-      toast.success('Notification disabled')
-      refetch()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to delete notification.')
-    }
-  }
-
-  async function handleRestore(n) {
-    const ok = await confirm('Restore Notification', `Are you sure you want to restore "${n.title}"?`)
-    if (!ok) return
-    try {
-      await restoreNotification(n.id)
-      toast.success('Notification restored')
-      refetch()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to restore notification.')
-    }
-  }
-
   const columns = useMemo(
-    () => notificationsColumns(targetDetails, handleDelete, handleRestore),
+    () => notificationsColumns(targetDetails),
     [targetDetails],
   )
 

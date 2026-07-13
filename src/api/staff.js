@@ -514,6 +514,16 @@ export async function getReportDetail(reportId) {
 }
 
 /**
+ * Create a new report.
+ * @param {{ title: string, description: string, typeReport: string }} payload
+ * @returns {Promise<{ message: string }>}
+ */
+export async function createReport(payload) {
+  const { data } = await api.post('/staff/reports', payload)
+  return data
+}
+
+/**
  * Update report status (Resolve / Reject).
  * @param {string} reportId
  * @param {'Pending'|'Resolved'|'Rejected'} status

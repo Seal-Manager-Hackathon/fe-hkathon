@@ -17,7 +17,7 @@ const TARGET_TYPE_SELECT = [
   ...STAFF_TARGET_OPTIONS,
 ]
 
-export default function NotificationsCreate() {
+export default function ReportCreate() {
   const navigate = useNavigate()
   const [form, setForm] = useState({
     title: '',
@@ -87,9 +87,9 @@ export default function NotificationsCreate() {
       }
       await createNotification(payload)
       toast.success('Notification sent')
-      navigate('/staff/notifications')
+      navigate('/staff/reports')
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to create notification.')
+      toast.error(err?.response?.data?.message || 'Failed to send notification.')
     } finally {
       setSaving(false)
     }
@@ -97,10 +97,10 @@ export default function NotificationsCreate() {
 
   return (
     <EntityFormPage
-      backUrl="/staff/notifications"
-      backLabel="Back to Notifications"
-      title="Create Notification"
-      description="Create a new notification. Delivery depends on the selected target."
+      backUrl="/staff/reports"
+      backLabel="Back to Reports"
+      title="Send Notification"
+      description="Send a notification to a specific user or team."
       saveLabel="Send Notification"
       savingLabel="Sending..."
       canSave={canSave}
@@ -113,7 +113,7 @@ export default function NotificationsCreate() {
             type="text"
             value={form.title}
             onChange={(e) => updateField('title', e.target.value)}
-            placeholder="e.g. New hackathon registration is open"
+            placeholder="e.g. Your team has been flagged"
             className="field-input"
           />
         </FormField>
@@ -177,4 +177,3 @@ export default function NotificationsCreate() {
     </EntityFormPage>
   )
 }
-

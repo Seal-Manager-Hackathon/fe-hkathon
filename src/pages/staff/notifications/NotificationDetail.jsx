@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Edit, Calendar, Clock, Target, BadgeCheck } from 'lucide-react'
+import { Calendar, Clock, Target, BadgeCheck } from 'lucide-react'
 import { getNotificationDetail, getUserDetail, getTeamDetail } from '../../../api/staff'
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
@@ -122,13 +122,6 @@ export default function NotificationDetail() {
             />
           </div>
         </div>
-        <Link
-          to={`/staff/notifications/${id}/edit`}
-          className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#05404a] sm:px-5 sm:py-2.5 sm:text-[14px] shrink-0 self-start sm:self-auto"
-        >
-          <Edit className="h-4 w-4" />
-          Edit Notification
-        </Link>
       </div>
 
       {/* Details card */}
