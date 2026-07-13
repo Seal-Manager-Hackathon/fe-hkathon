@@ -115,6 +115,8 @@ const LecturerTrackNotificationsPage = lazy(() => import('../pages/lecture/track
 const LecturerTrackNotificationCreate = lazy(() => import('../pages/lecture/tracks/LecturerTrackNotificationCreate'))
 const JudgeRoundSubmissionsPage = lazy(() => import('../pages/lecture/judge/JudgeRoundSubmissionsPage'))
 const JudgeSubmissionDetailPage = lazy(() => import('../pages/lecture/judge/JudgeSubmissionDetailPage'))
+const LecturerProfile = lazy(() => import('../pages/lecture/profile/LecturerProfile'))
+const LecturerProfileEdit = lazy(() => import('../pages/lecture/profile/LecturerProfileEdit'))
 
 const ForgotPasswordPage = lazy(() => import('../pages/auth/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('../pages/auth/ResetPasswordPage'))
@@ -320,8 +322,8 @@ export const routes = [
       },
       {
         path: 'profile', children: [
-          { index: true, element: <Suspense fallback={<RouteFallback />}><StaffProfile /></Suspense> },
-          { path: 'edit', element: <Suspense fallback={<RouteFallback />}><StaffProfileEdit /></Suspense> },
+          { index: true, element: <Suspense fallback={<RouteFallback />}><LecturerProfile /></Suspense> },
+          { path: 'edit', element: <Suspense fallback={<RouteFallback />}><LecturerProfileEdit /></Suspense> },
         ]
       },
     ]

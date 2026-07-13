@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom'
-import { Edit, Mail, Shield, Calendar, Hash, GraduationCap, BadgeCheck, UserCheck } from 'lucide-react'
+import { Edit, Mail, Shield, Calendar, Hash, GraduationCap, BadgeCheck, UserCheck, Phone, MapPin, Link as LinkIcon, Cake } from 'lucide-react'
 import Badge from '../Badge'
 import CardPanel from '../CardPanel'
 import InfoRow from '../InfoRow'
 import Avatar from '../Avatar'
-import { formatDateTime } from '../../utils/format'
+import { formatDate, formatDateTime } from '../../utils/format'
 import { roleBadge } from '../../constants/commonOptions'
 import { getUserRoleId } from '../../utils/userRoleId'
 
@@ -49,7 +49,10 @@ export default function ProfileInfo({ user, editTo, children }) {
           </InfoRow>
           <InfoRow label="Full Name" icon={UserCheck}><p className="text-[14px] font-medium text-[#1f2f3a]">{displayName}</p></InfoRow>
           <InfoRow label="Email" icon={Mail}><p className="text-[14px] text-[#064f5d]">{user?.email || '—'}</p></InfoRow>
+          <InfoRow label="Phone" icon={Phone}><p className="text-[14px] text-[#1f2f3a]">{user?.phoneNumber || '—'}</p></InfoRow>
           <InfoRow label="College" icon={GraduationCap}><p className="text-[14px] text-[#1f2f3a]">{user?.college || '—'}</p></InfoRow>
+          <InfoRow label="Date of Birth" icon={Cake}><p className="text-[14px] text-[#1f2f3a]">{formatDate(user?.dateOfBirth)}</p></InfoRow>
+          <InfoRow label="Address" icon={MapPin}><p className="text-[14px] text-[#1f2f3a]">{user?.address || '—'}</p></InfoRow>
           <InfoRow label="Role" icon={Shield}>
             <Badge label={user?.role || 'Student'} className={roleBadge[user?.role] || 'bg-[#e3f2fd] text-[#1565c0]'} />
           </InfoRow>
@@ -61,6 +64,18 @@ export default function ProfileInfo({ user, editTo, children }) {
               <Badge label="Not verified" className="bg-[#fff3e0] text-[#e65100]" />
             )}
           </InfoRow>
+          {user?.linkUrl && (
+            <InfoRow label="Link" icon={LinkIcon}>
+              <a
+                href={user.linkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[14px] text-[#064f5d] hover:underline"
+              >
+                {user.linkUrl}
+              </a>
+            </InfoRow>
+          )}
           <InfoRow label="Created" icon={Calendar}>
             <p className="text-[14px] text-[#1f2f3a]">{formatDateTime(user?.createdAt)}</p>
           </InfoRow>
