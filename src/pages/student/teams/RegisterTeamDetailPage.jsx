@@ -7,6 +7,8 @@ import {
 } from 'lucide-react'
 import {
   getStudentRegisterTeamDetail,
+  getStudentTrackDetail,
+  getStudentTopicDetail,
   getStudentRounds,
   getStudentRoundDetail,
   getStudentAwards,
@@ -39,6 +41,8 @@ export default function RegisterTeamDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState('overview')
+  const [trackDetail, setTrackDetail] = useState(null)
+  const [topicDetail, setTopicDetail] = useState(null)
   const currentUserId = user?.id
 
   useEffect(() => {
@@ -49,7 +53,22 @@ export default function RegisterTeamDetailPage() {
       setError('')
       try {
         const data = await getStudentRegisterTeamDetail(registerTeamId)
-        if (!cancelled) setDetail(data)
+        if (cancelled) return
+        setDetail(data)
+
+        // Fetch track detail if available
+        if (data.trackId) {
+          getStudentTrackDetail(data.trackId).then((track) => {
+            if (!cancelled) setTrackDetail(track)
+          }).catch(() => {})
+        }
+
+        // Fetch topic detail if available
+        if (data.topicId) {
+          getStudentTopicDetail(data.topicId).then((topic) => {
+            if (!cancelled) setTopicDetail(topic)
+          }).catch(() => {})
+        }
       } catch (err) {
         if (!cancelled) {
           if (err?.response?.status === 404) setError('Not found')
@@ -163,7 +182,7 @@ export default function RegisterTeamDetailPage() {
 
           {/* Tab content */}
           <div className="p-6">
-            {activeTab === 'overview' && <OverviewTab detail={detail} />}
+            {activeTab === 'overview' && <OverviewTab detail={detail} trackDetail={trackDetail} topicDetail={topicDetail} />}
             {activeTab === 'rounds' && <RoundsTab eventId={detail.eventId} registerTeamId={registerTeamId} members={detail.members} currentUserId={currentUserId} />}
             {activeTab === 'awards' && <AwardsTab eventId={detail.eventId} />}
             {activeTab === 'assignments' && <AssignmentsTab eventId={detail.eventId} />}
@@ -179,15 +198,15 @@ export default function RegisterTeamDetailPage() {
 /*  Overview                                                           */
 /* ================================================================== */
 
-function OverviewTab({ detail }) {
+function OverviewTab({ detail, trackDetail, topicDetail }) {
   return (
     <div className="space-y-5">
       <div className="divide-y divide-[#f0f4f8] rounded-xl border border-[#e8ecf0]">
         <LinkRow icon={Calendar} label="Event" to={`/hackathons/${detail.eventId}`} value={detail.eventName} accent="#3b82f6" />
         <LinkRow icon={Users} label="Team" to={`/teams/${detail.teamId}`} value={detail.teamName} accent="#10b981" />
         {detail.roundName && <DetailRow icon={Clock} label="Round" value={`#${detail.roundNo} ${detail.roundName}`} accent="#f59e0b" />}
-        {detail.trackTitle && <DetailRow icon={FileText} label="Track" value={detail.trackTitle} accent="#8b5cf6" />}
-        {detail.topicTitle && <DetailRow icon={FileText} label="Topic" value={detail.topicTitle} accent="#8b5cf6" />}
+        {detail.trackTitle ? <DetailRow icon={FileText} label="Track" value={detail.trackTitle} accent="#8b5cf6" /> : <DetailRow icon={FileText} label="Track" value="—" accent="#8a9ba6" />}
+        {detail.topicTitle ? <DetailRow icon={FileText} label="Topic" value={detail.topicTitle} accent="#8b5cf6" /> : <DetailRow icon={FileText} label="Topic" value="—" accent="#8a9ba6" />}
         <DetailRow icon={Calendar} label="Registered" value={formatDateTime(detail.createdAt)} accent="#8a9ba6" />
       </div>
 
@@ -228,6 +247,34 @@ function OverviewTab({ detail }) {
           <div className="flex flex-col items-center justify-center rounded-xl border border-[#e8ecf0] bg-[#fafbfc] py-12">
             <FileText size={24} className="mb-2 text-[#8a9ba6]" />
             <p className="text-[13px] text-[#7a8e99]">No description provided.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Track Description */}
+      <div>
+        <p className="mb-3 text-[13px] font-bold text-[#1f2f3a]">Track Description</p>
+        {detail.trackTitle && trackDetail?.description ? (
+          <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-5">
+            <RichTextViewer content={trackDetail.description} />
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-[#e8ecf0] bg-[#fafbfc] py-6">
+            <p className="text-[13px] text-[#7a8e99]">—</p>
+          </div>
+        )}
+      </div>
+
+      {/* Topic Description */}
+      <div>
+        <p className="mb-3 text-[13px] font-bold text-[#1f2f3a]">Topic Description</p>
+        {detail.topicTitle && topicDetail?.description ? (
+          <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-5">
+            <RichTextViewer content={topicDetail.description} />
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-[#e8ecf0] bg-[#fafbfc] py-6">
+            <p className="text-[13px] text-[#7a8e99]">—</p>
           </div>
         )}
       </div>

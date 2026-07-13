@@ -257,6 +257,16 @@ export async function getStudentRegisterTeamDetail(registerTeamId) {
   return data.data
 }
 
+export async function getStudentTrackDetail(trackId) {
+  const { data } = await api.get(`/student/tracks/${trackId}`)
+  return data.data
+}
+
+export async function getStudentTopicDetail(topicId) {
+  const { data } = await api.get(`/student/topics/${topicId}`)
+  return data.data
+}
+
 /**
  * Register a team to an event (team leader only).
  * POST /api/v1/student/register-teams
