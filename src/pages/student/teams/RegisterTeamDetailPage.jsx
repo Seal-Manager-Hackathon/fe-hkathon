@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Users, Calendar, Crown, FileText, Clock,
-  Info, UserRound, Layers, Award, MapPin, UsersRound,
-  Trophy, Eye, Upload, X, ExternalLink,
+  Info, UserRound, Layers, Award, MapPin, Bell,
+  Trophy, Eye, Upload, X, ExternalLink, Mail, Shield,
 } from 'lucide-react'
 import {
   getStudentRegisterTeamDetail,
@@ -13,10 +13,11 @@ import {
   getStudentRoundDetail,
   getStudentAwards,
   getStudentEventLeaderboard,
-  getStudentEventAssignments,
   getStudentTeamSubmissions,
   submitStudentSubmission,
   getStudentSubmissionDetail,
+  getStudentMentorNotifications,
+  getStudentMentorNotificationDetail,
 } from '../../../api/student'
 import Avatar from '../../../components/Avatar'
 import RichTextViewer from '../../../components/RichTextViewer'
@@ -30,7 +31,7 @@ const TABS = [
   { key: 'overview', label: 'Overview', icon: Info },
   { key: 'rounds', label: 'Rounds', icon: Layers },
   { key: 'awards', label: 'Awards', icon: Award },
-  { key: 'assignments', label: 'Assignments', icon: UsersRound },
+  { key: 'notifications', label: 'Notifications', icon: Bell },
   { key: 'leaderboard', label: 'Leaderboard', icon: MapPin },
 ]
 
@@ -185,7 +186,7 @@ export default function RegisterTeamDetailPage() {
             {activeTab === 'overview' && <OverviewTab detail={detail} trackDetail={trackDetail} topicDetail={topicDetail} />}
             {activeTab === 'rounds' && <RoundsTab eventId={detail.eventId} registerTeamId={registerTeamId} members={detail.members} currentUserId={currentUserId} />}
             {activeTab === 'awards' && <AwardsTab eventId={detail.eventId} />}
-            {activeTab === 'assignments' && <AssignmentsTab eventId={detail.eventId} />}
+            {activeTab === 'notifications' && <NotificationsTab registerTeamId={registerTeamId} />}
             {activeTab === 'leaderboard' && <LeaderboardTab eventId={detail.eventId} />}
           </div>
         </div>
@@ -566,72 +567,256 @@ function AwardsTab({ eventId }) {
 }
 
 /* ================================================================== */
-/*  Assignments                                                        */
+/*  Notifications (Mentor)                                             */
 /* ================================================================== */
 
-function AssignmentsTab({ eventId }) {
-  const [judges, setJudges] = useState([])
-  const [mentors, setMentors] = useState([])
+function NotificationsTab({ registerTeamId }) {
+  const [notifications, setNotifications] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [pageIndex, setPageIndex] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const pageSize = 10
+
+  // View modal state
+  const [viewNotifId, setViewNotifId] = useState(null)
 
   useEffect(() => {
-    if (!eventId) return
+    if (!registerTeamId) return
     let cancelled = false
-    async function fetchAll() {
+    async function fetchNotifs() {
       setLoading(true)
+      setError('')
       try {
-        const [j, m] = await Promise.all([
-          getStudentEventAssignments(eventId, { EventRole: 'Judge', PageSize: 100 }),
-          getStudentEventAssignments(eventId, { EventRole: 'Mentor', PageSize: 100 }),
-        ])
-        if (!cancelled) { setJudges(j.items || []); setMentors(m.items || []) }
-      } catch { if (!cancelled) { setJudges([]); setMentors([]) } }
-      finally { if (!cancelled) setLoading(false) }
+        const result = await getStudentMentorNotifications(registerTeamId, { PageIndex: pageIndex, PageSize: pageSize })
+        if (!cancelled) {
+          setNotifications(result.notifications || [])
+          setTotalCount(result.totalCount || 0)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          const msg = err?.response?.data?.message || 'Failed to load notifications.'
+          setError(msg)
+          setNotifications([])
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
     }
-    fetchAll()
+    fetchNotifs()
     return () => { cancelled = true }
-  }, [eventId])
+  }, [registerTeamId, pageIndex, pageSize])
 
-  if (loading) return <div className="space-y-6">{[1, 2].map((g) => <div key={g}><div className="mb-3 h-6 w-32 animate-pulse rounded bg-gray-200" /><div className="grid grid-cols-1 gap-2 lg:grid-cols-2">{[1, 2].map((i) => <div key={i} className="h-[68px] animate-pulse rounded-xl bg-gray-100" />)}</div></div>)}</div>
+  const totalPages = Math.ceil(totalCount / pageSize)
 
-  if (!judges.length && !mentors.length) return (
-    <div className="flex flex-col items-center justify-center py-12">
-      <UsersRound size={24} className="mb-2 text-[#8a9ba6]" />
-      <p className="text-[13px] text-[#7a8e99]">No assignments yet.</p>
+  if (loading) return (
+    <div className="space-y-3">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-[100px] animate-pulse rounded-xl bg-gray-100" />
+      ))}
     </div>
   )
 
-  function PersonCard({ person }) {
+  if (error) {
     return (
-      <div className="flex items-center gap-3 rounded-xl border border-[#e8ecf0] bg-white px-4 py-3">
-        <Avatar src={person.avatarUrl} name={`${person.firstName} ${person.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{person.firstName} {person.lastName}</p>
-          <p className="truncate text-[12px] text-[#8a9ba6]">{person.email}</p>
-          {person.assignTracks?.length > 0 && (
-            <p className="mt-0.5 truncate text-[11px] text-[#1565c0]">{person.assignTracks.filter(t => !t.isDisable).map(t => t.title).join(', ')}</p>
-          )}
-        </div>
+      <div className="flex flex-col items-center justify-center py-12">
+        <Bell size={24} className="mb-2 text-[#dc2626]" />
+        <p className="text-[13px] text-[#dc2626]">{error}</p>
       </div>
     )
   }
 
-  function GroupBlock({ title, items }) {
-    if (!items.length) return null
+  if (notifications.length === 0) {
     return (
-      <div className="mb-6 last:mb-0">
-        <div className="mb-3 flex items-center gap-2">
-          <h3 className="text-[15px] font-bold text-[#1f2f3a]">{title}</h3>
-          <span className="rounded-md bg-[#f0f0f0] px-2 py-0.5 text-[12px] font-semibold text-[#5a6a73]">{items.length} person{items.length !== 1 ? 's' : ''}</span>
-        </div>
-        <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-          {items.map((p) => <PersonCard key={p.assignEventId} person={p} />)}
-        </div>
+      <div className="flex flex-col items-center justify-center py-12">
+        <Bell size={24} className="mb-2 text-[#8a9ba6]" />
+        <p className="text-[13px] text-[#7a8e99]">No notifications yet.</p>
       </div>
     )
   }
 
-  return <div className="space-y-6"><GroupBlock title="Judge" items={judges} /><GroupBlock title="Mentor" items={mentors} /></div>
+  return (
+    <div>
+      <div className="space-y-3">
+        {notifications.map((n) => (
+          <div key={n.id} className="flex items-start gap-4 rounded-xl border border-[#e8ecf0] bg-white px-5 py-4">
+            <Avatar
+              src={n.mentorAvatarUrl}
+              name={`${n.mentorFirstName} ${n.mentorLastName}`}
+              size="h-10 w-10 shrink-0"
+              textSize="text-[14px]"
+            />
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h4 className="truncate text-[14px] font-bold text-[#1f2f3a]">{n.title}</h4>
+                {n.trackTitle && (
+                  <span className="shrink-0 rounded-full bg-[#e3f2fd] px-2.5 py-0.5 text-[10px] font-semibold text-[#1565c0]">
+                    {n.trackTitle}
+                  </span>
+                )}
+              </div>
+              <p className="mt-1 text-[13px] text-[#5a6a73] line-clamp-2">{n.description}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-[#8a9ba6]">
+                <span className="inline-flex items-center gap-1">
+                  <Mail size={12} />
+                  {n.mentorFirstName} {n.mentorLastName}
+                </span>
+                <span>{formatDateTime(n.createdAt)}</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setViewNotifId(n.id)}
+              className="shrink-0 inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#1f78d1] transition-colors hover:bg-[#f0f7ff] hover:border-[#1f78d1]/30"
+            >
+              <Eye size={15} />
+              View
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {totalPages > 1 && (
+        <div className="mt-5">
+          <Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} />
+        </div>
+      )}
+
+      {/* View Notification Detail Modal */}
+      <ViewNotificationModal
+        notificationId={viewNotifId}
+        onClose={() => setViewNotifId(null)}
+      />
+    </div>
+  )
+}
+
+/* ================================================================== */
+/*  View Notification Modal                                            */
+/* ================================================================== */
+
+function ViewNotificationModal({ notificationId, onClose }) {
+  const [detail, setDetail] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!notificationId) return
+    let cancelled = false
+    async function fetchDetail() {
+      setLoading(true)
+      setError('')
+      try {
+        const data = await getStudentMentorNotificationDetail(notificationId)
+        if (!cancelled) setDetail(data)
+      } catch (err) {
+        if (!cancelled) {
+          setError(err?.response?.data?.message || 'Failed to load notification detail.')
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    fetchDetail()
+    return () => { cancelled = true }
+  }, [notificationId])
+
+  if (!notificationId) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/40" />
+      <div
+        className="relative z-10 w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#e3f2fd]">
+              <Bell className="h-5 w-5 text-[#1565c0]" />
+            </div>
+            <h3 className="text-[16px] font-bold text-[#1f2f3a] truncate">
+              {loading ? 'Loading...' : detail?.title || 'Notification Detail'}
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-4 shrink-0 cursor-pointer rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-auto px-6 py-5">
+          {loading ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 shrink-0 animate-pulse rounded-full bg-gray-200" />
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-4 w-2/3 animate-pulse rounded bg-gray-200" />
+                  <div className="h-3 w-1/2 animate-pulse rounded bg-gray-200" />
+                </div>
+              </div>
+              <div className="h-5 w-1/2 animate-pulse rounded bg-gray-200" />
+              <div className="h-5 w-1/3 animate-pulse rounded bg-gray-200" />
+              <div className="h-5 w-2/3 animate-pulse rounded bg-gray-200" />
+              <div className="h-20 animate-pulse rounded bg-gray-100" />
+            </div>
+          ) : error ? (
+            <p className="text-[14px] text-[#c62828]">{error}</p>
+          ) : detail ? (
+            <div className="space-y-5">
+              {/* Mentor info */}
+              <div className="flex items-center gap-3 rounded-xl border border-[#e8ecf0] bg-[#fafbfc] px-4 py-3.5">
+                <Avatar
+                  src={detail.mentorAvatarUrl}
+                  name={`${detail.mentorFirstName} ${detail.mentorLastName}`}
+                  size="h-12 w-12 shrink-0"
+                  textSize="text-[15px]"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[15px] font-bold text-[#1f2f3a]">{detail.mentorFirstName} {detail.mentorLastName}</p>
+                  <p className="truncate text-[12px] text-[#8a9ba6]">{detail.mentorEmail}</p>
+                  {detail.mentorRole && (
+                    <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-[#f0faff] px-2.5 py-0.5 text-[10px] font-semibold text-[#00897b] ring-1 ring-[#00897b]/20">
+                      <Shield size={10} />
+                      {detail.mentorRole}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Detail rows */}
+              <div className="divide-y divide-[#f0f4f8] rounded-xl border border-[#e8ecf0]">
+                {detail.eventName && (
+                  <DetailRow icon={Calendar} label="Event" value={detail.eventName} accent="#3b82f6" />
+                )}
+                {detail.trackTitle && (
+                  <DetailRow icon={Layers} label="Track" value={detail.trackTitle} accent="#8b5cf6" />
+                )}
+                <DetailRow icon={Clock} label="Created" value={formatDateTime(detail.createdAt)} accent="#8a9ba6" />
+                {detail.updatedAt && (
+                  <DetailRow icon={Clock} label="Updated" value={formatDateTime(detail.updatedAt)} accent="#8a9ba6" />
+                )}
+              </div>
+
+              {/* Description */}
+              {detail.description && (
+                <div>
+                  <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Description</p>
+                  <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4">
+                    <p className="text-[14px] text-[#5a6a73] leading-relaxed whitespace-pre-wrap">{detail.description}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 /* ================================================================== */

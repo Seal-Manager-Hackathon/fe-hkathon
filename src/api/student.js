@@ -354,3 +354,30 @@ export async function getStudentSubmissionDetail(submissionId) {
   const { data } = await api.get(`/student/submissions/${submissionId}`)
   return data.data
 }
+
+/* ------------------------------------------------------------------ */
+/*  Mentor Notifications                                               */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Get paginated mentor notifications for a register team's track.
+ * GET /api/v1/student/register-teams/{registerTeamId}/mentor-notifications
+ * @param {string} registerTeamId
+ * @param {Object} [params] - { pageIndex?, pageSize? }
+ * @returns {Promise<{ notifications: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getStudentMentorNotifications(registerTeamId, params = {}) {
+  const { data } = await api.get(`/student/register-teams/${registerTeamId}/mentor-notifications`, { params })
+  return data.data
+}
+
+/**
+ * Get detail of a single mentor notification.
+ * GET /api/v1/student/mentor-notifications/{mentorNotificationId}
+ * @param {string} mentorNotificationId
+ * @returns {Promise<object>}
+ */
+export async function getStudentMentorNotificationDetail(mentorNotificationId) {
+  const { data } = await api.get(`/student/mentor-notifications/${mentorNotificationId}`)
+  return data.data
+}
