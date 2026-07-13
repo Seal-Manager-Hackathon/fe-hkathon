@@ -356,6 +356,63 @@ export async function getStudentSubmissionDetail(submissionId) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Student Notifications                                             */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Get paginated student notifications (Personal, Team, System).
+ * GET /api/v1/student/notifications
+ * @param {Object} [params] - { keyword?, targetType?, status?, fromDate?, toDate?, pageIndex?, pageSize? }
+ * @returns {Promise<{ notifications: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getStudentNotifications(params = {}) {
+  const { data } = await api.get('/student/notifications', { params })
+  return data.data
+}
+
+/**
+ * Get detail of a single student notification.
+ * GET /api/v1/student/notifications/{notificationId}
+ * @param {string} notificationId
+ * @returns {Promise<object>}
+ */
+export async function getStudentNotificationDetail(notificationId) {
+  const { data } = await api.get(`/student/notifications/${notificationId}`)
+  return data.data
+}
+
+/**
+ * Get unread notification count for the current student.
+ * GET /api/v1/student/notifications/unread-count
+ * @returns {Promise<{ count: number }>}
+ */
+export async function getStudentNotificationUnreadCount() {
+  const { data } = await api.get('/student/notifications/unread-count')
+  return data.data
+}
+
+/**
+ * Mark a single notification as read.
+ * POST /api/v1/student/notifications/{notificationId}/read
+ * @param {string} notificationId
+ * @returns {Promise<object>}
+ */
+export async function markStudentNotificationRead(notificationId) {
+  const { data } = await api.post(`/student/notifications/${notificationId}/read`)
+  return data.data
+}
+
+/**
+ * Mark all student notifications as read.
+ * POST /api/v1/student/notifications/read-all
+ * @returns {Promise<object>}
+ */
+export async function markStudentAllNotificationsRead() {
+  const { data } = await api.post('/student/notifications/read-all')
+  return data.data
+}
+
+/* ------------------------------------------------------------------ */
 /*  Mentor Notifications                                               */
 /* ------------------------------------------------------------------ */
 

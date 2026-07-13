@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import RichTextViewer from '../RichTextViewer'
 
 export default function NotificationModal({ notification, onClose }) {
   if (!notification) return null
@@ -16,7 +17,7 @@ export default function NotificationModal({ notification, onClose }) {
           </button>
         </div>
         <div className="rounded-xl bg-[#f4f6f8] p-5">
-          <p className="text-[14px] leading-relaxed text-gray-700 whitespace-pre-wrap">{notification.body}</p>
+          <RichTextViewer content={notification.body} />
         </div>
         <div className="mt-5 flex justify-end">
           <button onClick={onClose} className="cursor-pointer rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a]">Close</button>

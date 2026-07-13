@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Menu } from 'lucide-react'
-import { MOCK_NOTIFICATIONS } from '../../data/notifications'
+import useNotifications from '../../hooks/useNotifications'
 import NotificationModal from '../NotificationModal'
 import UserMenu from '../UserMenu'
 import NotificationBell from './NotificationBell'
@@ -14,13 +14,17 @@ export default function Header({
   onToggleSidebar,
 }) {
   const [open, setOpen] = useState(false)
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS)
   const [selected, setSelected] = useState(null)
   const ref = useRef(null)
 
-  const unreadCount = notifications.filter((n) => !n.read).length
+  const { notifications, unreadCount, markAsRead, markAllRead } = useNotifications(user)
+
   const viewAllTo =
-    user?.role === 'Admin' ? '/admin/my-notifications' : '/notifications'
+    user?.role === 'Admin'
+      ? '/admin/my-notifications'
+      : user?.role === 'Staff'
+        ? '/staff/my-notifications'
+        : '/my-notifications'
   const resolvedUser = user || { name: 'Guest visitor' }
 
   useEffect(() => {
@@ -31,18 +35,6 @@ export default function Header({
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  function markAsRead(id) {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    )
-  }
-
-  const markAllRead = useCallback(() => {
-    setNotifications((prev) =>
-      prev.map((n) => ({ ...n, read: true })),
-    )
   }, [])
 
   return (
