@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Calendar, Clock, Users, Flag, UserPlus, FileText,
-  Layers, Award, MapPin, BarChart3, Eye, X, ListChecks,
+  Layers, Award, MapPin, BarChart3, Eye, X, ListChecks, ArrowRight,
 } from 'lucide-react'
 import { getStudentEventDetail, getStudentRounds, getStudentRoundDetail, getStudentRoundCriteriaTemplates, getStudentCriteriaTemplateDetail } from '../../../api/student'
 import RichTextViewer from '../../../components/RichTextViewer'
@@ -39,11 +39,11 @@ const STATUS_STYLES = {
 }
 
 const TABS = [
-  { key: 'description', label: 'Description' },
-  { key: 'rounds', label: 'Rounds' },
-  { key: 'criteria', label: 'Criteria' },
-  { key: 'awards', label: 'Awards' },
-  { key: 'leaderboard', label: 'Leaderboard' },
+  { key: 'description', label: 'Description', icon: FileText },
+  { key: 'rounds', label: 'Rounds', icon: Layers },
+  { key: 'criteria', label: 'Criteria', icon: BarChart3 },
+  { key: 'awards', label: 'Awards', icon: Award },
+  { key: 'leaderboard', label: 'Leaderboard', icon: MapPin },
 ]
 
 const ITEM_META = {
@@ -216,7 +216,7 @@ function TabRounds({ eventId }) {
               <button
                 type="button"
                 onClick={() => setCriteriaRoundId(round.id)}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[13px] font-semibold text-[#8b5cf6] transition-colors hover:bg-[#f5f3ff] hover:border-[#8b5cf6]/30"
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[13px] font-semibold text-[#1f78d1] transition-colors hover:bg-[#f0f7ff] hover:border-[#1f78d1]/30"
               >
                 <ListChecks size={15} />
                 Criteria
@@ -224,7 +224,7 @@ function TabRounds({ eventId }) {
               <button
                 type="button"
                 onClick={() => setDetailRoundId(round.id)}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[13px] font-semibold text-[#1565c0] transition-colors hover:bg-[#f0f7ff] hover:border-[#1565c0]/30"
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#1565c0] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1]"
               >
                 <Eye size={15} />
                 View
@@ -427,8 +427,8 @@ function CriteriaModal({ roundId, onClose }) {
           {/* Header */}
           <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f3e5f5]">
-                <ListChecks className="h-5 w-5 text-[#8b5cf6]" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#e3f2fd]">
+                <ListChecks className="h-5 w-5 text-[#1f78d1]" />
               </div>
               <h3 className="text-[16px] font-bold text-[#1f2f3a] truncate">Criteria Templates</h3>
             </div>
@@ -467,14 +467,22 @@ function CriteriaModal({ roundId, onClose }) {
                     onClick={() => setSelectedTemplateId(template.id)}
                     className="w-full cursor-pointer text-left"
                   >
-                    <div className="flex items-center justify-between gap-3 rounded-xl border border-[#d7e0e5] bg-white px-4 py-3.5 transition-colors hover:border-[#8b5cf6]/30 hover:bg-[#f5f3ff]">
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{template.title}</p>
-                        {template.description && (
-                          <p className="mt-0.5 line-clamp-1 text-[12px] text-[#5a6a73]">{template.description.replace(/<[^>]*>/g, '')}</p>
-                        )}
+                    <div className="flex items-center justify-between gap-3 rounded-xl border border-[#d7e0e5] bg-white px-4 py-3.5 transition-colors hover:border-[#1f78d1]/30 hover:bg-[#f0f7ff]">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f0f7ff]">
+                          <ListChecks size={16} className="text-[#1f78d1]" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{template.title}</p>
+                          {template.description && (
+                            <p className="mt-0.5 line-clamp-1 text-[12px] text-[#7a8e99]">{template.description.replace(/<[^>]*>/g, '')}</p>
+                          )}
+                        </div>
                       </div>
-                      <span className="shrink-0 text-[12px] font-medium text-[#8b5cf6]">View &rarr;</span>
+                      <span className="shrink-0 inline-flex items-center gap-1 rounded-lg bg-[#f0f7ff] px-3 py-1.5 text-[12px] font-semibold text-[#1f78d1]">
+                        View
+                        <ArrowRight size={13} />
+                      </span>
                     </div>
                   </button>
                 ))}
@@ -483,14 +491,14 @@ function CriteriaModal({ roundId, onClose }) {
           </div>
 
           {/* Footer */}
-          {totalPages > 1 && (
-            <div className="shrink-0 border-t border-[#e8ecf0] px-6 py-3.5">
-              <Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} />
-            </div>
-          )}
-          {totalPages <= 1 && !loading && !error && templates.length > 0 && (
-            <div className="shrink-0 border-t border-[#e8ecf0] px-6 py-3.5 flex justify-end">
-              <button onClick={onClose} className="cursor-pointer rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a]">Close</button>
+          {!loading && !error && templates.length > 0 && (
+            <div className="shrink-0 border-t border-[#e8ecf0] px-6 py-3.5 flex items-center justify-between">
+              <span className="text-[12px] text-[#7a8e99]">{totalCount} template{totalCount !== 1 ? 's' : ''}</span>
+              {totalPages > 1 ? (
+                <Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} />
+              ) : (
+                <button onClick={onClose} className="cursor-pointer rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a]">Close</button>
+              )}
             </div>
           )}
         </div>
@@ -537,6 +545,7 @@ function CriteriaTemplateDetailModal({ templateId, onClose }) {
   if (!templateId) return null
 
   return (
+    <>
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6" onClick={onClose}>
       <div className="absolute inset-0 bg-black/40" />
       <div
@@ -546,8 +555,8 @@ function CriteriaTemplateDetailModal({ templateId, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f3e5f5]">
-              <ListChecks className="h-5 w-5 text-[#8b5cf6]" />
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#e3f2fd]">
+              <ListChecks className="h-5 w-5 text-[#1f78d1]" />
             </div>
             <h3 className="text-[16px] font-bold text-[#1f2f3a] truncate">
               {loading ? 'Loading...' : detail?.title || 'Template Detail'}
@@ -585,28 +594,52 @@ function CriteriaTemplateDetailModal({ templateId, onClose }) {
 
               {/* Criteria items */}
               <div>
-                <p className="mb-3 text-[13px] font-bold text-[#1f2f3a]">{detail.items?.length || 0} Criteria</p>
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="text-[13px] font-bold text-[#1f2f3a]">Criteria</span>
+                  {detail.items && detail.items.length > 0 && (
+                    <span className="inline-flex items-center justify-center rounded-full bg-[#e3f2fd] px-2 py-0.5 text-[11px] font-bold text-[#1f78d1]">
+                      {detail.items.length}
+                    </span>
+                  )}
+                </div>
                 {detail.items && detail.items.length > 0 ? (
-                  <div className="space-y-2">
-                    {detail.items.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-center justify-between rounded-xl border border-[#e8ecf0] bg-white px-4 py-3"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[14px] font-semibold text-[#1f2f3a]">{item.name}</p>
-                          {item.description && (
-                            <p className="mt-0.5 text-[12px] text-[#5a6a73]">{item.description}</p>
-                          )}
+                  <div className="space-y-2.5">
+                    {detail.items.map((item, idx) => {
+                      const maxScore = Math.max(...detail.items.map(i => i.score), 1)
+                      const pct = (item.score / maxScore) * 100
+                      return (
+                        <div key={item.id} className="overflow-hidden rounded-xl border border-[#e8ecf0] bg-white">
+                          <div className="flex items-center justify-between gap-3 px-4 pt-3.5 pb-2.5">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#f0f7ff] text-[11px] font-bold text-[#1f78d1]">
+                                {idx + 1}
+                              </span>
+                              <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{item.name}</p>
+                            </div>
+                            <div className="flex shrink-0 items-center gap-2">
+                              <span className="inline-flex items-center gap-1 rounded-lg bg-[#e3f2fd] px-2.5 py-1.5 text-[12px] font-bold text-[#1f78d1]">
+                                {item.score}<span className="text-[10px] font-medium text-[#64b5f6]">pts</span>
+                              </span>
+                            </div>
+                          </div>
+                          {/* Score bar */}
+                          <div className="h-1.5 w-full bg-[#f0f4f8]">
+                            <div
+                              className="h-full rounded-r-full bg-gradient-to-r from-[#64b5f6] to-[#1f78d1] transition-all"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
                         </div>
-                        <span className="ml-3 shrink-0 inline-flex items-center rounded-lg bg-[#f3e5f5] px-2.5 py-1 text-[13px] font-bold text-[#8b5cf6]">
-                          {item.score} pts
-                        </span>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 ) : (
-                  <p className="text-[13px] text-[#7a8e99]">No criteria items defined.</p>
+                  <div className="flex flex-col items-center justify-center rounded-xl border border-[#e8ecf0] py-8">
+                    <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-[#f0f4f8] text-[#8a9ba6]">
+                      <ListChecks size={20} />
+                    </div>
+                    <p className="text-[13px] text-[#7a8e99]">No criteria items defined.</p>
+                  </div>
                 )}
               </div>
             </div>
@@ -624,6 +657,7 @@ function CriteriaTemplateDetailModal({ templateId, onClose }) {
         </div>
       </div>
     </div>
+  </>
   )
 }
 
@@ -879,23 +913,27 @@ export default function EventDetailPage() {
             <div className="lg:col-span-2">
               {/* Tab nav */}
               <div className="flex border-b border-[#d7e0e5]">
-                {TABS.map((tab) => (
-                  <button
-                    key={tab.key}
-                    onClick={() => setActiveTab(tab.key)}
-                    className={cn(
-                      'relative flex cursor-pointer items-center gap-2 px-4 py-3 text-[13px] font-medium transition-colors sm:px-5',
-                      activeTab === tab.key
-                        ? 'text-[#1565c0]'
-                        : 'text-[#7a8e99] hover:text-[#1f2f3a]',
-                    )}
-                  >
-                    {tab.label}
-                    {activeTab === tab.key && (
-                      <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#1565c0]" />
-                    )}
-                  </button>
-                ))}
+                {TABS.map((tab) => {
+                  const Icon = tab.icon
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveTab(tab.key)}
+                      className={cn(
+                        'relative flex cursor-pointer items-center gap-2 px-4 py-3 text-[13px] font-medium transition-colors sm:px-5',
+                        activeTab === tab.key
+                          ? 'text-[#1565c0]'
+                          : 'text-[#7a8e99] hover:text-[#1f2f3a]',
+                      )}
+                    >
+                      <Icon size={16} />
+                      {tab.label}
+                      {activeTab === tab.key && (
+                        <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#1565c0]" />
+                      )}
+                    </button>
+                  )
+                })}
               </div>
 
               {/* Tab content */}
@@ -907,7 +945,7 @@ export default function EventDetailPage() {
                   <TabRounds eventId={event.id} />
                 )}
                 {activeTab === 'criteria' && (
-                  <TabPlaceholder label="Criteria" icon={BarChart3} accent="#8b5cf6" />
+                  <TabPlaceholder label="Criteria" icon={BarChart3} accent="#1f78d1" />
                 )}
                 {activeTab === 'awards' && (
                   <TabPlaceholder label="Awards" icon={Award} accent="#f59e0b" />
