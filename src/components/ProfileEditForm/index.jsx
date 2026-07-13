@@ -8,7 +8,7 @@ import FormField from '../FormField'
 import FormActions from '../FormActions'
 import PasswordInput from '../PasswordInput'
 import TextInput from '../TextInput'
-import AlertMessage from '../AlertMessage'
+import { toast } from '../../utils/toast'
 
 const TABS = [
   { key: 'profile', label: 'Profile Info', icon: User },
@@ -32,8 +32,6 @@ export default function ProfileEditForm({ user, initialTab = 'profile' }) {
   })
 
   const [profileSaving, setProfileSaving] = useState(false)
-  const [profileError, setProfileError] = useState('')
-  const [profileSuccess, setProfileSuccess] = useState(false)
 
   // Avatar file state
   const [avatarFile, setAvatarFile] = useState(null)
@@ -47,18 +45,12 @@ export default function ProfileEditForm({ user, initialTab = 'profile' }) {
     confirmPassword: '',
   })
   const [passwordSaving, setPasswordSaving] = useState(false)
-  const [passwordError, setPasswordError] = useState('')
-  const [passwordSuccess, setPasswordSuccess] = useState(false)
 
   function updateProfileField(field, value) {
-    setProfileSuccess(false)
-    setProfileError('')
     setProfileForm((prev) => ({ ...prev, [field]: value }))
   }
 
   function updatePassword(field, value) {
-    setPasswordError('')
-    setPasswordSuccess(false)
     setPasswordForm((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -69,19 +61,17 @@ export default function ProfileEditForm({ user, initialTab = 'profile' }) {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      setProfileError('Please select an image file (JPEG, PNG, etc.)')
+      toast.error('Please select an image file (JPEG, PNG, etc.)')
       return
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setProfileError('Image must be less than 5MB')
+      toast.error('Image must be less than 5MB')
       return
     }
 
     setAvatarFile(file)
-    setProfileSuccess(false)
-    setProfileError('')
 
     // Create preview URL
     const previewUrl = URL.createObjectURL(file)
@@ -97,13 +87,11 @@ export default function ProfileEditForm({ user, initialTab = 'profile' }) {
 
   async function handleSaveProfile() {
     if (!profileForm.firstName || !profileForm.lastName) {
-      setProfileError('First name and last name are required.')
+      toast.error('First name and last name are required.')
       return
     }
 
     setProfileSaving(true)
-    setProfileError('')
-    setProfileSuccess(false)
 
     try {
       const payload = new FormData()
@@ -122,7 +110,7 @@ export default function ProfileEditForm({ user, initialTab = 'profile' }) {
       }
 
       await updateProfile(payload)
-      setProfileSuccess(true)
+      toast.success('Profile updated successfully!')
 
       // Refresh user data in AuthContext
       await refreshUser()
@@ -130,8 +118,7 @@ export default function ProfileEditForm({ user, initialTab = 'profile' }) {
       // Clear avatar selection state
       clearAvatarSelection()
     } catch (err) {
-      const message = err?.response?.data?.message || err?.message || 'Failed to update profile'
-      setProfileError(message)
+      toast.error(err?.response?.data?.message || err?.message || 'Failed to update profile')
     } finally {
       setProfileSaving(false)
     }
@@ -139,14 +126,14 @@ export default function ProfileEditForm({ user, initialTab = 'profile' }) {
 
   function handleChangePassword() {
     const { currentPassword, newPassword, confirmPassword } = passwordForm
-    if (!currentPassword) { setPasswordError('Current password is required.'); return }
-    if (newPassword.length < 6) { setPasswordError('New password must be at least 6 characters.'); return }
-    if (newPassword !== confirmPassword) { setPasswordError('New passwords do not match.'); return }
+    if (!currentPassword) { toast.error('Current password is required.'); return }
+    if (newPassword.length < 6) { toast.error('New password must be at least 6 characters.'); return }
+    if (newPassword !== confirmPassword) { toast.error('New passwords do not match.'); return }
     setPasswordSaving(true)
     // TODO: Integrate with actual change password API when available
     setTimeout(() => {
       setPasswordSaving(false)
-      setPasswordSuccess(true)
+      toast.success('Password changed successfully!')
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
     }, 800)
   }
@@ -159,7 +146,7 @@ export default function ProfileEditForm({ user, initialTab = 'profile' }) {
           return (
             <button
               key={tab.key}
-              onClick={() => { setActiveTab(tab.key); setPasswordError(''); setPasswordSuccess(false); setProfileError('') }}
+              onClick={() => { setActiveTab(tab.key) }}
               className={cn(
                 'inline-flex cursor-pointer items-center gap-2 rounded-lg px-5 py-2.5 text-[14px] font-semibold transition-colors',
                 activeTab === tab.key ? 'bg-white text-[#064f5d] shadow-sm' : 'text-gray-500 hover:text-[#1f2f3a]'
@@ -177,9 +164,7 @@ export default function ProfileEditForm({ user, initialTab = 'profile' }) {
           user={user}
           profileForm={profileForm}
           updateProfileField={updateProfileField}
-          profileSaved={profileSuccess}
           profileSaving={profileSaving}
-          profileError={profileError}
           onSave={handleSaveProfile}
           avatarFile={avatarFile}
           avatarPreview={avatarPreview}
@@ -189,7 +174,7 @@ export default function ProfileEditForm({ user, initialTab = 'profile' }) {
         />
       )}
       {activeTab === 'password' && (
-        <PasswordTab passwordForm={passwordForm} updatePassword={updatePassword} passwordError={passwordError} passwordSuccess={passwordSuccess} passwordSaving={passwordSaving} onSave={handleChangePassword} />
+        <PasswordTab passwordForm={passwordForm} updatePassword={updatePassword} passwordSaving={passwordSaving} onSave={handleChangePassword} />
       )}
     </div>
   )
@@ -199,9 +184,7 @@ function ProfileTab({
   user,
   profileForm,
   updateProfileField,
-  profileSaved,
   profileSaving,
-  profileError,
   onSave,
   avatarPreview,
   avatarFile,
@@ -353,8 +336,6 @@ function ProfileTab({
         </div>
       </CardPanel>
 
-      <AlertMessage type="success">{profileSaved && 'Profile updated successfully!'}</AlertMessage>
-      <AlertMessage type="error">{profileError}</AlertMessage>
       <FormActions
         onSave={onSave}
         saving={profileSaving}
@@ -366,7 +347,7 @@ function ProfileTab({
   )
 }
 
-function PasswordTab({ passwordForm, updatePassword, passwordError, passwordSuccess, passwordSaving, onSave }) {
+function PasswordTab({ passwordForm, updatePassword, passwordSaving, onSave }) {
   return (
     <>
       <CardPanel title="Change Password">
@@ -384,8 +365,6 @@ function PasswordTab({ passwordForm, updatePassword, passwordError, passwordSucc
           </div>
         </div>
       </CardPanel>
-      <AlertMessage type="error">{passwordError}</AlertMessage>
-      <AlertMessage type="success">{passwordSuccess && 'Password changed successfully!'}</AlertMessage>
       <FormActions onSave={onSave} saving={passwordSaving} canSave={!!(passwordForm.currentPassword && passwordForm.newPassword && passwordForm.confirmPassword)} saveLabel="Change Password" savingLabel="Changing..." saveIcon={Lock} />
     </>
   )
