@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Avatar from '../../../../components/Avatar'
-import { getAssignedUsers, getAvailableLecturers, getAvailableStaff, assignUserToEvent, removeAssign, restoreAssign, getTracks, assignTrackToEventAssign, removeTrackFromAssign, restoreTrackToAssign } from '../../../../api/admin'
+import { getAssignedUsers, getAvailableLecturers, getAvailableStaff, assignUserToEvent, removeAssign, restoreAssign, updateEventRole, getTracks, assignTrackToEventAssign, removeTrackFromAssign, restoreTrackToAssign } from '../../../../api/admin'
 import { toast, confirm } from '../../../../utils/toast'
-import { Search, UserPlus, User, Shield, GraduationCap, MoreHorizontal, UserCheck, ClipboardList, Eye, Phone, X, FolderKanban, Ban, Trash2, RotateCcw, CircleCheck } from 'lucide-react'
+import { Search, UserPlus, User, Shield, GraduationCap, MoreHorizontal, UserCheck, ClipboardList, Eye, Phone, X, FolderKanban, Ban, Trash2, RotateCcw, CircleCheck, Shuffle } from 'lucide-react'
 
 const PAGE_SIZE = 10
 
@@ -29,11 +29,12 @@ const assignedFilters = [
 
 const viewBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2.5 py-1.5 text-[13px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]'
 const trackBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#ede7f6] px-2.5 py-1.5 text-[13px] font-semibold text-[#5e35b1] hover:bg-[#d1c4e9]'
+const roleBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#fef9e7] px-2.5 py-1.5 text-[13px] font-semibold text-[#7b5800] hover:bg-[#fdebd0]'
 const assignBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#e8f5e9] px-2.5 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9]'
 const removeBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#fce4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2] w-[92px]'
 const restoreBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9] w-[92px]'
 
-function assignedColumns(handleRemove, handleRestore, handleTrack, handleRemoveTrack, handleRestoreTrack) {
+function assignedColumns(handleRemove, handleRestore, handleTrack, handleRemoveTrack, handleRestoreTrack, handleChangeRole) {
   return [
     {
       key: 'user', header: 'User', headerIcon: User, render: (row) => (
@@ -89,7 +90,10 @@ function assignedColumns(handleRemove, handleRestore, handleTrack, handleRemoveT
       key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
         <div className="flex items-center justify-end gap-2">
           {!row.isDisable && (row.eventRole === 'Mentor' || row.eventRole === 'Judge') && (
-            <button onClick={() => handleTrack(row)} className={trackBtnClass}><FolderKanban className="h-3.5 w-3.5" />Track</button>
+            <>
+              <button onClick={() => handleTrack(row)} className={trackBtnClass}><FolderKanban className="h-3.5 w-3.5" />Track</button>
+              <button onClick={() => handleChangeRole(row)} className={roleBtnClass}><Shuffle className="h-3.5 w-3.5" />Role</button>
+            </>
           )}
           <Link to={`/admin/users/${row.userId}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
           {row.isDisable ? (
@@ -282,6 +286,60 @@ function AssignTrackModal({ open, user, eventId, onClose, onAssign, submitting }
   )
 }
 
+// ---- Change Role Modal ----
+function ChangeRoleModal({ open, user, onChangeRole, onClose, submitting }) {
+  if (!open || !user) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/40" onClick={!submitting ? onClose : undefined} />
+      <div className="relative z-10 w-full max-w-[92%] sm:max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-[16px] font-bold text-slate-800">Change Role</h3>
+            <p className="mt-1 text-[13px] text-[#1f2f3a]">
+              Change role for <span className="font-semibold">{user.firstName} {user.lastName}</span>
+            </p>
+            <p className="mt-1 text-[12px] text-gray-400">
+              Current: <span className="font-semibold">{user.eventRole}</span>
+            </p>
+          </div>
+          {!submitting && (
+            <button onClick={onClose} className="cursor-pointer rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600">
+              <X className="h-5 w-5" />
+            </button>
+          )}
+        </div>
+
+        <div className="mt-5 flex gap-3">
+          <button
+            disabled={submitting || user.eventRole === 'Mentor'}
+            onClick={() => onChangeRole('Mentor')}
+            className="flex-1 cursor-pointer rounded-xl border-2 border-[#e0e0e0] p-4 text-center transition-all hover:border-[#1565c0] hover:bg-[#e3f2fd] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <UserCheck className="mx-auto mb-2 h-6 w-6 text-[#1565c0]" />
+            <p className="text-[14px] font-bold text-[#1565c0]">Mentor</p>
+            <p className="mt-1 text-[12px] text-gray-400">Guide and support teams</p>
+          </button>
+          <button
+            disabled={submitting || user.eventRole === 'Judge'}
+            onClick={() => onChangeRole('Judge')}
+            className="flex-1 cursor-pointer rounded-xl border-2 border-[#e0e0e0] p-4 text-center transition-all hover:border-[#6a1b9a] hover:bg-[#f3e5f5] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <ClipboardList className="mx-auto mb-2 h-6 w-6 text-[#6a1b9a]" />
+            <p className="text-[14px] font-bold text-[#6a1b9a]">Judge</p>
+            <p className="mt-1 text-[12px] text-gray-400">Evaluate submissions</p>
+          </button>
+        </div>
+
+        {submitting && (
+          <p className="mt-4 text-center text-[13px] text-gray-400">Updating role...</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function AssignTab({ eventId }) {
   const [subTab, setSubTab] = useState('assigned')
 
@@ -314,6 +372,10 @@ export default function AssignTab({ eventId }) {
   // Track assignment
   const [trackTarget, setTrackTarget] = useState(null)
   const [trackAssigning, setTrackAssigning] = useState(false)
+
+  // Change role
+  const [changeRoleTarget, setChangeRoleTarget] = useState(null)
+  const [changingRole, setChangingRole] = useState(false)
 
   const fetchAssigned = useCallback(async () => {
     setAssignedLoading(true)
@@ -447,6 +509,21 @@ export default function AssignTab({ eventId }) {
     } finally { setTrackAssigning(false) }
   }
 
+  function openChangeRoleModal(row) { setChangeRoleTarget(row) }
+
+  async function handleChangeRoleSubmit(newRole) {
+    if (!changeRoleTarget) return
+    setChangingRole(true)
+    try {
+      await updateEventRole(changeRoleTarget.assignEventId, { eventRole: newRole })
+      toast.success(`Role changed to ${newRole} successfully`)
+      setChangeRoleTarget(null)
+      fetchAssigned()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to change event role.')
+    } finally { setChangingRole(false) }
+  }
+
   return (
     <div>
       <div className="mb-5 flex gap-1 overflow-x-auto border-b border-[#e8ecf0]">
@@ -462,7 +539,7 @@ export default function AssignTab({ eventId }) {
           <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
             <FilterBar filters={assignedFilters} values={asFilters} onChange={handleAsFilterChange} onReset={handleAsReset} hasActive={asHasActive} />
           </div>
-          <BaseTable borderless columns={assignedColumns(handleRemove, handleRestore, openTrackModal, handleRemoveTrack, handleRestoreTrack)} data={assigned} page={assignedPage} pageSize={PAGE_SIZE} total={assignedTotal} onPageChange={setAssignedPage} loading={assignedLoading} serverSide emptyText={asHasActive ? 'No results match.' : 'No users assigned to this event yet.'} keyExtractor={(row) => row.assignEventId} minWidth="950px" />
+          <BaseTable borderless columns={assignedColumns(handleRemove, handleRestore, openTrackModal, handleRemoveTrack, handleRestoreTrack, openChangeRoleModal)} data={assigned} page={assignedPage} pageSize={PAGE_SIZE} total={assignedTotal} onPageChange={setAssignedPage} loading={assignedLoading} serverSide emptyText={asHasActive ? 'No results match.' : 'No users assigned to this event yet.'} keyExtractor={(row) => row.assignEventId} minWidth="950px" />
         </div>
       )}
 
@@ -500,6 +577,14 @@ export default function AssignTab({ eventId }) {
         onClose={() => { if (!trackAssigning) setTrackTarget(null) }}
         onAssign={handleAssignTrack}
         submitting={trackAssigning}
+      />
+
+      <ChangeRoleModal
+        open={!!changeRoleTarget}
+        user={changeRoleTarget}
+        onChangeRole={handleChangeRoleSubmit}
+        onClose={() => { if (!changingRole) setChangeRoleTarget(null) }}
+        submitting={changingRole}
       />
     </div>
   )

@@ -795,6 +795,18 @@ export async function restoreAssign(assignEventId) {
 }
 
 /**
+ * Update the event role of an assigned user (Judge ↔ Mentor).
+ * PATCH /admin/assign/event-assigns/{assignEventId}/event-role
+ * @param {string} assignEventId
+ * @param {{ eventRole: 'Judge' | 'Mentor' }} payload
+ * @returns {Promise<{ data: null, message: string }>}
+ */
+export async function updateEventRole(assignEventId, payload) {
+  const { data } = await api.patch(`/admin/assign/event-assigns/${assignEventId}/event-role`, payload)
+  return data
+}
+
+/**
  * Assign an assign event to a track.
  * POST /admin/assign/event-assigns/{assignEventId}/tracks
  * @param {string} assignEventId
