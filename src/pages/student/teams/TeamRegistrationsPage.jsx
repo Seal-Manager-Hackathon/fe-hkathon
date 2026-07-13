@@ -122,52 +122,56 @@ export default function TeamRegistrationsPage() {
             const st = REG_STATUSES[reg.status] || REG_STATUSES.Pending
             const Icon = st.icon
             return (
-              <Link
+              <div
                 key={reg.id}
-                to={`/teams/registrations/${reg.id}`}
-                className="group block"
+                className="flex flex-col gap-3 rounded-xl border border-[#d7e0e5] bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
-                <div className="flex flex-col gap-3 rounded-xl border border-[#d7e0e5] bg-white px-5 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#1565c0]/20 hover:shadow-[0_4px_12px_rgba(21,101,192,0.08)] sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                  <div className="flex items-center gap-4 min-w-0 flex-1">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1565c0] to-[#42a5f5] text-white shadow-sm">
-                      <FileText size={20} />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h4 className="truncate text-[15px] font-bold text-[#1f2f3a] group-hover:text-[#1565c0] transition-colors">{reg.eventName}</h4>
-                        <span className={cn('inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold', st.cls)}>
-                          <Icon size={10} />
-                          {st.label}
-                        </span>
-                      </div>
-                      <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-[#5a6a73]">
-                        {(reg.trackName || reg.topicName) && (
-                          <span className="inline-flex items-center gap-1">
-                            <Calendar size={12} className="text-[#8a9ba6]" />
-                            {[reg.trackName, reg.topicName].filter(Boolean).join(' · ')}
-                          </span>
-                        )}
-                        {reg.roundName && (
-                          <span className="inline-flex items-center gap-1">
-                            <Clock size={12} className="text-[#8a9ba6]" />
-                            Round {reg.roundNo}: {reg.roundName}
-                          </span>
-                        )}
-                        <span className="inline-flex items-center gap-1">
-                          <FileText size={12} className="text-[#8a9ba6]" />
-                          {formatDate(reg.createdAt)}
-                        </span>
-                      </div>
-                      {reg.rejectionReason && (
-                        <p className="mt-1 text-[11px] text-[#c62828]">Reason: {reg.rejectionReason}</p>
-                      )}
-                      {(reg.isBanned || reg.isDisable) && (
-                        <p className="mt-1 text-[11px] text-[#dc2626]">{reg.isBanned ? 'Banned' : ''} {reg.isDisable ? 'Disabled' : ''}</p>
-                      )}
+                <div className="flex items-center gap-4 min-w-0 flex-1">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1565c0] to-[#42a5f5] text-white shadow-sm">
+                    <FileText size={20} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h4 className="truncate text-[15px] font-bold text-[#1f2f3a]">{reg.eventName}</h4>
+                      <span className={cn('inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold', st.cls)}>
+                        <Icon size={10} />
+                        {st.label}
+                      </span>
                     </div>
+                    <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-[#5a6a73]">
+                      {(reg.trackName || reg.topicName) && (
+                        <span className="inline-flex items-center gap-1">
+                          <Calendar size={12} className="text-[#8a9ba6]" />
+                          {[reg.trackName, reg.topicName].filter(Boolean).join(' · ')}
+                        </span>
+                      )}
+                      {reg.roundName && (
+                        <span className="inline-flex items-center gap-1">
+                          <Clock size={12} className="text-[#8a9ba6]" />
+                          Round {reg.roundNo}: {reg.roundName}
+                        </span>
+                      )}
+                      <span className="inline-flex items-center gap-1">
+                        <FileText size={12} className="text-[#8a9ba6]" />
+                        {formatDate(reg.createdAt)}
+                      </span>
+                    </div>
+                    {reg.rejectionReason && (
+                      <p className="mt-1 text-[11px] text-[#c62828]">Reason: {reg.rejectionReason}</p>
+                    )}
+                    {(reg.isBanned || reg.isDisable) && (
+                      <p className="mt-1 text-[11px] text-[#dc2626]">{reg.isBanned ? 'Banned' : ''} {reg.isDisable ? 'Disabled' : ''}</p>
+                    )}
                   </div>
                 </div>
-              </Link>
+                <Link
+                  to={`/teams/registrations/${reg.id}`}
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#1565c0] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1]"
+                >
+                  <Eye size={15} />
+                  View
+                </Link>
+              </div>
             )
           })}
         </div>
