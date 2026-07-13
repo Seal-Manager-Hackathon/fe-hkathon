@@ -7,9 +7,9 @@ import Footer from '../../../components/Footer'
 import {
   getStudentForYouEvents,
   getStudentPopularEvents,
+  getStudentLeaderboard,
 } from '../../../api/student'
 import {
-  mockRankingTeams,
   mockFooterColumns,
   mockFooterBottomLinks,
 } from '../../../data/mockHomeData'
@@ -19,34 +19,6 @@ const THEME_COLORS = ['blue', 'emerald', 'violet', 'rose', 'amber', 'teal', 'ind
 function getThemeColor(id) {
   const index = String(id || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0) % THEME_COLORS.length
   return THEME_COLORS[index]
-}
-
-function getRelativeTime(startTime, endTime) {
-  const now = Date.now()
-  const start = startTime ? new Date(startTime).getTime() : null
-  const end = endTime ? new Date(endTime).getTime() : null
-
-  if (start && now < start) {
-    const days = Math.ceil((start - now) / (1000 * 60 * 60 * 24))
-    if (days <= 0) return { label: 'Starts today!', urgent: true }
-    if (days === 1) return { label: 'Starts tomorrow', urgent: true }
-    if (days <= 7) return { label: `Starts in ${days} days`, urgent: true }
-    return { label: `Starts in ${days} days`, urgent: false }
-  }
-  if (end && now > end) {
-    const days = Math.floor((now - end) / (1000 * 60 * 60 * 24))
-    if (days <= 0) return { label: 'Ended today', urgent: false }
-    if (days === 1) return { label: 'Ended yesterday', urgent: false }
-    return { label: `Ended ${days} days ago`, urgent: false }
-  }
-  if (end) {
-    const days = Math.ceil((end - now) / (1000 * 60 * 60 * 24))
-    if (days <= 0) return { label: 'Last day!', urgent: true }
-    if (days === 1) return { label: '1 day left', urgent: true }
-    if (days <= 7) return { label: `${days} days left`, urgent: true }
-    return { label: `${days} days left`, urgent: false }
-  }
-  return null
 }
 
 function normalizeForYou(event) {
@@ -72,19 +44,28 @@ function normalizePopular(event) {
 export default function HomePage() {
   const [forYouEvents, setForYouEvents] = useState([])
   const [popularEvents, setPopularEvents] = useState([])
+  const [teams, setTeams] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let cancelled = false
     async function fetchAll() {
       try {
-        const [forYou, popular] = await Promise.all([
+        const [forYou, popular, lb] = await Promise.all([
           getStudentForYouEvents(),
           getStudentPopularEvents(),
+          getStudentLeaderboard(new Date().getFullYear()),
         ])
         if (!cancelled) {
           setForYouEvents((forYou.events || []).map(normalizeForYou))
           setPopularEvents((popular.events || []).map(normalizePopular))
+          setTeams((lb.items || []).map((item) => ({
+            id: item.teamId,
+            rank: item.rank,
+            name: item.teamName,
+            points: item.chapterScore,
+            events: item.eventCount,
+          })))
         }
       } catch {
         // silently fail — fall back to empty list
@@ -130,7 +111,7 @@ export default function HomePage() {
       <section className="mx-auto w-full max-w-[1100px] px-4 py-10 sm:px-6 lg:px-10">
         <div className="flex flex-col gap-10 lg:flex-row">
           <HackathonForYouSection hackathons={forYouEvents} />
-          <TeamRanking teams={mockRankingTeams} />
+          <TeamRanking teams={teams} />
         </div>
 
         <PopularHackathons hackathons={popularEvents} />
