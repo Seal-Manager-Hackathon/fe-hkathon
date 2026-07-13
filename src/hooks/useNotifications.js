@@ -11,6 +11,12 @@ import {
   markLecturerNotificationRead,
   markLecturerAllNotificationsRead,
 } from '../api/lecturer'
+import {
+  getStaffMyNotifications,
+  getStaffMyNotificationUnreadCount,
+  markStaffMyNotificationRead,
+  markStaffAllMyNotificationsRead,
+} from '../api/staff'
 import { MOCK_NOTIFICATIONS } from '../data/notifications'
 import { formatDate } from '../utils/format'
 
@@ -18,6 +24,7 @@ import { formatDate } from '../utils/format'
  * Hook to fetch and manage notifications based on user role.
  * - Student: calls the student notification API.
  * - Lecturer: calls the lecturer notification API.
+ * - Staff: calls the staff my-notifications API.
  * - Other roles / no user: falls back to MOCK_NOTIFICATIONS (legacy).
  */
 export default function useNotifications(user) {
@@ -29,7 +36,8 @@ export default function useNotifications(user) {
 
   const isStudent = role === 'Student'
   const isLecturer = role === 'Lecturer'
-  const hasApi = isStudent || isLecturer
+  const isStaff = role === 'Staff'
+  const hasApi = isStudent || isLecturer || isStaff
 
   /** Map notification shape from the API to the flat format expected by UI components. */
   function transform(apiNotif) {
@@ -51,22 +59,30 @@ export default function useNotifications(user) {
       ? (p) => getStudentNotifications(p)
       : isLecturer
         ? (p) => getLecturerNotifications(p)
-        : null,
+        : isStaff
+          ? (p) => getStaffMyNotifications(p)
+          : null,
     unreadCount: isStudent
       ? () => getStudentNotificationUnreadCount()
       : isLecturer
         ? () => getLecturerNotificationUnreadCount()
-        : null,
+        : isStaff
+          ? () => getStaffMyNotificationUnreadCount()
+          : null,
     markRead: isStudent
       ? (id) => markStudentNotificationRead(id)
       : isLecturer
         ? (id) => markLecturerNotificationRead(id)
-        : null,
+        : isStaff
+          ? (id) => markStaffMyNotificationRead(id)
+          : null,
     markAllRead: isStudent
       ? () => markStudentAllNotificationsRead()
       : isLecturer
         ? () => markLecturerAllNotificationsRead()
-        : null,
+        : isStaff
+          ? () => markStaffAllMyNotificationsRead()
+          : null,
   }
 
   const fetchNotifications = useCallback(async () => {

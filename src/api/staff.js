@@ -1139,3 +1139,60 @@ export async function getChapterLeaderboard(year, params = {}) {
   const { data } = await api.get(`/staff/events/chapter/${year}/leaderboard`, { params })
   return data.data
 }
+
+/* ------------------------------------------------------------------ */
+/*  Staff My Notifications (Personal + System)                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Get paginated staff "my notifications" (Personal + System).
+ * GET /api/v1/staff/notifications/my
+ * @param {Object} [params] - { keyword?, targetType?, status?, fromDate?, toDate?, pageIndex?, pageSize? }
+ * @returns {Promise<{ notifications: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getStaffMyNotifications(params = {}) {
+  const { data } = await api.get('/staff/notifications/my', { params })
+  return data.data
+}
+
+/**
+ * Get detail of a single staff notification.
+ * GET /api/v1/staff/notifications/my/{notificationId}
+ * @param {string} notificationId
+ * @returns {Promise<object>}
+ */
+export async function getStaffMyNotificationDetail(notificationId) {
+  const { data } = await api.get(`/staff/notifications/my/${notificationId}`)
+  return data.data
+}
+
+/**
+ * Get unread notification count for the current staff.
+ * GET /api/v1/staff/notifications/my/unread-count
+ * @returns {Promise<{ count: number }>}
+ */
+export async function getStaffMyNotificationUnreadCount() {
+  const { data } = await api.get('/staff/notifications/my/unread-count')
+  return data.data
+}
+
+/**
+ * Mark a single staff notification as read.
+ * POST /api/v1/staff/notifications/my/{notificationId}/read
+ * @param {string} notificationId
+ * @returns {Promise<object>}
+ */
+export async function markStaffMyNotificationRead(notificationId) {
+  const { data } = await api.post(`/staff/notifications/my/${notificationId}/read`)
+  return data.data
+}
+
+/**
+ * Mark all staff notifications as read.
+ * POST /api/v1/staff/notifications/my/read-all
+ * @returns {Promise<object>}
+ */
+export async function markStaffAllMyNotificationsRead() {
+  const { data } = await api.post('/staff/notifications/my/read-all')
+  return data.data
+}
