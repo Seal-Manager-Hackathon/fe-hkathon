@@ -52,9 +52,9 @@ export default function HackathonEdit() {
             name: data.name || '',
             description: data.description || '',
             season: data.season || '',
-            startTime: toDtl(data.startTime),
-            endTime: toDtl(data.endTime),
-            registerLimitTime: toDtl(data.registerLimitTime),
+            startTime: toUtcDatetime(data.startTime),
+            endTime: toUtcDatetime(data.endTime),
+            registerLimitTime: toUtcDatetime(data.registerLimitTime),
             limitTeam: data.limitTeam != null ? String(data.limitTeam) : '',
             minMember: data.minMember != null ? String(data.minMember) : '',
             maxMember: data.maxMember != null ? String(data.maxMember) : '',
@@ -72,13 +72,10 @@ export default function HackathonEdit() {
     return () => { cancelled = true }
   }, [id])
 
-  function toDtl(iso) {
+  function toUtcDatetime(iso) {
     if (!iso) return ''
     try {
-      const d = new Date(iso)
-      const tz = d.getTimezoneOffset()
-      const local = new Date(d.getTime() - tz * 60000)
-      return local.toISOString().slice(0, 16)
+      return new Date(iso).toISOString().slice(0, 16)
     } catch {
       return iso.slice(0, 16)
     }
@@ -99,15 +96,15 @@ export default function HackathonEdit() {
       if (event && form.description !== (event.description || '')) payload.description = form.description
       if (event && form.season !== (event.season || '')) payload.season = form.season || null
       if (form.startTime) {
-        const st = new Date(form.startTime).toISOString()
+        const st = form.startTime + ':00.000Z'
         if (event && st !== event.startTime) payload.startTime = st
       }
       if (form.endTime) {
-        const et = new Date(form.endTime).toISOString()
+        const et = form.endTime + ':00.000Z'
         if (event && et !== event.endTime) payload.endTime = et
       }
       if (form.registerLimitTime) {
-        const rt = new Date(form.registerLimitTime).toISOString()
+        const rt = form.registerLimitTime + ':00.000Z'
         if (event && rt !== event.registerLimitTime) payload.registerLimitTime = rt
       } else if (event?.registerLimitTime) {
         payload.registerLimitTime = null

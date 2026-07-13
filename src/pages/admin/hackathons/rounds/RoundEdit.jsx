@@ -11,10 +11,9 @@ import { formatDateTime } from '../../../../utils/format'
 import Badge from '../../../../components/Badge'
 
 
-function toLocalDatetime(iso) {
+function toUtcDatetime(iso) {
   if (!iso) return ''
-  const d = new Date(iso)
-  return d.toISOString().slice(0, 16)
+  return new Date(iso).toISOString().slice(0, 16)
 }
 
 export default function RoundEdit() {
@@ -34,10 +33,10 @@ export default function RoundEdit() {
           setForm({
             name: round.name || '',
             description: round.description || '',
-            startTime: toLocalDatetime(round.startTime),
-            endTime: toLocalDatetime(round.endTime),
-            startSubmission: toLocalDatetime(round.startSubmission),
-            endSubmission: toLocalDatetime(round.endSubmission),
+            startTime: toUtcDatetime(round.startTime),
+            endTime: toUtcDatetime(round.endTime),
+            startSubmission: toUtcDatetime(round.startSubmission),
+            endSubmission: toUtcDatetime(round.endSubmission),
             limitTeam: round.limitTeam ?? '',
           })
           if (round.eventId) {
@@ -67,10 +66,10 @@ export default function RoundEdit() {
       const payload = {}
       if (form.name.trim()) payload.name = form.name.trim()
       if (form.description !== undefined) payload.description = form.description || null
-      if (form.startTime) payload.startTime = new Date(form.startTime).toISOString()
-      if (form.endTime) payload.endTime = new Date(form.endTime).toISOString()
-      if (form.startSubmission) payload.startSubmission = new Date(form.startSubmission).toISOString()
-      if (form.endSubmission) payload.endSubmission = new Date(form.endSubmission).toISOString()
+      if (form.startTime) payload.startTime = form.startTime + ':00.000Z'
+      if (form.endTime) payload.endTime = form.endTime + ':00.000Z'
+      if (form.startSubmission) payload.startSubmission = form.startSubmission + ':00.000Z'
+      if (form.endSubmission) payload.endSubmission = form.endSubmission + ':00.000Z'
       if (form.limitTeam !== '') payload.limitTeam = Number(form.limitTeam)
 
       await updateRound(roundId, payload)

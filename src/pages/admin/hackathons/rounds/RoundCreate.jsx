@@ -57,11 +57,11 @@ export default function RoundCreate() {
     try {
       const payload = {
         name: form.name.trim(),
-        startTime: new Date(form.startTime).toISOString(),
-        endTime: new Date(form.endTime).toISOString(),
+        startTime: form.startTime + ':00.000Z',
+        endTime: form.endTime + ':00.000Z',
       }
-      if (form.startSubmission) payload.startSubmission = new Date(form.startSubmission).toISOString()
-      if (form.endSubmission) payload.endSubmission = new Date(form.endSubmission).toISOString()
+      if (form.startSubmission) payload.startSubmission = form.startSubmission + ':00.000Z'
+      if (form.endSubmission) payload.endSubmission = form.endSubmission + ':00.000Z'
       if (form.limitTeam !== '') payload.limitTeam = Number(form.limitTeam)
       await createRound(eventId, payload)
       toast.success('Round created successfully')

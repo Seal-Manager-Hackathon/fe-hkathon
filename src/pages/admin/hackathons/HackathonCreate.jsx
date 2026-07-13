@@ -37,12 +37,12 @@ export default function HackathonCreate() {
     try {
       const payload = {
         name: form.name.trim(),
-        startTime: new Date(form.startTime).toISOString(),
-        endTime: new Date(form.endTime).toISOString(),
+        startTime: form.startTime + ':00.000Z',
+        endTime: form.endTime + ':00.000Z',
       }
       if (form.description.trim()) payload.description = form.description.trim()
       if (form.season) payload.season = form.season
-      if (form.registerLimitTime) payload.registerLimitTime = new Date(form.registerLimitTime).toISOString()
+      if (form.registerLimitTime) payload.registerLimitTime = form.registerLimitTime + ':00.000Z'
       if (form.limitTeam !== '') payload.limitTeam = Number(form.limitTeam)
       if (form.minMember !== '') payload.minMember = Number(form.minMember)
       if (form.maxMember !== '') payload.maxMember = Number(form.maxMember)
