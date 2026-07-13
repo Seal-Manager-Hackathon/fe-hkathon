@@ -138,7 +138,7 @@ export default function YearLeaderboardPage() {
           <div>
             <h1 className="text-[38px] font-semibold text-[#1f2f3a] tracking-[-0.5px] leading-tight max-sm:text-[30px]">Year Leaderboard</h1>
             <p className="mt-1.5 text-[15px] text-[#5a6a73]">
-              {data ? `${data.eventCount || 0} events · ${data.totalCount || 0} teams` : 'Loading...'}
+              Team rankings accumulated across all events in the season
             </p>
           </div>
           {!loading && (
