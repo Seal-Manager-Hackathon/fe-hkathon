@@ -50,3 +50,24 @@ export async function getStudentRoundDetail(roundId) {
   const { data } = await api.get(`/student/rounds/${roundId}`)
   return data.data
 }
+
+/**
+ * Get criteria templates for a round (only active, non-disabled).
+ * @param {string} roundId
+ * @param {Object} [params]
+ * @returns {Promise<{ templates: Array, totalCount: number }>}
+ */
+export async function getStudentRoundCriteriaTemplates(roundId, params = {}) {
+  const { data } = await api.get(`/student/rounds/${roundId}/criteria-templates`, { params })
+  return data.data
+}
+
+/**
+ * Get criteria template detail with its items.
+ * @param {string} templateId
+ * @returns {Promise<object>}
+ */
+export async function getStudentCriteriaTemplateDetail(templateId) {
+  const { data } = await api.get(`/student/criteria-templates/${templateId}`)
+  return data.data
+}

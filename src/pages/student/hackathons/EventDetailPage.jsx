@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Calendar, Clock, Users, Flag, UserPlus, FileText,
-  Layers, Award, MapPin, BarChart3, Eye, X,
+  Layers, Award, MapPin, BarChart3, Eye, X, ListChecks,
 } from 'lucide-react'
-import { getStudentEventDetail, getStudentRounds, getStudentRoundDetail } from '../../../api/student'
+import { getStudentEventDetail, getStudentRounds, getStudentRoundDetail, getStudentRoundCriteriaTemplates, getStudentCriteriaTemplateDetail } from '../../../api/student'
 import RichTextViewer from '../../../components/RichTextViewer'
 import Pagination from '../../../components/Pagination'
 import { formatDate, formatDateTime } from '../../../utils/format'
@@ -126,6 +126,7 @@ function TabRounds({ eventId }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [detailRoundId, setDetailRoundId] = useState(null)
+  const [criteriaRoundId, setCriteriaRoundId] = useState(null)
   const pageSize = 10
 
   useEffect(() => {
@@ -211,14 +212,24 @@ function TabRounds({ eventId }) {
                 </span>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setDetailRoundId(round.id)}
-              className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[13px] font-semibold text-[#1565c0] transition-colors hover:bg-[#f0f7ff] hover:border-[#1565c0]/30"
-            >
-              <Eye size={15} />
-              View
-            </button>
+            <div className="flex shrink-0 gap-2">
+              <button
+                type="button"
+                onClick={() => setCriteriaRoundId(round.id)}
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[13px] font-semibold text-[#8b5cf6] transition-colors hover:bg-[#f5f3ff] hover:border-[#8b5cf6]/30"
+              >
+                <ListChecks size={15} />
+                Criteria
+              </button>
+              <button
+                type="button"
+                onClick={() => setDetailRoundId(round.id)}
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[13px] font-semibold text-[#1565c0] transition-colors hover:bg-[#f0f7ff] hover:border-[#1565c0]/30"
+              >
+                <Eye size={15} />
+                View
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -230,6 +241,11 @@ function TabRounds({ eventId }) {
       <RoundDetailModal
         roundId={detailRoundId}
         onClose={() => setDetailRoundId(null)}
+      />
+
+      <CriteriaModal
+        roundId={criteriaRoundId}
+        onClose={() => setCriteriaRoundId(null)}
       />
     </div>
   )
@@ -351,6 +367,262 @@ function DetailRow({ icon: Icon, label, value, accent }) {
         <span className="text-[13px] text-[#5a6a73]">{label}</span>
       </div>
       <span className="text-[13px] font-semibold text-[#1f2f3a]">{value}</span>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Criteria templates                                                 */
+/* ------------------------------------------------------------------ */
+
+function CriteriaModal({ roundId, onClose }) {
+  const [templates, setTemplates] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [pageIndex, setPageIndex] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [selectedTemplateId, setSelectedTemplateId] = useState(null)
+  const pageSize = 10
+
+  useEffect(() => {
+    if (!roundId) return
+    let cancelled = false
+    async function fetch() {
+      setLoading(true)
+      setError('')
+      try {
+        const result = await getStudentRoundCriteriaTemplates(roundId, { PageIndex: pageIndex, PageSize: pageSize })
+        if (!cancelled) {
+          setTemplates(result.templates || [])
+          setTotalCount(result.totalCount || 0)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          if (err?.response?.status === 404) {
+            setError('Không tìm thấy vòng')
+          } else {
+            setError(err?.response?.data?.message || 'Không thể tải tiêu chí.')
+          }
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    fetch()
+    return () => { cancelled = true }
+  }, [roundId, pageIndex, pageSize])
+
+  if (!roundId) return null
+
+  const totalPages = Math.ceil(totalCount / pageSize)
+
+  return (
+    <>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" onClick={onClose}>
+        <div className="absolute inset-0 bg-black/40" />
+        <div
+          className="relative z-10 w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f3e5f5]">
+                <ListChecks className="h-5 w-5 text-[#8b5cf6]" />
+              </div>
+              <h3 className="text-[16px] font-bold text-[#1f2f3a] truncate">Criteria Templates</h3>
+            </div>
+            <button
+              onClick={onClose}
+              className="ml-4 shrink-0 cursor-pointer rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Body */}
+          <div className="flex-1 overflow-auto px-6 py-5">
+            {loading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-[60px] animate-pulse rounded-xl bg-gray-100" />
+                ))}
+              </div>
+            ) : error ? (
+              <p className="text-[14px] text-[#c62828]">{error}</p>
+            ) : templates.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#f0f4f8] text-[#8a9ba6]">
+                  <ListChecks size={22} />
+                </div>
+                <p className="text-[15px] font-medium text-[#1f2f3a]">No criteria yet</p>
+                <p className="mt-1 text-[13px] text-[#7a8e99]">Criteria will appear here once created.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {templates.map((template) => (
+                  <button
+                    key={template.id}
+                    type="button"
+                    onClick={() => setSelectedTemplateId(template.id)}
+                    className="w-full cursor-pointer text-left"
+                  >
+                    <div className="flex items-center justify-between gap-3 rounded-xl border border-[#d7e0e5] bg-white px-4 py-3.5 transition-colors hover:border-[#8b5cf6]/30 hover:bg-[#f5f3ff]">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{template.title}</p>
+                        {template.description && (
+                          <p className="mt-0.5 line-clamp-1 text-[12px] text-[#5a6a73]">{template.description.replace(/<[^>]*>/g, '')}</p>
+                        )}
+                      </div>
+                      <span className="shrink-0 text-[12px] font-medium text-[#8b5cf6]">View &rarr;</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          {totalPages > 1 && (
+            <div className="shrink-0 border-t border-[#e8ecf0] px-6 py-3.5">
+              <Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} />
+            </div>
+          )}
+          {totalPages <= 1 && !loading && !error && templates.length > 0 && (
+            <div className="shrink-0 border-t border-[#e8ecf0] px-6 py-3.5 flex justify-end">
+              <button onClick={onClose} className="cursor-pointer rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a]">Close</button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <CriteriaTemplateDetailModal
+        templateId={selectedTemplateId}
+        onClose={() => setSelectedTemplateId(null)}
+      />
+    </>
+  )
+}
+
+function CriteriaTemplateDetailModal({ templateId, onClose }) {
+  const [detail, setDetail] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!templateId) return
+    let cancelled = false
+    async function fetchDetail() {
+      setLoading(true)
+      setError('')
+      try {
+        const data = await getStudentCriteriaTemplateDetail(templateId)
+        if (!cancelled) setDetail(data)
+      } catch (err) {
+        if (!cancelled) {
+          if (err?.response?.status === 404) {
+            setError('Không tìm thấy tiêu chí')
+          } else {
+            setError(err?.response?.data?.message || 'Không thể tải thông tin tiêu chí.')
+          }
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    fetchDetail()
+    return () => { cancelled = true }
+  }, [templateId])
+
+  if (!templateId) return null
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/40" />
+      <div
+        className="relative z-10 w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f3e5f5]">
+              <ListChecks className="h-5 w-5 text-[#8b5cf6]" />
+            </div>
+            <h3 className="text-[16px] font-bold text-[#1f2f3a] truncate">
+              {loading ? 'Loading...' : detail?.title || 'Template Detail'}
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-4 shrink-0 cursor-pointer rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-auto px-6 py-5">
+          {loading ? (
+            <div className="space-y-4">
+              <div className="h-5 w-1/2 animate-pulse rounded bg-gray-200" />
+              <div className="h-5 w-1/3 animate-pulse rounded bg-gray-200" />
+              <div className="h-20 animate-pulse rounded bg-gray-100" />
+            </div>
+          ) : error ? (
+            <p className="text-[14px] text-[#c62828]">{error}</p>
+          ) : detail ? (
+            <div className="space-y-5">
+              {/* Description */}
+              {detail.description && (
+                <div>
+                  <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Description</p>
+                  <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4">
+                    <RichTextViewer content={detail.description} />
+                  </div>
+                </div>
+              )}
+
+              {/* Criteria items */}
+              <div>
+                <p className="mb-3 text-[13px] font-bold text-[#1f2f3a]">{detail.items?.length || 0} Criteria</p>
+                {detail.items && detail.items.length > 0 ? (
+                  <div className="space-y-2">
+                    {detail.items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between rounded-xl border border-[#e8ecf0] bg-white px-4 py-3"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[14px] font-semibold text-[#1f2f3a]">{item.name}</p>
+                          {item.description && (
+                            <p className="mt-0.5 text-[12px] text-[#5a6a73]">{item.description}</p>
+                          )}
+                        </div>
+                        <span className="ml-3 shrink-0 inline-flex items-center rounded-lg bg-[#f3e5f5] px-2.5 py-1 text-[13px] font-bold text-[#8b5cf6]">
+                          {item.score} pts
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[13px] text-[#7a8e99]">No criteria items defined.</p>
+                )}
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        {/* Footer */}
+        <div className="shrink-0 border-t border-[#e8ecf0] px-6 py-3.5 flex justify-end">
+          <button
+            onClick={onClose}
+            className="cursor-pointer rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a]"
+          >
+            Close
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
