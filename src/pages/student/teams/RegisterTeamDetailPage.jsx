@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Users, Calendar, Crown, FileText, Clock,
+  Info, UserRound,
 } from 'lucide-react'
 import {
   getStudentRegisterTeamDetail,
@@ -9,13 +10,20 @@ import {
 import Avatar from '../../../components/Avatar'
 import RichTextViewer from '../../../components/RichTextViewer'
 import { formatDateTime } from '../../../utils/format'
+import { cn } from '../../../utils/cn'
+
+const TABS = [
+  { key: 'overview', label: 'Overview', icon: Info },
+  { key: 'members', label: 'Members', icon: Users },
+  { key: 'description', label: 'Description', icon: FileText },
+]
 
 export default function RegisterTeamDetailPage() {
   const { registerTeamId } = useParams()
-  const navigate = useNavigate()
   const [detail, setDetail] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [activeTab, setActiveTab] = useState('overview')
 
   useEffect(() => {
     if (!registerTeamId) return
@@ -43,10 +51,12 @@ export default function RegisterTeamDetailPage() {
     return (
       <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
         <div className="mb-8 h-5 w-36 animate-pulse rounded bg-gray-200" />
-        <div className="space-y-4">
-          <div className="h-5 w-1/2 animate-pulse rounded bg-gray-200" />
-          <div className="h-5 w-1/3 animate-pulse rounded bg-gray-200" />
-          <div className="space-y-2">
+        <div className="mb-6 h-7 w-48 animate-pulse rounded bg-gray-200" />
+        <div className="rounded-xl border border-[#d7e0e5] bg-white p-6">
+          <div className="mb-6 flex gap-4">
+            {[1, 2, 3].map((i) => <div key={i} className="h-10 w-28 animate-pulse rounded-lg bg-gray-200" />)}
+          </div>
+          <div className="space-y-3">
             {[1, 2, 3].map((i) => <div key={i} className="h-12 animate-pulse rounded-lg bg-gray-100" />)}
           </div>
         </div>
@@ -92,58 +102,102 @@ export default function RegisterTeamDetailPage() {
             <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[13px] text-[#80deea]">
               <span className="inline-flex items-center gap-1.5"><Users size={14} />{detail.teamName}</span>
               {detail.roundName && <span className="inline-flex items-center gap-1.5"><Clock size={14} />Round {detail.roundNo}: {detail.roundName}</span>}
+              {detail.trackTitle && <span className="inline-flex items-center gap-1.5"><FileText size={14} />{detail.trackTitle}</span>}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="space-y-5">
-        {/* Info cards */}
-        <div className="divide-y divide-[#f0f4f8] rounded-xl border border-[#e8ecf0] bg-white">
-          <DetailRow icon={Calendar} label="Event" value={detail.eventName} accent="#3b82f6" />
-          <DetailRow icon={Users} label="Team" value={detail.teamName} accent="#10b981" />
-          {detail.roundName && <DetailRow icon={Clock} label="Round" value={`#${detail.roundNo} ${detail.roundName}`} accent="#f59e0b" />}
-          {detail.trackTitle && <DetailRow icon={FileText} label="Track" value={detail.trackTitle} accent="#8b5cf6" />}
-          {detail.topicTitle && <DetailRow icon={FileText} label="Topic" value={detail.topicTitle} accent="#8b5cf6" />}
-          <DetailRow icon={Calendar} label="Registered" value={formatDateTime(detail.createdAt)} accent="#8a9ba6" />
+      {/* Tabs + content */}
+      <div className="rounded-xl border border-[#d7e0e5] bg-white">
+        {/* Tab nav */}
+        <div className="flex border-b border-[#d7e0e5] px-6 overflow-x-auto">
+          {TABS.map((tab) => {
+            const Icon = tab.icon
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={cn(
+                  'relative flex items-center gap-2 px-5 py-3.5 text-[14px] font-medium cursor-pointer whitespace-nowrap transition-colors',
+                  activeTab === tab.key ? 'text-[#1565c0]' : 'text-[#7a8e99] hover:text-[#1f2f3a]',
+                )}
+              >
+                <Icon size={16} />
+                {tab.label}
+                {tab.key === 'members' && detail.members && (
+                  <span className={cn(
+                    'inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none',
+                    activeTab === 'members' ? 'bg-[#1565c0] text-white' : 'bg-[#e8ecf0] text-[#7a8e99]',
+                  )}>
+                    {detail.members.length}
+                  </span>
+                )}
+                {activeTab === tab.key && (
+                  <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#1565c0]" />
+                )}
+              </button>
+            )
+          })}
         </div>
 
-        {/* Members */}
-        {detail.members && detail.members.length > 0 && (
-          <div className="rounded-xl border border-[#e8ecf0] bg-white">
-            <div className="border-b border-[#e8ecf0] bg-[#fafbfc] px-5 py-3">
-              <h4 className="flex items-center gap-2 text-[13px] font-bold text-[#1f2f3a]">
-                <Users size={16} className="text-[#1565c0]" />
-                Team Members ({detail.members.length})
-              </h4>
+        {/* Tab content */}
+        <div className="p-6">
+          {activeTab === 'overview' && (
+            <div className="divide-y divide-[#f0f4f8] rounded-xl border border-[#e8ecf0]">
+              <DetailRow icon={Calendar} label="Event" value={detail.eventName} accent="#3b82f6" />
+              <DetailRow icon={Users} label="Team" value={detail.teamName} accent="#10b981" />
+              {detail.roundName && <DetailRow icon={Clock} label="Round" value={`#${detail.roundNo} ${detail.roundName}`} accent="#f59e0b" />}
+              {detail.trackTitle && <DetailRow icon={FileText} label="Track" value={detail.trackTitle} accent="#8b5cf6" />}
+              {detail.topicTitle && <DetailRow icon={FileText} label="Topic" value={detail.topicTitle} accent="#8b5cf6" />}
+              <DetailRow icon={Calendar} label="Registered" value={formatDateTime(detail.createdAt)} accent="#8a9ba6" />
             </div>
-            <div className="px-5 py-3 space-y-2">
-              {detail.members.map((m) => (
-                <div key={m.userId} className="flex items-center gap-3 rounded-xl border border-[#e8ecf0] bg-white px-4 py-2.5">
-                  <Avatar src={m.avatarUrl} name={`${m.firstName} ${m.lastName}`} size="h-8 w-8" textSize="text-[12px]" />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="truncate text-[13px] font-semibold text-[#1f2f3a]">{m.firstName} {m.lastName}</p>
-                      {m.isLeader && <Crown size={11} className="shrink-0 text-[#f59e0b]" />}
+          )}
+
+          {activeTab === 'members' && (
+            <div className="space-y-2.5">
+              {detail.members && detail.members.length > 0 ? (
+                detail.members.map((m) => (
+                  <div key={m.userId} className="flex items-center gap-4 rounded-xl border border-[#e8ecf0] bg-white px-4 py-3 transition-colors hover:border-[#d7e0e5]">
+                    <Avatar src={m.avatarUrl} name={`${m.firstName} ${m.lastName}`} size="h-10 w-10" textSize="text-[14px]" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2.5">
+                        <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{m.firstName} {m.lastName}</p>
+                        {m.isLeader && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[#fff3e0] px-2.5 py-0.5 text-[10px] font-semibold text-[#e65100] ring-1 ring-orange-200/60">
+                            <Crown size={10} />
+                            Leader
+                          </span>
+                        )}
+                      </div>
+                      <p className="truncate text-[12px] text-[#8a9ba6]">{m.email}</p>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8">
+                  <UserRound size={24} className="mb-2 text-[#8a9ba6]" />
+                  <p className="text-[13px] text-[#7a8e99]">No members found.</p>
                 </div>
-              ))}
+              )}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Description */}
-        {detail.description && (
-          <div className="rounded-xl border border-[#e8ecf0] bg-white">
-            <div className="border-b border-[#e8ecf0] bg-[#fafbfc] px-5 py-3">
-              <h4 className="text-[13px] font-bold text-[#1f2f3a]">Description</h4>
+          {activeTab === 'description' && (
+            <div>
+              {detail.description ? (
+                <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-5">
+                  <RichTextViewer content={detail.description} />
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <FileText size={24} className="mb-2 text-[#8a9ba6]" />
+                  <p className="text-[13px] text-[#7a8e99]">No description provided.</p>
+                </div>
+              )}
             </div>
-            <div className="px-5 py-4">
-              <RichTextViewer content={detail.description} />
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )
