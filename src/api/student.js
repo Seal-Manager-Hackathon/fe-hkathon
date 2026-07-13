@@ -298,3 +298,38 @@ export async function getStudentEventAssignments(eventId, params = {}) {
   const { data } = await api.get(`/student/assign/events/${eventId}/assigned`, { params })
   return data.data
 }
+
+/* ------------------------------------------------------------------ */
+/*  Submissions                                                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Submit work for a round (team leader only).
+ * @param {{ registerTeamId: string, roundId: string, url: string, description?: string }} body
+ * @returns {Promise<object>}
+ */
+export async function submitStudentSubmission(body) {
+  const { data } = await api.post('/student/submissions', body)
+  return data.data
+}
+
+/**
+ * Get last submissions for each round of a register team.
+ * @param {string} registerTeamId
+ * @param {Object} [params] - { roundId? }
+ * @returns {Promise<{ items: Array, totalCount: number }>}
+ */
+export async function getStudentTeamSubmissions(registerTeamId, params = {}) {
+  const { data } = await api.get(`/student/register-teams/${registerTeamId}/submissions`, { params })
+  return data.data
+}
+
+/**
+ * Get submission detail by ID.
+ * @param {string} submissionId
+ * @returns {Promise<object>}
+ */
+export async function getStudentSubmissionDetail(submissionId) {
+  const { data } = await api.get(`/student/submissions/${submissionId}`)
+  return data.data
+}

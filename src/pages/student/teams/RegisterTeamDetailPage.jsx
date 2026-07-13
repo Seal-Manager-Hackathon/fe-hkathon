@@ -3,20 +3,26 @@ import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Users, Calendar, Crown, FileText, Clock,
   Info, UserRound, Layers, Award, MapPin, UsersRound,
-  Trophy,
+  Trophy, Eye, Upload, X, ExternalLink,
 } from 'lucide-react'
 import {
   getStudentRegisterTeamDetail,
   getStudentRounds,
+  getStudentRoundDetail,
   getStudentAwards,
   getStudentEventLeaderboard,
   getStudentEventAssignments,
+  getStudentTeamSubmissions,
+  submitStudentSubmission,
+  getStudentSubmissionDetail,
 } from '../../../api/student'
 import Avatar from '../../../components/Avatar'
 import RichTextViewer from '../../../components/RichTextViewer'
 import { formatDate, formatDateTime } from '../../../utils/format'
 import { cn } from '../../../utils/cn'
 import Pagination from '../../../components/Pagination'
+import { useAuth } from '../../../context/AuthContext'
+import { toast } from '../../../utils/toast'
 
 const TABS = [
   { key: 'overview', label: 'Overview', icon: Info },
@@ -28,10 +34,12 @@ const TABS = [
 
 export default function RegisterTeamDetailPage() {
   const { registerTeamId } = useParams()
+  const { user } = useAuth()
   const [detail, setDetail] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState('overview')
+  const currentUserId = user?.id
 
   useEffect(() => {
     if (!registerTeamId) return
@@ -44,8 +52,8 @@ export default function RegisterTeamDetailPage() {
         if (!cancelled) setDetail(data)
       } catch (err) {
         if (!cancelled) {
-          if (err?.response?.status === 404) setError('Không tìm thấy')
-          else setError(err?.response?.data?.message || 'Không thể tải thông tin.')
+          if (err?.response?.status === 404) setError('Not found')
+          else setError(err?.response?.data?.message || 'Failed to load details.')
         }
       } finally {
         if (!cancelled) setLoading(false)
@@ -156,7 +164,7 @@ export default function RegisterTeamDetailPage() {
           {/* Tab content */}
           <div className="p-6">
             {activeTab === 'overview' && <OverviewTab detail={detail} />}
-            {activeTab === 'rounds' && <RoundsTab eventId={detail.eventId} />}
+            {activeTab === 'rounds' && <RoundsTab eventId={detail.eventId} registerTeamId={registerTeamId} members={detail.members} currentUserId={currentUserId} />}
             {activeTab === 'awards' && <AwardsTab eventId={detail.eventId} />}
             {activeTab === 'assignments' && <AssignmentsTab eventId={detail.eventId} />}
             {activeTab === 'leaderboard' && <LeaderboardTab eventId={detail.eventId} />}
@@ -231,13 +239,25 @@ function OverviewTab({ detail }) {
 /*  Rounds                                                             */
 /* ================================================================== */
 
-function RoundsTab({ eventId }) {
+function RoundsTab({ eventId, registerTeamId, members, currentUserId }) {
   const [rounds, setRounds] = useState([])
   const [totalCount, setTotalCount] = useState(0)
   const [pageIndex, setPageIndex] = useState(1)
   const [loading, setLoading] = useState(true)
   const pageSize = 10
 
+  // Submissions state: roundId → submission info
+  const [submissions, setSubmissions] = useState({})
+
+  // Modal states
+  const [viewRoundId, setViewRoundId] = useState(null)
+  const [submitModalRound, setSubmitModalRound] = useState(null)
+  const [viewSubModalRound, setViewSubModalRound] = useState(null)
+  const [viewSubDetail, setViewSubDetail] = useState(null)
+  const [viewSubLoading, setViewSubLoading] = useState(false)
+  const [viewSubError, setViewSubError] = useState('')
+
+  // Fetch rounds
   useEffect(() => {
     if (!eventId) return
     let cancelled = false
@@ -253,7 +273,49 @@ function RoundsTab({ eventId }) {
     return () => { cancelled = true }
   }, [eventId, pageIndex, pageSize])
 
+  // Fetch submissions for all rounds
+  useEffect(() => {
+    if (!registerTeamId) return
+    let cancelled = false
+    async function fetchSubmissions() {
+      try {
+        const result = await getStudentTeamSubmissions(registerTeamId)
+        if (!cancelled && result?.items) {
+          const map = {}
+          result.items.forEach((item) => {
+            if (item.roundId && item.lastSubmission) {
+              map[item.roundId] = item
+            }
+          })
+          setSubmissions(map)
+        }
+      } catch { /* ignore */ }
+    }
+    fetchSubmissions()
+    return () => { cancelled = true }
+  }, [registerTeamId])
+
+  // Check if current user is team leader
+  const isLeader = members?.some((m) => m.userId === currentUserId && m.isLeader) || false
+
   const totalPages = Math.ceil(totalCount / pageSize)
+
+  async function handleViewSubmission(roundId) {
+    const sub = submissions[roundId]
+    if (!sub?.lastSubmission?.id) return
+    setViewSubModalRound(roundId)
+    setViewSubDetail(null)
+    setViewSubError('')
+    setViewSubLoading(true)
+    try {
+      const detail = await getStudentSubmissionDetail(sub.lastSubmission.id)
+      setViewSubDetail(detail)
+    } catch (err) {
+      setViewSubError(err?.response?.data?.message || 'Failed to load submission detail.')
+    } finally {
+      setViewSubLoading(false)
+    }
+  }
 
   if (loading) return <div className="space-y-3">{[1, 2, 3].map((i) => <div key={i} className="h-[72px] animate-pulse rounded-xl bg-gray-100" />)}</div>
 
@@ -267,19 +329,95 @@ function RoundsTab({ eventId }) {
   return (
     <div>
       <div className="space-y-3">
-        {rounds.map((round) => (
-          <div key={round.id} className="flex flex-col gap-3 rounded-xl border border-[#d7e0e5] bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0 flex-1">
-              <h4 className="truncate text-[15px] font-bold text-[#1f2f3a]">#{round.roundNo} {round.name}</h4>
-              <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-[#5a6a73]">
-                <span className="inline-flex items-center gap-1"><Calendar size={12} className="text-[#8a9ba6]" />{round.startTime ? formatDate(round.startTime) : '—'} – {round.endTime ? formatDate(round.endTime) : '—'}</span>
-                <span className="inline-flex items-center gap-1"><Users size={12} className="text-[#8a9ba6]" />{round.limitTeam ?? '—'} teams</span>
+        {rounds.map((round) => {
+          const hasSubmission = !!submissions[round.id]?.lastSubmission
+          return (
+            <div key={round.id} className="flex flex-col gap-3 rounded-xl border border-[#d7e0e5] bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0 flex-1">
+                <h4 className="truncate text-[15px] font-bold text-[#1f2f3a]">#{round.roundNo} {round.name}</h4>
+                <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-[#5a6a73]">
+                  <span className="inline-flex items-center gap-1"><Calendar size={12} className="text-[#8a9ba6]" />{round.startTime ? formatDate(round.startTime) : '—'} – {round.endTime ? formatDate(round.endTime) : '—'}</span>
+                  <span className="inline-flex items-center gap-1"><Users size={12} className="text-[#8a9ba6]" />{round.limitTeam ?? '—'} teams</span>
+                </div>
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-2">
+                {/* View round detail */}
+                <button
+                  type="button"
+                  onClick={() => setViewRoundId(round.id)}
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#1f78d1] transition-colors hover:bg-[#f0f7ff] hover:border-[#1f78d1]/30"
+                >
+                  <Eye size={15} />
+                  View
+                </button>
+
+                {/* Submit button — only for leader */}
+                {isLeader && (
+                  <button
+                    type="button"
+                    onClick={() => setSubmitModalRound(round.id)}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#1565c0] px-3.5 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1]"
+                  >
+                    <Upload size={15} />
+                    Submit
+                  </button>
+                )}
+
+                {/* View submission button — only if submitted */}
+                {hasSubmission && (
+                  <button
+                    type="button"
+                    onClick={() => handleViewSubmission(round.id)}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#10b981] transition-colors hover:bg-[#f0fdf4] hover:border-[#10b981]/30"
+                  >
+                    <FileText size={15} />
+                    View Submission
+                  </button>
+                )}
               </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
       {totalPages > 1 && <div className="mt-5"><Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} /></div>}
+
+      {/* Round Detail Modal */}
+      <RoundDetailModal
+        roundId={viewRoundId}
+        onClose={() => setViewRoundId(null)}
+      />
+
+      {/* Submit Modal */}
+      <SubmitModal
+        open={!!submitModalRound}
+        roundId={submitModalRound}
+        registerTeamId={registerTeamId}
+        onClose={() => setSubmitModalRound(null)}
+        onSuccess={() => {
+          setSubmitModalRound(null)
+          // Re-fetch submissions
+          getStudentTeamSubmissions(registerTeamId).then((result) => {
+            if (result?.items) {
+              const map = { ...submissions }
+              result.items.forEach((item) => {
+                if (item.roundId && item.lastSubmission) {
+                  map[item.roundId] = item
+                }
+              })
+              setSubmissions(map)
+            }
+          }).catch(() => {})
+        }}
+      />
+
+      {/* View Submission Modal */}
+      <ViewSubmissionModal
+        open={!!viewSubModalRound}
+        onClose={() => { setViewSubModalRound(null); setViewSubDetail(null); setViewSubError('') }}
+        loading={viewSubLoading}
+        error={viewSubError}
+        submissionDetail={viewSubDetail}
+      />
     </div>
   )
 }
@@ -539,6 +677,351 @@ function LinkRow({ icon: Icon, label, value, to, accent }) {
         <span className="text-[13px] text-[#5a6a73]">{label}</span>
       </div>
       <Link to={to} className="text-[13px] font-semibold text-[#1565c0] transition-colors hover:underline">{value} &rarr;</Link>
+    </div>
+  )
+}
+
+/* ================================================================== */
+/*  Round Detail Modal                                                 */
+/* ================================================================== */
+
+function RoundDetailModal({ roundId, onClose }) {
+  const [detail, setDetail] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!roundId) return
+    let cancelled = false
+    async function fetchDetail() {
+      setLoading(true)
+      setError('')
+      try {
+        const data = await getStudentRoundDetail(roundId)
+        if (!cancelled) setDetail(data)
+      } catch (err) {
+        if (!cancelled) {
+          setError(err?.response?.data?.message || 'Failed to load round details.')
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    fetchDetail()
+    return () => { cancelled = true }
+  }, [roundId])
+
+  if (!roundId) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/40" />
+      <div
+        className="relative z-10 w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#e3f2fd]">
+              <Layers className="h-5 w-5 text-[#1565c0]" />
+            </div>
+            <h3 className="text-[16px] font-bold text-[#1f2f3a] truncate">
+              {loading ? 'Loading...' : detail?.name || 'Round Detail'}
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-4 shrink-0 cursor-pointer rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-auto px-6 py-5">
+          {loading ? (
+            <div className="space-y-4">
+              <div className="h-5 w-1/2 animate-pulse rounded bg-gray-200" />
+              <div className="h-5 w-1/3 animate-pulse rounded bg-gray-200" />
+              <div className="h-5 w-2/3 animate-pulse rounded bg-gray-200" />
+              <div className="h-20 animate-pulse rounded bg-gray-100" />
+            </div>
+          ) : error ? (
+            <p className="text-[14px] text-[#c62828]">{error}</p>
+          ) : detail ? (
+            <div className="space-y-5">
+              {/* Info rows */}
+              <div className="divide-y divide-[#f0f4f8] rounded-xl border border-[#e8ecf0]">
+                <DetailRow icon={Calendar} label="Start Time" value={formatDateTime(detail.startTime)} accent="#3b82f6" />
+                <DetailRow icon={Calendar} label="End Time" value={formatDateTime(detail.endTime)} accent="#ef4444" />
+                {detail.startSubmission && (
+                  <DetailRow icon={Clock} label="Submission Start" value={formatDateTime(detail.startSubmission)} accent="#10b981" />
+                )}
+                {detail.endSubmission && (
+                  <DetailRow icon={Clock} label="Submission End" value={formatDateTime(detail.endSubmission)} accent="#f59e0b" />
+                )}
+                <DetailRow icon={Users} label="Max Teams" value={detail.limitTeam ?? '—'} accent="#8b5cf6" />
+              </div>
+
+              {/* Description */}
+              {detail.description && (
+                <div>
+                  <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Description</p>
+                  <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4">
+                    <RichTextViewer content={detail.description} />
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ================================================================== */
+/*  Submit Modal                                                       */
+/* ================================================================== */
+
+function SubmitModal({ open, roundId, registerTeamId, onClose, onSuccess }) {
+  const [url, setUrl] = useState('')
+  const [description, setDescription] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (open) {
+      setUrl('')
+      setDescription('')
+      setError('')
+    }
+  }, [open])
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (!url.trim()) {
+      setError('Please enter a submission URL.')
+      return
+    }
+    if (!roundId || !registerTeamId) return
+    setSubmitting(true)
+    setError('')
+    try {
+      await submitStudentSubmission({
+        registerTeamId,
+        roundId,
+        url: url.trim(),
+        description: description.trim() || undefined,
+      })
+      toast.success('Submission submitted successfully!')
+      onSuccess()
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Failed to submit. Please try again.'
+      setError(msg)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (!open) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/40" />
+      <div
+        className="relative z-10 w-full max-w-lg flex flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#e3f2fd]">
+              <Upload className="h-5 w-5 text-[#1565c0]" />
+            </div>
+            <h3 className="text-[16px] font-bold text-[#1f2f3a]">Submit Submission</h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-4 shrink-0 cursor-pointer rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+          {error && (
+            <div className="rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>
+          )}
+
+          <div>
+            <label className="mb-1.5 block text-[13px] font-semibold text-[#1f2f3a]">
+              Submission URL <span className="text-[#c62828]">*</span>
+            </label>
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://example.com/submission.pdf"
+              className="w-full rounded-lg border border-[#d7e0e5] px-4 py-2.5 text-[14px] text-[#1f2f3a] outline-none transition-colors placeholder:text-[#9aaab5] focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/10"
+              disabled={submitting}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-[13px] font-semibold text-[#1f2f3a]">
+              Description <span className="text-[#7a8e99] text-[12px]">(optional)</span>
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Add any additional notes about your submission..."
+              rows={3}
+              className="w-full resize-none rounded-lg border border-[#d7e0e5] px-4 py-2.5 text-[14px] text-[#1f2f3a] outline-none transition-colors placeholder:text-[#9aaab5] focus:border-[#1565c0] focus:ring-2 focus:ring-[#1565c0]/10"
+              disabled={submitting}
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-5 py-2.5 text-[13px] font-semibold text-[#5a6a73] transition-colors hover:bg-gray-50"
+              disabled={submitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#1565c0] px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {submitting ? (
+                <>
+                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Submitting...
+                </>
+              ) : (
+                'Submit'
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+/* ================================================================== */
+/*  View Submission Modal                                              */
+/* ================================================================== */
+
+function ViewSubmissionModal({ open, onClose, loading, error, submissionDetail }) {
+  if (!open) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/40" />
+      <div
+        className="relative z-10 w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#e8f5e9]">
+              <FileText className="h-5 w-5 text-[#10b981]" />
+            </div>
+            <h3 className="text-[16px] font-bold text-[#1f2f3a]">Submission</h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-4 shrink-0 cursor-pointer rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-auto px-6 py-5">
+          {loading ? (
+            <div className="space-y-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-5 w-full animate-pulse rounded bg-gray-200" />
+              ))}
+            </div>
+          ) : error ? (
+            <p className="text-[14px] text-[#c62828]">{error}</p>
+          ) : submissionDetail ? (
+            <div className="space-y-5">
+              <div className="divide-y divide-[#f0f4f8] rounded-xl border border-[#e8ecf0]">
+                <DetailRow icon={Layers} label="Round" value={submissionDetail.roundName || '—'} accent="#3b82f6" />
+                <DetailRow icon={Users} label="Team" value={submissionDetail.teamName || '—'} accent="#10b981" />
+                {submissionDetail.trackTitle && (
+                  <DetailRow icon={FileText} label="Track" value={submissionDetail.trackTitle} accent="#8b5cf6" />
+                )}
+                {submissionDetail.topicTitle && (
+                  <DetailRow icon={FileText} label="Topic" value={submissionDetail.topicTitle} accent="#8b5cf6" />
+                )}
+                <DetailRow icon={UserRound} label="Submitted by" value={`${submissionDetail.submittedBy?.firstName || ''} ${submissionDetail.submittedBy?.lastName || ''}`.trim() || '—'} accent="#f59e0b" />
+                <DetailRow icon={Calendar} label="Submitted at" value={formatDateTime(submissionDetail.submittedAt)} accent="#8a9ba6" />
+              </div>
+
+              {/* URL */}
+              <div>
+                <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Submission URL</p>
+                <a
+                  href={submissionDetail.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-[#fafbfc] px-4 py-2.5 text-[13px] font-medium text-[#1565c0] transition-colors hover:bg-[#f0f7ff] hover:border-[#1565c0]/30"
+                >
+                  <ExternalLink size={14} />
+                  {submissionDetail.url}
+                </a>
+              </div>
+
+              {/* Description */}
+              {submissionDetail.description && (
+                <div>
+                  <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Description</p>
+                  <p className="text-[14px] text-[#5a6a73] leading-relaxed">{submissionDetail.description}</p>
+                </div>
+              )}
+
+              {/* Status + Score */}
+              <div className="flex flex-wrap gap-4">
+                <div className="flex-1 rounded-xl border border-[#e8ecf0] bg-[#fafbfc] px-4 py-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[#8a9ba6]">Status</p>
+                  <p className={cn(
+                    'mt-1 text-[15px] font-bold',
+                    submissionDetail.status === 'Graded' ? 'text-[#10b981]' : 'text-[#f59e0b]',
+                  )}>
+                    {submissionDetail.status === 'Graded' ? 'Graded' : 'Submitted'}
+                  </p>
+                </div>
+                {submissionDetail.totalScore != null && (
+                  <div className="flex-1 rounded-xl border border-[#e8ecf0] bg-[#fafbfc] px-4 py-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-[#8a9ba6]">Score</p>
+                    <p className="mt-1 text-[18px] font-bold text-[#064f5d]">{submissionDetail.totalScore.toFixed(2)}</p>
+                    {submissionDetail.judgeCount > 0 && (
+                      <p className="text-[11px] text-[#8a9ba6]">{submissionDetail.judgeCount} judge{submissionDetail.judgeCount > 1 ? 's' : ''}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <p className="text-[14px] text-[#7a8e99]">No submission data available.</p>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
