@@ -10,6 +10,8 @@ const LoginPage = lazy(() => import('../pages/auth/LoginPage'))
 const HackathonsPage = lazy(() => import('../pages/student/hackathons/HackathonsPage'))
 const EventDetailPage = lazy(() => import('../pages/student/hackathons/EventDetailPage'))
 const YearLeaderboardPage = lazy(() => import('../pages/student/leaderboard/YearLeaderboardPage'))
+const StudentTeamsPage = lazy(() => import('../pages/student/teams/StudentTeamsPage'))
+const TeamDetailPage = lazy(() => import('../pages/student/teams/TeamDetailPage'))
 const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'))
 const VerifyEmailPage = lazy(() => import('../pages/auth/VerifyEmailPage'))
 const ProfilePage = lazy(() => import('../pages/auth/ProfilePage'))
@@ -131,6 +133,12 @@ export const routes = [
         path: 'hackathons', children: [
           { index: true, element: <Suspense fallback={<RouteFallback />}><HackathonsPage /></Suspense> },
           { path: ':id', element: <Suspense fallback={<RouteFallback />}><EventDetailPage /></Suspense> },
+        ]
+      },
+      {
+        path: 'teams', element: <ProtectedRoute roles={['Student']}><Suspense fallback={<RouteFallback />}><Outlet /></Suspense></ProtectedRoute>, children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><StudentTeamsPage /></Suspense> },
+          { path: ':teamId', element: <Suspense fallback={<RouteFallback />}><TeamDetailPage /></Suspense> },
         ]
       },
       { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><YearLeaderboardPage /></Suspense> }

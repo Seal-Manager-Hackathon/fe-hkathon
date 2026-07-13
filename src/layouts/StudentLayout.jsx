@@ -9,6 +9,11 @@ export default function StudentLayout() {
   const { user, logout } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
+  const navItems = useMemo(() => {
+    if (!user) return mockNavItems.filter((item) => item.key !== 'teams')
+    return mockNavItems
+  }, [user])
+
   const menuItems = useMemo(() => {
     if (!user) return [
       { icon: 'LogIn', label: 'Sign in', to: '/login' },
@@ -22,7 +27,7 @@ export default function StudentLayout() {
 
   return (
     <div className="flex min-h-screen bg-white">
-      <Sidebar navItems={mockNavItems} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar navItems={navItems} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex min-h-screen min-w-0 flex-1 flex-col lg:ml-[248px]">
         <Header
