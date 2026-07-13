@@ -164,13 +164,15 @@ export default function TeamRegistrationsPage() {
                       )}
                     </div>
                   </div>
-                  <Link
-                    to={`/teams/registrations/${reg.id}`}
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#1565c0] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1]"
-                  >
-                    <Eye size={15} />
-                    View
-                  </Link>
+                  {reg.status === 'Approved' && (
+                    <Link
+                      to={`/teams/registrations/${reg.id}`}
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#1565c0] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1]"
+                    >
+                      <Eye size={15} />
+                      View
+                    </Link>
+                  )}
                 </div>
               )
             })}

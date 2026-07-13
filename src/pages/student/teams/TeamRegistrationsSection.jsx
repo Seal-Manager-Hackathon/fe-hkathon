@@ -127,12 +127,14 @@ export default function TeamRegistrationsSection({ teamId }) {
                       )}
                     </div>
                   </div>
-                  <Link
-                    to={`/teams/registrations/${reg.id}`}
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#1565c0] px-3.5 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#0d47a1]"
-                  >
-                    View
-                  </Link>
+                  {reg.status === 'Approved' && (
+                    <Link
+                      to={`/teams/registrations/${reg.id}`}
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#1565c0] px-3.5 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[#0d47a1]"
+                    >
+                      View
+                    </Link>
+                  )}
                 </div>
               )
             })}
