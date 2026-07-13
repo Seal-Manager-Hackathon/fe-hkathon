@@ -237,3 +237,22 @@ export async function getStudentTeamInvitations(teamId, params = {}) {
   const { data } = await api.get(`/student/teams/${teamId}/invitations`, { params })
   return data.data
 }
+
+/* ------------------------------------------------------------------ */
+/*  Student Register Teams                                             */
+/* ------------------------------------------------------------------ */
+
+export async function getStudentTeamAllRegisterTeams(teamId, params = {}) {
+  const { data } = await api.get(`/student/teams/${teamId}/register-teams/all`, { params })
+  return data.data
+}
+
+export async function getStudentApprovedRegisterTeams(teamId, params = {}) {
+  const { data } = await api.get(`/student/teams/${teamId}/register-teams`, { params })
+  return data.data
+}
+
+export async function getStudentRegisterTeamDetail(registerTeamId) {
+  const { data } = await api.get(`/student/register-teams/${registerTeamId}`)
+  return data.data
+}

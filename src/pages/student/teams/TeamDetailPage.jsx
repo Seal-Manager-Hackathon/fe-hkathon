@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Users, Calendar, Crown, Shield, Edit3, LogOut,
   UserMinus, UserCog, Check, X, FileText, Send, Clock, CheckCircle,
-  XCircle, AlertTriangle,
+  XCircle, AlertTriangle, Eye,
 } from 'lucide-react'
 import {
   getStudentTeamDetail,
@@ -22,6 +22,12 @@ import { formatDate } from '../../../utils/format'
 import { cn } from '../../../utils/cn'
 import { toast, confirm } from '../../../utils/toast'
 import { useAuth } from '../../../context/AuthContext'
+
+const TABS = [
+  { key: 'members', label: 'Members', icon: Users },
+  { key: 'events', label: 'Events', icon: Calendar },
+  { key: 'invitations', label: 'Invitations', icon: Send },
+]
 
 export default function TeamDetailPage() {
   const { teamId } = useParams()
@@ -201,76 +207,45 @@ export default function TeamDetailPage() {
           <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/[0.04]" />
           <div className="pointer-events-none absolute -bottom-8 -left-8 h-28 w-28 rounded-full bg-white/[0.03]" />
           <div className="relative flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
-            {/* Avatar */}
             <div className="relative shrink-0 self-center sm:self-start">
               <div className="flex h-[60px] w-[60px] items-center justify-center rounded-2xl bg-white/20 text-[18px] font-bold leading-none tracking-wide text-white shadow-sm backdrop-blur sm:h-[68px] sm:w-[68px] sm:text-[22px]">
                 {detail?.name ? detail.name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase() : '?'}
               </div>
             </div>
 
-            {/* Right */}
             <div className="flex min-w-0 flex-1 flex-col gap-4">
-              {/* Title row */}
               <div>
                 <div className="flex flex-wrap items-center gap-3">
                   {editingName ? (
                     <div className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                        className="rounded-lg border border-white/30 bg-white/10 px-3 py-1.5 text-[18px] font-bold text-white outline-none backdrop-blur focus:border-white/60 sm:text-[22px]"
-                        autoFocus
-                      />
+                      <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} className="rounded-lg border border-white/30 bg-white/10 px-3 py-1.5 text-[18px] font-bold text-white outline-none backdrop-blur focus:border-white/60 sm:text-[22px]" autoFocus />
                       <button onClick={handleUpdateName} className="cursor-pointer rounded-lg p-1.5 text-green-300 hover:bg-white/10"><Check size={18} /></button>
                       <button onClick={() => setEditingName(false)} className="cursor-pointer rounded-lg p-1.5 text-white/60 hover:bg-white/10"><X size={18} /></button>
                     </div>
                   ) : (
                     <div className="flex items-center gap-3">
                       <h1 className="text-[22px] font-bold leading-tight text-white sm:text-[26px]">{detail?.name}</h1>
-                      <button
-                        onClick={() => { setNewName(detail?.name || ''); setEditingName(true) }}
-                        className="cursor-pointer rounded-lg p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
-                        title="Rename team"
-                      >
-                        <Edit3 size={15} />
-                      </button>
+                      <button onClick={() => { setNewName(detail?.name || ''); setEditingName(true) }} className="cursor-pointer rounded-lg p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white" title="Rename team"><Edit3 size={15} /></button>
                     </div>
                   )}
                 </div>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-5 gap-y-1 text-[13px] text-[#80deea]">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Users size={14} />
-                    {detail?.members?.length || 0} member{(detail?.members?.length || 0) !== 1 ? 's' : ''}
-                  </span>
+                  <span className="inline-flex items-center gap-1.5"><Users size={14} />{detail?.members?.length || 0} member{(detail?.members?.length || 0) !== 1 ? 's' : ''}</span>
                 </div>
               </div>
 
-              {/* Action buttons */}
               <div className="flex flex-wrap gap-2">
                 {isCurrentUserLeader && (
-                  <button
-                    onClick={() => setShowInviteModal(true)}
-                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-white/20 px-4 py-2 text-[13px] font-semibold text-white backdrop-blur transition-colors hover:bg-white/30"
-                  >
-                    <Send size={14} />
-                    Invite
+                  <button onClick={() => setShowInviteModal(true)} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-white/20 px-4 py-2 text-[13px] font-semibold text-white backdrop-blur transition-colors hover:bg-white/30">
+                    <Send size={14} /> Invite
                   </button>
                 )}
-                <button
-                  onClick={handleLeave}
-                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-semibold text-white/90 backdrop-blur transition-colors hover:bg-white/20"
-                >
-                  <LogOut size={14} />
-                  Leave
+                <button onClick={handleLeave} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-semibold text-white/90 backdrop-blur transition-colors hover:bg-white/20">
+                  <LogOut size={14} /> Leave
                 </button>
                 {isCurrentUserLeader && (
-                  <button
-                    onClick={handleDisband}
-                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-red-400/30 bg-red-500/20 px-4 py-2 text-[13px] font-semibold text-red-200 backdrop-blur transition-colors hover:bg-red-500/30"
-                  >
-                    <Users size={14} />
-                    Disband
+                  <button onClick={handleDisband} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-red-400/30 bg-red-500/20 px-4 py-2 text-[13px] font-semibold text-red-200 backdrop-blur transition-colors hover:bg-red-500/30">
+                    <Users size={14} /> Disband
                   </button>
                 )}
               </div>
@@ -281,86 +256,50 @@ export default function TeamDetailPage() {
 
       {/* Tabs + content */}
       <div className="rounded-xl border border-[#d7e0e5] bg-white">
-        {/* Tab nav */}
-        <div className="flex border-b border-[#d7e0e5] px-6">
-          <button
-            onClick={() => setActiveTab('members')}
-            className={cn('relative px-4 py-3 text-[13px] font-medium transition-colors cursor-pointer', activeTab === 'members' ? 'text-[#1565c0]' : 'text-[#7a8e99] hover:text-[#1f2f3a]')}
-          >
-            Members
-            {activeTab === 'members' && <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#1565c0]" />}
-          </button>
-          <button
-            onClick={() => setActiveTab('events')}
-            className={cn('relative px-4 py-3 text-[13px] font-medium transition-colors cursor-pointer', activeTab === 'events' ? 'text-[#1565c0]' : 'text-[#7a8e99] hover:text-[#1f2f3a]')}
-          >
-            Events
-            {activeTab === 'events' && <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#1565c0]" />}
-          </button>
-          <button
-            onClick={() => setActiveTab('invitations')}
-            className={cn('relative px-4 py-3 text-[13px] font-medium transition-colors cursor-pointer', activeTab === 'invitations' ? 'text-[#1565c0]' : 'text-[#7a8e99] hover:text-[#1f2f3a]')}
-          >
-            Invitations
-            {activeTab === 'invitations' && <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#1565c0]" />}
-          </button>
+        <div className="flex border-b border-[#d7e0e5] px-6 overflow-x-auto">
+          {TABS.map((tab) => {
+            const Icon = tab.icon
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={cn('relative flex items-center gap-2 px-4 py-3 text-[13px] font-medium cursor-pointer whitespace-nowrap transition-colors', activeTab === tab.key ? 'text-[#1565c0]' : 'text-[#7a8e99] hover:text-[#1f2f3a]')}
+              >
+                <Icon size={16} />
+                {tab.label}
+                {activeTab === tab.key && <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#1565c0]" />}
+              </button>
+            )
+          })}
         </div>
 
-        {/* Tab content */}
         <div className="p-6">
           {activeTab === 'members' && (
-            <TeamMembersSection
-              members={detail?.members}
-              teamId={detail?.id}
-              isCurrentUserLeader={isCurrentUserLeader}
-              onKick={handleKick}
-              onChangeLeader={() => setShowChangeLeader(true)}
-            />
+            <TeamMembersSection members={detail?.members} teamId={detail?.id} isCurrentUserLeader={isCurrentUserLeader} onKick={handleKick} onChangeLeader={() => setShowChangeLeader(true)} />
           )}
           {activeTab === 'events' && <TeamEventsSection teamId={detail?.id} />}
           {activeTab === 'invitations' && <TeamInvitationsSection key={inviteVersion} teamId={detail?.id} />}
         </div>
       </div>
 
-      {/* Invite Modal */}
-      <InviteModal
-        teamId={detail?.id}
-        open={showInviteModal}
-        onClose={() => setShowInviteModal(false)}
-        onSent={handleInviteSent}
-      />
-
-      {/* Change Leader Modal */}
-      <ChangeLeaderModal
-        open={showChangeLeader}
-        members={detail?.members}
-        onClose={() => setShowChangeLeader(false)}
-        onSelect={handleChangeLeader}
-      />
+      <InviteModal teamId={detail?.id} open={showInviteModal} onClose={() => setShowInviteModal(false)} onSent={handleInviteSent} />
+      <ChangeLeaderModal open={showChangeLeader} members={detail?.members} onClose={() => setShowChangeLeader(false)} onSelect={handleChangeLeader} />
     </div>
   )
 }
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /*  Members                                                            */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 function TeamMembersSection({ members, teamId, isCurrentUserLeader, onKick, onChangeLeader }) {
   return (
     <div className="space-y-3">
       {isCurrentUserLeader && (
-        <div className="mb-2 flex gap-2">
-          <button
-            type="button"
-            onClick={onChangeLeader}
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-2 text-[12px] font-semibold text-[#1565c0] transition-colors hover:bg-[#bbdefb]"
-          >
-            <UserCog size={14} />
-            Change Leader
-          </button>
-        </div>
+        <button type="button" onClick={onChangeLeader} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-2 text-[12px] font-semibold text-[#1565c0] transition-colors hover:bg-[#bbdefb]">
+          <UserCog size={14} /> Change Leader
+        </button>
       )}
-
       {members && members.length > 0 ? (
         members.map((member) => (
           <div key={member.userId} className="flex items-center justify-between rounded-xl border border-[#e8ecf0] bg-white px-4 py-3">
@@ -375,21 +314,9 @@ function TeamMembersSection({ members, teamId, isCurrentUserLeader, onKick, onCh
               </div>
             </div>
             <div className="flex shrink-0 items-center gap-1.5">
-              {member.isLeader && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#fff3e0] px-2.5 py-1 text-[11px] font-semibold text-[#e65100]">
-                  <Shield size={11} />
-                  Leader
-                </span>
-              )}
+              {member.isLeader && <span className="inline-flex items-center gap-1 rounded-full bg-[#fff3e0] px-2.5 py-1 text-[11px] font-semibold text-[#e65100]"><Shield size={11} /> Leader</span>}
               {isCurrentUserLeader && !member.isLeader && (
-                <button
-                  type="button"
-                  onClick={() => onKick(member.userId)}
-                  title="Kick member"
-                  className="cursor-pointer rounded-lg bg-[#fce4ec] p-1.5 text-[#c62828] transition-colors hover:bg-[#f8bbd0]"
-                >
-                  <UserMinus size={14} />
-                </button>
+                <button type="button" onClick={() => onKick(member.userId)} title="Kick member" className="cursor-pointer rounded-lg bg-[#fce4ec] p-1.5 text-[#c62828] transition-colors hover:bg-[#f8bbd0]"><UserMinus size={14} /></button>
               )}
             </div>
           </div>
@@ -401,9 +328,9 @@ function TeamMembersSection({ members, teamId, isCurrentUserLeader, onKick, onCh
   )
 }
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /*  Events                                                             */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 function TeamEventsSection({ teamId }) {
   const [events, setEvents] = useState([])
@@ -434,7 +361,7 @@ function TeamEventsSection({ teamId }) {
 
   const totalPages = Math.ceil(totalCount / 5)
 
-  if (loading) return <div className="space-y-2">{[1, 2].map((i) => <div key={i} className="h-[56px] animate-pulse rounded-lg bg-gray-100" />)}</div>
+  if (loading) return <div className="space-y-2">{[1, 2].map((i) => <div key={i} className="h-[72px] animate-pulse rounded-lg bg-gray-100" />)}</div>
 
   if (events.length === 0) return (
     <div className="flex flex-col items-center justify-center py-8">
@@ -445,19 +372,22 @@ function TeamEventsSection({ teamId }) {
 
   return (
     <div>
-      <div className="space-y-2">
+      <div className="space-y-3">
         {events.map((event) => (
-          <Link
-            key={event.registerTeamId}
-            to={`/hackathons/${event.eventId}`}
-            className="flex items-center justify-between rounded-xl border border-[#e8ecf0] bg-white px-4 py-3 transition-colors hover:bg-[#f0f7ff]"
-          >
+          <div key={event.registerTeamId} className="flex flex-col gap-3 rounded-xl border border-[#e8ecf0] bg-white px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0 flex-1">
               <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{event.eventName}</p>
               <p className="text-[12px] text-[#8a9ba6]">Registered {formatDate(event.createdAt)}</p>
             </div>
-            <span className="shrink-0 text-[12px] text-[#1565c0] font-medium">View &rarr;</span>
-          </Link>
+            <div className="flex shrink-0 gap-2">
+              <Link to={`/hackathons/${event.eventId}`} className="inline-flex items-center gap-1.5 rounded-lg bg-[#1565c0] px-4 py-2 text-[12px] font-semibold text-white transition-colors hover:bg-[#0d47a1]">
+                <Eye size={14} /> View Hackathon
+              </Link>
+              <Link to={`/teams/${teamId}/registrations`} className="inline-flex items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[12px] font-semibold text-[#1565c0] transition-colors hover:bg-[#f0f7ff]">
+                <FileText size={14} /> My Registrations
+              </Link>
+            </div>
+          </div>
         ))}
       </div>
       {totalPages > 1 && <div className="mt-3"><Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} /></div>}
@@ -465,9 +395,9 @@ function TeamEventsSection({ teamId }) {
   )
 }
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /*  Invite Modal                                                       */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 function InviteModal({ teamId, open, onClose, onSent }) {
   const [email, setEmail] = useState('')
@@ -496,31 +426,17 @@ function InviteModal({ teamId, open, onClose, onSent }) {
       <div className="absolute inset-0 bg-black/40" />
       <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e3f2fd]">
-              <Send className="h-5 w-5 text-[#1565c0]" />
-            </div>
-            <h3 className="text-[16px] font-bold text-[#1f2f3a]">Invite Member</h3>
-          </div>
+          <div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e3f2fd]"><Send className="h-5 w-5 text-[#1565c0]" /></div><h3 className="text-[16px] font-bold text-[#1f2f3a]">Invite Member</h3></div>
           <button onClick={onClose} className="cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-100"><X className="h-5 w-5" /></button>
         </div>
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
           <div>
             <label className="mb-1.5 block text-[13px] font-medium text-[#1f2f3a]">Email address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="user@email.com"
-              className="w-full rounded-lg border border-[#d7e0e5] px-3 py-2.5 text-[14px] text-[#1f2f3a] outline-none placeholder:text-[#8a9ba6] focus:border-[#1565c0]"
-              autoFocus
-            />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="user@email.com" className="w-full rounded-lg border border-[#d7e0e5] px-3 py-2.5 text-[14px] text-[#1f2f3a] outline-none placeholder:text-[#8a9ba6] focus:border-[#1565c0]" autoFocus />
           </div>
           <div className="flex justify-end gap-3">
             <button type="button" onClick={onClose} className="cursor-pointer rounded-lg border border-[#d7e0e5] bg-white px-5 py-2.5 text-[13px] font-semibold text-[#1f2f3a] hover:bg-gray-50">Cancel</button>
-            <button type="submit" disabled={submitting} className="cursor-pointer rounded-lg bg-[#1565c0] px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1] disabled:opacity-50">
-              {submitting ? 'Sending...' : 'Send Invitation'}
-            </button>
+            <button type="submit" disabled={submitting} className="cursor-pointer rounded-lg bg-[#1565c0] px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1] disabled:opacity-50">{submitting ? 'Sending...' : 'Send Invitation'}</button>
           </div>
         </form>
       </div>
@@ -528,13 +444,12 @@ function InviteModal({ teamId, open, onClose, onSent }) {
   )
 }
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /*  Change Leader Modal                                                */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 function ChangeLeaderModal({ open, members, onClose, onSelect }) {
   if (!open || !members) return null
-
   const nonLeaders = members.filter((m) => !m.isLeader)
 
   return (
@@ -542,12 +457,7 @@ function ChangeLeaderModal({ open, members, onClose, onSelect }) {
       <div className="absolute inset-0 bg-black/40" />
       <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e3f2fd]">
-              <UserCog className="h-5 w-5 text-[#1565c0]" />
-            </div>
-            <h3 className="text-[16px] font-bold text-[#1f2f3a]">Change Team Leader</h3>
-          </div>
+          <div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e3f2fd]"><UserCog className="h-5 w-5 text-[#1565c0]" /></div><h3 className="text-[16px] font-bold text-[#1f2f3a]">Change Team Leader</h3></div>
           <button onClick={onClose} className="cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-100"><X className="h-5 w-5" /></button>
         </div>
         <div className="px-6 py-5 space-y-3">
@@ -556,12 +466,7 @@ function ChangeLeaderModal({ open, members, onClose, onSelect }) {
             <p className="text-[13px] text-[#7a8e99]">No other members to transfer leadership to.</p>
           ) : (
             nonLeaders.map((m) => (
-              <button
-                key={m.userId}
-                type="button"
-                onClick={() => onSelect(m.userId)}
-                className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-[#d7e0e5] bg-white px-4 py-3 text-left transition-all hover:border-[#1565c0]/30 hover:bg-[#f0f7ff] hover:shadow-sm"
-              >
+              <button key={m.userId} type="button" onClick={() => onSelect(m.userId)} className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-[#d7e0e5] bg-white px-4 py-3 text-left transition-all hover:border-[#1565c0]/30 hover:bg-[#f0f7ff] hover:shadow-sm">
                 <Avatar src={m.avatarUrl} name={`${m.firstName} ${m.lastName}`} size="h-10 w-10" textSize="text-[14px]" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{m.firstName} {m.lastName}</p>
@@ -571,18 +476,16 @@ function ChangeLeaderModal({ open, members, onClose, onSelect }) {
               </button>
             ))
           )}
-          <div className="flex justify-end pt-2">
-            <button onClick={onClose} className="cursor-pointer rounded-lg border border-[#d7e0e5] bg-white px-5 py-2.5 text-[13px] font-semibold text-[#1f2f3a] hover:bg-gray-50">Cancel</button>
-          </div>
+          <div className="flex justify-end pt-2"><button onClick={onClose} className="cursor-pointer rounded-lg border border-[#d7e0e5] bg-white px-5 py-2.5 text-[13px] font-semibold text-[#1f2f3a] hover:bg-gray-50">Cancel</button></div>
         </div>
       </div>
     </div>
   )
 }
 
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 /*  Invitations List                                                   */
-/* ------------------------------------------------------------------ */
+/* ================================================================== */
 
 const INVITE_STATUS = {
   Pending: { label: 'Pending', cls: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200/60', icon: Clock },
@@ -620,13 +523,11 @@ function TeamInvitationsSection({ teamId }) {
   }, [teamId, pageIndex, pageSize])
 
   const totalPages = Math.ceil(totalCount / pageSize)
-
   if (loading) return <div className="space-y-2">{[1, 2, 3].map((i) => <div key={i} className="h-[56px] animate-pulse rounded-lg bg-gray-100" />)}</div>
 
   if (items.length === 0) return (
     <div className="flex flex-col items-center justify-center py-8">
-      <Send size={24} className="mb-2 text-[#8a9ba6]" />
-      <p className="text-[13px] text-[#7a8e99]">No invitations sent yet.</p>
+      <Send size={24} className="mb-2 text-[#8a9ba6]" /><p className="text-[13px] text-[#7a8e99]">No invitations sent yet.</p>
     </div>
   )
 
@@ -639,27 +540,15 @@ function TeamInvitationsSection({ teamId }) {
           return (
             <div key={inv.id} className="flex items-center justify-between rounded-xl border border-[#e8ecf0] bg-white px-4 py-3">
               <div className="flex items-center gap-3 min-w-0 flex-1">
-                <Avatar
-                  src={inv.invitedUserAvatarUrl}
-                  name={`${inv.invitedUserFirstName} ${inv.invitedUserLastName}`}
-                  size="h-9 w-9"
-                  textSize="text-[13px]"
-                />
+                <Avatar src={inv.invitedUserAvatarUrl} name={`${inv.invitedUserFirstName} ${inv.invitedUserLastName}`} size="h-9 w-9" textSize="text-[13px]" />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">
-                    {inv.invitedUserFirstName} {inv.invitedUserLastName}
-                  </p>
+                  <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{inv.invitedUserFirstName} {inv.invitedUserLastName}</p>
                   <p className="truncate text-[12px] text-[#8a9ba6]">{inv.invitedUserEmail}</p>
                 </div>
               </div>
               <div className="flex shrink-0 items-center gap-3">
-                <span className={cn('inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold', cfg.cls)}>
-                  <Icon size={12} />
-                  {cfg.label}
-                </span>
-                {inv.limitTime && (
-                  <span className="text-[11px] text-[#8a9ba6]">Expires {formatDate(inv.limitTime)}</span>
-                )}
+                <span className={cn('inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold', cfg.cls)}><Icon size={12} />{cfg.label}</span>
+                {inv.limitTime && <span className="text-[11px] text-[#8a9ba6]">Expires {formatDate(inv.limitTime)}</span>}
               </div>
             </div>
           )
