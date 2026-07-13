@@ -1467,7 +1467,7 @@ export default function EventDetailPage() {
     const initials = getInitials(event.name)
     const relative = getRelativeStatus(event.startTime, event.endTime)
 
-    return (
+    return (<>
       <div className="min-h-screen bg-[#f6f9fb]">
         <div className="mx-auto max-w-[1064px] px-4 py-8 sm:px-6 lg:px-8">
           {/* ---------- Back link ---------- */}
@@ -1670,6 +1670,7 @@ export default function EventDetailPage() {
           getStudentEventDetail(id).then(setEvent).catch(() => {})
         }}
       />
+    </>
     )
   }
 }
