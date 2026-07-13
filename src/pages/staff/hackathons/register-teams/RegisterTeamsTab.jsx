@@ -6,7 +6,7 @@ import Badge from '../../../../components/Badge'
 import RoundSelectModal from '../../../../components/RoundSelectModal'
 import TrackSelectModal from '../../../../components/TrackSelectModal'
 import TopicSelectModal from '../../../../components/TopicSelectModal'
-import { getRounds, getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam, assignTrackTopicToRegisterTeam, removeTrackTopicFromRegisterTeam } from '../../../../api/staff'
+import { getRounds, getTracks, getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam, assignTrackTopicToRegisterTeam, removeTrackTopicFromRegisterTeam } from '../../../../api/staff'
 import { formatDateTime } from '../../../../utils/format'
 import { toast, confirm } from '../../../../utils/toast'
 import PromptReason from '../../../../components/PromptReason'
@@ -237,6 +237,7 @@ export default function RegisterTeamsTab({ eventId }) {
       onClose={() => setFilterTrackModalOpen(false)}
       eventId={eventId}
       selectedTrackId={filters.trackId}
+      fetchTracks={getTracks}
       onSelect={(id, name) => {
         handleFilterSelect('trackId', setTrackName)(id, name)
         if (id !== filters.trackId) {
@@ -260,6 +261,7 @@ export default function RegisterTeamsTab({ eventId }) {
       onClose={() => { setAssignTrackModalOpen(false) }}
       eventId={eventId}
       selectedTrackId={assignTarget?.trackId || null}
+      fetchTracks={getTracks}
       onSelect={handleTrackSelect}
     />
 

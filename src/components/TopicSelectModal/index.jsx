@@ -25,12 +25,13 @@ function buildQuery(filters, page) {
   return q
 }
 
-export default function TopicSelectModal({ open, onClose, trackId, selectedTopicId, onSelect }) {
+export default function TopicSelectModal({ open, onClose, trackId, selectedTopicId, onSelect, fetchTopics }) {
   const fetchFn = useCallback(async (q) => {
     if (!trackId) return { items: [], totalCount: 0 }
-    const result = await getTopics(trackId, q)
+    const fn = fetchTopics || getTopics
+    const result = await fn(trackId, q)
     return { items: result.topics || [], totalCount: result.totalCount || 0 }
-  }, [trackId])
+  }, [trackId, fetchTopics])
 
   const columns = useMemo(() => [
     {

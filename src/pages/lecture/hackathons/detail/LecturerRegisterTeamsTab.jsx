@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Ban, CircleCheck, Layers, Users, FileText, Calendar, Eye } from 'lucide-react'
+import { Search, Ban, CircleCheck, Layers, Users, FileText, Calendar, Eye, ChevronDown, FolderKanban } from 'lucide-react'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Badge from '../../../../components/Badge'
 import RoundSelectModal from '../../../../components/RoundSelectModal'
-import { getLecturerRegisterTeams, getLecturerRounds } from '../../../../api/lecturer'
+import TrackSelectModal from '../../../../components/TrackSelectModal'
+import TopicSelectModal from '../../../../components/TopicSelectModal'
+import { getLecturerRegisterTeams, getLecturerRounds, getLecturerMyTracks, getLecturerTopics } from '../../../../api/lecturer'
 import { formatDateTime } from '../../../../utils/format'
 
 const PAGE_SIZE = 10
@@ -16,7 +18,7 @@ const statusBadge = {
   Rejected: 'bg-rose-50 text-rose-700 border border-rose-200',
 }
 
-const INITIAL_FILTERS = { keyword: '', status: '', isBanned: '', roundId: '' }
+const INITIAL_FILTERS = { keyword: '', status: '', isBanned: '', roundId: '', trackId: '', topicId: '' }
 
 function hasActiveFilters(f) {
   return Object.values(f).some((v) => v !== '')
@@ -30,7 +32,11 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
   const [error, setError] = useState('')
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const [roundName, setRoundName] = useState('')
+  const [trackName, setTrackName] = useState('')
+  const [topicName, setTopicName] = useState('')
   const [filterRoundModalOpen, setFilterRoundModalOpen] = useState(false)
+  const [filterTrackModalOpen, setFilterTrackModalOpen] = useState(false)
+  const [filterTopicModalOpen, setFilterTopicModalOpen] = useState(false)
   const active = hasActiveFilters(filters)
 
   const prevFiltersRef = useRef(filters)
@@ -40,7 +46,9 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
       prev.keyword !== filters.keyword ||
       prev.status !== filters.status ||
       prev.isBanned !== filters.isBanned ||
-      prev.roundId !== filters.roundId
+      prev.roundId !== filters.roundId ||
+      prev.trackId !== filters.trackId ||
+      prev.topicId !== filters.topicId
     ) {
       setPageIndex(1)
     }
@@ -55,6 +63,8 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
       if (filters.status) params.Status = filters.status
       if (filters.isBanned !== '') params.IsBanned = filters.isBanned === 'true'
       if (filters.roundId) params.RoundId = filters.roundId
+      if (filters.trackId) params.TrackId = filters.trackId
+      if (filters.topicId) params.TopicId = filters.topicId
       const result = await getLecturerRegisterTeams(eventId, params)
       setTeams(result.registerTeams || [])
       setTotalCount(result.totalCount || 0)
@@ -67,12 +77,18 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
   useEffect(() => { fetchTeams() }, [fetchTeams])
 
   function setFilter(key, value) {
-    setFilters((prev) => ({ ...prev, [key]: value }))
+    setFilters((prev) => {
+      const next = { ...prev, [key]: value }
+      if (key === 'trackId') next.topicId = ''
+      return next
+    })
   }
 
   function resetFilters() {
     setFilters(INITIAL_FILTERS)
     setRoundName('')
+    setTrackName('')
+    setTopicName('')
   }
 
   function handleFilterSelect(key, nameSetter) {
@@ -95,6 +111,69 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
       { value: 'true', label: 'Yes' },
       { value: 'false', label: 'No' },
     ]},
+    {
+      type: 'custom',
+      key: 'roundPicker',
+      render: () => (
+        <div key="round" className="relative w-full sm:w-[170px]">
+          <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+            <Layers className="h-3 w-3" /> Round
+          </label>
+          <button
+            type="button"
+            onClick={() => setFilterRoundModalOpen(true)}
+            className="group flex w-full cursor-pointer items-center justify-between rounded-lg border border-[#d8e0e6] bg-white py-2.5 pl-3.5 pr-3 text-left text-[14px] transition-all hover:border-[#064f5d] hover:shadow-sm focus:border-[#064f5d] outline-none"
+          >
+            <span className={filters.roundId ? 'text-[#1f2f3a] font-medium' : 'text-gray-400'}>
+              {filters.roundId ? roundName : 'All Rounds'}
+            </span>
+            <ChevronDown className="h-4 w-4 text-gray-400 transition-transform group-hover:text-[#064f5d]" />
+          </button>
+        </div>
+      ),
+    },
+    {
+      type: 'custom',
+      key: 'trackPicker',
+      render: () => (
+        <div key="track" className="relative w-full sm:w-[170px]">
+          <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+            <FolderKanban className="h-3 w-3" /> Track
+          </label>
+          <button
+            type="button"
+            onClick={() => setFilterTrackModalOpen(true)}
+            className="group flex w-full cursor-pointer items-center justify-between rounded-lg border border-[#d8e0e6] bg-white py-2.5 pl-3.5 pr-3 text-left text-[14px] transition-all hover:border-[#064f5d] hover:shadow-sm focus:border-[#064f5d] outline-none"
+          >
+            <span className={filters.trackId ? 'text-[#1f2f3a] font-medium' : 'text-gray-400'}>
+              {filters.trackId ? trackName : 'All Tracks'}
+            </span>
+            <ChevronDown className="h-4 w-4 text-gray-400 transition-transform group-hover:text-[#064f5d]" />
+          </button>
+        </div>
+      ),
+    },
+    {
+      type: 'custom',
+      key: 'topicPicker',
+      render: () => (
+        <div key="topic" className="relative w-full sm:w-[170px]">
+          <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+            <FileText className="h-3 w-3" /> Topic
+          </label>
+          <button
+            type="button"
+            onClick={!filters.trackId ? undefined : () => setFilterTopicModalOpen(true)}
+            className={`group flex w-full items-center justify-between rounded-lg border border-[#d8e0e6] bg-white py-2.5 pl-3.5 pr-3 text-left text-[14px] transition-all hover:border-[#064f5d] hover:shadow-sm focus:border-[#064f5d] outline-none ${!filters.trackId ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+          >
+            <span className={filters.topicId ? 'text-[#1f2f3a] font-medium' : 'text-gray-400'}>
+              {filters.topicId ? topicName : (!filters.trackId ? 'Select Track First' : 'All Topics')}
+            </span>
+            <ChevronDown className="h-4 w-4 text-gray-400 transition-transform group-hover:text-[#064f5d]" />
+          </button>
+        </div>
+      ),
+    },
   ]
 
   const viewBtnClass =
@@ -141,30 +220,13 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
 
       <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
         <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
-          <div className="flex flex-wrap items-end gap-3">
-            <FilterBar
-              filters={filterConfigs}
-              values={filters}
-              onChange={setFilter}
-              onReset={resetFilters}
-              hasActive={active}
-            />
-            {/* Round filter button */}
-            <div className="relative w-full sm:w-[200px]">
-              <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                <Layers className="h-3 w-3" /> Round
-              </label>
-              <button
-                type="button"
-                onClick={() => setFilterRoundModalOpen(true)}
-                className="group flex w-full cursor-pointer items-center justify-between rounded-lg border border-[#d8e0e6] bg-white py-2.5 pl-3.5 pr-3 text-left text-[14px] transition-all hover:border-[#064f5d] hover:shadow-sm focus:border-[#064f5d] outline-none"
-              >
-                <span className={filters.roundId ? 'text-[#1f2f3a] font-medium' : 'text-gray-400'}>
-                  {filters.roundId ? roundName : 'All Rounds'}
-                </span>
-              </button>
-            </div>
-          </div>
+          <FilterBar
+            filters={filterConfigs}
+            values={filters}
+            onChange={setFilter}
+            onReset={resetFilters}
+            hasActive={active}
+          />
         </div>
         <BaseTable
           borderless
@@ -189,6 +251,30 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
         selectedRoundId={filters.roundId}
         onSelect={handleFilterSelect('roundId', setRoundName)}
         fetchRounds={getLecturerRounds}
+      />
+
+      <TrackSelectModal
+        open={filterTrackModalOpen}
+        onClose={() => { setFilterTrackModalOpen(false) }}
+        eventId={eventId}
+        selectedTrackId={filters.trackId}
+        fetchTracks={getLecturerMyTracks}
+        onSelect={(id, name) => {
+          handleFilterSelect('trackId', setTrackName)(id, name)
+          if (id !== filters.trackId) {
+            setFilter('topicId', '')
+            setTopicName('')
+          }
+        }}
+      />
+
+      <TopicSelectModal
+        open={filterTopicModalOpen}
+        onClose={() => setFilterTopicModalOpen(false)}
+        trackId={filters.trackId}
+        selectedTopicId={filters.topicId}
+        onSelect={handleFilterSelect('topicId', setTopicName)}
+        fetchTopics={getLecturerTopics}
       />
     </>
   )

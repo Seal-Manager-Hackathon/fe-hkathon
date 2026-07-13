@@ -7,19 +7,19 @@ export const INITIAL_FILTERS = { keyword: '', status: '', isBanned: '', roundId:
 const hasActiveFilters = (f) => Object.values(f).some((v) => v !== '')
 
 // ── Small picker button for each filter type ──
-function FilterPickButton({ icon: Icon, label, name, allLabel, onClick }) {
+function FilterPickButton({ icon: Icon, label, name, allLabel, onClick, disabled }) {
   return (
-    <div className="relative w-full sm:w-[200px]">
+    <div className="relative w-full sm:w-[170px]">
       <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
         <Icon className="h-3 w-3" /> {label}
       </label>
       <button
         type="button"
-        onClick={onClick}
-        className="group flex w-full cursor-pointer items-center justify-between rounded-lg border border-[#d8e0e6] bg-white py-2.5 pl-3.5 pr-3 text-left text-[14px] transition-all hover:border-[#064f5d] hover:shadow-sm focus:border-[#064f5d] outline-none"
+        onClick={disabled ? undefined : onClick}
+        className={`group flex w-full items-center justify-between rounded-lg border border-[#d8e0e6] bg-white py-2.5 pl-3.5 pr-3 text-left text-[14px] transition-all hover:border-[#064f5d] hover:shadow-sm focus:border-[#064f5d] outline-none ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
       >
         <span className={name ? 'text-[#1f2f3a] font-medium' : 'text-gray-400'}>
-          {name || allLabel}
+          {name || (disabled ? 'Select Track First' : allLabel)}
         </span>
         <ChevronDown className="h-4 w-4 text-gray-400 transition-transform group-hover:text-[#064f5d]" />
       </button>
@@ -99,6 +99,7 @@ export function useRegisterTeamFilters() {
             icon={FileText} label="Topic" allLabel="All Topics"
             name={filters.topicId ? topicName : ''}
             onClick={() => setFilterTopicModalOpen(true)}
+            disabled={!filters.trackId}
           />
         ),
       },
