@@ -55,7 +55,7 @@ const ITEM_META = {
 }
 
 const GROUP_INFO = [
-  { key: 'timeline', items: ['startTime', 'endTime', 'registerLimitTime'] },
+  { key: 'timeline', items: ['startTime', 'registerLimitTime', 'endTime'] },
   { key: 'constraints', items: ['limitTeam', 'teamSize'] },
 ]
 
