@@ -21,20 +21,25 @@ import Avatar from '../../../components/Avatar'
 import { formatDate } from '../../../utils/format'
 import { cn } from '../../../utils/cn'
 import { toast, confirm } from '../../../utils/toast'
+import { useAuth } from '../../../context/AuthContext'
 
 export default function TeamDetailPage() {
   const { teamId } = useParams()
+  const { user } = useAuth()
   const [detail, setDetail] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState('members')
+
+  const currentUserId = user?.id
+  const isCurrentUserLeader = detail?.members?.some((m) => m.userId === currentUserId && m.isLeader) ?? false
 
   // Edit name
   const [editingName, setEditingName] = useState(false)
   const [newName, setNewName] = useState('')
 
   // Change leader
-  const [changingLeader, setChangingLeader] = useState(null)
+  const [showChangeLeader, setShowChangeLeader] = useState(false)
 
   // Invitations
   const [showInviteModal, setShowInviteModal] = useState(false)
@@ -118,9 +123,11 @@ export default function TeamDetailPage() {
 
   async function handleChangeLeader(newLeaderUserId) {
     if (!detail) return
+    const ok = await confirm('Change Team Leader', 'Are you sure you want to transfer leadership to this member?')
+    if (!ok) return
     try {
       await changeStudentTeamLeader(detail.id, newLeaderUserId)
-      setChangingLeader(null)
+      setShowChangeLeader(false)
       toast.success('Team leader changed successfully.')
       refresh()
     } catch (err) {
@@ -241,13 +248,15 @@ export default function TeamDetailPage() {
 
               {/* Action buttons */}
               <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setShowInviteModal(true)}
-                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-white/20 px-4 py-2 text-[13px] font-semibold text-white backdrop-blur transition-colors hover:bg-white/30"
-                >
-                  <Send size={14} />
-                  Invite
-                </button>
+                {isCurrentUserLeader && (
+                  <button
+                    onClick={() => setShowInviteModal(true)}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-white/20 px-4 py-2 text-[13px] font-semibold text-white backdrop-blur transition-colors hover:bg-white/30"
+                  >
+                    <Send size={14} />
+                    Invite
+                  </button>
+                )}
                 <button
                   onClick={handleLeave}
                   className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-semibold text-white/90 backdrop-blur transition-colors hover:bg-white/20"
@@ -255,13 +264,15 @@ export default function TeamDetailPage() {
                   <LogOut size={14} />
                   Leave
                 </button>
-                <button
-                  onClick={handleDisband}
-                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-red-400/30 bg-red-500/20 px-4 py-2 text-[13px] font-semibold text-red-200 backdrop-blur transition-colors hover:bg-red-500/30"
-                >
-                  <Users size={14} />
-                  Disband
-                </button>
+                {isCurrentUserLeader && (
+                  <button
+                    onClick={handleDisband}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-red-400/30 bg-red-500/20 px-4 py-2 text-[13px] font-semibold text-red-200 backdrop-blur transition-colors hover:bg-red-500/30"
+                  >
+                    <Users size={14} />
+                    Disband
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -301,10 +312,9 @@ export default function TeamDetailPage() {
             <TeamMembersSection
               members={detail?.members}
               teamId={detail?.id}
+              isCurrentUserLeader={isCurrentUserLeader}
               onKick={handleKick}
-              changingLeader={changingLeader}
-              setChangingLeader={setChangingLeader}
-              onChangeLeader={handleChangeLeader}
+              onChangeLeader={() => setShowChangeLeader(true)}
             />
           )}
           {activeTab === 'events' && <TeamEventsSection teamId={detail?.id} />}
@@ -319,6 +329,14 @@ export default function TeamDetailPage() {
         onClose={() => setShowInviteModal(false)}
         onSent={handleInviteSent}
       />
+
+      {/* Change Leader Modal */}
+      <ChangeLeaderModal
+        open={showChangeLeader}
+        members={detail?.members}
+        onClose={() => setShowChangeLeader(false)}
+        onSelect={handleChangeLeader}
+      />
     </div>
   )
 }
@@ -327,28 +345,19 @@ export default function TeamDetailPage() {
 /*  Members                                                            */
 /* ------------------------------------------------------------------ */
 
-function TeamMembersSection({ members, teamId, onKick, changingLeader, setChangingLeader, onChangeLeader }) {
-  const leader = members?.find((m) => m.isLeader)
-
+function TeamMembersSection({ members, teamId, isCurrentUserLeader, onKick, onChangeLeader }) {
   return (
     <div className="space-y-3">
-      {/* Change leader picker */}
-      {changingLeader && (
-        <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4">
-          <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Select new leader:</p>
-          <div className="space-y-1.5">
-            {members.filter((m) => !m.isLeader).map((m) => (
-              <button
-                key={m.userId}
-                type="button"
-                onClick={() => onChangeLeader(m.userId)}
-                className="w-full cursor-pointer text-left rounded-lg border border-[#d7e0e5] bg-white px-3 py-2 text-[13px] font-medium text-[#1f2f3a] transition-colors hover:border-[#1565c0]/30 hover:bg-[#f0f7ff]"
-              >
-                {m.firstName} {m.lastName}
-              </button>
-            ))}
-          </div>
-          <button onClick={() => setChangingLeader(null)} className="mt-2 cursor-pointer text-[12px] text-[#8a9ba6] hover:underline">Cancel</button>
+      {isCurrentUserLeader && (
+        <div className="mb-2 flex gap-2">
+          <button
+            type="button"
+            onClick={onChangeLeader}
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-2 text-[12px] font-semibold text-[#1565c0] transition-colors hover:bg-[#bbdefb]"
+          >
+            <UserCog size={14} />
+            Change Leader
+          </button>
         </div>
       )}
 
@@ -372,25 +381,15 @@ function TeamMembersSection({ members, teamId, onKick, changingLeader, setChangi
                   Leader
                 </span>
               )}
-              {leader && !member.isLeader && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => setChangingLeader(member.userId)}
-                    title="Transfer leadership"
-                    className="cursor-pointer rounded-lg p-1.5 text-[#8a9ba6] transition-colors hover:bg-[#f0f7ff] hover:text-[#1565c0]"
-                  >
-                    <UserCog size={14} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onKick(member.userId)}
-                    title="Kick member"
-                    className="cursor-pointer rounded-lg p-1.5 text-[#8a9ba6] transition-colors hover:bg-[#fee2e2] hover:text-[#dc2626]"
-                  >
-                    <UserMinus size={14} />
-                  </button>
-                </>
+              {isCurrentUserLeader && !member.isLeader && (
+                <button
+                  type="button"
+                  onClick={() => onKick(member.userId)}
+                  title="Kick member"
+                  className="cursor-pointer rounded-lg bg-[#fce4ec] p-1.5 text-[#c62828] transition-colors hover:bg-[#f8bbd0]"
+                >
+                  <UserMinus size={14} />
+                </button>
               )}
             </div>
           </div>
@@ -524,6 +523,58 @@ function InviteModal({ teamId, open, onClose, onSent }) {
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Change Leader Modal                                                */
+/* ------------------------------------------------------------------ */
+
+function ChangeLeaderModal({ open, members, onClose, onSelect }) {
+  if (!open || !members) return null
+
+  const nonLeaders = members.filter((m) => !m.isLeader)
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e3f2fd]">
+              <UserCog className="h-5 w-5 text-[#1565c0]" />
+            </div>
+            <h3 className="text-[16px] font-bold text-[#1f2f3a]">Change Team Leader</h3>
+          </div>
+          <button onClick={onClose} className="cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-100"><X className="h-5 w-5" /></button>
+        </div>
+        <div className="px-6 py-5 space-y-3">
+          <p className="text-[13px] text-[#5a6a73]">Select a member to become the new team leader:</p>
+          {nonLeaders.length === 0 ? (
+            <p className="text-[13px] text-[#7a8e99]">No other members to transfer leadership to.</p>
+          ) : (
+            nonLeaders.map((m) => (
+              <button
+                key={m.userId}
+                type="button"
+                onClick={() => onSelect(m.userId)}
+                className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-[#d7e0e5] bg-white px-4 py-3 text-left transition-all hover:border-[#1565c0]/30 hover:bg-[#f0f7ff] hover:shadow-sm"
+              >
+                <Avatar src={m.avatarUrl} name={`${m.firstName} ${m.lastName}`} size="h-10 w-10" textSize="text-[14px]" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{m.firstName} {m.lastName}</p>
+                  <p className="truncate text-[12px] text-[#8a9ba6]">{m.email}</p>
+                </div>
+                <span className="shrink-0 text-[12px] font-medium text-[#1565c0]">Select &rarr;</span>
+              </button>
+            ))
+          )}
+          <div className="flex justify-end pt-2">
+            <button onClick={onClose} className="cursor-pointer rounded-lg border border-[#d7e0e5] bg-white px-5 py-2.5 text-[13px] font-semibold text-[#1f2f3a] hover:bg-gray-50">Cancel</button>
+          </div>
+        </div>
       </div>
     </div>
   )
