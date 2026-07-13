@@ -300,6 +300,12 @@ function RoundsTab({ eventId, registerTeamId, members, currentUserId }) {
 
   const totalPages = Math.ceil(totalCount / pageSize)
 
+  function isRoundActive(round) {
+    if (!round.startTime || !round.endTime) return true
+    const now = new Date()
+    return now >= new Date(round.startTime) && now <= new Date(round.endTime)
+  }
+
   async function handleViewSubmission(roundId) {
     const sub = submissions[roundId]
     if (!sub?.lastSubmission?.id) return
@@ -331,6 +337,7 @@ function RoundsTab({ eventId, registerTeamId, members, currentUserId }) {
       <div className="space-y-3">
         {rounds.map((round) => {
           const hasSubmission = !!submissions[round.id]?.lastSubmission
+          const roundActive = isRoundActive(round)
           return (
             <div key={round.id} className="flex flex-col gap-3 rounded-xl border border-[#d7e0e5] bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0 flex-1">
@@ -341,7 +348,7 @@ function RoundsTab({ eventId, registerTeamId, members, currentUserId }) {
                 </div>
               </div>
               <div className="flex shrink-0 flex-wrap gap-2">
-                {/* View round detail */}
+                {/* View round detail — always active */}
                 <button
                   type="button"
                   onClick={() => setViewRoundId(round.id)}
@@ -355,8 +362,14 @@ function RoundsTab({ eventId, registerTeamId, members, currentUserId }) {
                 {isLeader && (
                   <button
                     type="button"
-                    onClick={() => setSubmitModalRound(round.id)}
-                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#1565c0] px-3.5 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1]"
+                    onClick={() => roundActive && setSubmitModalRound(round.id)}
+                    disabled={!roundActive}
+                    className={cn(
+                      'inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[13px] font-semibold transition-colors',
+                      roundActive
+                        ? 'cursor-pointer bg-[#1565c0] text-white hover:bg-[#0d47a1]'
+                        : 'cursor-not-allowed bg-[#90caf9] text-white',
+                    )}
                   >
                     <Upload size={15} />
                     Submit
@@ -367,8 +380,14 @@ function RoundsTab({ eventId, registerTeamId, members, currentUserId }) {
                 {hasSubmission && (
                   <button
                     type="button"
-                    onClick={() => handleViewSubmission(round.id)}
-                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#10b981] transition-colors hover:bg-[#f0fdf4] hover:border-[#10b981]/30"
+                    onClick={() => roundActive && handleViewSubmission(round.id)}
+                    disabled={!roundActive}
+                    className={cn(
+                      'inline-flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-[13px] font-semibold transition-colors',
+                      roundActive
+                        ? 'cursor-pointer border-[#d7e0e5] bg-white text-[#10b981] hover:bg-[#f0fdf4] hover:border-[#10b981]/30'
+                        : 'cursor-not-allowed border-[#e8ecf0] bg-gray-50 text-[#b0bec5]',
+                    )}
                   >
                     <FileText size={15} />
                     View Submission
