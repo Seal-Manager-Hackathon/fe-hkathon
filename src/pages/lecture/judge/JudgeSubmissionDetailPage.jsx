@@ -162,7 +162,7 @@ export default function JudgeSubmissionDetailPage() {
             onClick={() => setGradeModalOpen(true)}
             className="mt-3 sm:mt-0 inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 text-[14px] font-semibold text-white backdrop-blur-sm border border-white/20 hover:bg-white/25 active:scale-[0.97]"
           >
-            <Star className="h-4 w-4" /> Grade
+            <Star className="h-4 w-4" /> {data?.status === 'Graded' ? 'Regrade' : 'Grade'}
           </button>
         </div>
       </div>
@@ -322,6 +322,8 @@ export default function JudgeSubmissionDetailPage() {
         onClose={() => setGradeModalOpen(false)}
         submissionId={submissionId}
         roundId={data?.roundId}
+        scoreId={data?.status === 'Graded' ? data?.score?.id || data?.scoreId : null}
+        mode={data?.status === 'Graded' ? 'regrade' : 'grade'}
         onSuccess={() => {
           // Refresh submission data after successful grade
           getJudgeSubmissionDetail(submissionId).then(setData).catch(() => {})

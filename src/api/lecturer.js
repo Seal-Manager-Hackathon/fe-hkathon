@@ -503,3 +503,15 @@ export async function gradeJudgeSubmission(submissionId, payload) {
   const { data } = await api.post(`/judge/submissions/${submissionId}/scores`, payload)
   return data.data
 }
+
+/**
+ * Regrade a submission as a judge (update existing score).
+ * PATCH /api/v1/judge/scores/{scoreId}
+ * @param {string} scoreId
+ * @param {{ scores: Array<{ criteriaItemId: string, score: number, comment?: string }> }} payload
+ * @returns {Promise<{ scoreId: string, items: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function regradeJudgeSubmission(scoreId, payload) {
+  const { data } = await api.patch(`/judge/scores/${scoreId}`, payload)
+  return data.data
+}

@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { Search, Ban, CircleCheck, Layers, FolderKanban, FileText, ChevronDown } from 'lucide-react'
 
 export const PAGE_SIZE = 10
-export const INITIAL_FILTERS = { keyword: '', status: '', isBanned: '', isDisable: '', roundId: '', trackId: '', topicId: '' }
+export const INITIAL_FILTERS = { keyword: '', status: '', isBanned: '', roundId: '', trackId: '', topicId: '' }
 
 const hasActiveFilters = (f) => Object.values(f).some((v) => v !== '')
 
@@ -66,7 +66,6 @@ export function useRegisterTeamFilters() {
       { type: 'search', key: 'keyword', label: 'Team Name', icon: Search, placeholder: 'Search team name...' },
       { type: 'select', key: 'status', label: 'Status', icon: CircleCheck, options: [{ value: '', label: 'All' }, { value: 'Pending', label: 'Pending' }, { value: 'Approved', label: 'Approved' }, { value: 'Rejected', label: 'Rejected' }] },
       { type: 'select', key: 'isBanned', label: 'Banned', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
-      { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
       {
         type: 'custom',
         key: 'roundPicker',

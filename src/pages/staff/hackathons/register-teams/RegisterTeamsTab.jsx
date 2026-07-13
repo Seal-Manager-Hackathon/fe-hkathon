@@ -43,7 +43,6 @@ export default function RegisterTeamsTab({ eventId }) {
       prev.keyword !== filters.keyword ||
       prev.status !== filters.status ||
       prev.isBanned !== filters.isBanned ||
-      prev.isDisable !== filters.isDisable ||
       prev.roundId !== filters.roundId ||
       prev.trackId !== filters.trackId ||
       prev.topicId !== filters.topicId
@@ -73,7 +72,6 @@ export default function RegisterTeamsTab({ eventId }) {
       if (filters.keyword) params.Keyword = filters.keyword
       if (filters.status) params.Status = filters.status
       if (filters.isBanned !== '') params.IsBanned = filters.isBanned === 'true'
-      if (filters.isDisable !== '') params.IsDisable = filters.isDisable === 'true'
       if (filters.roundId) params.RoundId = filters.roundId
       if (filters.trackId) params.TrackId = filters.trackId
       if (filters.topicId) params.TopicId = filters.topicId

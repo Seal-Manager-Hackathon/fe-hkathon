@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { X, Star, Loader2, FileText, CheckCircle } from 'lucide-react'
-import { getLecturerCriteriaTemplates, getLecturerCriteriaItems, gradeJudgeSubmission } from '../../api/lecturer'
+import { getLecturerCriteriaTemplates, getLecturerCriteriaItems, gradeJudgeSubmission, regradeJudgeSubmission } from '../../api/lecturer'
 import ScoreSlider from '../ScoreSlider'
 import RichTextEditor from '../RichTextEditor'
 import { toast } from '../../utils/toast'
 
-export default function GradeSubmissionModal({ open, onClose, submissionId, roundId, onSuccess }) {
+export default function GradeSubmissionModal({ open, onClose, submissionId, roundId, onSuccess, mode = 'grade', scoreId = null }) {
   const [templates, setTemplates] = useState([])
   const [criteriaMap, setCriteriaMap] = useState({})
   const [loading, setLoading] = useState(false)
@@ -33,7 +33,13 @@ export default function GradeSubmissionModal({ open, onClose, submissionId, roun
             map[tpl.id] = (itemsResult.items || []).filter(item => !item.isDisable)
           } catch {}
         }))
-        if (!cancelled) setCriteriaMap(map)
+        if (!cancelled) {
+          setCriteriaMap(map)
+          // Initialize all scores to 0 by default so API always sends them
+          const initialScores = {}
+          Object.values(map).flat().forEach(item => { initialScores[item.id] = 0 })
+          setScores(initialScores)
+        }
       } catch {} finally {
         if (!cancelled) setLoading(false)
       }
@@ -69,8 +75,13 @@ export default function GradeSubmissionModal({ open, onClose, submissionId, roun
 
     setSubmitting(true)
     try {
-      await gradeJudgeSubmission(submissionId, payload)
-      toast.success('Graded successfully!')
+      if (mode === 'regrade' && scoreId) {
+        await regradeJudgeSubmission(scoreId, payload)
+        toast.success('Grades updated successfully!')
+      } else {
+        await gradeJudgeSubmission(submissionId, payload)
+        toast.success('Graded successfully!')
+      }
       onSuccess?.()
       onClose()
     } catch (err) {
@@ -109,7 +120,7 @@ export default function GradeSubmissionModal({ open, onClose, submissionId, roun
               <Star className="h-5 w-5 text-[#e65100]" />
             </div>
             <div>
-              <h3 className="text-[16px] font-bold text-[#1f2f3a]">Grade Submission</h3>
+              <h3 className="text-[16px] font-bold text-[#1f2f3a]">{mode === 'regrade' ? 'Regrade Submission' : 'Grade Submission'}</h3>
               <p className="text-[12px] text-gray-400">Score each criteria below.</p>
             </div>
           </div>
@@ -201,7 +212,7 @@ export default function GradeSubmissionModal({ open, onClose, submissionId, roun
               className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-6 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a] disabled:opacity-50"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Star className="h-4 w-4" />}
-              {submitting ? 'Submitting...' : 'Submit Grades'}
+              {submitting ? 'Submitting...' : mode === 'regrade' ? 'Update Grades' : 'Submit Grades'}
             </button>
           )}
         </div>

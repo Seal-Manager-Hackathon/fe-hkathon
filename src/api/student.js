@@ -257,6 +257,17 @@ export async function getStudentRegisterTeamDetail(registerTeamId) {
   return data.data
 }
 
+/**
+ * Register a team to an event (team leader only).
+ * POST /api/v1/student/register-teams
+ * @param {{ teamId: string, eventId: string, trackId?: string, topicId?: string, description?: string }} payload
+ * @returns {Promise<{ id: string, teamId: string, eventId: string, status: string, createdAt: string }>}
+ */
+export async function createStudentRegisterTeam(payload) {
+  const { data } = await api.post('/student/register-teams', payload)
+  return data.data
+}
+
 /* ------------------------------------------------------------------ */
 /*  Student Received Invitations                                       */
 /* ------------------------------------------------------------------ */

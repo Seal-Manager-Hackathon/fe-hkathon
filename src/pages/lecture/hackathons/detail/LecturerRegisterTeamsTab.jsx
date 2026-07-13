@@ -16,7 +16,7 @@ const statusBadge = {
   Rejected: 'bg-rose-50 text-rose-700 border border-rose-200',
 }
 
-const INITIAL_FILTERS = { keyword: '', status: '', isBanned: '', isDisable: '', roundId: '' }
+const INITIAL_FILTERS = { keyword: '', status: '', isBanned: '', roundId: '' }
 
 function hasActiveFilters(f) {
   return Object.values(f).some((v) => v !== '')
@@ -40,7 +40,6 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
       prev.keyword !== filters.keyword ||
       prev.status !== filters.status ||
       prev.isBanned !== filters.isBanned ||
-      prev.isDisable !== filters.isDisable ||
       prev.roundId !== filters.roundId
     ) {
       setPageIndex(1)
@@ -55,7 +54,6 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
       if (filters.keyword) params.Keyword = filters.keyword
       if (filters.status) params.Status = filters.status
       if (filters.isBanned !== '') params.IsBanned = filters.isBanned === 'true'
-      if (filters.isDisable !== '') params.IsDisable = filters.isDisable === 'true'
       if (filters.roundId) params.RoundId = filters.roundId
       const result = await getLecturerRegisterTeams(eventId, params)
       setTeams(result.registerTeams || [])
@@ -93,11 +91,6 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
       { value: 'Rejected', label: 'Rejected' },
     ]},
     { type: 'select', key: 'isBanned', label: 'Banned', icon: Ban, options: [
-      { value: '', label: 'All' },
-      { value: 'true', label: 'Yes' },
-      { value: 'false', label: 'No' },
-    ]},
-    { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [
       { value: '', label: 'All' },
       { value: 'true', label: 'Yes' },
       { value: 'false', label: 'No' },

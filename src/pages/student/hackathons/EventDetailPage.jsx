@@ -3,14 +3,15 @@ import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Calendar, Clock, Users, Flag, UserPlus, FileText,
   Layers, Award, MapPin, BarChart3, Eye, X, ListChecks, ArrowRight,
-  Trophy, UsersRound,
+  Trophy, UsersRound, Loader2,
 } from 'lucide-react'
-import { getStudentEventDetail, getStudentRounds, getStudentRoundDetail, getStudentRoundCriteriaTemplates, getStudentCriteriaTemplateDetail, getStudentAwards, getStudentAwardDetail, getStudentEventLeaderboard, getStudentEventAssignments } from '../../../api/student'
+import { getStudentEventDetail, getStudentRounds, getStudentRoundDetail, getStudentRoundCriteriaTemplates, getStudentCriteriaTemplateDetail, getStudentAwards, getStudentAwardDetail, getStudentEventLeaderboard, getStudentEventAssignments, getStudentMyTeams, createStudentRegisterTeam } from '../../../api/student'
 import RichTextViewer from '../../../components/RichTextViewer'
 import Pagination from '../../../components/Pagination'
 import Avatar from '../../../components/Avatar'
 import { formatDate, formatDateTime } from '../../../utils/format'
 import { cn } from '../../../utils/cn'
+import { toast } from '../../../utils/toast'
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -1158,6 +1159,173 @@ function TabPlaceholder({ label, icon: Icon = FileText, accent = '#1565c0' }) {
   )
 }
 
+/* ------------------------------------------------------------------ */
+/*  Register Event Modal                                               */
+/* ------------------------------------------------------------------ */
+
+function RegisterEventModal({ eventId, open, onClose, onSuccess }) {
+  const [teams, setTeams] = useState([])
+  const [loadingTeams, setLoadingTeams] = useState(false)
+  const [selectedTeamId, setSelectedTeamId] = useState('')
+  const [description, setDescription] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (!open) return
+    setSelectedTeamId('')
+    setDescription('')
+    let cancelled = false
+    async function fetchTeams() {
+      setLoadingTeams(true)
+      try {
+        const result = await getStudentMyTeams({ PageSize: 100 })
+        if (!cancelled) setTeams(result.teams || [])
+      } catch {
+        if (!cancelled) toast.error('Failed to load your teams.')
+      } finally {
+        if (!cancelled) setLoadingTeams(false)
+      }
+    }
+    fetchTeams()
+    return () => { cancelled = true }
+  }, [open])
+
+  async function handleRegister() {
+    if (!selectedTeamId) {
+      toast.error('Please select a team.')
+      return
+    }
+    setSubmitting(true)
+    try {
+      await createStudentRegisterTeam({
+        teamId: selectedTeamId,
+        eventId,
+        description: description || undefined,
+      })
+      toast.success('Registered successfully! Pending approval.')
+      onSuccess?.()
+      onClose()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to register.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (!open) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/40" />
+      <div
+        className="relative z-10 w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#e3f2fd]">
+              <UserPlus className="h-5 w-5 text-[#1565c0]" />
+            </div>
+            <h3 className="text-[16px] font-bold text-[#1f2f3a] truncate">Register Event</h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-4 shrink-0 cursor-pointer rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-auto px-6 py-5">
+          {loadingTeams ? (
+            <div className="space-y-3">
+              <div className="h-5 w-1/2 animate-pulse rounded bg-gray-200" />
+              <div className="h-12 animate-pulse rounded bg-gray-100" />
+            </div>
+          ) : (
+            <div className="space-y-5">
+              {/* Team select */}
+              <div>
+                <label className="mb-1.5 block text-[13px] font-semibold text-[#1f2f3a]">Select Team *</label>
+                {teams.length === 0 ? (
+                  <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4 text-center">
+                    <p className="text-[13px] text-[#7a8e99]">
+                      You don't have any team yet.{' '}
+                      <Link to="/teams/create" className="text-[#1565c0] hover:underline font-medium">Create one</Link>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {teams.map((team) => (
+                      <label
+                        key={team.id}
+                        className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors ${
+                          selectedTeamId === team.id
+                            ? 'border-[#1565c0] bg-[#f0f7ff]'
+                            : 'border-[#e8ecf0] bg-white hover:bg-[#fafbfc]'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="teamSelect"
+                          value={team.id}
+                          checked={selectedTeamId === team.id}
+                          onChange={() => setSelectedTeamId(team.id)}
+                          className="h-4 w-4 accent-[#1565c0]"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[14px] font-semibold text-[#1f2f3a]">{team.name}</p>
+                          {team.description && (
+                            <p className="truncate text-[12px] text-[#7a8e99]">{team.description}</p>
+                          )}
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="mb-1.5 block text-[13px] font-semibold text-[#1f2f3a]">Description</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Optional notes about your team's registration..."
+                  rows={3}
+                  className="w-full rounded-xl border border-[#d8e0e6] bg-white px-4 py-2.5 text-[14px] outline-none transition-all focus:border-[#064f5d] focus:ring-1 focus:ring-[#064f5d]/20 resize-none"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="shrink-0 border-t border-[#e8ecf0] px-6 py-3.5 flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="cursor-pointer rounded-lg border border-[#d8e0e6] bg-white px-5 py-2.5 text-[14px] font-semibold text-[#1f2f3a] transition-colors hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleRegister}
+            disabled={submitting || !selectedTeamId || teams.length === 0}
+            className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-6 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a] disabled:opacity-50"
+          >
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+            {submitting ? 'Registering...' : 'Register'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ================================================================== */
 /*  Main page                                                          */
 /* ================================================================== */
@@ -1169,6 +1337,7 @@ export default function EventDetailPage() {
   const [error, setError] = useState('')
   const [isForbidden, setIsForbidden] = useState(false)
   const [activeTab, setActiveTab] = useState('description')
+  const [registerEventModalOpen, setRegisterEventModalOpen] = useState(false)
 
   /* ---- data fetching ---- */
 
@@ -1444,6 +1613,17 @@ export default function EventDetailPage() {
 
             {/* ---- Right: sidebar ---- */}
             <div className="space-y-5 self-start lg:sticky lg:top-8">
+              {/* Register Event Button */}
+              {event.status === 'Published' && (
+                <button
+                  type="button"
+                  onClick={() => setRegisterEventModalOpen(true)}
+                  className="w-full inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#064f5d] px-5 py-3 text-[14px] font-semibold text-white shadow-sm transition-colors hover:bg-[#05404a] active:scale-[0.98]"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Register Event
+                </button>
+              )}
               {/* Schedule */}
               <SidebarSection title="Schedule" icon={Calendar}>
                 <div className="divide-y divide-[#f0f4f8]">
@@ -1480,6 +1660,16 @@ export default function EventDetailPage() {
           </div>
         </div>
       </div>
+
+      <RegisterEventModal
+        eventId={event.id}
+        open={registerEventModalOpen}
+        onClose={() => setRegisterEventModalOpen(false)}
+        onSuccess={() => {
+          // Refresh event data to reflect new registration status
+          getStudentEventDetail(id).then(setEvent).catch(() => {})
+        }}
+      />
     )
   }
 }
