@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
 import Avatar from '../../../../components/Avatar'
-import { getAssignedUsers, restoreAssign, removeTrackFromAssign, restoreTrackToAssign } from '../../../../api/staff'
+import { getAssignedUsers, restoreAssign } from '../../../../api/staff'
 import { toast, confirm } from '../../../../utils/toast'
-import { Search, User, Shield, GraduationCap, MoreHorizontal, UserCheck, ClipboardList, Eye, Phone, X, Ban, RotateCcw, CircleCheck } from 'lucide-react'
+import { Search, User, Shield, GraduationCap, MoreHorizontal, UserCheck, ClipboardList, Eye, Phone, RotateCcw, CircleCheck } from 'lucide-react'
 
 const PAGE_SIZE = 10
 
@@ -24,13 +24,12 @@ const roleIcon = {
 const assignedFilters = [
   { type: 'search', key: 'keyword', label: 'Search', icon: Search, placeholder: 'Search by name or email...' },
   { type: 'select', key: 'eventRole', label: 'Role', icon: Shield, options: [{ value: '', label: 'All' }, { value: 'Mentor', label: 'Mentor' }, { value: 'Judge', label: 'Judge' }, { value: 'Staff', label: 'Staff' }] },
-  { type: 'select', key: 'isDisable', label: 'Deleted', icon: Ban, options: [{ value: '', label: 'All' }, { value: 'true', label: 'Yes' }, { value: 'false', label: 'No' }] },
 ]
 
 const viewBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2.5 py-1.5 text-[13px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]'
 const restoreBtnClass = 'inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#e8f5e9] px-3 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9] w-[92px]'
 
-function assignedColumns(handleRestore, handleRemoveTrack, handleRestoreTrack) {
+function assignedColumns(handleRestore) {
   return [
     { key: 'user', header: 'User', headerIcon: User, render: (row) => (
       <Link to={`/staff/users/${row.userId}`} className="flex items-center gap-3 hover:opacity-80">
@@ -48,17 +47,8 @@ function assignedColumns(handleRestore, handleRemoveTrack, handleRestoreTrack) {
       return (
         <div className="flex flex-wrap gap-1">
           {tracks.map((t) => (
-            <span key={t.trackId} className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[12px] font-medium ${t.isDisable ? 'bg-[#fce4ec] text-[#c62828]' : 'bg-[#f5f5f5] text-[#064f5d]'}`}>
+            <span key={t.trackId} className="inline-flex items-center gap-1 rounded-full bg-[#f5f5f5] px-2.5 py-0.5 text-[12px] font-medium text-[#064f5d]">
               <Link to={`/staff/tracks/${t.trackId}`} className="hover:underline">{t.title}</Link>
-              {t.isDisable ? (
-                <button onClick={() => handleRestoreTrack(row.assignEventId, t.trackId)} className="ml-0.5 inline-flex cursor-pointer items-center justify-center rounded-full bg-[#e8f5e9] p-0.5 text-[#2e7d32] hover:bg-[#c8e6c9]" title="Restore track">
-                  <RotateCcw className="h-3 w-3" />
-                </button>
-              ) : (
-                <button onClick={() => handleRemoveTrack(row.assignEventId, t.trackId)} className="ml-0.5 inline-flex cursor-pointer items-center justify-center rounded-full bg-[#fce4ec] p-0.5 text-[#c62828] hover:bg-[#ffcdd2]" title="Remove track">
-                  <X className="h-3 w-3" />
-                </button>
-              )}
             </span>
           ))}
         </div>
@@ -97,7 +87,7 @@ export default function AssignTab({ eventId }) {
   const [assignedTotal, setAssignedTotal] = useState(0)
   const [assignedPage, setAssignedPage] = useState(1)
   const [assignedLoading, setAssignedLoading] = useState(false)
-  const [asFilters, setAsFilters] = useState({ keyword: '', eventRole: '', isDisable: '' })
+  const [asFilters, setAsFilters] = useState({ keyword: '', eventRole: '' })
   const asHasActive = Object.values(asFilters).some(v => v !== '')
 
   const fetchAssigned = useCallback(async () => {
@@ -106,7 +96,6 @@ export default function AssignTab({ eventId }) {
       const params = { PageIndex: assignedPage, PageSize: PAGE_SIZE }
       if (asFilters.keyword) params.Keyword = asFilters.keyword
       if (asFilters.eventRole) params.EventRole = asFilters.eventRole
-      if (asFilters.isDisable !== '') params.IsDisable = asFilters.isDisable === 'true'
       const result = await getAssignedUsers(eventId, params)
       setAssigned(result.items || [])
       setAssignedTotal(result.totalCount || 0)
@@ -128,32 +117,8 @@ export default function AssignTab({ eventId }) {
     }
   }
 
-  async function handleRemoveTrack(assignEventId, trackId) {
-    const ok = await confirm('Remove Track', 'Remove this track from the assignment?')
-    if (!ok) return
-    try {
-      await removeTrackFromAssign(assignEventId, trackId)
-      toast.success('Track removed from assignment')
-      fetchAssigned()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to remove track.')
-    }
-  }
-
-  async function handleRestoreTrack(assignEventId, trackId) {
-    const ok = await confirm('Restore Track', 'Restore this track to the assignment?')
-    if (!ok) return
-    try {
-      await restoreTrackToAssign(assignEventId, trackId)
-      toast.success('Track restored to assignment')
-      fetchAssigned()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to restore track.')
-    }
-  }
-
   function handleAsFilterChange(key, value) { setAsFilters(prev => ({ ...prev, [key]: value })); setAssignedPage(1) }
-  function handleAsReset() { setAsFilters({ keyword: '', eventRole: '', isDisable: '' }); setAssignedPage(1) }
+  function handleAsReset() { setAsFilters({ keyword: '', eventRole: '' }); setAssignedPage(1) }
 
   return (
     <div>
@@ -170,7 +135,7 @@ export default function AssignTab({ eventId }) {
           <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4">
             <FilterBar filters={assignedFilters} values={asFilters} onChange={handleAsFilterChange} onReset={handleAsReset} hasActive={asHasActive} />
           </div>
-          <BaseTable borderless columns={assignedColumns(handleRestore, handleRemoveTrack, handleRestoreTrack)} data={assigned} page={assignedPage} pageSize={PAGE_SIZE} total={assignedTotal} onPageChange={setAssignedPage} loading={assignedLoading} serverSide emptyText={asHasActive ? 'No results match.' : 'No users assigned to this event yet.'} keyExtractor={(row) => row.assignEventId} minWidth="950px" />
+          <BaseTable borderless columns={assignedColumns(handleRestore)} data={assigned} page={assignedPage} pageSize={PAGE_SIZE} total={assignedTotal} onPageChange={setAssignedPage} loading={assignedLoading} serverSide emptyText={asHasActive ? 'No results match.' : 'No users assigned to this event yet.'} keyExtractor={(row) => row.assignEventId} minWidth="950px" />
         </div>
       )}
     </div>
