@@ -131,9 +131,9 @@ export default function RegisterEventModal({ eventId, open, onClose, onSuccess }
             <div className="max-h-60 space-y-2 overflow-y-auto">
               {teams.map((team) => (
                 <label
-                  key={team.id}
+                  key={team.teamId}
                   className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors ${
-                    selectedTeamId === team.id
+                    selectedTeamId === team.teamId
                       ? 'border-[#1565c0] bg-[#e3f2fd]'
                       : 'border-[#d7e0e5] hover:bg-gray-50'
                   }`}
@@ -141,9 +141,9 @@ export default function RegisterEventModal({ eventId, open, onClose, onSuccess }
                   <input
                     type="radio"
                     name="team"
-                    value={team.id}
-                    checked={selectedTeamId === team.id}
-                    onChange={() => setSelectedTeamId(team.id)}
+                    value={team.teamId}
+                    checked={selectedTeamId === team.teamId}
+                    onChange={() => setSelectedTeamId(team.teamId)}
                     className="h-4 w-4 text-[#1565c0] focus:ring-[#1565c0]"
                   />
                   <div className="min-w-0 flex-1">
