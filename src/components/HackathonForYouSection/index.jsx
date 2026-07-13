@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import HackathonCard from '../HackathonCard'
 
@@ -10,10 +11,13 @@ export default function HackathonForYouSection({ hackathons }) {
           <HackathonCard key={h.id} hackathon={h} />
         ))}
       </div>
-      <button className="mt-5 inline-flex cursor-pointer items-center gap-2 text-[15px] font-semibold text-[#064f5d] hover:underline">
+      <Link
+        to="/hackathons"
+        className="mt-5 inline-flex cursor-pointer items-center gap-2 text-[15px] font-semibold text-[#064f5d] hover:underline"
+      >
         View all SEAL hackathons
         <ArrowRight className="h-4 w-4" />
-      </button>
+      </Link>
     </div>
   )
 }

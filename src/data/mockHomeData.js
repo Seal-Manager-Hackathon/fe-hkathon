@@ -54,6 +54,11 @@ export const mockRankingTeams = [
   { id: '3', rank: 3, name: 'Cloud Deployers', points: 87, events: 1 },
   { id: '4', rank: 4, name: 'Green Coders', points: 82, events: 1 },
   { id: '5', rank: 5, name: 'FPT Data Miners', points: 72, events: 1 },
+  { id: '6', rank: 6, name: 'AI Warriors', points: 68, events: 1 },
+  { id: '7', rank: 7, name: 'Blockchain Builders', points: 65, events: 1 },
+  { id: '8', rank: 8, name: 'Cyber Defenders', points: 61, events: 1 },
+  { id: '9', rank: 9, name: 'Data Wizards', points: 58, events: 1 },
+  { id: '10', rank: 10, name: 'UI Crafters', points: 54, events: 1 },
 ]
 
 export const mockPopularHackathons = [

@@ -17,6 +17,30 @@ export async function getStudentEvents(params = {}) {
 }
 
 /**
+ * Get recommended / "for you" events for the home page.
+ * Currently maps to the same list endpoint; will use a dedicated API later.
+ * @param {Object} [params]
+ * @returns {Promise<{ events: Array, totalCount: number }>}
+ */
+export async function getStudentForYouEvents(params = {}) {
+  const merged = { ...params }
+  if (!merged.PageSize) merged.PageSize = 6
+  return getStudentEvents(merged)
+}
+
+/**
+ * Get popular / featured events for the home page.
+ * Currently maps to the same list endpoint; will use a dedicated API later.
+ * @param {Object} [params]
+ * @returns {Promise<{ events: Array, totalCount: number }>}
+ */
+export async function getStudentPopularEvents(params = {}) {
+  const merged = { ...params }
+  if (!merged.PageSize) merged.PageSize = 4
+  return getStudentEvents(merged)
+}
+
+/**
  * Get student-facing event detail by ID.
  * @param {string} eventId
  * @returns {Promise<object>} full event object
