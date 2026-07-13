@@ -48,7 +48,8 @@ export default function StudentTeamsPage() {
 
   if (loading) {
     return (
-      <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
+      <div className="min-h-screen bg-[#f6f9fb]">
+      <div className="mx-auto max-w-[1064px] px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-6 h-7 w-40 animate-pulse rounded bg-gray-200" />
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
@@ -56,11 +57,13 @@ export default function StudentTeamsPage() {
           ))}
         </div>
       </div>
+    </div>
     )
   }
 
   return (
-    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
+    <div className="min-h-screen bg-[#f6f9fb]">
+      <div className="mx-auto max-w-[1064px] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-[28px] font-bold text-[#1f2f3a]">My Teams</h1>
@@ -154,6 +157,7 @@ export default function StudentTeamsPage() {
         onClose={() => setShowCreate(false)}
         onCreated={() => { setShowCreate(false); setPageIndex(1); fetchTeams() }}
       />
+      </div>
     </div>
   )
 }

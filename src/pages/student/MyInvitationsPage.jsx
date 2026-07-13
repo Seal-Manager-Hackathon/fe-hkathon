@@ -102,7 +102,8 @@ export default function MyInvitationsPage() {
   }
 
   return (
-    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
+    <div className="min-h-screen bg-[#f6f9fb]">
+      <div className="mx-auto max-w-[1064px] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-[28px] font-bold text-[#1f2f3a]">My Invitations</h1>
@@ -224,6 +225,8 @@ export default function MyInvitationsPage() {
       {totalPages > 1 && (
         <Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} />
       )}
+    </div>
+      </div>
     </div>
   )
 }
