@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Calendar, Clock, Users, Flag, UserPlus, FileText,
   Layers, Award, MapPin, BarChart3, Eye, X, ListChecks, ArrowRight,
-  Trophy, UsersRound, Loader2,
+  Trophy, UsersRound, Loader2, Search,
 } from 'lucide-react'
 import { getStudentEventDetail, getStudentRounds, getStudentRoundDetail, getStudentRoundCriteriaTemplates, getStudentCriteriaTemplateDetail, getStudentAwards, getStudentAwardDetail, getStudentEventLeaderboard, getStudentEventAssignments, getStudentMyTeams, createStudentRegisterTeam } from '../../../api/student'
 import RichTextViewer from '../../../components/RichTextViewer'
@@ -1165,21 +1165,31 @@ function TabPlaceholder({ label, icon: Icon = FileText, accent = '#1565c0' }) {
 
 function RegisterEventModal({ eventId, open, onClose, onSuccess }) {
   const [teams, setTeams] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
   const [loadingTeams, setLoadingTeams] = useState(false)
   const [selectedTeamId, setSelectedTeamId] = useState('')
   const [description, setDescription] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [searchKeyword, setSearchKeyword] = useState('')
+  const [teamPageIndex, setTeamPageIndex] = useState(1)
+  const TEAM_PAGE_SIZE = 5
 
+  /* ---- fetch teams from API on mount / search / page change ---- */
   useEffect(() => {
     if (!open) return
-    setSelectedTeamId('')
-    setDescription('')
+    setLoadingTeams(true)
     let cancelled = false
     async function fetchTeams() {
-      setLoadingTeams(true)
       try {
-        const result = await getStudentMyTeams({ PageSize: 100 })
-        if (!cancelled) setTeams(result.teams || [])
+        const result = await getStudentMyTeams({
+          Keyword: searchKeyword || undefined,
+          PageIndex: teamPageIndex,
+          PageSize: TEAM_PAGE_SIZE,
+        })
+        if (!cancelled) {
+          setTeams(result.teams || [])
+          setTotalCount(result.totalCount || 0)
+        }
       } catch {
         if (!cancelled) toast.error('Failed to load your teams.')
       } finally {
@@ -1188,7 +1198,22 @@ function RegisterEventModal({ eventId, open, onClose, onSuccess }) {
     }
     fetchTeams()
     return () => { cancelled = true }
+  }, [open, searchKeyword, teamPageIndex])
+
+  /* ---- reset to page 1 when search changes ---- */
+  useEffect(() => {
+    if (!open) return
+    setTeamPageIndex(1)
+  }, [searchKeyword, open])
+
+  /* ---- reset state when modal opens ---- */
+  useEffect(() => {
+    if (!open) return
+    setSelectedTeamId('')
+    setDescription('')
   }, [open])
+
+  const totalTeamPages = Math.ceil(totalCount / TEAM_PAGE_SIZE)
 
   async function handleRegister() {
     if (!selectedTeamId) {
@@ -1239,67 +1264,95 @@ function RegisterEventModal({ eventId, open, onClose, onSuccess }) {
 
         {/* Body */}
         <div className="flex-1 overflow-auto px-6 py-5">
-          {loadingTeams ? (
+          <div className="space-y-5">
+            {/* Team select */}
             <div className="space-y-3">
-              <div className="h-5 w-1/2 animate-pulse rounded bg-gray-200" />
-              <div className="h-12 animate-pulse rounded bg-gray-100" />
-            </div>
-          ) : (
-            <div className="space-y-5">
-              {/* Team select */}
-              <div>
-                <label className="mb-1.5 block text-[13px] font-semibold text-[#1f2f3a]">Select Team *</label>
-                {teams.length === 0 ? (
-                  <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4 text-center">
-                    <p className="text-[13px] text-[#7a8e99]">
-                      You don't have any team yet.{' '}
-                      <Link to="/teams/create" className="text-[#1565c0] hover:underline font-medium">Create one</Link>
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {teams.map((team) => (
-                      <label
-                        key={team.id}
-                        className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors ${
-                          selectedTeamId === team.id
-                            ? 'border-[#1565c0] bg-[#f0f7ff]'
-                            : 'border-[#e8ecf0] bg-white hover:bg-[#fafbfc]'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="teamSelect"
-                          value={team.id}
-                          checked={selectedTeamId === team.id}
-                          onChange={() => setSelectedTeamId(team.id)}
-                          className="h-4 w-4 accent-[#1565c0]"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[14px] font-semibold text-[#1f2f3a]">{team.name}</p>
-                          {team.description && (
-                            <p className="truncate text-[12px] text-[#7a8e99]">{team.description}</p>
-                          )}
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <label className="block text-[13px] font-semibold text-[#1f2f3a]">Select Team *</label>
 
-              {/* Description */}
-              <div>
-                <label className="mb-1.5 block text-[13px] font-semibold text-[#1f2f3a]">Description</label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Optional notes about your team's registration..."
-                  rows={3}
-                  className="w-full rounded-xl border border-[#d8e0e6] bg-white px-4 py-2.5 text-[14px] outline-none transition-all focus:border-[#064f5d] focus:ring-1 focus:ring-[#064f5d]/20 resize-none"
+              {/* Search input — always visible */}
+              <div className="relative">
+                <Search
+                  size={15}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a9ba6] pointer-events-none"
+                />
+                <input
+                  type="text"
+                  value={searchKeyword}
+                  onChange={(e) => setSearchKeyword(e.target.value)}
+                  placeholder="Search teams..."
+                  className="w-full rounded-xl border border-[#d8e0e6] bg-white pl-9 pr-4 py-2.5 text-[13px] outline-none transition-all focus:border-[#064f5d] focus:ring-1 focus:ring-[#064f5d]/20"
                 />
               </div>
+
+              {/* Result area — loading skeleton or content */}
+              {loadingTeams ? (
+                <div className="space-y-2">
+                  <div className="h-[52px] animate-pulse rounded-xl bg-gray-100" />
+                  <div className="h-[52px] animate-pulse rounded-xl bg-gray-100" />
+                </div>
+              ) : teams.length === 0 ? (
+                <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4 text-center">
+                  <p className="text-[13px] text-[#7a8e99]">
+                    {searchKeyword
+                      ? "No teams match your search."
+                      : "You don't have any team yet. "}
+                    {!searchKeyword && (
+                      <Link to="/teams/create" className="text-[#1565c0] hover:underline font-medium">Create one</Link>
+                    )}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {teams.map((team) => (
+                    <label
+                      key={team.teamId}
+                      className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors ${
+                        selectedTeamId === team.teamId
+                          ? 'border-[#1565c0] bg-[#f0f7ff]'
+                          : 'border-[#e8ecf0] bg-white hover:bg-[#fafbfc]'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="teamSelect"
+                        value={team.teamId}
+                        checked={selectedTeamId === team.teamId}
+                        onChange={() => setSelectedTeamId(team.teamId)}
+                        className="h-4 w-4 accent-[#1565c0]"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[14px] font-semibold text-[#1f2f3a]">{team.name}</p>
+                        {team.description && (
+                          <p className="truncate text-[12px] text-[#7a8e99]">{team.description}</p>
+                        )}
+                      </div>
+                    </label>
+                  ))}
+
+                  {/* Pagination */}
+                  {totalTeamPages > 1 && (
+                    <Pagination
+                      currentPage={teamPageIndex}
+                      totalPages={totalTeamPages}
+                      onPageChange={setTeamPageIndex}
+                    />
+                  )}
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Description */}
+            <div>
+              <label className="mb-1.5 block text-[13px] font-semibold text-[#1f2f3a]">Description</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Optional notes about your team's registration..."
+                rows={3}
+                className="w-full rounded-xl border border-[#d8e0e6] bg-white px-4 py-2.5 text-[14px] outline-none transition-all focus:border-[#064f5d] focus:ring-1 focus:ring-[#064f5d]/20 resize-none"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Footer */}
@@ -1558,6 +1611,21 @@ export default function EventDetailPage() {
                     ))}
                   </div>
                 </div>
+
+                  {/* Register Event button — inside the card */}
+                  {event.status === 'Published' && (
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setRegisterEventModalOpen(true)}
+                        className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-white/20 px-5 py-2.5 text-[13px] font-semibold text-white backdrop-blur transition-colors hover:bg-white/30 active:scale-[0.98]"
+                      >
+                        <UserPlus className="h-4 w-4" />
+                        Register Event
+                      </button>
+                    </div>
+                  )}
+
               </div>
             </div>
           </div>
@@ -1613,17 +1681,6 @@ export default function EventDetailPage() {
 
             {/* ---- Right: sidebar ---- */}
             <div className="space-y-5 self-start lg:sticky lg:top-8">
-              {/* Register Event Button */}
-              {event.status === 'Published' && (
-                <button
-                  type="button"
-                  onClick={() => setRegisterEventModalOpen(true)}
-                  className="w-full inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#064f5d] px-5 py-3 text-[14px] font-semibold text-white shadow-sm transition-colors hover:bg-[#05404a] active:scale-[0.98]"
-                >
-                  <UserPlus className="h-4 w-4" />
-                  Register Event
-                </button>
-              )}
               {/* Schedule */}
               <SidebarSection title="Schedule" icon={Calendar}>
                 <div className="divide-y divide-[#f0f4f8]">
