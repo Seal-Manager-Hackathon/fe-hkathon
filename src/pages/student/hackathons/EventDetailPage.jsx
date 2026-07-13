@@ -582,26 +582,8 @@ function CriteriaTemplateDetailModal({ templateId, onClose }) {
             <p className="text-[14px] text-[#c62828]">{error}</p>
           ) : detail ? (
             <div className="space-y-5">
-              {/* Description */}
-              {detail.description && (
-                <div>
-                  <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Description</p>
-                  <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4">
-                    <RichTextViewer content={detail.description} />
-                  </div>
-                </div>
-              )}
-
               {/* Criteria items */}
               <div>
-                <div className="mb-3 flex items-center gap-2">
-                  <span className="text-[13px] font-bold text-[#1f2f3a]">Criteria</span>
-                  {detail.items && detail.items.length > 0 && (
-                    <span className="inline-flex items-center justify-center rounded-full bg-[#e3f2fd] px-2 py-0.5 text-[11px] font-bold text-[#1f78d1]">
-                      {detail.items.length}
-                    </span>
-                  )}
-                </div>
                 {detail.items && detail.items.length > 0 ? (
                   <div className="space-y-2.5">
                     {detail.items.map((item, idx) => {
