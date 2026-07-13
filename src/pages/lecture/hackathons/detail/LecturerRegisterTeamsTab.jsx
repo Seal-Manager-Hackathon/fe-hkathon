@@ -189,8 +189,8 @@ export default function LecturerRegisterTeamsTab({ eventId }) {
       ? <Link to={`/lecture/tracks/${row.trackId}`} className="text-[13px] font-semibold text-[#064f5d] hover:underline">{row.trackName || '—'}</Link>
       : <span className="text-[13px] text-gray-400">—</span>
     },
-    { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => row.topicId && row.trackId
-      ? <Link to={`/lecture/tracks/${row.trackId}/topics`} className="text-[13px] font-semibold text-[#064f5d] hover:underline">{row.topicTitle || '—'}</Link>
+    { key: 'topicTitle', header: 'Topic', headerIcon: FileText, render: (row) => row.topicId
+      ? <Link to={`/lecture/tracks/${row.trackId}/topics`} className="text-[13px] font-semibold text-[#064f5d] hover:underline">{row.topicTitle || row.topicName || '—'}</Link>
       : <span className="text-[13px] text-gray-400">—</span>
     },
     { key: 'roundName', header: 'Round', headerIcon: Layers, render: (row) => row.roundId
