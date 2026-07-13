@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, Ban, ExternalLink, Eye, CheckCircle as ApproveIcon, XCircle, ShieldOff, MoreHorizontal, Layers, ChevronDown, Send, FileDown } from 'lucide-react'
-import { getRegisterTeamDetail, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam, getRegisterTeamSubmissions } from '../../../../api/admin'
+import { ArrowLeft, FileText, Calendar, Clock, Users, Trophy, User, Crown, CircleCheck, Shield, Ban, ExternalLink, Eye, CheckCircle as ApproveIcon, XCircle, MoreHorizontal, Layers, ChevronDown, Send, FileDown } from 'lucide-react'
+import { getRegisterTeamDetail, approveRegisterTeam, rejectRegisterTeam, getRegisterTeamSubmissions } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import Badge from '../../../../components/Badge'
 import CardPanel from '../../../../components/CardPanel'
@@ -21,41 +21,49 @@ const statusIcon = { Pending: <Clock className="h-4 w-4 text-amber-600" />, Appr
 const memberColumns = [
   { key: 'member', header: 'Member', headerIcon: User, render: (row) => (<div className="flex items-center gap-3"><Avatar src={row.avatarUrl} name={`${row.firstName} ${row.lastName}`} size="h-9 w-9" textSize="text-[13px]" /><div><p className="text-[14px] font-semibold text-[#1f2f3a]">{row.firstName} {row.lastName}</p><p className="text-[12px] text-gray-400">{row.email}</p></div></div>) },
   { key: 'role', header: 'Role', headerIcon: Shield, render: (row) => row.isLeader ? (<div className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-0.5"><Crown className="h-3.5 w-3.5 text-[#ffca28]" /><span className="text-[12px] font-semibold text-[#e65100]">Leader</span></div>) : <span className="text-[13px] text-gray-400">Member</span> },
-  { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
-    <Link to={`/admin/users/${row.userId}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2 py-1.5 text-[12px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]"><Eye className="h-3.5 w-3.5" />View</Link>
-  )},
+  {
+    key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
+      <Link to={`/admin/users/${row.userId}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2 py-1.5 text-[12px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]"><Eye className="h-3.5 w-3.5" />View</Link>
+    )
+  },
 ]
 
 const submissionColumns = [
-  { key: 'round', header: 'Round', headerIcon: Layers, render: (row) => (
-    <div>
-      <Link to={`/admin/hackathons/${row.eventId}/rounds/${row.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.roundName}</Link>
-      <p className="text-[12px] text-gray-400">{row.trackTitle}{row.topicTitle ? ` / ${row.topicTitle}` : ''}</p>
-    </div>
-  )},
-  { key: 'lastSubmission', header: 'Last Submission', headerIcon: FileDown, render: (row) => {
-    const sub = row.lastSubmission
-    if (!sub) return <span className="text-[13px] text-gray-400">—</span>
-    return (
+  {
+    key: 'round', header: 'Round', headerIcon: Layers, render: (row) => (
       <div>
-        <Link to={`/admin/submissions/${sub.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{sub.description || sub.url || 'View'}</Link>
-        <p className="text-[12px] text-gray-400">{formatDateTime(sub.submittedAt)}</p>
+        <Link to={`/admin/hackathons/${row.eventId}/rounds/${row.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.roundName}</Link>
+        <p className="text-[12px] text-gray-400">{row.trackTitle}{row.topicTitle ? ` / ${row.topicTitle}` : ''}</p>
       </div>
     )
-  }},
-  { key: 'submittedBy', header: 'Submitted By', headerIcon: User, render: (row) => {
-    const by = row.submittedBy
-    if (!by) return <span className="text-[13px] text-gray-400">—</span>
-    return (
-      <Link to={`/admin/users/${by.userId}`} className="flex items-center gap-3 hover:opacity-80">
-        <Avatar src={by.avatarUrl} name={`${by.firstName} ${by.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
+  },
+  {
+    key: 'lastSubmission', header: 'Last Submission', headerIcon: FileDown, render: (row) => {
+      const sub = row.lastSubmission
+      if (!sub) return <span className="text-[13px] text-gray-400">—</span>
+      return (
         <div>
-          <p className="text-[14px] font-semibold text-[#064f5d] hover:underline">{by.firstName} {by.lastName}</p>
-          <p className="text-[12px] text-[#1f2f3a]">{by.email}</p>
+          <Link to={`/admin/submissions/${sub.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{sub.description || sub.url || 'View'}</Link>
+          <p className="text-[12px] text-gray-400">{formatDateTime(sub.submittedAt)}</p>
         </div>
-      </Link>
-    )
-  }},
+      )
+    }
+  },
+  {
+    key: 'submittedBy', header: 'Submitted By', headerIcon: User, render: (row) => {
+      const by = row.submittedBy
+      if (!by) return <span className="text-[13px] text-gray-400">—</span>
+      return (
+        <Link to={`/admin/users/${by.userId}`} className="flex items-center gap-3 hover:opacity-80">
+          <Avatar src={by.avatarUrl} name={`${by.firstName} ${by.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
+          <div>
+            <p className="text-[14px] font-semibold text-[#064f5d] hover:underline">{by.firstName} {by.lastName}</p>
+            <p className="text-[12px] text-[#1f2f3a]">{by.email}</p>
+          </div>
+        </Link>
+      )
+    }
+  },
 ]
 
 export default function RegisterTeamDetail() {
@@ -65,8 +73,6 @@ export default function RegisterTeamDetail() {
   const [error, setError] = useState('')
   const [rejectTarget, setRejectTarget] = useState(null)
   const [rejecting, setRejecting] = useState(false)
-  const [banTarget, setBanTarget] = useState(null)
-  const [banning, setBanning] = useState(false)
   const [acting, setActing] = useState(false)
 
   // Submissions
@@ -119,24 +125,6 @@ export default function RegisterTeamDetail() {
     finally { setRejecting(false) }
   }
 
-  function openBan() { setBanTarget(data) }
-
-  async function handleBanSubmit(reason) {
-    setBanning(true)
-    try { await banRegisterTeam(registerTeamId, { reason }); setBanTarget(null); toast.success('Banned'); fetchData() }
-    catch (err) { toast.error(err?.response?.data?.message || 'Failed') }
-    finally { setBanning(false) }
-  }
-
-  async function handleUnban() {
-    const ok = await confirm('Unban', `Unban "${data.teamName}"?`)
-    if (!ok) return
-    setActing(true)
-    try { await unbanRegisterTeam(registerTeamId); toast.success('Unbanned'); fetchData() }
-    catch (err) { toast.error(err?.response?.data?.message || 'Failed') }
-    finally { setActing(false) }
-  }
-
   if (loading) return <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8"><div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" /><div className="h-80 animate-pulse rounded-xl bg-gray-100" /></div>
 
   if (error) {
@@ -182,16 +170,6 @@ export default function RegisterTeamDetail() {
                   </button>
                 </>
               )}
-              {data.status === 'Approved' && (data.isBanned ? (
-                <button onClick={handleUnban} disabled={acting} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-emerald-600 disabled:opacity-50">
-                  <ShieldOff className="h-3.5 w-3.5" />{acting ? '...' : 'Unban'}
-                </button>
-              ) : (
-                <button onClick={openBan} disabled={banning || acting} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-rose-500 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-rose-600 disabled:opacity-50">
-                  <ShieldOff className="h-3.5 w-3.5" />{banning ? '...' : 'Ban'}
-                </button>
-              ))}
-              <Link to={`/admin/register-teams/${registerTeamId}/edit`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-white/30">Edit</Link>
             </div>
           </div>
         </div>
@@ -306,18 +284,6 @@ export default function RegisterTeamDetail() {
         confirmText="Reject"
         placeholder="Why is this team being rejected?"
         submitting={rejecting}
-        confirmVariant="danger"
-      />
-
-      <PromptReason
-        open={!!banTarget}
-        onClose={() => { if (!banning) setBanTarget(null) }}
-        onSubmit={handleBanSubmit}
-        title="Ban Team"
-        description={`Ban "${banTarget?.teamName}" from participating in this event.`}
-        confirmText="Ban"
-        placeholder="Why is this team being banned?"
-        submitting={banning}
         confirmVariant="danger"
       />
 
