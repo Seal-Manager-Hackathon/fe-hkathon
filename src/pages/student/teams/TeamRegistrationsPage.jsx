@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, FileText, Search, Calendar, Users,
   Clock, XCircle, AlertTriangle, CheckCircle, Eye,
@@ -30,8 +30,7 @@ const REG_STATUSES = {
 
 export default function TeamRegistrationsPage() {
   const { teamId } = useParams()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const statusFilter = searchParams.get('status') || ''
+  const [statusFilter, setStatusFilter] = useState('Approved')
 
   const [items, setItems] = useState([])
   const [totalCount, setTotalCount] = useState(0)
@@ -85,7 +84,7 @@ export default function TeamRegistrationsPage() {
           <button
             key={f.key}
             type="button"
-            onClick={() => { setSearchParams(f.key ? { status: f.key } : {}); setPageIndex(1) }}
+            onClick={() => { setStatusFilter(f.key); setPageIndex(1) }}
             className={cn(
               'rounded-full px-4 py-1.5 text-[12px] font-semibold transition-all cursor-pointer',
               statusFilter === f.key
