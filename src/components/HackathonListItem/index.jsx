@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { MapPin, Globe, Monitor, Layers, CalendarClock } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
@@ -27,17 +28,18 @@ const MODE_ICON = {
   hybrid: { icon: MapPin, label: 'Hybrid' },
 };
 
-export default function HackathonListItem({ hackathon }) {
+export default function HackathonListItem({ hackathon, to }) {
   const gradient = THEME_GRADIENTS[hackathon.themeColor] || THEME_GRADIENTS.blue;
   const statusCfg = STATUS_CONFIG[hackathon.status] || STATUS_CONFIG.Closed;
   const modeCfg = MODE_ICON[hackathon.mode] || MODE_ICON.online;
   const ModeIcon = modeCfg.icon;
 
   return (
-    <div
+    <Link
+      to={to || '#'}
       className={cn(
         'group flex flex-col sm:flex-row overflow-hidden rounded-2xl border border-[#d8e0e6] bg-white',
-        'transition-all duration-200 cursor-pointer',
+        'transition-all duration-200',
         'hover:border-[#064f5d]/30 hover:shadow-[0_4px_20px_rgba(6,79,93,0.08)]'
       )}
     >
@@ -91,18 +93,17 @@ export default function HackathonListItem({ hackathon }) {
 
       {/* CTA */}
       <div className="flex sm:flex-col items-center sm:justify-center px-4 pb-3 sm:pb-0 sm:pr-5 sm:pl-0 shrink-0">
-        <button
-          type="button"
+        <span
           className={cn(
-            'inline-flex items-center justify-center rounded-xl px-4 py-2 text-[13px] font-semibold cursor-pointer',
+            'inline-flex items-center justify-center rounded-xl px-4 py-2 text-[13px] font-semibold',
             'transition-all duration-200 whitespace-nowrap',
-            'border border-[#064f5d] text-[#064f5d] bg-white hover:bg-[#064f5d] hover:text-white',
-            'shadow-[0_1px_3px_rgba(6,79,93,0.08)] hover:shadow-[0_3px_12px_rgba(6,79,93,0.18)]'
+            'border border-[#064f5d] text-[#064f5d] bg-white group-hover:bg-[#064f5d] group-hover:text-white',
+            'shadow-[0_1px_3px_rgba(6,79,93,0.08)] group-hover:shadow-[0_3px_12px_rgba(6,79,93,0.18)]'
           )}
         >
           View details
-        </button>
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }

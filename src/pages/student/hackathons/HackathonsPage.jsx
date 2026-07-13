@@ -220,7 +220,7 @@ export default function HackathonsPage() {
                   )}
                 </div>
               ) : (
-                events.map((event) => <HackathonListItem key={event.id} hackathon={normalizeEvent(event)} />)
+                events.map((event) => <HackathonListItem key={event.id} hackathon={normalizeEvent(event)} to={`/hackathons/${event.id}`} />)
               )}
             </div>
 

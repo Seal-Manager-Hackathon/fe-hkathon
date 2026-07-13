@@ -8,6 +8,7 @@ const StudentLayout = lazy(() => import('../layouts/StudentLayout'))
 const HomePage = lazy(() => import('../pages/student/home/HomePage'))
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'))
 const HackathonsPage = lazy(() => import('../pages/student/hackathons/HackathonsPage'))
+const EventDetailPage = lazy(() => import('../pages/student/hackathons/EventDetailPage'))
 const YearLeaderboardPage = lazy(() => import('../pages/student/leaderboard/YearLeaderboardPage'))
 const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'))
 const VerifyEmailPage = lazy(() => import('../pages/auth/VerifyEmailPage'))
@@ -126,7 +127,12 @@ export const routes = [
         ]
       },
 
-      { path: 'hackathons', element: <Suspense fallback={<RouteFallback />}><HackathonsPage /></Suspense> },
+      {
+        path: 'hackathons', children: [
+          { index: true, element: <Suspense fallback={<RouteFallback />}><HackathonsPage /></Suspense> },
+          { path: ':id', element: <Suspense fallback={<RouteFallback />}><EventDetailPage /></Suspense> },
+        ]
+      },
       { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><YearLeaderboardPage /></Suspense> }
     ]
   },

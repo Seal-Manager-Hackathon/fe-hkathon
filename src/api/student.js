@@ -15,3 +15,13 @@ export async function getStudentEvents(params = {}) {
   const { data } = await api.get('/student/events', { params })
   return data.data
 }
+
+/**
+ * Get student-facing event detail by ID.
+ * @param {string} eventId
+ * @returns {Promise<object>} full event object
+ */
+export async function getStudentEventDetail(eventId) {
+  const { data } = await api.get(`/student/events/${eventId}`)
+  return data.data
+}
