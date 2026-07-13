@@ -3,11 +3,12 @@ import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Calendar, Clock, Users, Flag, UserPlus, FileText,
   Layers, Award, MapPin, BarChart3, Eye, X, ListChecks, ArrowRight,
-  Trophy,
+  Trophy, UsersRound,
 } from 'lucide-react'
-import { getStudentEventDetail, getStudentRounds, getStudentRoundDetail, getStudentRoundCriteriaTemplates, getStudentCriteriaTemplateDetail, getStudentAwards, getStudentAwardDetail, getStudentEventLeaderboard } from '../../../api/student'
+import { getStudentEventDetail, getStudentRounds, getStudentRoundDetail, getStudentRoundCriteriaTemplates, getStudentCriteriaTemplateDetail, getStudentAwards, getStudentAwardDetail, getStudentEventLeaderboard, getStudentEventAssignments } from '../../../api/student'
 import RichTextViewer from '../../../components/RichTextViewer'
 import Pagination from '../../../components/Pagination'
+import Avatar from '../../../components/Avatar'
 import { formatDate, formatDateTime } from '../../../utils/format'
 import { cn } from '../../../utils/cn'
 
@@ -43,6 +44,7 @@ const TABS = [
   { key: 'description', label: 'Description', icon: FileText },
   { key: 'rounds', label: 'Rounds', icon: Layers },
   { key: 'awards', label: 'Awards', icon: Award },
+  { key: 'assignments', label: 'Assignments', icon: UsersRound },
   { key: 'leaderboard', label: 'Leaderboard', icon: MapPin },
 ]
 
@@ -1025,6 +1027,122 @@ function TabEventLeaderboard({ eventId }) {
   )
 }
 
+/* ------------------------------------------------------------------ */
+/*  Assignments                                                        */
+/* ------------------------------------------------------------------ */
+
+function TabAssignments({ eventId }) {
+  const [allItems, setAllItems] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!eventId) return
+    let cancelled = false
+    async function fetchAll() {
+      setLoading(true)
+      setError('')
+      try {
+        // Fetch judges and mentors in parallel
+        const [judges, mentors] = await Promise.all([
+          getStudentEventAssignments(eventId, { EventRole: 'Judge', PageSize: 100 }),
+          getStudentEventAssignments(eventId, { EventRole: 'Mentor', PageSize: 100 }),
+        ])
+        if (!cancelled) {
+          const combined = [
+            ...(judges.items || []).map(i => ({ ...i, _group: 'Judge' })),
+            ...(mentors.items || []).map(i => ({ ...i, _group: 'Mentor' })),
+          ]
+          setAllItems(combined)
+        }
+      } catch (err) {
+        if (!cancelled) setError(err?.response?.data?.message || 'Không thể tải danh sách phân công.')
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    fetchAll()
+    return () => { cancelled = true }
+  }, [eventId])
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        {[1, 2].map((g) => (
+          <div key={g}>
+            <div className="mb-3 h-6 w-32 animate-pulse rounded bg-gray-200" />
+            <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+              {[1, 2].map((i) => <div key={i} className="h-[68px] animate-pulse rounded-xl bg-gray-100" />)}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>
+    )
+  }
+
+  const judges = allItems.filter(i => i._group === 'Judge')
+  const mentors = allItems.filter(i => i._group === 'Mentor')
+
+  if (allItems.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-xl border border-[#d7e0e5] bg-white py-16">
+        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#f0f4f8] text-[#8a9ba6]">
+          <UsersRound size={22} />
+        </div>
+        <p className="text-[15px] font-medium text-[#1f2f3a]">No assignments</p>
+        <p className="mt-1 text-[13px] text-[#7a8e99]">Judges and mentors will appear here once assigned.</p>
+      </div>
+    )
+  }
+
+  function PersonCard({ person }) {
+    return (
+      <div className="flex items-center gap-3 rounded-xl border border-[#e8ecf0] bg-white px-4 py-3">
+        <Avatar src={person.avatarUrl} name={`${person.firstName} ${person.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{person.firstName} {person.lastName}</p>
+          <p className="truncate text-[12px] text-[#8a9ba6]">{person.email}</p>
+          {person.assignTracks && person.assignTracks.length > 0 && (
+            <p className="mt-0.5 truncate text-[11px] text-[#1565c0]">
+              {person.assignTracks.filter(t => !t.isDisable).map(t => t.title).join(', ')}
+            </p>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  function RoleGroup({ title, items }) {
+    if (items.length === 0) return null
+    return (
+      <div className="mb-6 last:mb-0">
+        <div className="mb-3 flex items-center gap-2">
+          <h3 className="text-[15px] font-bold text-[#1f2f3a]">{title}</h3>
+          <span className="rounded-md bg-[#f0f0f0] px-2 py-0.5 text-[12px] font-semibold text-[#5a6a73]">{items.length} person{items.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+          {items.map((person) => (
+            <PersonCard key={person.assignEventId} person={person} />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <RoleGroup title="Judge" items={judges} />
+      <RoleGroup title="Mentor" items={mentors} />
+    </div>
+  )
+}
+
 function TabPlaceholder({ label, icon: Icon = FileText, accent = '#1565c0' }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-xl border border-[#d7e0e5] bg-white py-20">
@@ -1314,6 +1432,9 @@ export default function EventDetailPage() {
                 )}
                 {activeTab === 'awards' && (
                   <TabAwards eventId={event.id} />
+                )}
+                {activeTab === 'assignments' && (
+                  <TabAssignments eventId={event.id} />
                 )}
                 {activeTab === 'leaderboard' && (
                   <TabEventLeaderboard eventId={event.id} />

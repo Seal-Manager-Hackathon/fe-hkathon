@@ -289,3 +289,12 @@ export async function getStudentEventLeaderboard(eventId, params = {}) {
   const { data } = await api.get(`/student/events/${eventId}/leaderboard`, { params })
   return data.data
 }
+
+/* ------------------------------------------------------------------ */
+/*  Assignments                                                        */
+/* ------------------------------------------------------------------ */
+
+export async function getStudentEventAssignments(eventId, params = {}) {
+  const { data } = await api.get(`/student/assign/events/${eventId}/assigned`, { params })
+  return data.data
+}
