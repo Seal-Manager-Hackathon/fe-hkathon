@@ -424,18 +424,12 @@ function RoundsTab({ eventId, registerTeamId, members, currentUserId }) {
                   </button>
                 )}
 
-                {/* View submission button — only if submitted */}
+                {/* View submission button — always active if submitted */}
                 {hasSubmission && (
                   <button
                     type="button"
-                    onClick={() => roundActive && handleViewSubmission(round.id)}
-                    disabled={!roundActive}
-                    className={cn(
-                      'inline-flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-[13px] font-semibold transition-colors',
-                      roundActive
-                        ? 'cursor-pointer border-[#d7e0e5] bg-white text-[#10b981] hover:bg-[#f0fdf4] hover:border-[#10b981]/30'
-                        : 'cursor-not-allowed border-[#e8ecf0] bg-gray-50 text-[#b0bec5]',
-                    )}
+                    onClick={() => handleViewSubmission(round.id)}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-3.5 py-2 text-[13px] font-semibold text-[#10b981] transition-colors hover:bg-[#f0fdf4] hover:border-[#10b981]/30"
                   >
                     <FileText size={15} />
                     View Submission
@@ -1226,24 +1220,26 @@ function ViewSubmissionModal({ open, onClose, loading, error, submissionDetail }
               {/* URL */}
               <div>
                 <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Submission URL</p>
-                <a
-                  href={submissionDetail.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-[#fafbfc] px-4 py-2.5 text-[13px] font-medium text-[#1565c0] transition-colors hover:bg-[#f0f7ff] hover:border-[#1565c0]/30"
-                >
-                  <ExternalLink size={14} />
-                  {submissionDetail.url}
-                </a>
+                <div className="flex items-center gap-2 rounded-lg border border-[#d7e0e5] bg-[#fafbfc] px-4 py-2.5">
+                  <span className="min-w-0 flex-1 break-all text-[13px] text-[#1f2f3a]">{submissionDetail.url}</span>
+                  {submissionDetail.url && (
+                    <a
+                      href={submissionDetail.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 rounded-md p-1.5 text-[#1565c0] transition-colors hover:bg-[#f0f7ff]"
+                    >
+                      <ExternalLink size={16} />
+                    </a>
+                  )}
+                </div>
               </div>
 
               {/* Description */}
-              {submissionDetail.description && (
-                <div>
-                  <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Description</p>
-                  <p className="text-[14px] text-[#5a6a73] leading-relaxed">{submissionDetail.description}</p>
-                </div>
-              )}
+              <div>
+                <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Description</p>
+                <RichTextViewer content={submissionDetail.description} />
+              </div>
 
               {/* Status + Score */}
               <div className="flex flex-wrap gap-4">
