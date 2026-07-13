@@ -121,6 +121,7 @@ export default function SubmissionsTab({ eventId }) {
         trackId={filters.trackId}
         selectedTopicId={filters.topicId}
         onSelect={handleSelect('topicId', setTopicName)}
+        fetchTopics={getTopics}
       />
 
       <RegisterTeamSelectModal

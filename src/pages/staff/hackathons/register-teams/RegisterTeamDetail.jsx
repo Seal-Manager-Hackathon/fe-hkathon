@@ -172,7 +172,8 @@ export default function RegisterTeamDetail() {
               )}
             </div>
           </div>
-          <div className="flex flex-wrap gap-4 border-t border-[#e8ecf0] bg-[#fafbfc] px-6 py-3 sm:px-8">
+        </div>
+        <div className="flex flex-wrap gap-4 border-t border-[#e8ecf0] bg-[#fafbfc] px-6 py-3 sm:px-8">
             <QuickStat icon={Trophy} label="Event" value={data.eventName || '—'} href={data.eventId ? `/staff/hackathons/${data.eventId}` : null} />
             <QuickStat icon={FileText} label="Track" value={data.trackTitle || '—'} href={data.trackId ? `/staff/tracks/${data.trackId}` : null} />
             <QuickStat icon={FileText} label="Topic" value={data.topicTitle || '—'} href={data.topicId && data.trackId ? `/staff/tracks/${data.trackId}/topics` : null} />
@@ -294,7 +295,6 @@ export default function RegisterTeamDetail() {
           onSelect={handleRoundSelect}
           fetchRounds={getRounds}
         />
-      </div>
     </div>
   )
 }
