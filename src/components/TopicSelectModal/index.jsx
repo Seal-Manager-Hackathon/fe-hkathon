@@ -2,7 +2,6 @@ import { useMemo, useCallback } from 'react'
 import { Search, Ban, Calendar, CircleCheck } from 'lucide-react'
 import Badge from '../Badge'
 import { formatDateTime } from '../../utils/format'
-import { getTopics } from '../../api/admin'
 import TableSelectModal from '../TableSelectModal'
 
 const FILTER_DEFS = [
@@ -28,8 +27,7 @@ function buildQuery(filters, page) {
 export default function TopicSelectModal({ open, onClose, trackId, selectedTopicId, onSelect, fetchTopics }) {
   const fetchFn = useCallback(async (q) => {
     if (!trackId) return { items: [], totalCount: 0 }
-    const fn = fetchTopics || getTopics
-    const result = await fn(trackId, q)
+    const result = await fetchTopics(trackId, q)
     return { items: result.topics || [], totalCount: result.totalCount || 0 }
   }, [trackId, fetchTopics])
 

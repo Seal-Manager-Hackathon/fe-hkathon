@@ -6,7 +6,7 @@ import Badge from '../../../../components/Badge'
 import RoundSelectModal from '../../../../components/RoundSelectModal'
 import TrackSelectModal from '../../../../components/TrackSelectModal'
 import TopicSelectModal from '../../../../components/TopicSelectModal'
-import { getRounds, getTracks, getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam, assignTrackTopicToRegisterTeam, removeTrackTopicFromRegisterTeam } from '../../../../api/admin'
+import { getRounds, getTracks, getTopics, getEventRegisterTeams, approveRegisterTeam, rejectRegisterTeam, banRegisterTeam, unbanRegisterTeam, assignTrackTopicToRegisterTeam, removeTrackTopicFromRegisterTeam } from '../../../../api/admin'
 import { formatDateTime } from '../../../../utils/format'
 import { toast, confirm } from '../../../../utils/toast'
 import PromptReason from '../../../../components/PromptReason'
@@ -252,6 +252,7 @@ export default function RegisterTeamsTab({ eventId }) {
       trackId={filters.trackId}
       selectedTopicId={filters.topicId}
       onSelect={handleFilterSelect('topicId', setTopicName)}
+      fetchTopics={getTopics}
     />
 
     {/* ── Assignment Modals ── */}
@@ -270,6 +271,7 @@ export default function RegisterTeamsTab({ eventId }) {
       trackId={selectedTrackIdRef.current}
       selectedTopicId={assignTarget?.topicId || null}
       onSelect={handleTopicSelect}
+      fetchTopics={getTopics}
     />
 
     <PromptReason

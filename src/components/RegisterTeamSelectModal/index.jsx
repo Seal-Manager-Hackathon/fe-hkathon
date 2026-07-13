@@ -2,7 +2,6 @@ import { useMemo, useCallback } from 'react'
 import { Search, Ban, Users, Calendar, CircleCheck } from 'lucide-react'
 import Badge from '../Badge'
 import { formatDateTime } from '../../utils/format'
-import { getEventRegisterTeams } from '../../api/admin'
 import TableSelectModal from '../TableSelectModal'
 
 const FILTER_DEFS = [
@@ -25,11 +24,11 @@ function buildQuery(filters, page) {
   return q
 }
 
-export default function RegisterTeamSelectModal({ open, onClose, eventId, selectedRegisterTeamId, onSelect }) {
+export default function RegisterTeamSelectModal({ open, onClose, eventId, selectedRegisterTeamId, onSelect, fetchEventRegisterTeams }) {
   const fetchFn = useCallback(async (q) => {
-    const result = await getEventRegisterTeams(eventId, q)
+    const result = await fetchEventRegisterTeams(eventId, q)
     return { items: result.registerTeams || [], totalCount: result.totalCount || 0 }
-  }, [eventId])
+  }, [eventId, fetchEventRegisterTeams])
 
   const columns = useMemo(() => [
     {

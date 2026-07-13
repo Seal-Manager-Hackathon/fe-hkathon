@@ -5,7 +5,7 @@ import RoundSelectModal from '../../../../components/RoundSelectModal'
 import TrackSelectModal from '../../../../components/TrackSelectModal'
 import TopicSelectModal from '../../../../components/TopicSelectModal'
 import RegisterTeamSelectModal from '../../../../components/RegisterTeamSelectModal'
-import { getRounds, getTracks, getTopics } from '../../../../api/staff'
+import { getRounds, getTracks, getTopics, getEventRegisterTeams } from '../../../../api/staff'
 import { useSubmissionColumns } from './SubmissionColumns'
 import { useSubmissionFilters, PAGE_SIZE } from './useSubmissionFilters'
 import { useSubmissions } from './useSubmissions'
@@ -105,6 +105,7 @@ export default function SubmissionsTab({ eventId }) {
         onClose={() => setTrackModalOpen(false)}
         eventId={eventId}
         selectedTrackId={filters.trackId}
+        fetchTracks={getTracks}
         onSelect={(id, name) => {
           handleSelect('trackId', setTrackName)(id, name)
           if (id !== filters.trackId) {
@@ -130,6 +131,7 @@ export default function SubmissionsTab({ eventId }) {
         eventId={eventId}
         selectedRegisterTeamId={filters.registerTeamId}
         onSelect={handleSelect('registerTeamId', setRegTeamName)}
+        fetchEventRegisterTeams={getEventRegisterTeams}
       />
     </>
   )
