@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Users, Calendar, Crown, Shield, Edit3, LogOut,
-  UserMinus, UserCog, Check, X, FileText,
+  UserMinus, UserCog, Check, X, FileText, Send, Clock, CheckCircle,
+  XCircle, AlertTriangle,
 } from 'lucide-react'
 import {
   getStudentTeamDetail,
@@ -12,6 +13,8 @@ import {
   leaveStudentTeam,
   kickStudentTeamMember,
   changeStudentTeamLeader,
+  sendStudentTeamInvitation,
+  getStudentTeamInvitations,
 } from '../../../api/student'
 import Pagination from '../../../components/Pagination'
 import Avatar from '../../../components/Avatar'
@@ -32,6 +35,9 @@ export default function TeamDetailPage() {
 
   // Change leader
   const [changingLeader, setChangingLeader] = useState(null)
+
+  // Invitations
+  const [showInviteModal, setShowInviteModal] = useState(false)
 
   useEffect(() => {
     if (!teamId) return
@@ -230,6 +236,13 @@ export default function TeamDetailPage() {
             {/* Action buttons */}
             <div className="flex flex-wrap gap-2">
               <button
+                onClick={() => setShowInviteModal(true)}
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#1565c0] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1]"
+              >
+                <Send size={14} />
+                Invite
+              </button>
+              <button
                 onClick={handleLeave}
                 className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[13px] font-semibold text-[#e65100] transition-colors hover:bg-[#fff3e0]"
               >
@@ -266,6 +279,13 @@ export default function TeamDetailPage() {
             Events
             {activeTab === 'events' && <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#1565c0]" />}
           </button>
+          <button
+            onClick={() => setActiveTab('invitations')}
+            className={cn('relative px-4 py-3 text-[13px] font-medium transition-colors cursor-pointer', activeTab === 'invitations' ? 'text-[#1565c0]' : 'text-[#7a8e99] hover:text-[#1f2f3a]')}
+          >
+            Invitations
+            {activeTab === 'invitations' && <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#1565c0]" />}
+          </button>
         </div>
 
         {/* Tab content */}
@@ -281,8 +301,17 @@ export default function TeamDetailPage() {
             />
           )}
           {activeTab === 'events' && <TeamEventsSection teamId={detail?.id} />}
+          {activeTab === 'invitations' && <TeamInvitationsSection teamId={detail?.id} />}
         </div>
       </div>
+
+      {/* Invite Modal */}
+      <InviteModal
+        teamId={detail?.id}
+        open={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+        onSent={() => setActiveTab('invitations')}
+      />
     </div>
   )
 }
@@ -424,6 +453,162 @@ function TeamEventsSection({ teamId }) {
             <span className="shrink-0 text-[12px] text-[#1565c0] font-medium">View &rarr;</span>
           </Link>
         ))}
+      </div>
+      {totalPages > 1 && <div className="mt-3"><Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} /></div>}
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Invite Modal                                                       */
+/* ------------------------------------------------------------------ */
+
+function InviteModal({ teamId, open, onClose, onSent }) {
+  const [email, setEmail] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  if (!open || !teamId) return null
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (!email.trim()) { setError('Email không được để trống'); return }
+    setSubmitting(true)
+    setError('')
+    try {
+      await sendStudentTeamInvitation(teamId, email.trim())
+      setEmail('')
+      onSent()
+      onClose()
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Không thể gửi lời mời.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e3f2fd]">
+              <Send className="h-5 w-5 text-[#1565c0]" />
+            </div>
+            <h3 className="text-[16px] font-bold text-[#1f2f3a]">Invite Member</h3>
+          </div>
+          <button onClick={onClose} className="cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-100"><X className="h-5 w-5" /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+          {error && <p className="text-[13px] text-[#c62828]">{error}</p>}
+          <div>
+            <label className="mb-1.5 block text-[13px] font-medium text-[#1f2f3a]">Email address</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="user@email.com"
+              className="w-full rounded-lg border border-[#d7e0e5] px-3 py-2.5 text-[14px] text-[#1f2f3a] outline-none placeholder:text-[#8a9ba6] focus:border-[#1565c0]"
+              autoFocus
+            />
+          </div>
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={onClose} className="cursor-pointer rounded-lg border border-[#d7e0e5] bg-white px-5 py-2.5 text-[13px] font-semibold text-[#1f2f3a] hover:bg-gray-50">Cancel</button>
+            <button type="submit" disabled={submitting} className="cursor-pointer rounded-lg bg-[#1565c0] px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1] disabled:opacity-50">
+              {submitting ? 'Sending...' : 'Send Invitation'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Invitations List                                                   */
+/* ------------------------------------------------------------------ */
+
+const INVITE_STATUS = {
+  Pending: { label: 'Pending', cls: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200/60', icon: Clock },
+  Accepted: { label: 'Accepted', cls: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200/60', icon: CheckCircle },
+  Rejected: { label: 'Rejected', cls: 'bg-red-50 text-red-700 ring-1 ring-red-200/60', icon: XCircle },
+  Expired: { label: 'Expired', cls: 'bg-slate-100 text-slate-500 ring-1 ring-slate-200/60', icon: AlertTriangle },
+}
+
+function TeamInvitationsSection({ teamId }) {
+  const [items, setItems] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [pageIndex, setPageIndex] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const pageSize = 10
+
+  useEffect(() => {
+    if (!teamId) return
+    let cancelled = false
+    async function fetch() {
+      setLoading(true)
+      try {
+        const result = await getStudentTeamInvitations(teamId, { PageIndex: pageIndex, PageSize: pageSize })
+        if (!cancelled) {
+          setItems(result.items || [])
+          setTotalCount(result.totalCount || 0)
+        }
+      } catch {
+        if (!cancelled) setItems([])
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    fetch()
+    return () => { cancelled = true }
+  }, [teamId, pageIndex, pageSize])
+
+  const totalPages = Math.ceil(totalCount / pageSize)
+
+  if (loading) return <div className="space-y-2">{[1, 2, 3].map((i) => <div key={i} className="h-[56px] animate-pulse rounded-lg bg-gray-100" />)}</div>
+
+  if (items.length === 0) return (
+    <div className="flex flex-col items-center justify-center py-8">
+      <Send size={24} className="mb-2 text-[#8a9ba6]" />
+      <p className="text-[13px] text-[#7a8e99]">No invitations sent yet.</p>
+    </div>
+  )
+
+  return (
+    <div>
+      <div className="space-y-2">
+        {items.map((inv) => {
+          const cfg = INVITE_STATUS[inv.status] || INVITE_STATUS.Pending
+          const Icon = cfg.icon
+          return (
+            <div key={inv.id} className="flex items-center justify-between rounded-xl border border-[#e8ecf0] bg-white px-4 py-3">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <Avatar
+                  src={inv.invitedUserAvatarUrl}
+                  name={`${inv.invitedUserFirstName} ${inv.invitedUserLastName}`}
+                  size="h-9 w-9"
+                  textSize="text-[13px]"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">
+                    {inv.invitedUserFirstName} {inv.invitedUserLastName}
+                  </p>
+                  <p className="truncate text-[12px] text-[#8a9ba6]">{inv.invitedUserEmail}</p>
+                </div>
+              </div>
+              <div className="flex shrink-0 items-center gap-3">
+                <span className={cn('inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold', cfg.cls)}>
+                  <Icon size={12} />
+                  {cfg.label}
+                </span>
+                {inv.limitTime && (
+                  <span className="text-[11px] text-[#8a9ba6]">Expires {formatDate(inv.limitTime)}</span>
+                )}
+              </div>
+            </div>
+          )
+        })}
       </div>
       {totalPages > 1 && <div className="mt-3"><Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} /></div>}
     </div>

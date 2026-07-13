@@ -215,3 +215,25 @@ export async function changeStudentTeamLeader(teamId, newLeaderUserId) {
   const { data } = await api.post(`/student/teams/${teamId}/change-leader`, { newLeaderUserId })
   return data.data
 }
+
+/**
+ * Send invitation to a user by email (leader only).
+ * @param {string} teamId
+ * @param {string} email
+ * @returns {Promise<object>}
+ */
+export async function sendStudentTeamInvitation(teamId, email) {
+  const { data } = await api.post(`/student/teams/${teamId}/invitations`, { email })
+  return data.data
+}
+
+/**
+ * List invitations sent by the team (leader only).
+ * @param {string} teamId
+ * @param {Object} [params]
+ * @returns {Promise<{ items: Array, totalCount: number }>}
+ */
+export async function getStudentTeamInvitations(teamId, params = {}) {
+  const { data } = await api.get(`/student/teams/${teamId}/invitations`, { params })
+  return data.data
+}
