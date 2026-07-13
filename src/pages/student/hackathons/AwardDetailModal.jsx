@@ -22,9 +22,9 @@ export default function AwardDetailModal({ awardId, onClose }) {
       } catch (err) {
         if (!cancelled) {
           if (err?.response?.status === 404) {
-            setError('Không tìm thấy')
+            setError('Not found')
           } else {
-            setError(err?.response?.data?.message || 'Không thể tải thông tin giải thưởng.')
+            setError(err?.response?.data?.message || 'Cannot load award information.')
           }
         }
       } finally {

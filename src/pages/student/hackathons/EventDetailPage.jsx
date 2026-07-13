@@ -70,11 +70,11 @@ export default function EventDetailPage() {
           if (status === 403) {
             setIsForbidden(true)
           } else if (status === 404) {
-            setError('Không tìm thấy sự kiện')
+            setError('Event not found')
           } else if (status === 401) {
             // api.js interceptor handles redirect
           } else {
-            setError(err?.response?.data?.message || 'Không thể tải thông tin sự kiện.')
+            setError(err?.response?.data?.message || 'Cannot load event information.')
           }
         }
       } finally {

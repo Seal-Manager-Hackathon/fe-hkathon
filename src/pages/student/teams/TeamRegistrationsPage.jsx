@@ -53,7 +53,7 @@ export default function TeamRegistrationsPage() {
           setTotalCount(result.totalCount || 0)
         }
       } catch (err) {
-        if (!cancelled) setError(err?.response?.data?.message || 'Không thể tải danh sách đăng ký.')
+        if (!cancelled) setError(err?.response?.data?.message || 'Cannot load registration list.')
       } finally {
         if (!cancelled) setLoading(false)
       }

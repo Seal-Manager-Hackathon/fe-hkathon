@@ -11,7 +11,7 @@ export default function InviteModal({ teamId, open, onClose, onSent }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!email.trim()) { toast.error('Email không được để trống'); return }
+    if (!email.trim()) { toast.error('Email cannot be empty'); return }
     setSubmitting(true)
     try {
       await sendStudentTeamInvitation(teamId, email.trim())
@@ -19,7 +19,7 @@ export default function InviteModal({ teamId, open, onClose, onSent }) {
       onSent()
       onClose()
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Không thể gửi lời mời.')
+      toast.error(err?.response?.data?.message || 'Cannot send invitation.')
     } finally {
       setSubmitting(false)
     }

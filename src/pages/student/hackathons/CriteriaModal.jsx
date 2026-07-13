@@ -28,9 +28,9 @@ export default function CriteriaModal({ roundId, onClose }) {
       } catch (err) {
         if (!cancelled) {
           if (err?.response?.status === 404) {
-            setError('Không tìm thấy vòng')
+            setError('Round not found')
           } else {
-            setError(err?.response?.data?.message || 'Không thể tải tiêu chí.')
+            setError(err?.response?.data?.message || 'Cannot load criteria.')
           }
         }
       } finally {

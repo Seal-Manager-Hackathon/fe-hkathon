@@ -81,7 +81,7 @@ export default function YearLeaderboardPage() {
       const result = await getStudentLeaderboard(year, { PageIndex: page, PageSize: PAGE_SIZE });
       setData(result);
     } catch (err) {
-      setError(err?.response?.data?.message || 'Không thể tải bảng xếp hạng.');
+      setError(err?.response?.data?.message || 'Cannot load leaderboard.');
       setData(null);
     } finally {
       setLoading(false);

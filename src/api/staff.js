@@ -183,7 +183,7 @@ export async function restoreEvent(eventId) {
 // ============================ USERS ============================
 
 /**
- * Get paginated users list with search and filters (sắp xếp gần nhất trên cùng).
+ * Get paginated users list with search and filters (sorted with newest first).
  * @param {Object} params
  * @param {string} [params.Keyword]
  * @param {'Admin'|'Staff'|'Student'|'Lecturer'} [params.Role]

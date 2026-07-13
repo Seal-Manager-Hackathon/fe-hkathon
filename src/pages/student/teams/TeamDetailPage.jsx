@@ -62,8 +62,8 @@ export default function TeamDetailPage() {
         if (!cancelled) setDetail(data)
       } catch (err) {
         if (!cancelled) {
-          if (err?.response?.status === 404) setError('Team không tồn tại')
-          else setError(err?.response?.data?.message || 'Không thể tải thông tin team.')
+          if (err?.response?.status === 404) setError('Team does not exist')
+          else setError(err?.response?.data?.message || 'Cannot load team information.')
         }
       } finally {
         if (!cancelled) setLoading(false)
@@ -86,7 +86,7 @@ export default function TeamDetailPage() {
       setDetail((prev) => prev ? { ...prev, name: newName.trim() } : prev)
       toast.success('Team renamed successfully.')
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Không thể cập nhật tên team.')
+      toast.error(err?.response?.data?.message || 'Cannot update team name.')
     }
   }
 
@@ -99,7 +99,7 @@ export default function TeamDetailPage() {
       toast.success('Team disbanded successfully.')
       setDetail(null)
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Không thể giải thể team.')
+      toast.error(err?.response?.data?.message || 'Cannot disband team.')
     }
   }
 
@@ -112,7 +112,7 @@ export default function TeamDetailPage() {
       toast.success('You left the team.')
       setDetail(null)
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Không thể rời team.')
+      toast.error(err?.response?.data?.message || 'Cannot leave team.')
     }
   }
 
@@ -123,7 +123,7 @@ export default function TeamDetailPage() {
       toast.success('Member removed from team.')
       refresh()
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Không thể kick member.')
+      toast.error(err?.response?.data?.message || 'Cannot kick member.')
     }
   }
 
@@ -137,7 +137,7 @@ export default function TeamDetailPage() {
       toast.success('Team leader changed successfully.')
       refresh()
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Không thể chuyển quyền leader.')
+      toast.error(err?.response?.data?.message || 'Cannot transfer leader role.')
     }
   }
 

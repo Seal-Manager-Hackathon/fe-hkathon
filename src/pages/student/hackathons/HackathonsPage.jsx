@@ -16,9 +16,9 @@ const FILTERS = [
 ]
 const THEME_COLORS = ['blue', 'emerald', 'violet', 'rose', 'amber', 'teal', 'indigo', 'orange', 'green', 'cyan', 'slate', 'sky']
 const ERROR_MESSAGES = {
-  'Invalid Status. Must be: Draft, Published, Closed': 'Trạng thái không hợp lệ',
-  'Page Index Must Be Greater Than 0': 'Trang không hợp lệ',
-  'Page Size Must Be Between 1 And 100': 'Kích thước trang không hợp lệ',
+  'Invalid Status. Must be: Draft, Published, Closed': 'Invalid status',
+  'Page Index Must Be Greater Than 0': 'Invalid page',
+  'Page Size Must Be Between 1 And 100': 'Invalid page size',
 }
 
 function normalizeEvent(event) {
@@ -42,7 +42,7 @@ function toApiDate(date, endOfDay = false) {
 
 function getErrorMessage(error) {
   const message = error?.response?.data?.message
-  return ERROR_MESSAGES[message] || message || 'Không thể tải danh sách hackathon.'
+  return ERROR_MESSAGES[message] || message || 'Cannot load hackathon list.'
 }
 
 export default function HackathonsPage() {

@@ -58,7 +58,7 @@ export default function MyInvitationsPage() {
           setTotalCount(result.totalCount || 0)
         }
       } catch (err) {
-        if (!cancelled) setError(err?.response?.data?.message || 'Không thể tải lời mời.')
+        if (!cancelled) setError(err?.response?.data?.message || 'Cannot load invitations.')
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -81,7 +81,7 @@ export default function MyInvitationsPage() {
         toast.error('Please complete your profile first.')
         // Could redirect to profile edit page
       } else {
-        toast.error(msg || 'Không thể chấp nhận lời mời.')
+        toast.error(msg || 'Cannot accept invitation.')
       }
     } finally {
       setActingId(null)
@@ -95,7 +95,7 @@ export default function MyInvitationsPage() {
       toast.success(`Rejected invitation from ${invitation.teamName}`)
       setRefreshKey((k) => k + 1)
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Không thể từ chối lời mời.')
+      toast.error(err?.response?.data?.message || 'Cannot reject invitation.')
     } finally {
       setActingId(null)
     }

@@ -42,9 +42,9 @@ export default function RoundDetailModal({ roundId, onClose }) {
       } catch (err) {
         if (!cancelled) {
           if (err?.response?.status === 404) {
-            setError('Không tìm thấy vòng')
+            setError('Round not found')
           } else {
-            setError(err?.response?.data?.message || 'Không thể tải thông tin vòng.')
+            setError(err?.response?.data?.message || 'Cannot load round information.')
           }
         }
       } finally {

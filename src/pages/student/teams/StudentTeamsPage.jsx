@@ -36,7 +36,7 @@ export default function StudentTeamsPage() {
       setTotalCount(result.totalCount || 0)
     } catch (err) {
       if (err?.response?.status === 403) return
-      setError(err?.response?.data?.message || 'Không thể tải danh sách team.')
+      setError(err?.response?.data?.message || 'Cannot load team list.')
     } finally {
       setLoading(false)
     }
@@ -175,7 +175,7 @@ function CreateTeamModal({ open, onClose, onCreated }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!name.trim()) { setError('Tên team không được để trống'); return }
+    if (!name.trim()) { setError('Team name cannot be empty'); return }
     setSubmitting(true)
     setError('')
     try {
@@ -183,7 +183,7 @@ function CreateTeamModal({ open, onClose, onCreated }) {
       toast.success('Team created successfully.')
       onCreated()
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Không thể tạo team.')
+      toast.error(err?.response?.data?.message || 'Cannot create team.')
     } finally {
       setSubmitting(false)
     }

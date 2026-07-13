@@ -19,9 +19,9 @@ export default function CriteriaTemplateDetailModal({ templateId, onClose }) {
       } catch (err) {
         if (!cancelled) {
           if (err?.response?.status === 404) {
-            setError('Không tìm thấy tiêu chí')
+            setError('Criteria not found')
           } else {
-            setError(err?.response?.data?.message || 'Không thể tải thông tin tiêu chí.')
+            setError(err?.response?.data?.message || 'Cannot load criteria information.')
           }
         }
       } finally {
