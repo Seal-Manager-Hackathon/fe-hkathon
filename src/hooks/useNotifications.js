@@ -5,24 +5,33 @@ import {
   markStudentNotificationRead,
   markStudentAllNotificationsRead,
 } from '../api/student'
+import {
+  getLecturerNotifications,
+  getLecturerNotificationUnreadCount,
+  markLecturerNotificationRead,
+  markLecturerAllNotificationsRead,
+} from '../api/lecturer'
 import { MOCK_NOTIFICATIONS } from '../data/notifications'
 import { formatDate } from '../utils/format'
 
 /**
  * Hook to fetch and manage notifications based on user role.
- * For students: calls the real student notification API.
- * For other roles (or when no user): falls back to MOCK_NOTIFICATIONS (legacy).
+ * - Student: calls the student notification API.
+ * - Lecturer: calls the lecturer notification API.
+ * - Other roles / no user: falls back to MOCK_NOTIFICATIONS (legacy).
  */
 export default function useNotifications(user) {
   const [notifications, setNotifications] = useState([])
   const [unreadCount, setUnreadCount] = useState(0)
   const intervalRef = useRef(null)
-  const isStudent = user?.role === 'Student'
 
-  /**
-   * Transform an API notification into the shape expected
-   * by NotificationDropdown and NotificationModal.
-   */
+  const role = user?.role
+
+  const isStudent = role === 'Student'
+  const isLecturer = role === 'Lecturer'
+  const hasApi = isStudent || isLecturer
+
+  /** Map notification shape from the API to the flat format expected by UI components. */
   function transform(apiNotif) {
     return {
       id: apiNotif.id,
@@ -32,38 +41,59 @@ export default function useNotifications(user) {
       read: apiNotif.status === 'Read',
       targetType: apiNotif.targetType || '',
       createdAt: apiNotif.createdAt,
-      // Keep original fields for downstream use
       _raw: apiNotif,
     }
   }
 
+  // ------- Resolve which API to call based on role -------
+  const api = {
+    fetch: isStudent
+      ? (p) => getStudentNotifications(p)
+      : isLecturer
+        ? (p) => getLecturerNotifications(p)
+        : null,
+    unreadCount: isStudent
+      ? () => getStudentNotificationUnreadCount()
+      : isLecturer
+        ? () => getLecturerNotificationUnreadCount()
+        : null,
+    markRead: isStudent
+      ? (id) => markStudentNotificationRead(id)
+      : isLecturer
+        ? (id) => markLecturerNotificationRead(id)
+        : null,
+    markAllRead: isStudent
+      ? () => markStudentAllNotificationsRead()
+      : isLecturer
+        ? () => markLecturerAllNotificationsRead()
+        : null,
+  }
+
   const fetchNotifications = useCallback(async () => {
-    if (!isStudent) return
+    if (!api.fetch) return
     try {
-      const result = await getStudentNotifications({ PageIndex: 1, PageSize: 10 })
+      const result = await api.fetch({ PageIndex: 1, PageSize: 10 })
       if (result?.notifications) {
-        const list = result.notifications.map(transform)
-        setNotifications(list)
+        setNotifications(result.notifications.map(transform))
       }
     } catch {
-      // silently fail — dropdown shows stale data or empty
+      // silently fail
     }
-  }, [isStudent])
+  }, [api.fetch])
 
   const fetchUnreadCount = useCallback(async () => {
-    if (!isStudent) return
+    if (!api.unreadCount) return
     try {
-      const result = await getStudentNotificationUnreadCount()
+      const result = await api.unreadCount()
       setUnreadCount(result?.count ?? 0)
     } catch {
       // silently fail
     }
-  }, [isStudent])
+  }, [api.unreadCount])
 
   // Initial fetch + poll every 60 seconds
   useEffect(() => {
-    if (!isStudent) {
-      // Fallback to mock data for non-students
+    if (!hasApi) {
       setNotifications(MOCK_NOTIFICATIONS)
       setUnreadCount(MOCK_NOTIFICATIONS.filter((n) => !n.read).length)
       return
@@ -80,40 +110,25 @@ export default function useNotifications(user) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
-  }, [isStudent, fetchNotifications, fetchUnreadCount])
+  }, [hasApi, fetchNotifications, fetchUnreadCount])
 
-  /**
-   * Mark a single notification as read.
-   * Optimistically updates local state, then calls the API.
-   */
   const markAsRead = useCallback(async (id) => {
-    if (isStudent) {
-      try {
-        await markStudentNotificationRead(id)
-      } catch {
-        // API call failed — revert not necessary for read status
-      }
+    if (api.markRead) {
+      try { await api.markRead(id) } catch { /* ignore */ }
     }
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     )
     setUnreadCount((prev) => Math.max(0, prev - 1))
-  }, [isStudent])
+  }, [api.markRead])
 
-  /**
-   * Mark all notifications as read.
-   */
   const markAllRead = useCallback(async () => {
-    if (isStudent) {
-      try {
-        await markStudentAllNotificationsRead()
-      } catch {
-        // silently fail
-      }
+    if (api.markAllRead) {
+      try { await api.markAllRead() } catch { /* ignore */ }
     }
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
     setUnreadCount(0)
-  }, [isStudent])
+  }, [api.markAllRead])
 
   return { notifications, unreadCount, markAsRead, markAllRead, refetch: fetchNotifications }
 }

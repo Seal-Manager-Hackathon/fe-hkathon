@@ -526,3 +526,60 @@ export async function regradeJudgeSubmission(scoreId, payload) {
   const { data } = await api.patch(`/judge/scores/${scoreId}`, payload)
   return data.data
 }
+
+/* ------------------------------------------------------------------ */
+/*  Lecturer Notifications (Personal + System)                        */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Get paginated lecturer notifications (Personal + System).
+ * GET /api/v1/lecturer/notifications
+ * @param {Object} [params] - { title?, targetType?, fromDate?, toDate?, pageIndex?, pageSize? }
+ * @returns {Promise<{ notifications: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getLecturerNotifications(params = {}) {
+  const { data } = await api.get('/lecturer/notifications', { params })
+  return data.data
+}
+
+/**
+ * Get detail of a single lecturer notification.
+ * GET /api/v1/lecturer/notifications/{notificationId}
+ * @param {string} notificationId
+ * @returns {Promise<object>}
+ */
+export async function getLecturerNotificationDetail(notificationId) {
+  const { data } = await api.get(`/lecturer/notifications/${notificationId}`)
+  return data.data
+}
+
+/**
+ * Get unread notification count for the current lecturer.
+ * GET /api/v1/lecturer/notifications/unread-count
+ * @returns {Promise<{ count: number }>}
+ */
+export async function getLecturerNotificationUnreadCount() {
+  const { data } = await api.get('/lecturer/notifications/unread-count')
+  return data.data
+}
+
+/**
+ * Mark a single lecturer notification as read.
+ * POST /api/v1/lecturer/notifications/{notificationId}/read
+ * @param {string} notificationId
+ * @returns {Promise<object>}
+ */
+export async function markLecturerNotificationRead(notificationId) {
+  const { data } = await api.post(`/lecturer/notifications/${notificationId}/read`)
+  return data.data
+}
+
+/**
+ * Mark all lecturer notifications as read.
+ * POST /api/v1/lecturer/notifications/read-all
+ * @returns {Promise<object>}
+ */
+export async function markLecturerAllNotificationsRead() {
+  const { data } = await api.post('/lecturer/notifications/read-all')
+  return data.data
+}

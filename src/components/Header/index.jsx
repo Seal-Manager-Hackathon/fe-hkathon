@@ -24,7 +24,9 @@ export default function Header({
       ? '/admin/my-notifications'
       : user?.role === 'Staff'
         ? '/staff/my-notifications'
-        : '/my-notifications'
+        : user?.role === 'Lecturer'
+          ? '/lecture/my-notifications'
+          : '/my-notifications'
   const resolvedUser = user || { name: 'Guest visitor' }
 
   useEffect(() => {
