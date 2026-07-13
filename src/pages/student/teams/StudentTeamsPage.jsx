@@ -8,7 +8,7 @@ import {
   createStudentTeam,
 } from '../../../api/student'
 import Pagination from '../../../components/Pagination'
-import { cn } from '../../../utils/cn'
+import { toast } from '../../../utils/toast'
 
 const PAGE_SIZE = 7
 
@@ -176,9 +176,10 @@ function CreateTeamModal({ open, onClose, onCreated }) {
     setError('')
     try {
       await createStudentTeam(name.trim())
+      toast.success('Team created successfully.')
       onCreated()
     } catch (err) {
-      setError(err?.response?.data?.message || 'Không thể tạo team.')
+      toast.error(err?.response?.data?.message || 'Không thể tạo team.')
     } finally {
       setSubmitting(false)
     }
@@ -198,7 +199,6 @@ function CreateTeamModal({ open, onClose, onCreated }) {
           <button onClick={onClose} className="cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-100"><X className="h-5 w-5" /></button>
         </div>
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-          {error && <p className="text-[13px] text-[#c62828]">{error}</p>}
           <div>
             <label className="mb-1.5 block text-[13px] font-medium text-[#1f2f3a]">Team Name</label>
             <input

@@ -20,6 +20,7 @@ import Pagination from '../../../components/Pagination'
 import Avatar from '../../../components/Avatar'
 import { formatDate } from '../../../utils/format'
 import { cn } from '../../../utils/cn'
+import { toast, confirm } from '../../../utils/toast'
 
 export default function TeamDetailPage() {
   const { teamId } = useParams()
@@ -27,7 +28,6 @@ export default function TeamDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState('members')
-  const [actionMsg, setActionMsg] = useState('')
 
   // Edit name
   const [editingName, setEditingName] = useState(false)
@@ -38,6 +38,7 @@ export default function TeamDetailPage() {
 
   // Invitations
   const [showInviteModal, setShowInviteModal] = useState(false)
+  const [inviteVersion, setInviteVersion] = useState(0)
 
   useEffect(() => {
     if (!teamId) return
@@ -68,60 +69,69 @@ export default function TeamDetailPage() {
 
   async function handleUpdateName() {
     if (!newName.trim() || !detail) return
-    setActionMsg('')
     try {
       await updateStudentTeam(detail.id, { name: newName.trim() })
       setEditingName(false)
       setDetail((prev) => prev ? { ...prev, name: newName.trim() } : prev)
-      setActionMsg('Team renamed successfully.')
+      toast.success('Team renamed successfully.')
     } catch (err) {
-      setActionMsg(err?.response?.data?.message || 'Không thể cập nhật tên team.')
+      toast.error(err?.response?.data?.message || 'Không thể cập nhật tên team.')
     }
   }
 
   async function handleDisband() {
     if (!detail) return
-    setActionMsg('')
+    const ok = await confirm('Disband Team', `Are you sure you want to disband "${detail.name}"? This cannot be undone.`)
+    if (!ok) return
     try {
       await disbandStudentTeam(detail.id)
+      toast.success('Team disbanded successfully.')
       setDetail(null)
     } catch (err) {
-      setActionMsg(err?.response?.data?.message || 'Không thể giải thể team.')
+      toast.error(err?.response?.data?.message || 'Không thể giải thể team.')
     }
   }
 
   async function handleLeave() {
     if (!detail) return
-    setActionMsg('')
+    const ok = await confirm('Leave Team', `Are you sure you want to leave "${detail.name}"?`)
+    if (!ok) return
     try {
       await leaveStudentTeam(detail.id)
+      toast.success('You left the team.')
       setDetail(null)
     } catch (err) {
-      setActionMsg(err?.response?.data?.message || 'Không thể rời team.')
+      toast.error(err?.response?.data?.message || 'Không thể rời team.')
     }
   }
 
   async function handleKick(memberId) {
     if (!detail) return
-    setActionMsg('')
     try {
       await kickStudentTeamMember(detail.id, memberId)
+      toast.success('Member removed from team.')
       refresh()
     } catch (err) {
-      setActionMsg(err?.response?.data?.message || 'Không thể kick member.')
+      toast.error(err?.response?.data?.message || 'Không thể kick member.')
     }
   }
 
   async function handleChangeLeader(newLeaderUserId) {
     if (!detail) return
-    setActionMsg('')
     try {
       await changeStudentTeamLeader(detail.id, newLeaderUserId)
       setChangingLeader(null)
+      toast.success('Team leader changed successfully.')
       refresh()
     } catch (err) {
-      setActionMsg(err?.response?.data?.message || 'Không thể chuyển quyền leader.')
+      toast.error(err?.response?.data?.message || 'Không thể chuyển quyền leader.')
     }
+  }
+
+  function handleInviteSent() {
+    setActiveTab('invitations')
+    setInviteVersion((v) => v + 1)
+    toast.success('Invitation sent successfully.')
   }
 
   // Disbanded / left state
@@ -177,13 +187,6 @@ export default function TeamDetailPage() {
       <Link to="/teams" className="mb-6 inline-flex items-center gap-1.5 text-[14px] font-medium text-[#1565c0] transition-colors hover:text-[#0d47a1]">
         <ArrowLeft size={16} /> Back to My Teams
       </Link>
-
-      {/* Action message */}
-      {actionMsg && (
-        <div className={cn('mb-4 rounded-lg border px-4 py-3 text-[14px]', actionMsg.includes('successfully') ? 'border-[#c8e6c9] bg-[#e8f5e9] text-[#2e7d32]' : 'border-[#fce4ec] bg-[#fff5f5] text-[#c62828]')}>
-          {actionMsg}
-        </div>
-      )}
 
       {/* Header card */}
       <div className="mb-6 overflow-hidden rounded-xl border border-[#d7e0e5] bg-gradient-to-r from-[#064f5d] via-[#0a6e7d] to-[#0d8a9a] shadow-[0_4px_16px_rgba(6,79,93,0.12)]">
@@ -305,7 +308,7 @@ export default function TeamDetailPage() {
             />
           )}
           {activeTab === 'events' && <TeamEventsSection teamId={detail?.id} />}
-          {activeTab === 'invitations' && <TeamInvitationsSection teamId={detail?.id} />}
+          {activeTab === 'invitations' && <TeamInvitationsSection key={inviteVersion} teamId={detail?.id} />}
         </div>
       </div>
 
@@ -314,7 +317,7 @@ export default function TeamDetailPage() {
         teamId={detail?.id}
         open={showInviteModal}
         onClose={() => setShowInviteModal(false)}
-        onSent={() => setActiveTab('invitations')}
+        onSent={handleInviteSent}
       />
     </div>
   )
@@ -470,22 +473,20 @@ function TeamEventsSection({ teamId }) {
 function InviteModal({ teamId, open, onClose, onSent }) {
   const [email, setEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
 
   if (!open || !teamId) return null
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!email.trim()) { setError('Email không được để trống'); return }
+    if (!email.trim()) { toast.error('Email không được để trống'); return }
     setSubmitting(true)
-    setError('')
     try {
       await sendStudentTeamInvitation(teamId, email.trim())
       setEmail('')
       onSent()
       onClose()
     } catch (err) {
-      setError(err?.response?.data?.message || 'Không thể gửi lời mời.')
+      toast.error(err?.response?.data?.message || 'Không thể gửi lời mời.')
     } finally {
       setSubmitting(false)
     }
@@ -505,7 +506,6 @@ function InviteModal({ teamId, open, onClose, onSent }) {
           <button onClick={onClose} className="cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-100"><X className="h-5 w-5" /></button>
         </div>
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-          {error && <p className="text-[13px] text-[#c62828]">{error}</p>}
           <div>
             <label className="mb-1.5 block text-[13px] font-medium text-[#1f2f3a]">Email address</label>
             <input
