@@ -21,41 +21,49 @@ const statusIcon = { Pending: <Clock className="h-4 w-4 text-amber-600" />, Appr
 const memberColumns = [
   { key: 'member', header: 'Member', headerIcon: User, render: (row) => (<div className="flex items-center gap-3"><Avatar src={row.avatarUrl} name={`${row.firstName} ${row.lastName}`} size="h-9 w-9" textSize="text-[13px]" /><div><p className="text-[14px] font-semibold text-[#1f2f3a]">{row.firstName} {row.lastName}</p><p className="text-[12px] text-gray-400">{row.email}</p></div></div>) },
   { key: 'role', header: 'Role', headerIcon: Shield, render: (row) => row.isLeader ? (<div className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-0.5"><Crown className="h-3.5 w-3.5 text-[#ffca28]" /><span className="text-[12px] font-semibold text-[#e65100]">Leader</span></div>) : <span className="text-[13px] text-gray-400">Member</span> },
-  { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
-    <Link to={`/staff/users/${row.userId}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2 py-1.5 text-[12px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]"><Eye className="h-3.5 w-3.5" />View</Link>
-  )},
+  {
+    key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
+      <Link to={`/staff/users/${row.userId}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2 py-1.5 text-[12px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]"><Eye className="h-3.5 w-3.5" />View</Link>
+    )
+  },
 ]
 
 const submissionColumns = [
-  { key: 'round', header: 'Round', headerIcon: Layers, render: (row) => (
-    <div>
-      <Link to={`/staff/rounds/${row.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.roundName}</Link>
-      <p className="text-[12px] text-gray-400">{row.trackTitle}{row.topicTitle ? ` / ${row.topicTitle}` : ''}</p>
-    </div>
-  )},
-  { key: 'lastSubmission', header: 'Last Submission', headerIcon: FileDown, render: (row) => {
-    const sub = row.lastSubmission
-    if (!sub) return <span className="text-[13px] text-gray-400">—</span>
-    return (
+  {
+    key: 'round', header: 'Round', headerIcon: Layers, render: (row) => (
       <div>
-        <Link to={`/staff/submissions/${sub.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{sub.description || sub.url || 'View'}</Link>
-        <p className="text-[12px] text-gray-400">{formatDateTime(sub.submittedAt)}</p>
+        <Link to={`/staff/rounds/${row.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.roundName}</Link>
+        <p className="text-[12px] text-gray-400">{row.trackTitle}{row.topicTitle ? ` / ${row.topicTitle}` : ''}</p>
       </div>
     )
-  }},
-  { key: 'submittedBy', header: 'Submitted By', headerIcon: User, render: (row) => {
-    const by = row.submittedBy
-    if (!by) return <span className="text-[13px] text-gray-400">—</span>
-    return (
-      <Link to={`/staff/users/${by.userId}`} className="flex items-center gap-3 hover:opacity-80">
-        <Avatar src={by.avatarUrl} name={`${by.firstName} ${by.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
+  },
+  {
+    key: 'lastSubmission', header: 'Last Submission', headerIcon: FileDown, render: (row) => {
+      const sub = row.lastSubmission
+      if (!sub) return <span className="text-[13px] text-gray-400">—</span>
+      return (
         <div>
-          <p className="text-[14px] font-semibold text-[#064f5d] hover:underline">{by.firstName} {by.lastName}</p>
-          <p className="text-[12px] text-[#1f2f3a]">{by.email}</p>
+          <Link to={`/staff/submissions/${sub.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{sub.description || sub.url || 'View'}</Link>
+          <p className="text-[12px] text-gray-400">{formatDateTime(sub.submittedAt)}</p>
         </div>
-      </Link>
-    )
-  }},
+      )
+    }
+  },
+  {
+    key: 'submittedBy', header: 'Submitted By', headerIcon: User, render: (row) => {
+      const by = row.submittedBy
+      if (!by) return <span className="text-[13px] text-gray-400">—</span>
+      return (
+        <Link to={`/staff/users/${by.userId}`} className="flex items-center gap-3 hover:opacity-80">
+          <Avatar src={by.avatarUrl} name={`${by.firstName} ${by.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
+          <div>
+            <p className="text-[14px] font-semibold text-[#064f5d] hover:underline">{by.firstName} {by.lastName}</p>
+            <p className="text-[12px] text-[#1f2f3a]">{by.email}</p>
+          </div>
+        </Link>
+      )
+    }
+  },
 ]
 
 export default function RegisterTeamDetail() {
@@ -162,130 +170,131 @@ export default function RegisterTeamDetail() {
                   </button>
                 </>
               )}
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-4 border-t border-[#e8ecf0] bg-[#fafbfc] px-6 py-3 sm:px-8">
+            <QuickStat icon={Trophy} label="Event" value={data.eventName || '—'} href={data.eventId ? `/staff/hackathons/${data.eventId}` : null} />
+            <QuickStat icon={FileText} label="Track" value={data.trackTitle || '—'} href={data.trackId ? `/staff/tracks/${data.trackId}` : null} />
+            <QuickStat icon={FileText} label="Topic" value={data.topicTitle || '—'} href={data.topicId && data.trackId ? `/staff/tracks/${data.trackId}/topics` : null} />
+            <QuickStat icon={Users} label="Team" value={data.teamName || '—'} href={data.teamId ? `/staff/teams/${data.teamId}` : null} />
           </div>
         </div>
-        <div className="flex flex-wrap gap-4 border-t border-[#e8ecf0] bg-[#fafbfc] px-6 py-3 sm:px-8">
-          <QuickStat icon={Trophy} label="Event" value={data.eventName || '—'} href={data.eventId ? `/staff/hackathons/${data.eventId}` : null} />
-          <QuickStat icon={FileText} label="Track" value={data.trackTitle || '—'} href={data.trackId ? `/staff/tracks/${data.trackId}` : null} />
-          <QuickStat icon={FileText} label="Topic" value={data.topicTitle || '—'} href={data.topicId && data.trackId ? `/staff/tracks/${data.trackId}/topics` : null} />
-          <QuickStat icon={Users} label="Team" value={data.teamName || '—'} href={data.teamId ? `/staff/teams/${data.teamId}` : null} />
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <div className="space-y-5 lg:col-span-2">
-          <CardPanel title="Registration Details">
-            <div className="divide-y divide-[#f5f5f5]">
-              <InfoRow label="Status" icon={CircleCheck}>
-                <Badge label={data.status} className={statusBadge[data.status] || 'bg-gray-50 text-gray-600'} />
-              </InfoRow>
-              {data.status === 'Rejected' && data.rejectionReason && (
-                <InfoRow label="Rejection Reason" icon={Shield}>
-                  <p className="text-[14px] text-rose-600">{data.rejectionReason}</p>
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <div className="space-y-5 lg:col-span-2">
+            <CardPanel title="Registration Details">
+              <div className="divide-y divide-[#f5f5f5]">
+                <InfoRow label="Status" icon={CircleCheck}>
+                  <Badge label={data.status} className={statusBadge[data.status] || 'bg-gray-50 text-gray-600'} />
                 </InfoRow>
-              )}
-              <InfoRow label="Description" icon={FileText}>
-                <p className="text-[14px] text-[#1f2f3a]">{data.description || '—'}</p>
-              </InfoRow>
-            </div>
-          </CardPanel>
-
-          <CardPanel title="Members">
-            {members.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12"><Users className="mb-3 h-10 w-10 text-gray-300" /><p className="text-[14px] text-gray-400">No members.</p></div>
-            ) : (
-              <BaseTable borderless columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="600px" />
-            )}
-          </CardPanel>
-
-          <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
-            <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4 flex items-center justify-between">
-              <h3 className="text-[15px] font-bold text-[#1f2f3a] flex items-center gap-2"><Send className="h-4 w-4" /> Submissions</h3>
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setRoundModalOpen(true)}
-                    className="group flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-[#d8e0e6] bg-white px-3 py-2 text-[13px] font-medium transition-all hover:border-[#064f5d] hover:shadow-sm focus:border-[#064f5d] outline-none"
-                  >
-                    <Layers className="h-3.5 w-3.5 text-gray-400 group-hover:text-[#064f5d]" />
-                    <span className={roundName ? 'text-[#1f2f3a]' : 'text-gray-400'}>{roundName || 'All Rounds'}</span>
-                    <ChevronDown className="h-3.5 w-3.5 text-gray-400 group-hover:text-[#064f5d]" />
-                  </button>
-                </div>
-                {roundHasActive && (
-                  <button onClick={() => { setRoundId(''); setRoundName(''); setSubPage(1) }} className="cursor-pointer text-[12px] text-gray-400 hover:text-[#c62828] underline">Clear</button>
+                {data.status === 'Rejected' && data.rejectionReason && (
+                  <InfoRow label="Rejection Reason" icon={Shield}>
+                    <p className="text-[14px] text-rose-600">{data.rejectionReason}</p>
+                  </InfoRow>
                 )}
+                <InfoRow label="Description" icon={FileText}>
+                  <p className="text-[14px] text-[#1f2f3a]">{data.description || '—'}</p>
+                </InfoRow>
               </div>
+            </CardPanel>
+
+            <CardPanel title="Members">
+              {members.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12"><Users className="mb-3 h-10 w-10 text-gray-300" /><p className="text-[14px] text-gray-400">No members.</p></div>
+              ) : (
+                <BaseTable borderless columns={memberColumns} data={members} page={1} pageSize={members.length} total={members.length} emptyText="No members." keyExtractor={(row) => row.userId} minWidth="600px" />
+              )}
+            </CardPanel>
+
+            <div className="rounded-xl border border-[#e8ecf0] bg-white overflow-hidden">
+              <div className="border-b border-[#f0f0f0] bg-[#fafbfc] px-5 py-4 flex items-center justify-between">
+                <h3 className="text-[15px] font-bold text-[#1f2f3a] flex items-center gap-2"><Send className="h-4 w-4" /> Submissions</h3>
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setRoundModalOpen(true)}
+                      className="group flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-[#d8e0e6] bg-white px-3 py-2 text-[13px] font-medium transition-all hover:border-[#064f5d] hover:shadow-sm focus:border-[#064f5d] outline-none"
+                    >
+                      <Layers className="h-3.5 w-3.5 text-gray-400 group-hover:text-[#064f5d]" />
+                      <span className={roundName ? 'text-[#1f2f3a]' : 'text-gray-400'}>{roundName || 'All Rounds'}</span>
+                      <ChevronDown className="h-3.5 w-3.5 text-gray-400 group-hover:text-[#064f5d]" />
+                    </button>
+                  </div>
+                  {roundHasActive && (
+                    <button onClick={() => { setRoundId(''); setRoundName(''); setSubPage(1) }} className="cursor-pointer text-[12px] text-gray-400 hover:text-[#c62828] underline">Clear</button>
+                  )}
+                </div>
+              </div>
+              <BaseTable borderless columns={submissionColumns} data={submissions} page={subPage} pageSize={SUB_PAGE_SIZE} total={subTotal} onPageChange={setSubPage} loading={subLoading} serverSide emptyText="No submissions found." keyExtractor={(row) => row.roundId} minWidth="700px" />
             </div>
-            <BaseTable borderless columns={submissionColumns} data={submissions} page={subPage} pageSize={SUB_PAGE_SIZE} total={subTotal} onPageChange={setSubPage} loading={subLoading} serverSide emptyText="No submissions found." keyExtractor={(row) => row.roundId} minWidth="700px" />
+          </div>
+
+          <div className="space-y-5">
+            <CardPanel title="Event & Track">
+              <div className="divide-y divide-[#f5f5f5]">
+                <InfoRow label="Event" icon={Trophy}>
+                  {data.eventId ? <Link to={`/staff/hackathons/${data.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.eventName}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.eventName || '—'}</span>}
+                </InfoRow>
+                <InfoRow label="Track" icon={FileText}>
+                  {data.trackId ? <Link to={`/staff/tracks/${data.trackId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.trackTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.trackTitle || '—'}</span>}
+                </InfoRow>
+                <InfoRow label="Topic" icon={FileText}>
+                  {data.topicId && data.trackId ? <Link to={`/staff/tracks/${data.trackId}/topics`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.topicTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.topicTitle || '—'}</span>}
+                </InfoRow>
+                <InfoRow label="Round" icon={Layers}>
+                  {data.roundId ? <Link to={`/staff/rounds/${data.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.roundName || '—'}</Link> : <span className="text-[14px] text-gray-400">—</span>}
+                </InfoRow>
+              </div>
+            </CardPanel>
+
+            <CardPanel title="Team">
+              <div className="divide-y divide-[#f5f5f5]">
+                <InfoRow label="Team" icon={Users}>
+                  {data.teamId ? <Link to={`/staff/teams/${data.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.teamName}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.teamName || '—'}</span>}
+                </InfoRow>
+                <InfoRow label="Locked" icon={CircleCheck}>
+                  {data.teamCanEdit ? <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" /> : <Badge label="Yes" className="bg-[#ffcdd2] text-[#e65100]" />}
+                </InfoRow>
+                <InfoRow label="Status" icon={CircleCheck}>
+                  {data.teamIsDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
+                </InfoRow>
+                <InfoRow label="Created" icon={Calendar}>
+                  <span className="text-[14px] text-[#1f2f3a]">{data.teamCreatedAt ? formatDateTime(data.teamCreatedAt) : '—'}</span>
+                </InfoRow>
+              </div>
+            </CardPanel>
+
+            <CardPanel title="Timestamps">
+              <div className="divide-y divide-[#f5f5f5]">
+                <InfoRow label="Registered" icon={Calendar}><span className="text-[14px] text-[#1f2f3a]">{formatDateTime(data.createdAt)}</span></InfoRow>
+                <InfoRow label="Last Updated" icon={Clock}><span className="text-[14px] text-[#1f2f3a]">{data.updatedAt ? formatDateTime(data.updatedAt) : '—'}</span></InfoRow>
+              </div>
+            </CardPanel>
           </div>
         </div>
 
-        <div className="space-y-5">
-          <CardPanel title="Event & Track">
-            <div className="divide-y divide-[#f5f5f5]">
-              <InfoRow label="Event" icon={Trophy}>
-                {data.eventId ? <Link to={`/staff/hackathons/${data.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.eventName}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.eventName || '—'}</span>}
-              </InfoRow>
-              <InfoRow label="Track" icon={FileText}>
-                {data.trackId ? <Link to={`/staff/tracks/${data.trackId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.trackTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.trackTitle || '—'}</span>}
-              </InfoRow>
-              <InfoRow label="Topic" icon={FileText}>
-                {data.topicId && data.trackId ? <Link to={`/staff/tracks/${data.trackId}/topics`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.topicTitle}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.topicTitle || '—'}</span>}
-              </InfoRow>
-              <InfoRow label="Round" icon={Layers}>
-                {data.roundId ? <Link to={`/staff/rounds/${data.roundId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.roundName || '—'}</Link> : <span className="text-[14px] text-gray-400">—</span>}
-              </InfoRow>
-            </div>
-          </CardPanel>
+        <PromptReason
+          open={!!rejectTarget}
+          onClose={() => { if (!rejecting) setRejectTarget(null) }}
+          onSubmit={handleRejectSubmit}
+          title="Reject Registration"
+          description={`Reject "${rejectTarget?.teamName}" from this event.`}
+          confirmText="Reject"
+          placeholder="Why is this team being rejected?"
+          submitting={rejecting}
+          confirmVariant="danger"
+        />
 
-          <CardPanel title="Team">
-            <div className="divide-y divide-[#f5f5f5]">
-              <InfoRow label="Team" icon={Users}>
-                {data.teamId ? <Link to={`/staff/teams/${data.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{data.teamName}</Link> : <span className="text-[14px] text-[#1f2f3a]">{data.teamName || '—'}</span>}
-              </InfoRow>
-              <InfoRow label="Locked" icon={CircleCheck}>
-                {data.teamCanEdit ? <Badge label="No" className="bg-[#e8f5e9] text-[#2e7d32]" /> : <Badge label="Yes" className="bg-[#ffcdd2] text-[#e65100]" />}
-              </InfoRow>
-              <InfoRow label="Status" icon={CircleCheck}>
-                {data.teamIsDisable ? <Badge label="Deleted" className="bg-[#fce4ec] text-[#c62828]" /> : <Badge label="Active" className="bg-[#e8f5e9] text-[#2e7d32]" />}
-              </InfoRow>
-              <InfoRow label="Created" icon={Calendar}>
-                <span className="text-[14px] text-[#1f2f3a]">{data.teamCreatedAt ? formatDateTime(data.teamCreatedAt) : '—'}</span>
-              </InfoRow>
-            </div>
-          </CardPanel>
-
-          <CardPanel title="Timestamps">
-            <div className="divide-y divide-[#f5f5f5]">
-              <InfoRow label="Registered" icon={Calendar}><span className="text-[14px] text-[#1f2f3a]">{formatDateTime(data.createdAt)}</span></InfoRow>
-              <InfoRow label="Last Updated" icon={Clock}><span className="text-[14px] text-[#1f2f3a]">{data.updatedAt ? formatDateTime(data.updatedAt) : '—'}</span></InfoRow>
-            </div>
-          </CardPanel>
-        </div>
+        <RoundSelectModal
+          open={roundModalOpen}
+          onClose={() => setRoundModalOpen(false)}
+          eventId={data?.eventId}
+          selectedRoundId={roundId}
+          onSelect={handleRoundSelect}
+          fetchRounds={getRounds}
+        />
       </div>
-
-      <PromptReason
-        open={!!rejectTarget}
-        onClose={() => { if (!rejecting) setRejectTarget(null) }}
-        onSubmit={handleRejectSubmit}
-        title="Reject Registration"
-        description={`Reject "${rejectTarget?.teamName}" from this event.`}
-        confirmText="Reject"
-        placeholder="Why is this team being rejected?"
-        submitting={rejecting}
-        confirmVariant="danger"
-      />
-
-      <RoundSelectModal
-        open={roundModalOpen}
-        onClose={() => setRoundModalOpen(false)}
-        eventId={data?.eventId}
-        selectedRoundId={roundId}
-        onSelect={handleRoundSelect}
-        fetchRounds={getRounds}
-      />
     </div>
   )
 }
