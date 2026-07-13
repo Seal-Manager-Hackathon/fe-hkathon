@@ -5,7 +5,7 @@ import FilterBar from '../../../../components/FilterBar'
 import SwapModal from '../../../../components/SwapModal'
 import NextRoundModal from '../../../../components/NextRoundModal'
 import RoundLeaderboardModal from '../../../../components/RoundLeaderboardModal'
-import { getRounds, getMaxRoundNo, deleteRound, restoreRound, swapRounds, getEventRegisterTeams, assignRegisterTeamToNextRound, revertRegisterTeamToPreviousRound, getRoundLeaderboard } from '../../../../api/admin'
+import { getRounds, getMaxRoundNo, deleteRound, restoreRound, swapRounds, endRound, getEventRegisterTeams, assignRegisterTeamToNextRound, revertRegisterTeamToPreviousRound, getRoundLeaderboard } from '../../../../api/admin'
 import { roundColumns } from './RoundColumns'
 import { toast, confirm } from '../../../../utils/toast'
 import { Search, Hash, Ban, ArrowUpDown } from 'lucide-react'
@@ -84,6 +84,13 @@ export default function RoundsTab({ eventId }) {
     catch (err) { toast.error(err?.response?.data?.message || 'Failed to restore round.') }
   }
 
+  async function handleEndRound(round) {
+    const ok = await confirm('End Round', `Are you sure you want to end round #${round.roundNo} "${round.name}" now? This will set the end time to the current moment.`)
+    if (!ok) return
+    try { await endRound(round.id); toast.success('Round ended successfully'); fetchRounds() }
+    catch (err) { toast.error(err?.response?.data?.message || 'Failed to end round.') }
+  }
+
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
@@ -99,7 +106,7 @@ export default function RoundsTab({ eventId }) {
         </div>
         <BaseTable
           borderless
-          columns={roundColumns(eventId, setSwapSource, handleDelete, handleRestore, setNextRoundTarget, setLeaderboardTarget)}
+          columns={roundColumns(eventId, setSwapSource, handleDelete, handleRestore, setNextRoundTarget, setLeaderboardTarget, handleEndRound)}
           data={rounds}
           page={pageIndex}
           pageSize={PAGE_SIZE}

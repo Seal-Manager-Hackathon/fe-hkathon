@@ -1,4 +1,4 @@
-import { Trash2, RotateCcw, ArrowLeftRight, Edit, Eye, Hash, Calendar, Play, Flag, Users, CircleCheck, MoreHorizontal, ClipboardList, TrendingUp, BarChart3 } from 'lucide-react'
+import { Trash2, RotateCcw, ArrowLeftRight, Edit, Eye, Hash, Calendar, Play, Flag, Users, CircleCheck, MoreHorizontal, ClipboardList, TrendingUp, BarChart3, SquareStop } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Badge from '../../../../components/Badge'
 import { formatDateTime } from '../../../../utils/format'
@@ -23,7 +23,10 @@ const nextRoundBtnClass =
 const leaderboardBtnClass =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#f3e5f5] px-3 py-1.5 text-[13px] font-semibold text-[#7b1fa2] transition-colors hover:bg-[#e1bee7]'
 
-export function roundColumns(eventId, onSwap, onDelete, onRestore, onNextRound, onLeaderboard) {
+const endRoundBtnClass =
+  'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#fff8e1] px-3 py-1.5 text-[13px] font-semibold text-[#f57f17] transition-colors hover:bg-[#ffecb3]'
+
+export function roundColumns(eventId, onSwap, onDelete, onRestore, onNextRound, onLeaderboard, onEndRound) {
   return [
     { key: 'roundNo', header: '#', headerIcon: Hash, render: (row) => <span className="text-[13px] text-[#1f2f3a]">Round {row.roundNo}</span> },
     { key: 'name', header: 'Round Name', headerIcon: Calendar, render: (row) => <Link to={`/admin/rounds/${row.id}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.name}</Link> },
@@ -83,6 +86,14 @@ export function roundColumns(eventId, onSwap, onDelete, onRestore, onNextRound, 
               </button>
             )}
           </div>
+          {/* Row 3: End Round */}
+          {!row.isDisable && (
+            <div className="flex items-center gap-2">
+              <button onClick={() => onEndRound?.(row)} className={endRoundBtnClass}>
+                <SquareStop className="h-3.5 w-3.5" /> End Round
+              </button>
+            </div>
+          )}
         </div>
       ),
     },

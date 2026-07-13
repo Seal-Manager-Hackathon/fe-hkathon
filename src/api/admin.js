@@ -390,6 +390,17 @@ export async function restoreRound(roundId) {
 }
 
 /**
+ * End a round immediately by setting EndTime to current time.
+ * POST /admin/rounds/{roundId}/end-round
+ * @param {string} roundId
+ * @returns {Promise<{ data: null, message: string, status: number, traceId: string }>}
+ */
+export async function endRound(roundId) {
+  const { data } = await api.post(`/admin/rounds/${roundId}/end-round`)
+  return data
+}
+
+/**
  * Swap two rounds within the same event.
  * @param {string} eventId
  * @param {string} roundId - source round
