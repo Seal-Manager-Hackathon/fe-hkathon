@@ -1,27 +1,25 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
-  ArrowLeft, Users, Calendar, Crown, Shield, Edit3, LogOut,
-  UserMinus, UserCog, Check, X, FileText, Send, Clock, CheckCircle,
-  XCircle, AlertTriangle, Eye,
+  ArrowLeft, Users, Calendar, Edit3, LogOut,
+  UserCog, Check, X, FileText, Send,
 } from 'lucide-react'
 import {
   getStudentTeamDetail,
-  getStudentTeamEvents,
   updateStudentTeam,
   disbandStudentTeam,
   leaveStudentTeam,
   kickStudentTeamMember,
   changeStudentTeamLeader,
-  sendStudentTeamInvitation,
-  getStudentTeamInvitations,
 } from '../../../api/student'
-import Pagination from '../../../components/Pagination'
-import Avatar from '../../../components/Avatar'
-import { formatDate } from '../../../utils/format'
 import { cn } from '../../../utils/cn'
 import { toast, confirm } from '../../../utils/toast'
 import { useAuth } from '../../../context/AuthContext'
+import TeamMembersSection from './TeamMembersSection'
+import TeamEventsSection from './TeamEventsSection'
+import InviteModal from './InviteModal'
+import ChangeLeaderModal from './ChangeLeaderModal'
+import TeamInvitationsSection from './TeamInvitationsSection'
 
 const TABS = [
   { key: 'members', label: 'Members', icon: Users },
@@ -299,264 +297,5 @@ export default function TeamDetailPage() {
 /*  Members                                                            */
 /* ================================================================== */
 
-function TeamMembersSection({ members, teamId, isCurrentUserLeader, onKick }) {
-  return (
-    <div className="space-y-3">
-      {members && members.length > 0 ? (
-        members.map((member) => (
-          <div key={member.userId} className="flex items-center justify-between rounded-xl border border-[#e8ecf0] bg-white px-4 py-3">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <Avatar src={member.avatarUrl} name={`${member.firstName} ${member.lastName}`} size="h-9 w-9" textSize="text-[13px]" />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{member.firstName} {member.lastName}</p>
-                  {member.isLeader && <Crown size={12} className="shrink-0 text-[#f59e0b]" />}
-                </div>
-                <p className="truncate text-[12px] text-[#8a9ba6]">{member.email}</p>
-              </div>
-            </div>
-            <div className="flex shrink-0 items-center gap-1.5">
-              {member.isLeader && <span className="inline-flex items-center gap-1 rounded-full bg-[#fff3e0] px-2.5 py-1 text-[11px] font-semibold text-[#e65100]"><Shield size={11} /> Leader</span>}
-              {isCurrentUserLeader && !member.isLeader && (
-                <button type="button" onClick={() => onKick(member.userId)} title="Kick member" className="cursor-pointer rounded-lg bg-[#fce4ec] p-1.5 text-[#c62828] transition-colors hover:bg-[#f8bbd0]"><UserMinus size={14} /></button>
-              )}
-            </div>
-          </div>
-        ))
-      ) : (
-        <p className="text-[13px] text-[#7a8e99]">No members found.</p>
-      )}
-    </div>
-  )
-}
 
-/* ================================================================== */
-/*  Events                                                             */
-/* ================================================================== */
 
-function TeamEventsSection({ teamId }) {
-  const [events, setEvents] = useState([])
-  const [totalCount, setTotalCount] = useState(0)
-  const [pageIndex, setPageIndex] = useState(1)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (!teamId) return
-    let cancelled = false
-    async function fetchEvents() {
-      setLoading(true)
-      try {
-        const result = await getStudentTeamEvents(teamId, { PageIndex: pageIndex, PageSize: 5 })
-        if (!cancelled) {
-          setEvents(result.items || [])
-          setTotalCount(result.totalCount || 0)
-        }
-      } catch {
-        if (!cancelled) setEvents([])
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    fetchEvents()
-    return () => { cancelled = true }
-  }, [teamId, pageIndex])
-
-  const totalPages = Math.ceil(totalCount / 5)
-
-  if (loading) return <div className="space-y-2">{[1, 2].map((i) => <div key={i} className="h-[72px] animate-pulse rounded-lg bg-gray-100" />)}</div>
-
-  if (events.length === 0) return (
-    <div className="flex flex-col items-center justify-center py-8">
-      <Calendar size={24} className="mb-2 text-[#8a9ba6]" />
-      <p className="text-[13px] text-[#7a8e99]">No events joined yet.</p>
-    </div>
-  )
-
-  return (
-    <div>
-      <div className="space-y-3">
-        {events.map((event) => (
-          <div key={event.registerTeamId} className="flex flex-col gap-3 rounded-xl border border-[#e8ecf0] bg-white px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{event.eventName}</p>
-              <p className="text-[12px] text-[#8a9ba6]">Registered {formatDate(event.createdAt)}</p>
-            </div>
-            <div className="flex shrink-0 gap-2">
-              <Link to={`/hackathons/${event.eventId}`} className="inline-flex items-center gap-1.5 rounded-lg bg-[#1565c0] px-4 py-2 text-[12px] font-semibold text-white transition-colors hover:bg-[#0d47a1]">
-                <Eye size={14} /> View Hackathon
-              </Link>
-              <Link to={`/teams/${teamId}/registrations`} className="inline-flex items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[12px] font-semibold text-[#1565c0] transition-colors hover:bg-[#f0f7ff]">
-                <FileText size={14} /> My Registrations
-              </Link>
-            </div>
-          </div>
-        ))}
-      </div>
-      {totalPages > 1 && <div className="mt-3"><Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} /></div>}
-    </div>
-  )
-}
-
-/* ================================================================== */
-/*  Invite Modal                                                       */
-/* ================================================================== */
-
-function InviteModal({ teamId, open, onClose, onSent }) {
-  const [email, setEmail] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-
-  if (!open || !teamId) return null
-
-  async function handleSubmit(e) {
-    e.preventDefault()
-    if (!email.trim()) { toast.error('Email không được để trống'); return }
-    setSubmitting(true)
-    try {
-      await sendStudentTeamInvitation(teamId, email.trim())
-      setEmail('')
-      onSent()
-      onClose()
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Không thể gửi lời mời.')
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/40" />
-      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
-          <div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e3f2fd]"><Send className="h-5 w-5 text-[#1565c0]" /></div><h3 className="text-[16px] font-bold text-[#1f2f3a]">Invite Member</h3></div>
-          <button onClick={onClose} className="cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-100"><X className="h-5 w-5" /></button>
-        </div>
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-          <div>
-            <label className="mb-1.5 block text-[13px] font-medium text-[#1f2f3a]">Email address</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="user@email.com" className="w-full rounded-lg border border-[#d7e0e5] px-3 py-2.5 text-[14px] text-[#1f2f3a] outline-none placeholder:text-[#8a9ba6] focus:border-[#1565c0]" autoFocus />
-          </div>
-          <div className="flex justify-end gap-3">
-            <button type="button" onClick={onClose} className="cursor-pointer rounded-lg border border-[#d7e0e5] bg-white px-5 py-2.5 text-[13px] font-semibold text-[#1f2f3a] hover:bg-gray-50">Cancel</button>
-            <button type="submit" disabled={submitting} className="cursor-pointer rounded-lg bg-[#1565c0] px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#0d47a1] disabled:opacity-50">{submitting ? 'Sending...' : 'Send Invitation'}</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  )
-}
-
-/* ================================================================== */
-/*  Change Leader Modal                                                */
-/* ================================================================== */
-
-function ChangeLeaderModal({ open, members, onClose, onSelect }) {
-  if (!open || !members) return null
-  const nonLeaders = members.filter((m) => !m.isLeader)
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/40" />
-      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
-          <div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e3f2fd]"><UserCog className="h-5 w-5 text-[#1565c0]" /></div><h3 className="text-[16px] font-bold text-[#1f2f3a]">Change Team Leader</h3></div>
-          <button onClick={onClose} className="cursor-pointer rounded-lg p-1.5 text-gray-400 hover:bg-gray-100"><X className="h-5 w-5" /></button>
-        </div>
-        <div className="px-6 py-5 space-y-3">
-          <p className="text-[13px] text-[#5a6a73]">Select a member to become the new team leader:</p>
-          {nonLeaders.length === 0 ? (
-            <p className="text-[13px] text-[#7a8e99]">No other members to transfer leadership to.</p>
-          ) : (
-            nonLeaders.map((m) => (
-              <button key={m.userId} type="button" onClick={() => onSelect(m.userId)} className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-[#d7e0e5] bg-white px-4 py-3 text-left transition-all hover:border-[#1565c0]/30 hover:bg-[#f0f7ff] hover:shadow-sm">
-                <Avatar src={m.avatarUrl} name={`${m.firstName} ${m.lastName}`} size="h-10 w-10" textSize="text-[14px]" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{m.firstName} {m.lastName}</p>
-                  <p className="truncate text-[12px] text-[#8a9ba6]">{m.email}</p>
-                </div>
-                <span className="shrink-0 text-[12px] font-medium text-[#1565c0]">Select &rarr;</span>
-              </button>
-            ))
-          )}
-          <div className="flex justify-end pt-2"><button onClick={onClose} className="cursor-pointer rounded-lg border border-[#d7e0e5] bg-white px-5 py-2.5 text-[13px] font-semibold text-[#1f2f3a] hover:bg-gray-50">Cancel</button></div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ================================================================== */
-/*  Invitations List                                                   */
-/* ================================================================== */
-
-const INVITE_STATUS = {
-  Pending: { label: 'Pending', cls: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200/60', icon: Clock },
-  Accepted: { label: 'Accepted', cls: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200/60', icon: CheckCircle },
-  Rejected: { label: 'Rejected', cls: 'bg-red-50 text-red-700 ring-1 ring-red-200/60', icon: XCircle },
-  Expired: { label: 'Expired', cls: 'bg-slate-100 text-slate-500 ring-1 ring-slate-200/60', icon: AlertTriangle },
-}
-
-function TeamInvitationsSection({ teamId }) {
-  const [items, setItems] = useState([])
-  const [totalCount, setTotalCount] = useState(0)
-  const [pageIndex, setPageIndex] = useState(1)
-  const [loading, setLoading] = useState(true)
-  const pageSize = 10
-
-  useEffect(() => {
-    if (!teamId) return
-    let cancelled = false
-    async function fetch() {
-      setLoading(true)
-      try {
-        const result = await getStudentTeamInvitations(teamId, { PageIndex: pageIndex, PageSize: pageSize })
-        if (!cancelled) {
-          setItems(result.items || [])
-          setTotalCount(result.totalCount || 0)
-        }
-      } catch {
-        if (!cancelled) setItems([])
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    fetch()
-    return () => { cancelled = true }
-  }, [teamId, pageIndex, pageSize])
-
-  const totalPages = Math.ceil(totalCount / pageSize)
-  if (loading) return <div className="space-y-2">{[1, 2, 3].map((i) => <div key={i} className="h-[56px] animate-pulse rounded-lg bg-gray-100" />)}</div>
-
-  if (items.length === 0) return (
-    <div className="flex flex-col items-center justify-center py-8">
-      <Send size={24} className="mb-2 text-[#8a9ba6]" /><p className="text-[13px] text-[#7a8e99]">No invitations sent yet.</p>
-    </div>
-  )
-
-  return (
-    <div>
-      <div className="space-y-2">
-        {items.map((inv) => {
-          const cfg = INVITE_STATUS[inv.status] || INVITE_STATUS.Pending
-          const Icon = cfg.icon
-          return (
-            <div key={inv.id} className="flex items-center justify-between rounded-xl border border-[#e8ecf0] bg-white px-4 py-3">
-              <div className="flex items-center gap-3 min-w-0 flex-1">
-                <Avatar src={inv.invitedUserAvatarUrl} name={`${inv.invitedUserFirstName} ${inv.invitedUserLastName}`} size="h-9 w-9" textSize="text-[13px]" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{inv.invitedUserFirstName} {inv.invitedUserLastName}</p>
-                  <p className="truncate text-[12px] text-[#8a9ba6]">{inv.invitedUserEmail}</p>
-                </div>
-              </div>
-              <div className="flex shrink-0 items-center gap-3">
-                <span className={cn('inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold', cfg.cls)}><Icon size={12} />{cfg.label}</span>
-                {inv.limitTime && <span className="text-[11px] text-[#8a9ba6]">Expires {formatDate(inv.limitTime)}</span>}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-      {totalPages > 1 && <div className="mt-3"><Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} /></div>}
-    </div>
-  )
-}

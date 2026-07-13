@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Calendar, Clock, Users, User, CircleCheck, Send, ExternalLink, FolderKanban, Layers, Star, Eye, Info, Lock, ChevronRight, Trophy } from 'lucide-react'
+import { useParams } from 'react-router-dom'
+import { ArrowLeft, FileText, Calendar, Clock, Users, User, CircleCheck, Send, ExternalLink, FolderKanban, Layers, Star, Eye, Info, Lock, Trophy } from 'lucide-react'
 import { getJudgeSubmissionDetail, getLecturerCriteriaTemplates, getLecturerCriteriaItems } from '../../../api/lecturer'
 import GradeSubmissionModal from '../../../components/GradeSubmissionModal'
 import { formatDateTime } from '../../../utils/format'
@@ -9,66 +9,15 @@ import CardPanel from '../../../components/CardPanel'
 import InfoRow from '../../../components/InfoRow'
 import Avatar from '../../../components/Avatar'
 import RichTextViewer from '../../../components/RichTextViewer'
+import LoadingSkeleton from './LoadingSkeleton'
+import ErrorState from './ErrorState'
+import TabBtn from './TabBtn'
+import SidebarCard from './SidebarCard'
 
 const statusBadge = {
   Submitted: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
   Graded: 'bg-blue-50 text-blue-700 border border-blue-200',
   Failed: 'bg-rose-50 text-rose-700 border border-rose-200',
-}
-
-function LoadingSkeleton() {
-  return (
-    <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
-      <div className="mb-6 h-4 w-32 animate-pulse rounded bg-gray-200" />
-      <div className="mb-6 h-28 animate-pulse rounded-xl bg-gray-100" />
-      <div className="h-80 animate-pulse rounded-xl bg-gray-100" />
-    </div>
-  )
-}
-
-function ErrorState({ message, nf }) {
-  return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center">
-      <div className="mb-4 rounded-full bg-rose-50 p-4"><Send className="h-8 w-8 text-rose-400" /></div>
-      <p className="text-[18px] font-semibold text-[#1f2f3a]">{nf ? 'Submission not found' : message}</p>
-      <Link to="/lecture/hackathons" className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-medium text-[#064f5d] hover:underline"><ArrowLeft className="h-4 w-4" /> Back to Hackathons</Link>
-    </div>
-  )
-}
-
-function TabBtn({ active, icon: Icon, label, color, onClick }) {
-  const c = {
-    blue:   { bg: 'from-blue-50 to-white', text: 'text-blue-700', bar: 'bg-blue-500', icon: 'text-blue-500' },
-    amber:  { bg: 'from-amber-50 to-white', text: 'text-amber-700', bar: 'bg-amber-500', icon: 'text-amber-500' },
-    green:  { bg: 'from-emerald-50 to-white', text: 'text-emerald-700', bar: 'bg-emerald-500', icon: 'text-emerald-500' },
-    purple: { bg: 'from-purple-50 to-white', text: 'text-purple-700', bar: 'bg-purple-500', icon: 'text-purple-500' },
-  }[color] || { bg: 'from-blue-50 to-white', text: 'text-blue-700', bar: 'bg-blue-500', icon: 'text-blue-500' }
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`relative flex-1 cursor-pointer px-4 py-3.5 text-[13px] font-semibold transition-all duration-200 ${active ? `bg-gradient-to-r ${c.bg} ${c.text}` : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
-    >
-      <span className="inline-flex items-center gap-2 whitespace-nowrap"><Icon className={`h-4 w-4 ${active ? c.icon : 'text-slate-400'}`} />{label}</span>
-      {active && <span className={`absolute bottom-0 left-3 right-3 h-0.5 rounded-full ${c.bar}`} />}
-    </button>
-  )
-}
-
-function SidebarCard({ icon: Icon, title, viewTo, children }) {
-  return (
-    <div className="rounded-xl border border-[#e8ecf0] bg-white shadow-sm self-start overflow-hidden">
-      <div className="flex items-center justify-between bg-gradient-to-r from-[#064f5d] to-[#0a6e7d] px-5 py-4">
-        <h4 className="text-[14px] font-bold text-white flex items-center gap-2"><Icon className="h-4 w-4 text-[#80deea]" />{title}</h4>
-        {viewTo && (
-          <Link to={viewTo} className="inline-flex cursor-pointer items-center gap-1 text-[12px] font-medium text-white/80 hover:text-white hover:underline">
-            View <ChevronRight className="h-3.5 w-3.5" />
-          </Link>
-        )}
-      </div>
-      <div className="divide-y divide-[#f5f5f5]">{children}</div>
-    </div>
-  )
 }
 
 export default function JudgeSubmissionDetailPage() {
