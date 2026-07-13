@@ -203,10 +203,10 @@ export default function RegisterTeamsTab({ eventId }) {
             ? <button onClick={() => handleRemoveAssign(row)} disabled={assigning} className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#fff3cd] px-2.5 py-1.5 text-[13px] font-semibold text-[#856404] hover:bg-[#ffe8a1] disabled:opacity-50 w-[185px]"><FolderKanban className="h-3.5 w-3.5 shrink-0" />{assigning && assignTarget?.id === row.id ? '...' : 'Remove Track & Topic'}</button>
             : <button onClick={() => openAssign(row)} disabled={assigning} className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#e0f2f1] px-2.5 py-1.5 text-[13px] font-semibold text-[#064f5d] hover:bg-[#b2dfdb] disabled:opacity-50 w-[185px]"><FolderKanban className="h-3.5 w-3.5 shrink-0" />Assign Track & Topic</button>
         )}
-        {row.isBanned
+        {row.status === 'Approved' && (row.isBanned
           ? <button onClick={() => handleUnban(row)} className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#e8f5e9] px-2.5 py-1.5 text-[13px] font-semibold text-[#2e7d32] hover:bg-[#c8e6c9] w-[92px]"><ShieldOff className="h-3.5 w-3.5" />Unban</button>
           : <button onClick={() => openBan(row)} className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-lg bg-[#fce4ec] px-2.5 py-1.5 text-[13px] font-semibold text-[#c62828] hover:bg-[#ffcdd2] w-[92px]"><ShieldOff className="h-3.5 w-3.5" />Ban</button>
-        }
+        )}
         <Link to={`/staff/register-teams/${row.id}`} className={viewBtnClass}><Eye className="h-3.5 w-3.5" />View</Link>
         <Link to={`/staff/register-teams/${row.id}/edit`} className={viewBtnClass}><Edit3 className="h-3.5 w-3.5" />Edit</Link>
       </div>

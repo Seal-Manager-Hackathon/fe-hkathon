@@ -182,7 +182,7 @@ export default function RegisterTeamDetail() {
                   </button>
                 </>
               )}
-              {data.isBanned ? (
+              {data.status === 'Approved' && (data.isBanned ? (
                 <button onClick={handleUnban} disabled={acting} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-emerald-500 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-emerald-600 disabled:opacity-50">
                   <ShieldOff className="h-3.5 w-3.5" />{acting ? '...' : 'Unban'}
                 </button>
@@ -190,7 +190,7 @@ export default function RegisterTeamDetail() {
                 <button onClick={openBan} disabled={banning || acting} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-rose-500 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-rose-600 disabled:opacity-50">
                   <ShieldOff className="h-3.5 w-3.5" />{banning ? '...' : 'Ban'}
                 </button>
-              )}
+              ))}
               <Link to={`/staff/register-teams/${registerTeamId}/edit`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-white/20 px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-white/30">Edit</Link>
             </div>
           </div>
