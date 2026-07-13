@@ -655,7 +655,6 @@ function NotificationsTab({ registerTeamId }) {
                   </span>
                 )}
               </div>
-              <p className="mt-1 text-[13px] text-[#5a6a73] line-clamp-2">{n.description}</p>
               <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-[#8a9ba6]">
                 <span className="inline-flex items-center gap-1">
                   <Mail size={12} />
@@ -807,7 +806,7 @@ function ViewNotificationModal({ notificationId, onClose }) {
                 <div>
                   <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Description</p>
                   <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4">
-                    <p className="text-[14px] text-[#5a6a73] leading-relaxed whitespace-pre-wrap">{detail.description}</p>
+                    <RichTextViewer content={detail.description} />
                   </div>
                 </div>
               )}
