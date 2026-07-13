@@ -240,6 +240,11 @@ export default function TeamDetailPage() {
                     <Send size={14} /> Invite
                   </button>
                 )}
+                {isCurrentUserLeader && (
+                  <button onClick={() => setShowChangeLeader(true)} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-white/20 px-4 py-2 text-[13px] font-semibold text-white backdrop-blur transition-colors hover:bg-white/30">
+                    <UserCog size={14} /> Change Leader
+                  </button>
+                )}
                 <button onClick={handleLeave} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-semibold text-white/90 backdrop-blur transition-colors hover:bg-white/20">
                   <LogOut size={14} /> Leave
                 </button>
@@ -275,7 +280,7 @@ export default function TeamDetailPage() {
 
         <div className="p-6">
           {activeTab === 'members' && (
-            <TeamMembersSection members={detail?.members} teamId={detail?.id} isCurrentUserLeader={isCurrentUserLeader} onKick={handleKick} onChangeLeader={() => setShowChangeLeader(true)} />
+            <TeamMembersSection members={detail?.members} teamId={detail?.id} isCurrentUserLeader={isCurrentUserLeader} onKick={handleKick} />
           )}
           {activeTab === 'events' && <TeamEventsSection teamId={detail?.id} />}
           {activeTab === 'invitations' && <TeamInvitationsSection key={inviteVersion} teamId={detail?.id} />}
@@ -292,14 +297,9 @@ export default function TeamDetailPage() {
 /*  Members                                                            */
 /* ================================================================== */
 
-function TeamMembersSection({ members, teamId, isCurrentUserLeader, onKick, onChangeLeader }) {
+function TeamMembersSection({ members, teamId, isCurrentUserLeader, onKick }) {
   return (
     <div className="space-y-3">
-      {isCurrentUserLeader && (
-        <button type="button" onClick={onChangeLeader} className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#e3f2fd] px-3 py-2 text-[12px] font-semibold text-[#1565c0] transition-colors hover:bg-[#bbdefb]">
-          <UserCog size={14} /> Change Leader
-        </button>
-      )}
       {members && members.length > 0 ? (
         members.map((member) => (
           <div key={member.userId} className="flex items-center justify-between rounded-xl border border-[#e8ecf0] bg-white px-4 py-3">
