@@ -17,9 +17,8 @@ const THEME_GRADIENTS = {
 };
 
 const STATUS_CONFIG = {
-  published: { label: 'Upcoming', className: 'bg-blue-50 text-blue-700' },
-  ongoing: { label: 'Ongoing', className: 'bg-emerald-50 text-emerald-700' },
-  closed: { label: 'Ended', className: 'bg-slate-100 text-slate-500' },
+  Published: { label: 'Published', className: 'bg-blue-50 text-blue-700' },
+  Closed: { label: 'Closed', className: 'bg-slate-100 text-slate-500' },
 };
 
 const MODE_ICON = {
@@ -30,7 +29,7 @@ const MODE_ICON = {
 
 export default function HackathonListItem({ hackathon }) {
   const gradient = THEME_GRADIENTS[hackathon.themeColor] || THEME_GRADIENTS.blue;
-  const statusCfg = STATUS_CONFIG[hackathon.status] || STATUS_CONFIG.closed;
+  const statusCfg = STATUS_CONFIG[hackathon.status] || STATUS_CONFIG.Closed;
   const modeCfg = MODE_ICON[hackathon.mode] || MODE_ICON.online;
   const ModeIcon = modeCfg.icon;
 
@@ -60,11 +59,6 @@ export default function HackathonListItem({ hackathon }) {
         <h3 className="text-[15px] font-semibold text-[#1f2f3a] leading-tight group-hover:text-[#064f5d] transition-colors">
           {hackathon.title}
         </h3>
-
-        {/* Description */}
-        <p className="text-[13px] text-[#5a6a73] leading-relaxed line-clamp-1">
-          {hackathon.description}
-        </p>
 
         {/* Metadata row */}
         <div className="flex flex-wrap items-center gap-2.5 mt-1">
