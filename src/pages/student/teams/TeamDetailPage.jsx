@@ -225,7 +225,9 @@ export default function TeamDetailPage() {
                   ) : (
                     <div className="flex items-center gap-3">
                       <h1 className="text-[22px] font-bold leading-tight text-white sm:text-[26px]">{detail?.name}</h1>
-                      <button onClick={() => { setNewName(detail?.name || ''); setEditingName(true) }} className="cursor-pointer rounded-lg p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white" title="Rename team"><Edit3 size={15} /></button>
+                      {isCurrentUserLeader && (
+                        <button onClick={() => { setNewName(detail?.name || ''); setEditingName(true) }} className="cursor-pointer rounded-lg p-1.5 text-white/60 transition-colors hover:bg-white/10 hover:text-white" title="Rename team"><Edit3 size={15} /></button>
+                      )}
                     </div>
                   )}
                 </div>
