@@ -4,7 +4,7 @@ import {
   ArrowLeft, Calendar, Clock, Users, Flag, UserPlus, FileText,
   Layers, Award, MapPin, BarChart3, Eye, X, ListChecks, ArrowRight,
 } from 'lucide-react'
-import { getStudentEventDetail, getStudentRounds, getStudentRoundDetail, getStudentRoundCriteriaTemplates, getStudentCriteriaTemplateDetail } from '../../../api/student'
+import { getStudentEventDetail, getStudentRounds, getStudentRoundDetail, getStudentRoundCriteriaTemplates, getStudentCriteriaTemplateDetail, getStudentAwards, getStudentAwardDetail } from '../../../api/student'
 import RichTextViewer from '../../../components/RichTextViewer'
 import Pagination from '../../../components/Pagination'
 import { formatDate, formatDateTime } from '../../../utils/format'
@@ -41,10 +41,19 @@ const STATUS_STYLES = {
 const TABS = [
   { key: 'description', label: 'Description', icon: FileText },
   { key: 'rounds', label: 'Rounds', icon: Layers },
-  { key: 'criteria', label: 'Criteria', icon: BarChart3 },
   { key: 'awards', label: 'Awards', icon: Award },
   { key: 'leaderboard', label: 'Leaderboard', icon: MapPin },
 ]
+
+const LEVEL_LABELS = {
+  1: { label: '1st Prize', color: 'bg-yellow-100 text-yellow-800 ring-1 ring-yellow-300/60', icon: 'from-[#f59e0b] to-[#f97316]' },
+  2: { label: '2nd Prize', color: 'bg-slate-100 text-slate-700 ring-1 ring-slate-300/60', icon: 'from-[#94a3b8] to-[#64748b]' },
+  3: { label: '3rd Prize', color: 'bg-orange-100 text-orange-800 ring-1 ring-orange-300/60', icon: 'from-[#d97706] to-[#b45309]' },
+}
+
+function getLevelLabel(level) {
+  return LEVEL_LABELS[level] || { label: `${level} Prize`, color: 'bg-white text-slate-500 ring-1 ring-slate-200/60', icon: 'from-[#cbd5e1] to-[#94a3b8]' }
+}
 
 const ITEM_META = {
   startTime: { label: 'Start', icon: Calendar },
@@ -643,6 +652,245 @@ function CriteriaTemplateDetailModal({ templateId, onClose }) {
   )
 }
 
+function TabAwards({ eventId }) {
+  const [awards, setAwards] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [pageIndex, setPageIndex] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [selectedAwardId, setSelectedAwardId] = useState(null)
+  const pageSize = 10
+
+  useEffect(() => {
+    let cancelled = false
+    async function fetchAwards() {
+      setLoading(true)
+      setError('')
+      try {
+        const params = { PageIndex: pageIndex, PageSize: pageSize }
+        const result = await getStudentAwards(eventId, params)
+        if (!cancelled) {
+          setAwards(result.awards || [])
+          setTotalCount(result.totalCount || 0)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          const msg = err?.response?.data?.message
+          if (msg?.toLowerCase().includes('page index must be greater than zero')) {
+            setError('Trang không hợp lệ')
+          } else if (msg?.toLowerCase().includes('page size must be between')) {
+            setError('Kích thước trang không hợp lệ')
+          } else if (err?.response?.status === 404) {
+            setError('Không tìm thấy sự kiện')
+          } else {
+            setError(msg || 'Không thể tải danh sách giải thưởng.')
+          }
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    fetchAwards()
+    return () => { cancelled = true }
+  }, [eventId, pageIndex, pageSize])
+
+  const totalPages = Math.ceil(totalCount / pageSize)
+
+  function formatPrize(amount) {
+    if (amount == null) return '—'
+    return new Intl.NumberFormat('vi-VN').format(amount) + ' ₫'
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-[80px] animate-pulse rounded-xl bg-gray-100" />
+        ))}
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>
+    )
+  }
+
+  if (awards.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-xl border border-[#d7e0e5] bg-white py-16">
+        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#f0f4f8] text-[#8a9ba6]">
+          <Award size={22} />
+        </div>
+        <p className="text-[15px] font-medium text-[#1f2f3a]">No awards yet</p>
+        <p className="mt-1 text-[13px] text-[#7a8e99]">Awards will appear here once created.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <div className="space-y-3">
+        {awards.map((award) => {
+          const levelStyle = getLevelLabel(award.levelAward)
+          return (
+            <div
+              key={award.id}
+              className="flex flex-col gap-3 rounded-xl border border-[#d7e0e5] bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+            >
+              <div className="flex items-center gap-4 min-w-0 flex-1">
+                <div className={cn('flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-white shadow-sm', levelStyle.icon)}>
+                  <Award size={22} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h4 className="truncate text-[15px] font-bold text-[#1f2f3a]">{award.name}</h4>
+                    <span className={cn('inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold', levelStyle.color)}>
+                      {levelStyle.label}
+                    </span>
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-[#5a6a73]">
+                    <span className="inline-flex items-center gap-1">
+                      {award.numberOfAward ?? '—'} winner{award.numberOfAward > 1 ? 's' : ''}
+                    </span>
+                    <span className="inline-flex items-center gap-1 font-semibold text-[#f59e0b]">
+                      {formatPrize(award.prize)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedAwardId(award.id)}
+                className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg bg-[#f59e0b] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#e69009]"
+              >
+                <Eye size={15} />
+                View
+              </button>
+            </div>
+          )
+        })}
+      </div>
+
+      {totalPages > 1 && (
+        <Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} />
+      )}
+
+      <AwardDetailModal
+        awardId={selectedAwardId}
+        onClose={() => setSelectedAwardId(null)}
+      />
+    </div>
+  )
+}
+
+function AwardDetailModal({ awardId, onClose }) {
+  const [detail, setDetail] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!awardId) return
+    let cancelled = false
+    async function fetchDetail() {
+      setLoading(true)
+      setError('')
+      try {
+        const data = await getStudentAwardDetail(awardId)
+        if (!cancelled) setDetail(data)
+      } catch (err) {
+        if (!cancelled) {
+          if (err?.response?.status === 404) {
+            setError('Không tìm thấy')
+          } else {
+            setError(err?.response?.data?.message || 'Không thể tải thông tin giải thưởng.')
+          }
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    fetchDetail()
+    return () => { cancelled = true }
+  }, [awardId])
+
+  if (!awardId) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/40" />
+      <div
+        className="relative z-10 w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-[#e8ecf0] px-6 py-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#fff3e0]">
+              <Award className="h-5 w-5 text-[#f59e0b]" />
+            </div>
+            <h3 className="text-[16px] font-bold text-[#1f2f3a] truncate">
+              {loading ? 'Loading...' : detail?.name || 'Award Detail'}
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-4 shrink-0 cursor-pointer rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-auto px-6 py-5">
+          {loading ? (
+            <div className="space-y-4">
+              <div className="h-5 w-1/2 animate-pulse rounded bg-gray-200" />
+              <div className="h-5 w-1/3 animate-pulse rounded bg-gray-200" />
+              <div className="h-20 animate-pulse rounded bg-gray-100" />
+            </div>
+          ) : error ? (
+            <p className="text-[14px] text-[#c62828]">{error}</p>
+          ) : detail ? (
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#f59e0b] to-[#f97316] text-white shadow-sm">
+                  <Award size={24} />
+                </div>
+                <div>
+                  <p className="text-[17px] font-bold text-[#1f2f3a]">{detail.name}</p>
+                  <p className="text-[13px] text-[#f59e0b] font-semibold">
+                    {detail.prize ? new Intl.NumberFormat('vi-VN').format(detail.prize) + ' ₫' : '—'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="divide-y divide-[#f0f4f8] rounded-xl border border-[#e8ecf0]">
+                <DetailRow icon={Award} label="Level" value={getLevelLabel(detail.levelAward).label} accent="#f59e0b" />
+                <DetailRow icon={Users} label="Winners" value={detail.numberOfAward ?? '—'} accent="#10b981" />
+              </div>
+
+              {detail.description && (
+                <div>
+                  <p className="mb-2 text-[13px] font-bold text-[#1f2f3a]">Description</p>
+                  <div className="rounded-xl border border-[#e8ecf0] bg-[#fafbfc] p-4">
+                    <RichTextViewer content={detail.description} />
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="shrink-0 border-t border-[#e8ecf0] px-6 py-3.5 flex justify-end">
+          <button onClick={onClose} className="cursor-pointer rounded-lg bg-[#064f5d] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#05404a]">Close</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function TabPlaceholder({ label, icon: Icon = FileText, accent = '#1565c0' }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-xl border border-[#d7e0e5] bg-white py-20">
@@ -926,11 +1174,8 @@ export default function EventDetailPage() {
                 {activeTab === 'rounds' && (
                   <TabRounds eventId={event.id} />
                 )}
-                {activeTab === 'criteria' && (
-                  <TabPlaceholder label="Criteria" icon={BarChart3} accent="#1f78d1" />
-                )}
                 {activeTab === 'awards' && (
-                  <TabPlaceholder label="Awards" icon={Award} accent="#f59e0b" />
+                  <TabAwards eventId={event.id} />
                 )}
                 {activeTab === 'leaderboard' && (
                   <TabPlaceholder label="Leaderboard" icon={MapPin} accent="#10b981" />

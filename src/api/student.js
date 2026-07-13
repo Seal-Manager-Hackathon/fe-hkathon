@@ -71,3 +71,24 @@ export async function getStudentCriteriaTemplateDetail(templateId) {
   const { data } = await api.get(`/student/criteria-templates/${templateId}`)
   return data.data
 }
+
+/**
+ * Get student awards for an event (paginated, only non-disabled).
+ * @param {string} eventId
+ * @param {Object} [params]
+ * @returns {Promise<{ awards: Array, totalCount: number }>}
+ */
+export async function getStudentAwards(eventId, params = {}) {
+  const { data } = await api.get(`/student/events/${eventId}/awards`, { params })
+  return data.data
+}
+
+/**
+ * Get award detail by ID.
+ * @param {string} awardId
+ * @returns {Promise<object>}
+ */
+export async function getStudentAwardDetail(awardId) {
+  const { data } = await api.get(`/student/awards/${awardId}`)
+  return data.data
+}
