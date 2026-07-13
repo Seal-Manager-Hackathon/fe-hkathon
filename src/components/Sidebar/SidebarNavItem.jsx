@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { cn } from '../../utils/cn'
-import { Home, Trophy, Medal, LayoutDashboard, Users, UserRound, Settings, Bell, FileText, BarChart3 } from 'lucide-react'
+import { Home, Trophy, Medal, LayoutDashboard, Users, UserRound, Settings, Bell, FileText, BarChart3, Send } from 'lucide-react'
 
-const iconMap = { Home, Trophy, Medal, LayoutDashboard, Users, UserRound, Settings, Bell, FileText, BarChart3 }
+const iconMap = { Home, Trophy, Medal, LayoutDashboard, Users, UserRound, Settings, Bell, FileText, BarChart3, Send }
 
 export default function SidebarNavItem({ item, activeKey, onClick }) {
   const navigate = useNavigate()

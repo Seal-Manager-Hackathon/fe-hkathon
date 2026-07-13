@@ -9,6 +9,7 @@ const URL_TO_ACTIVE_KEY = [
   { match: (p) => p === '/' || p === '', key: 'home' },
   { match: (p) => p.startsWith('/hackathons'), key: 'hackathons' },
   { match: (p) => p === '/teams' || p.startsWith('/teams/'), key: 'teams' },
+  { match: (p) => p.startsWith('/invitations'), key: 'invitations' },
   { match: (p) => p.startsWith('/leaderboard'), key: 'leaderboard' },
   // Admin routes
   { match: (p) => p.startsWith('/admin/hackathons') || p.startsWith('/admin/rounds') || p.startsWith('/admin/tracks') || p.startsWith('/admin/awards'), key: 'hackathons' },

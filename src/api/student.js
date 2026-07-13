@@ -256,3 +256,22 @@ export async function getStudentRegisterTeamDetail(registerTeamId) {
   const { data } = await api.get(`/student/register-teams/${registerTeamId}`)
   return data.data
 }
+
+/* ------------------------------------------------------------------ */
+/*  Student Received Invitations                                       */
+/* ------------------------------------------------------------------ */
+
+export async function getStudentReceivedInvitations(params = {}) {
+  const { data } = await api.get('/student/invitations', { params })
+  return data.data
+}
+
+export async function acceptStudentInvitation(invitationId) {
+  const { data } = await api.post(`/student/invitations/${invitationId}/accept`)
+  return data.data
+}
+
+export async function rejectStudentInvitation(invitationId) {
+  const { data } = await api.post(`/student/invitations/${invitationId}/reject`)
+  return data.data
+}
