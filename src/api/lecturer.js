@@ -493,6 +493,17 @@ export async function getJudgeSubmissionDetail(submissionId) {
 }
 
 /**
+ * Get the judge's own score for a submission (for regrade / review).
+ * GET /api/v1/judge/submissions/{submissionId}/my-score
+ * @param {string} submissionId
+ * @returns {Promise<{ submissionId: string, scoreId: string|null, assignTrackId: string|null, totalScore: number|null, isRetake: boolean, isMock: boolean, scoreItems: Array }>}
+ */
+export async function getJudgeMyScore(submissionId) {
+  const { data } = await api.get(`/judge/submissions/${submissionId}/my-score`)
+  return data.data
+}
+
+/**
  * Grade a submission as a judge.
  * POST /api/v1/judge/submissions/{submissionId}/scores
  * @param {string} submissionId

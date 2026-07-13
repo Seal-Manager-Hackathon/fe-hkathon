@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { X, Star, Loader2, FileText, CheckCircle } from 'lucide-react'
-import { getLecturerCriteriaTemplates, getLecturerCriteriaItems, gradeJudgeSubmission, regradeJudgeSubmission } from '../../api/lecturer'
+import { getLecturerCriteriaTemplates, getLecturerCriteriaItems, gradeJudgeSubmission, regradeJudgeSubmission, getJudgeMyScore } from '../../api/lecturer'
 import ScoreSlider from '../ScoreSlider'
 import RichTextEditor from '../RichTextEditor'
 import { toast } from '../../utils/toast'
@@ -38,6 +38,26 @@ export default function GradeSubmissionModal({ open, onClose, submissionId, roun
           // Initialize all scores to 0 by default so API always sends them
           const initialScores = {}
           Object.values(map).flat().forEach(item => { initialScores[item.id] = 0 })
+
+          // If regrade mode, fetch existing score to pre-populate the form
+          if (mode === 'regrade' && submissionId) {
+            try {
+              const myScore = await getJudgeMyScore(submissionId)
+              if (!cancelled && myScore?.scoreItems?.length > 0) {
+                const initialComments = {}
+                myScore.scoreItems.forEach(item => {
+                  if (initialScores[item.criteriaItemId] !== undefined) {
+                    initialScores[item.criteriaItemId] = item.score
+                    if (item.comment) initialComments[item.criteriaItemId] = item.comment
+                  }
+                })
+                setComments(initialComments)
+              }
+            } catch (e) {
+              // If no existing score found, just proceed with empty form
+            }
+          }
+
           setScores(initialScores)
         }
       } catch {} finally {
