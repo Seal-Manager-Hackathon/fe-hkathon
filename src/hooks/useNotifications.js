@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import {
   getStudentNotifications,
   getStudentNotificationUnreadCount,
@@ -20,11 +20,43 @@ import {
 import { MOCK_NOTIFICATIONS } from '../data/notifications'
 import { formatDate } from '../utils/format'
 
+const ROLE_API = {
+  Student: {
+    fetch: (p) => getStudentNotifications(p),
+    unreadCount: () => getStudentNotificationUnreadCount(),
+    markRead: (id) => markStudentNotificationRead(id),
+    markAllRead: () => markStudentAllNotificationsRead(),
+  },
+  Lecturer: {
+    fetch: (p) => getLecturerNotifications(p),
+    unreadCount: () => getLecturerNotificationUnreadCount(),
+    markRead: (id) => markLecturerNotificationRead(id),
+    markAllRead: () => markLecturerAllNotificationsRead(),
+  },
+  Staff: {
+    fetch: (p) => getStaffMyNotifications(p),
+    unreadCount: () => getStaffMyNotificationUnreadCount(),
+    markRead: (id) => markStaffMyNotificationRead(id),
+    markAllRead: () => markStaffAllMyNotificationsRead(),
+  },
+}
+
+function transform(apiNotif) {
+  return {
+    id: apiNotif.id,
+    title: apiNotif.title,
+    body: apiNotif.description,
+    date: formatDate(apiNotif.createdAt),
+    read: apiNotif.status === 'Read',
+    targetType: apiNotif.targetType || '',
+    createdAt: apiNotif.createdAt,
+    _raw: apiNotif,
+  }
+}
+
 /**
  * Hook to fetch and manage notifications based on user role.
- * - Student: calls the student notification API.
- * - Lecturer: calls the lecturer notification API.
- * - Staff: calls the staff my-notifications API.
+ * - Student / Lecturer / Staff: calls the corresponding API.
  * - Other roles / no user: falls back to MOCK_NOTIFICATIONS (legacy).
  */
 export default function useNotifications(user) {
@@ -33,118 +65,59 @@ export default function useNotifications(user) {
   const intervalRef = useRef(null)
 
   const role = user?.role
-
-  const isStudent = role === 'Student'
-  const isLecturer = role === 'Lecturer'
-  const isStaff = role === 'Staff'
-  const hasApi = isStudent || isLecturer || isStaff
-
-  /** Map notification shape from the API to the flat format expected by UI components. */
-  function transform(apiNotif) {
-    return {
-      id: apiNotif.id,
-      title: apiNotif.title,
-      body: apiNotif.description,
-      date: formatDate(apiNotif.createdAt),
-      read: apiNotif.status === 'Read',
-      targetType: apiNotif.targetType || '',
-      createdAt: apiNotif.createdAt,
-      _raw: apiNotif,
-    }
-  }
-
-  // ------- Resolve which API to call based on role -------
-  const api = {
-    fetch: isStudent
-      ? (p) => getStudentNotifications(p)
-      : isLecturer
-        ? (p) => getLecturerNotifications(p)
-        : isStaff
-          ? (p) => getStaffMyNotifications(p)
-          : null,
-    unreadCount: isStudent
-      ? () => getStudentNotificationUnreadCount()
-      : isLecturer
-        ? () => getLecturerNotificationUnreadCount()
-        : isStaff
-          ? () => getStaffMyNotificationUnreadCount()
-          : null,
-    markRead: isStudent
-      ? (id) => markStudentNotificationRead(id)
-      : isLecturer
-        ? (id) => markLecturerNotificationRead(id)
-        : isStaff
-          ? (id) => markStaffMyNotificationRead(id)
-          : null,
-    markAllRead: isStudent
-      ? () => markStudentAllNotificationsRead()
-      : isLecturer
-        ? () => markLecturerAllNotificationsRead()
-        : isStaff
-          ? () => markStaffAllMyNotificationsRead()
-          : null,
-  }
-
-  const fetchNotifications = useCallback(async () => {
-    if (!api.fetch) return
-    try {
-      const result = await api.fetch({ PageIndex: 1, PageSize: 10 })
-      if (result?.notifications) {
-        setNotifications(result.notifications.map(transform))
-      }
-    } catch {
-      // silently fail
-    }
-  }, [api.fetch])
-
-  const fetchUnreadCount = useCallback(async () => {
-    if (!api.unreadCount) return
-    try {
-      const result = await api.unreadCount()
-      setUnreadCount(result?.count ?? 0)
-    } catch {
-      // silently fail
-    }
-  }, [api.unreadCount])
+  const api = useMemo(() => ROLE_API[role] || null, [role])
+  const hasApi = !!api
 
   // Initial fetch + poll every 60 seconds
   useEffect(() => {
-    if (!hasApi) {
+    if (!api) {
       setNotifications(MOCK_NOTIFICATIONS)
       setUnreadCount(MOCK_NOTIFICATIONS.filter((n) => !n.read).length)
       return
     }
 
-    fetchNotifications()
-    fetchUnreadCount()
+    api.fetch({ PageIndex: 1, PageSize: 10 })
+      .then((result) => {
+        if (result?.notifications) setNotifications(result.notifications.map(transform))
+      })
+      .catch(() => {})
+
+    api.unreadCount()
+      .then((result) => setUnreadCount(result?.count ?? 0))
+      .catch(() => {})
 
     intervalRef.current = setInterval(() => {
-      fetchNotifications()
-      fetchUnreadCount()
+      api.fetch({ PageIndex: 1, PageSize: 10 })
+        .then((result) => {
+          if (result?.notifications) setNotifications(result.notifications.map(transform))
+        })
+        .catch(() => {})
+
+      api.unreadCount()
+        .then((result) => setUnreadCount(result?.count ?? 0))
+        .catch(() => {})
     }, 60_000)
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
-  }, [hasApi, fetchNotifications, fetchUnreadCount])
+  }, [api])
 
   const markAsRead = useCallback(async (id) => {
-    if (api.markRead) {
-      try { await api.markRead(id) } catch { /* ignore */ }
-    }
+    const m = api?.markRead
+    if (m) { try { await m(id) } catch { /* ignore */ } }
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     )
     setUnreadCount((prev) => Math.max(0, prev - 1))
-  }, [api.markRead])
+  }, [api])
 
   const markAllRead = useCallback(async () => {
-    if (api.markAllRead) {
-      try { await api.markAllRead() } catch { /* ignore */ }
-    }
+    const m = api?.markAllRead
+    if (m) { try { await m() } catch { /* ignore */ } }
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
     setUnreadCount(0)
-  }, [api.markAllRead])
+  }, [api])
 
-  return { notifications, unreadCount, markAsRead, markAllRead, refetch: fetchNotifications }
+  return { notifications, unreadCount, markAsRead, markAllRead, refetch: () => {} }
 }
