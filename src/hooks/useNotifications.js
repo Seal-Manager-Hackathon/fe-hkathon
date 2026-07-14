@@ -17,6 +17,12 @@ import {
   markStaffMyNotificationRead,
   markStaffAllMyNotificationsRead,
 } from '../api/staff'
+import {
+  getAdminMyNotifications,
+  getAdminMyNotificationUnreadCount,
+  markAdminMyNotificationRead,
+  markAdminAllMyNotificationsRead,
+} from '../api/admin'
 import { MOCK_NOTIFICATIONS } from '../data/notifications'
 import { formatDate } from '../utils/format'
 
@@ -38,6 +44,12 @@ const ROLE_API = {
     unreadCount: () => getStaffMyNotificationUnreadCount(),
     markRead: (id) => markStaffMyNotificationRead(id),
     markAllRead: () => markStaffAllMyNotificationsRead(),
+  },
+  Admin: {
+    fetch: (p) => getAdminMyNotifications(p),
+    unreadCount: () => getAdminMyNotificationUnreadCount(),
+    markRead: (id) => markAdminMyNotificationRead(id),
+    markAllRead: () => markAdminAllMyNotificationsRead(),
   },
 }
 

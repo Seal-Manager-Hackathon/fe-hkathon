@@ -1010,4 +1010,59 @@ export async function getChapterLeaderboard(year, params = {}) {
   return data.data
 }
 
+/* ------------------------------------------------------------------ */
+/*  Admin My Notifications (Personal + System)                        */
+/* ------------------------------------------------------------------ */
 
+/**
+ * Get paginated admin "my notifications" (Personal + System).
+ * GET /api/v1/admin/notifications/my
+ * @param {Object} [params] - { keyword?, targetType?, status?, fromDate?, toDate?, pageIndex?, pageSize? }
+ * @returns {Promise<{ notifications: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getAdminMyNotifications(params = {}) {
+  const { data } = await api.get('/admin/notifications/my', { params })
+  return data.data
+}
+
+/**
+ * Get detail of a single admin "my notification".
+ * GET /api/v1/admin/notifications/my/{notificationId}
+ * @param {string} notificationId
+ * @returns {Promise<object>}
+ */
+export async function getAdminMyNotificationDetail(notificationId) {
+  const { data } = await api.get(`/admin/notifications/my/${notificationId}`)
+  return data.data
+}
+
+/**
+ * Get unread notification count for the current admin.
+ * GET /api/v1/admin/notifications/my/unread-count
+ * @returns {Promise<{ count: number }>}
+ */
+export async function getAdminMyNotificationUnreadCount() {
+  const { data } = await api.get('/admin/notifications/my/unread-count')
+  return data.data
+}
+
+/**
+ * Mark a single admin notification as read.
+ * POST /api/v1/admin/notifications/my/{notificationId}/read
+ * @param {string} notificationId
+ * @returns {Promise<object>}
+ */
+export async function markAdminMyNotificationRead(notificationId) {
+  const { data } = await api.post(`/admin/notifications/my/${notificationId}/read`)
+  return data.data
+}
+
+/**
+ * Mark all admin notifications as read.
+ * POST /api/v1/admin/notifications/my/read-all
+ * @returns {Promise<object>}
+ */
+export async function markAdminAllMyNotificationsRead() {
+  const { data } = await api.post('/admin/notifications/my/read-all')
+  return data.data
+}
