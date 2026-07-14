@@ -680,6 +680,11 @@ export async function getEventRegisterTeams(eventId, params = {}) {
   return data.data
 }
 
+export async function getEventRegisterTeamsWithScores(eventId, params = {}) {
+  const { data } = await api.get(`/admin/events/${eventId}/register-teams/with-scores`, { params })
+  return data.data
+}
+
 export async function getRegisterTeamDetail(registerTeamId) {
   const { data } = await api.get(`/admin/register-teams/${registerTeamId}`)
   return data.data

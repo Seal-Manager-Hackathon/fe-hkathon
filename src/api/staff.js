@@ -945,6 +945,11 @@ export async function getEventRegisterTeams(eventId, params = {}) {
   return data.data
 }
 
+export async function getEventRegisterTeamsWithScores(eventId, params = {}) {
+  const { data } = await api.get(`/staff/events/${eventId}/register-teams/with-scores`, { params })
+  return data.data
+}
+
 /**
  * Get register team detail.
  * @param {string} registerTeamId

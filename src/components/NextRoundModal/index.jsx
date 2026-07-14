@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { X, AlertCircle, TrendingUp, ChevronUp, ChevronDown, Loader2, Users, Calendar, CircleCheck, Search, Ban, FolderKanban, FileText, Eye, Layers } from 'lucide-react'
+import { X, AlertCircle, TrendingUp, ChevronUp, ChevronDown, Loader2, Users, Calendar, CircleCheck, Search, Ban, FolderKanban, FileText, Eye, Layers, Award } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import BaseTable from '../BaseTable'
 import FilterBar from '../FilterBar'
@@ -227,6 +227,15 @@ export default function NextRoundModal({
     {
       key: 'status', header: 'Status', headerIcon: CircleCheck,
       render: (row) => <Badge label={row.status} className={statusBadge[row.status] || 'bg-gray-50 text-gray-600'} />,
+    },
+    {
+      key: 'totalScopeScore', header: 'Score', headerIcon: Award,
+      render: (row) => {
+        const score = row.totalScopeScore
+        return score != null
+          ? <span className="inline-flex items-center gap-1.5 rounded-full bg-[#fff8e1] px-3 py-0.5 text-[13px] font-bold text-[#f57f17]">{Number(score).toFixed(2)}</span>
+          : <span className="text-[13px] text-gray-400">—</span>
+      },
     },
     {
       key: 'createdAt', header: 'Created', headerIcon: Calendar,
