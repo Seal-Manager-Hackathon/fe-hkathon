@@ -88,31 +88,31 @@ export default function HackathonEdit() {
     setSaving(true)
     try {
       const payload = {}
-      if (event && form.name.trim() !== event.name) payload.name = form.name.trim()
-      if (event && form.description !== (event.description || '')) payload.description = form.description
-      if (event && form.season !== (event.season || '')) payload.season = form.season || null
+      if (event && form.name.trim() !== event.name) payload.Name = form.name.trim()
+      if (event && form.description !== (event.description || '')) payload.Description = form.description
+      if (event && form.season !== (event.season || '')) payload.Season = form.season || null
       if (form.startTime) {
         const st = toUTCISO(form.startTime)
-        if (event && st !== event.startTime) payload.startTime = st
+        if (event && st !== event.startTime) payload.StartTime = st
       }
       if (form.endTime) {
         const et = toUTCISO(form.endTime)
-        if (event && et !== event.endTime) payload.endTime = et
+        if (event && et !== event.endTime) payload.EndTime = et
       }
       if (form.registerLimitTime) {
         const rt = toUTCISO(form.registerLimitTime)
-        if (event && rt !== event.registerLimitTime) payload.registerLimitTime = rt
+        if (event && rt !== event.registerLimitTime) payload.RegisterLimitTime = rt
       } else if (event?.registerLimitTime) {
-        payload.registerLimitTime = null
+        payload.RegisterLimitTime = null
       }
       const lt = form.limitTeam !== '' ? Number(form.limitTeam) : null
-      if (event && lt !== (event.limitTeam ?? null)) payload.limitTeam = lt
+      if (event && lt !== (event.limitTeam ?? null)) payload.LimitTeam = lt
       const mm = form.minMember !== '' ? Number(form.minMember) : null
-      if (event && mm !== (event.minMember ?? null)) payload.minMember = mm
+      if (event && mm !== (event.minMember ?? null)) payload.MinMember = mm
       const mx = form.maxMember !== '' ? Number(form.maxMember) : null
-      if (event && mx !== (event.maxMember ?? null)) payload.maxMember = mx
-      if (event && form.status !== event.status) payload.status = form.status
-      if (event && form.isDisable !== !!event.isDisable) payload.isDisable = form.isDisable
+      if (event && mx !== (event.maxMember ?? null)) payload.MaxMember = mx
+      if (event && form.status !== event.status) payload.Status = form.status
+      if (event && form.isDisable !== !!event.isDisable) payload.IsDisable = form.isDisable
 
       if (Object.keys(payload).length > 0) {
         await updateEvent(id, payload)
