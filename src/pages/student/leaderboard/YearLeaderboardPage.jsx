@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Trophy } from 'lucide-react';
 import { cn } from '../../../utils/cn';
+import { getRankScoreColor } from '../../../utils/rankScoreColor';
 import { getStudentLeaderboard } from '../../../api/student';
 import SeasonSwitcher from '../../../components/SeasonSwitcher';
 import LeaderboardList from '../../../components/LeaderboardList';
@@ -34,7 +35,6 @@ const PODIUM_CONFIG = {
     border: 'border-[#d97706]',
     shadow: 'shadow-[0_4px_24px_rgba(217,119,6,0.18)]',
     rankBg: 'from-[#d97706] to-[#b45309]',
-    textColor: '#b45309',
     label: '1st',
     height: 'pb-8 pt-5',
     avatarSize: 'h-18 w-18 text-[24px]',
@@ -45,7 +45,6 @@ const PODIUM_CONFIG = {
     border: 'border-[#64748b]',
     shadow: 'shadow-[0_4px_20px_rgba(100,116,139,0.14)]',
     rankBg: 'from-[#64748b] to-[#475569]',
-    textColor: '#475569',
     label: '2nd',
     height: 'pb-5 pt-5',
     avatarSize: 'h-14 w-14 text-[18px]',
@@ -56,7 +55,6 @@ const PODIUM_CONFIG = {
     border: 'border-[#ea580c]',
     shadow: 'shadow-[0_4px_16px_rgba(234,88,12,0.12)]',
     rankBg: 'from-[#ea580c] to-[#c2410c]',
-    textColor: '#c2410c',
     label: '3rd',
     height: 'pb-5 pt-5',
     avatarSize: 'h-14 w-14 text-[18px]',
@@ -167,7 +165,7 @@ export default function YearLeaderboardPage() {
                   </div>
                   <div className={cn('flex items-center justify-center rounded-full text-white font-bold ring-4 ring-white/60 shadow-lg mt-8 mb-3', cfg.avatarSize, team.avatarColor)}>{team.initials}</div>
                   <h3 className={cn('font-bold text-[#1f2f3a] leading-tight text-center mb-1 px-2', isGold ? 'text-[16px]' : 'text-[14px]')}>{team.name}</h3>
-                  <p className={cn(cfg.scoreSize, 'font-extrabold leading-none mb-1')} style={{ color: cfg.textColor }}>{team.points.toFixed(1)}</p>
+                  <p className={cn(cfg.scoreSize, 'font-extrabold leading-none mb-1', getRankScoreColor(team.rank))}>{team.points.toFixed(1)}</p>
                   <span className="text-[10px] font-semibold text-[#9ca3af] uppercase tracking-widest mb-3">Points</span>
                 </div>
               );

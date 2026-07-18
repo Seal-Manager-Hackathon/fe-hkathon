@@ -3,6 +3,7 @@ import { X, Trophy, Hash, Users, Target } from 'lucide-react'
 import BaseTable from '../BaseTable'
 import RankIcon from './RankIcon'
 import { cn } from '../../utils/cn'
+import { getRankScoreColor } from '../../utils/rankScoreColor'
 
 const PAGE_SIZE = 5
 
@@ -103,7 +104,7 @@ export default function RoundLeaderboardModal({ open, onClose, roundId, roundNam
       render: (row) => (
         <span className={cn(
           'text-[16px] font-bold',
-          row.rank === 1 ? 'text-[#b45309]' : row.rank === 2 ? 'text-[#475569]' : row.rank === 3 ? 'text-[#c2410c]' : 'text-[#064f5d]'
+          getRankScoreColor(row.rank)
         )}>
           {row.totalScore != null ? row.totalScore.toFixed(2) : '—'}
         </span>

@@ -1,5 +1,6 @@
 import { Trophy, Award } from 'lucide-react'
 import { cn } from '../../utils/cn'
+import { getRankScoreColor } from '../../utils/rankScoreColor'
 
 const AVATAR_COLORS = [
   'bg-blue-600', 'bg-emerald-600', 'bg-violet-600', 'bg-rose-600',
@@ -48,7 +49,7 @@ export default function RankingCard({ team }) {
 
       {/* Score */}
       <div className="flex flex-col items-end shrink-0">
-        <span className="text-[16px] font-bold leading-none text-[#064f5d]">{team.points}</span>
+        <span className={cn('text-[16px] font-bold leading-none', getRankScoreColor(team.rank))}>{team.points}</span>
         <span className="text-[9px] font-semibold text-[#9ca3af] uppercase tracking-wider">PTS</span>
       </div>
     </div>

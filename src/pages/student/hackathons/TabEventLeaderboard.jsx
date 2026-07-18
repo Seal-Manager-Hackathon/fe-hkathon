@@ -3,6 +3,7 @@ import { MapPin, Trophy, Award } from 'lucide-react'
 import { getStudentEventLeaderboard } from '../../../api/student'
 import Pagination from '../../../components/Pagination'
 import { cn } from '../../../utils/cn'
+import { getRankScoreColor } from '../../../utils/rankScoreColor'
 import { getLbInitials, getLbColor } from './eventDetailHelpers'
 
 /* ------------------------------------------------------------------ */
@@ -114,15 +115,6 @@ export default function TabEventLeaderboard({ eventId }) {
       <div className="space-y-2.5">
         {items.map((team) => {
           const isExpanded = expandedTeam === team.registerTeamId
-          const rankScoreColor =
-            team.rank === 1
-              ? 'text-[#b45309]'
-              : team.rank === 2
-                ? 'text-[#475569]'
-                : team.rank === 3
-                  ? 'text-[#c2410c]'
-                  : 'text-[#064f5d]'
-
           return (
             <div
               key={team.registerTeamId}
@@ -168,7 +160,7 @@ export default function TabEventLeaderboard({ eventId }) {
                   <span
                     className={cn(
                       'text-[20px] font-bold leading-none',
-                      rankScoreColor,
+                      getRankScoreColor(team.rank),
                     )}
                   >
                     {team.eventScore?.toFixed(1)}

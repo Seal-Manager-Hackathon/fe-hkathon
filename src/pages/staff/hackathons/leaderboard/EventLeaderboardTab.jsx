@@ -4,6 +4,7 @@ import BaseTable from '../../../../components/BaseTable'
 import { getEventLeaderboard } from '../../../../api/staff'
 import { Trophy, Medal, Hash, Users, Target, Eye, MoreHorizontal, X, FileText } from 'lucide-react'
 import { cn } from '../../../../utils/cn'
+import { getRankScoreColor } from '../../../../utils/rankScoreColor'
 
 const PAGE_SIZE = 5
 
@@ -171,7 +172,7 @@ export default function EventLeaderboardTab({ eventId }) {
       headerClassName: 'text-right w-[130px]', className: 'text-right w-[130px]',
       render: (row) => (
         <span className={cn('text-[16px] font-bold',
-          row.rank === 1 ? 'text-[#b45309]' : row.rank === 2 ? 'text-[#475569]' : row.rank === 3 ? 'text-[#c2410c]' : 'text-[#064f5d]')}>
+          getRankScoreColor(row.rank))}>
           {row.eventScore != null ? row.eventScore.toFixed(2) : '—'}
         </span>
       ),

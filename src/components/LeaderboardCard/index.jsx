@@ -1,5 +1,6 @@
 import { Trophy, Award, Calendar, Layers } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { getRankScoreColor } from '../../utils/rankScoreColor';
 
 const HIGHLIGHT_STYLES = {
   gold: {
@@ -75,10 +76,7 @@ export default function LeaderboardCard({ team }) {
       <div className="flex flex-col items-end shrink-0">
         <span className={cn(
           'text-[22px] font-bold leading-none',
-          team.highlight === 'gold' ? 'text-[#b45309]' :
-          team.highlight === 'silver' ? 'text-[#475569]' :
-          team.highlight === 'bronze' ? 'text-[#c2410c]' :
-          'text-[#064f5d]'
+          getRankScoreColor(team.rank)
         )}>
           {team.points.toFixed(1)}
         </span>

@@ -4,6 +4,7 @@ import BaseTable from '../../../components/BaseTable'
 import { getChapterLeaderboard } from '../../../api/staff'
 import { Trophy, Medal, Hash, Users, Eye, MoreHorizontal, X, Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '../../../utils/cn'
+import { getRankScoreColor } from '../../../utils/rankScoreColor'
 
 const PAGE_SIZE = 10
 
@@ -109,7 +110,7 @@ export default function ChapterLeaderboardPage() {
     { key: 'eventCount', header: 'Events', headerIcon: Calendar, headerClassName: 'text-center w-[80px]', className: 'text-center w-[80px]',
       render: (row) => (<span className="inline-flex items-center justify-center rounded-full bg-[#f0f7ff] px-2.5 py-0.5 text-[13px] font-bold text-[#1565c0]">{row.eventCount || 0}</span>) },
     { key: 'chapterScore', header: 'Chapter Score', headerIcon: Trophy, headerClassName: 'text-right w-[140px]', className: 'text-right w-[140px]',
-      render: (row) => (<span className={cn('text-[16px] font-bold', row.rank <= 3 ? 'text-[#b45309]' : 'text-[#064f5d]')}>{row.chapterScore != null ? row.chapterScore.toFixed(2) : '—'}</span>) },
+      render: (row) => (<span className={cn('text-[16px] font-bold', getRankScoreColor(row.rank))}>{row.chapterScore != null ? row.chapterScore.toFixed(2) : '—'}</span>) },
     { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right w-[90px]', className: 'text-right w-[90px]',
       render: (row) => (<button onClick={() => setDetailTarget(row)} className={viewBtnClass}><Eye className="h-3.5 w-3.5" /> View</button>) },
   ]

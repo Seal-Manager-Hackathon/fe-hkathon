@@ -23,6 +23,7 @@ import Avatar from '../../../components/Avatar'
 import RichTextViewer from '../../../components/RichTextViewer'
 import { formatDate, formatDateTime } from '../../../utils/format'
 import { cn } from '../../../utils/cn'
+import { getRankScoreColor } from '../../../utils/rankScoreColor'
 import Pagination from '../../../components/Pagination'
 import { useAuth } from '../../../context/AuthContext'
 import { toast } from '../../../utils/toast'
@@ -872,7 +873,7 @@ function LeaderboardTab({ eventId }) {
                 <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white text-[13px] font-bold', getColor(team.teamId))}>{getInitials(team.teamName)}</div>
                 <div className="flex-1 min-w-0"><p className="truncate text-[14px] font-semibold text-[#1f2f3a]">{team.teamName}</p>{team.trackTitle && <p className="truncate text-[11px] text-[#8a9ba6]">{team.trackTitle}{team.topicTitle ? ` · ${team.topicTitle}` : ''}</p>}</div>
                 <div className="flex flex-col items-end shrink-0 ml-2">
-                  <span className={cn('text-[20px] font-bold leading-none', team.rank === 1 ? 'text-[#b45309]' : team.rank === 2 ? 'text-[#475569]' : team.rank === 3 ? 'text-[#c2410c]' : 'text-[#064f5d]')}>{team.eventScore?.toFixed(1)}</span>
+                  <span className={cn('text-[20px] font-bold leading-none', getRankScoreColor(team.rank))}>{team.eventScore?.toFixed(1)}</span>
                   <span className="text-[9px] font-semibold text-[#9ca3af] uppercase tracking-wider mt-0.5">PTS</span>
                 </div>
               </button>
