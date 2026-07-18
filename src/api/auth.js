@@ -59,3 +59,21 @@ export async function getCurrentUser() {
   const { data } = await api.get('/user/me')
   return data.data
 }
+
+/**
+ * Change password for the currently authenticated user.
+ * POST /api/v1/auth/change-password
+ *
+ * @param {{ currentPassword: string, newPassword: string }} payload
+ *   currentPassword — current password (required)
+ *   newPassword — new password (6-100 characters, required)
+ * @returns {Promise<null>}
+ *
+ * @throws {400} Current Password Invalid — current password is wrong
+ * @throws {401} Invalid Or Expired Token — token missing, invalid, or expired
+ * @throws {404} User Not Found — authenticated user does not exist
+ */
+export async function changePassword({ currentPassword, newPassword }) {
+  const { data } = await api.post('/auth/change-password', { currentPassword, newPassword })
+  return data.data
+}

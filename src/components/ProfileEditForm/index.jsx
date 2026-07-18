@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import { Lock, User, ShieldAlert, Mail, GraduationCap, Phone, MapPin, Calendar, Link as LinkIcon, IdCard, Camera, X } from 'lucide-react'
+import { changePassword } from '../../api/auth'
 import { cn } from '../../utils/cn'
 import { useAuth } from '../../context/AuthContext'
 import { updateProfile } from '../../api/user'
@@ -124,18 +125,22 @@ export default function ProfileEditForm({ user, initialTab = 'profile' }) {
     }
   }
 
-  function handleChangePassword() {
+  async function handleChangePassword() {
     const { currentPassword, newPassword, confirmPassword } = passwordForm
     if (!currentPassword) { toast.error('Current password is required.'); return }
     if (newPassword.length < 6) { toast.error('New password must be at least 6 characters.'); return }
     if (newPassword !== confirmPassword) { toast.error('New passwords do not match.'); return }
     setPasswordSaving(true)
-    // TODO: Integrate with actual change password API when available
-    setTimeout(() => {
-      setPasswordSaving(false)
+    try {
+      await changePassword({ currentPassword, newPassword })
       toast.success('Password changed successfully!')
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
-    }, 800)
+    } catch (err) {
+      const message = err?.response?.data?.message || err?.message || 'Failed to change password'
+      toast.error(message)
+    } finally {
+      setPasswordSaving(false)
+    }
   }
 
   return (
