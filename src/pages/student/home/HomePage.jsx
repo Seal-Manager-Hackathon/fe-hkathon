@@ -32,7 +32,7 @@ function normalizeForYou(event) {
 function normalizePopular(event) {
   return {
     ...normalizeForYou(event),
-    label: event.status === 'Published' ? 'FEATURED' : 'ACTIVE',
+    approvedRegisterTeamCount: event.approvedRegisterTeamCount ?? 0,
   }
 }
 

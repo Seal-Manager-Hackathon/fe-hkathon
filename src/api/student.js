@@ -27,11 +27,14 @@ export async function getStudentForYouEvents(params = {}) {
 
 /**
  * Get popular / featured events for the home page.
+ * GET /api/v1/student/events/popular
+ * @param {Object} params - { PageIndex?, PageSize? }
+ * @returns {Promise<{ events: Array, totalCount: number, pageIndex: number, pageSize: number }>}
  */
 export async function getStudentPopularEvents(params = {}) {
-  const merged = { ...params }
-  if (!merged.PageSize) merged.PageSize = 4
-  return getStudentEvents(merged)
+  const merged = { PageIndex: 1, PageSize: 4, ...params }
+  const { data } = await api.get('/student/events/popular', { params: merged })
+  return data.data
 }
 
 /**
