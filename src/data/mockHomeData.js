@@ -105,52 +105,6 @@ export const mockPopularHackathons = [
   },
 ]
 
-export const mockFooterColumns = [
-  {
-    title: 'SEAL Hackathon',
-    links: [
-      { label: 'About', href: '#' },
-      { label: 'Careers', href: '#' },
-      { label: 'Contact', href: '#' },
-      { label: 'Help', href: '#' },
-    ],
-  },
-  {
-    title: 'Hackathons',
-    links: [
-      { label: 'Browse hackathons', href: '#' },
-      { label: 'Explore projects', href: '#' },
-      { label: 'Host a hackathon', href: '#' },
-      { label: 'Hackathon guides', href: '#' },
-    ],
-  },
-  {
-    title: 'Portfolio',
-    links: [
-      { label: 'Your projects', href: '#' },
-      { label: 'Your hackathons', href: '#' },
-      { label: 'Settings', href: '#' },
-    ],
-  },
-  {
-    title: 'Connect',
-    links: [
-      { label: 'Twitter', href: '#' },
-      { label: 'Discord', href: '#' },
-      { label: 'Facebook', href: '#' },
-      { label: 'LinkedIn', href: '#' },
-    ],
-  },
-]
-
-export const mockFooterBottomLinks = [
-  { label: 'Community guidelines', href: '#' },
-  { label: 'Security', href: '#' },
-  { label: 'CA notices', href: '#' },
-  { label: 'Privacy policy', href: '#' },
-  { label: 'Terms of service', href: '#' },
-]
-
 export const mockGuestMenu = [
   { icon: 'LogIn', label: 'Sign in', to: '/login' },
   { icon: 'UserPlus', label: 'Sign up', to: '/register' },

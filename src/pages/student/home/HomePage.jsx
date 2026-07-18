@@ -3,16 +3,11 @@ import HeroSection from '../../../components/HeroSection'
 import HackathonForYouSection from '../../../components/HackathonForYouSection'
 import TeamRanking from '../../../components/TeamRanking'
 import PopularHackathons from '../../../components/PopularHackathons'
-import Footer from '../../../components/Footer'
 import {
   getStudentForYouEvents,
   getStudentPopularEvents,
   getStudentLeaderboard,
 } from '../../../api/student'
-import {
-  mockFooterColumns,
-  mockFooterBottomLinks,
-} from '../../../data/mockHomeData'
 
 const THEME_COLORS = ['blue', 'emerald', 'violet', 'rose', 'amber', 'teal', 'indigo', 'orange', 'green', 'cyan', 'slate', 'sky']
 
@@ -117,10 +112,6 @@ export default function HomePage() {
         <PopularHackathons hackathons={popularEvents} />
       </section>
 
-      <Footer
-        columns={mockFooterColumns}
-        bottomLinks={mockFooterBottomLinks}
-      />
     </>
   )
 }
