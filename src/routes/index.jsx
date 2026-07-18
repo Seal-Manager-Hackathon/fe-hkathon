@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
 import RouteFallback from '../components/RouteFallback'
 import ProtectedRoute from '../components/ProtectedRoute'
+import GuestOrStudentRoute from '../components/GuestOrStudentRoute'
 
 const StudentLayout = lazy(() => import('../layouts/StudentLayout'))
 
@@ -127,7 +128,7 @@ const UnauthorizedPage = lazy(() => import('../pages/UnauthorizedPage'))
 
 export const routes = [
   {
-    path: '/', element: <Suspense fallback={<RouteFallback full />}><StudentLayout /></Suspense>, children: [
+    path: '/', element: <GuestOrStudentRoute><Suspense fallback={<RouteFallback full />}><StudentLayout /></Suspense></GuestOrStudentRoute>, children: [
       { index: true, element: <Suspense fallback={<RouteFallback />}><HomePage /></Suspense> },
 
       {
