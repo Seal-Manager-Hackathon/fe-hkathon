@@ -120,7 +120,7 @@ export default function RegisterEventModal({ eventId, open, onClose, onSuccess }
             <div className="py-8 text-center">
               <p className="text-[14px] text-[#8a9ba6]">No teams found.</p>
               <Link
-                to="/student/teams"
+                to="/teams"
                 className="mt-2 inline-block text-[13px] text-[#1565c0] hover:underline"
                 onClick={onClose}
               >
