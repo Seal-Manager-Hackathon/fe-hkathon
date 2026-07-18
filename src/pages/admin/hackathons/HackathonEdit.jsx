@@ -190,9 +190,9 @@ export default function HackathonEdit() {
             <FormField label="Status" icon={CircleDot}>
               <SelectInput options={STATUS_OPTIONS} value={form.status} onChange={(v) => updateField('status', v)} />
             </FormField>
-            <FormField label="Visibility" icon={EyeOff}>
+            <FormField label="Deleted" icon={EyeOff}>
               <SelectInput
-                options={[{ value: 'false', label: 'Enabled (visible)' }, { value: 'true', label: 'Disabled (hidden)' }]}
+                options={[{ value: 'false', label: 'No' }, { value: 'true', label: 'Yes' }]}
                 value={form.isDisable ? 'true' : 'false'}
                 onChange={(v) => updateField('isDisable', v === 'true')}
               />
