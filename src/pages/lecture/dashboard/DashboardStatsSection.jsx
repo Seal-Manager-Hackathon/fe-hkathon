@@ -18,7 +18,7 @@ const iconMap = {
 export default function DashboardStatsSection({ section }) {
   const viewAllMap = {
     Hackathons: '/lecture/hackathons',
-    Users: '/lecture/users',
+    Users: null,
     Teams: '/lecture/teams',
   }
 

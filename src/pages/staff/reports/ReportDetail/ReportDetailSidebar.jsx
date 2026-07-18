@@ -1,6 +1,6 @@
 import { User, FileText, Calendar, Clock, Hash } from 'lucide-react'
 import Badge from '../../../../components/Badge'
-import NotificationTarget from '../../../../components/NotificationTarget'
+import StaffNotificationTarget from '../../../../components/StaffNotificationTarget'
 import { reportStatusBadge, reportTypeBadge } from '../../../../constants/commonOptions'
 import { formatDateTime } from '../../../../utils/format'
 
@@ -26,7 +26,7 @@ export default function ReportDetailSidebar({ report, userDetails, statusIcon: S
           </div>
           <div className="divide-y divide-[#f5f5f5]">
             <InfoItem icon={User} label="Reported By">
-              <NotificationTarget targetType="Personal" userId={report.userId} details={userDetails} />
+              <StaffNotificationTarget targetType="Personal" userId={report.userId} details={userDetails} />
             </InfoItem>
             <InfoItem icon={FileText} label="Report Type">
               <Badge

@@ -41,7 +41,7 @@ function FilterPickButton({ icon: Icon, label, name, allLabel, onClick }) {
 
 /**
  * Round Team Flow modal — shows register teams in the current round
- * and lets admins advance or revert them to adjacent rounds.
+ * and lets staff advance or revert them to adjacent rounds.
  *
  * @param {{
  *   open: boolean,
@@ -55,7 +55,7 @@ function FilterPickButton({ icon: Icon, label, name, allLabel, onClick }) {
  *   onRevert: (registerTeamId: string) => Promise<{ data: { roundName: string } }>,
  * }} props
  */
-export default function NextRoundModal({
+export default function StaffNextRoundModal({
   open, onClose, eventId, roundId, roundName, roundNo,
   fetchTeams, onAdvance, onRevert, fetchTopics, fetchTracks,
 }) {
@@ -180,7 +180,7 @@ export default function NextRoundModal({
     {
       key: 'teamName', header: 'Team', headerIcon: Users,
       render: (row) => (
-        <Link to={`/admin/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">
+        <Link to={`/staff/teams/${row.teamId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">
           {row.teamName || '—'}
         </Link>
       ),
@@ -191,7 +191,7 @@ export default function NextRoundModal({
         const tid = row.trackId
         const tname = row.trackName || row.trackTitle || '—'
         return tid
-          ? <Link to={`/admin/tracks/${tid}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{tname}</Link>
+          ? <Link to={`/staff/tracks/${tid}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{tname}</Link>
           : tname !== '—'
             ? <span className="text-[13px] text-[#1f2f3a]">{tname}</span>
             : <span className="text-[13px] text-gray-400">—</span>
@@ -204,7 +204,7 @@ export default function NextRoundModal({
         const tt = row.topicTitle || row.topicName || '—'
         const tid = row.trackId
         return hasTopic && tid
-          ? <Link to={`/admin/tracks/${tid}/topics`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{tt}</Link>
+          ? <Link to={`/staff/tracks/${tid}/topics`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{tt}</Link>
           : hasTopic
             ? <span className="text-[13px] text-[#1f2f3a]">{tt}</span>
             : <span className="text-[13px] text-gray-400">—</span>
@@ -212,7 +212,7 @@ export default function NextRoundModal({
     },
     {
       key: 'roundName', header: 'Round', headerIcon: Layers,
-      render: (row) => row.roundId ? <Link to={`/admin/hackathons/${row.eventId}/rounds/${row.roundId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.roundName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span>,
+      render: (row) => row.roundId ? <Link to={`/staff/hackathons/${row.eventId}/rounds/${row.roundId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.roundName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span>,
     },
     {
       key: 'isBanned', header: 'Banned', headerIcon: Ban,
@@ -248,7 +248,7 @@ export default function NextRoundModal({
         const busy = advancing || reverting
         return (
           <div className="flex items-center justify-end gap-2">
-            <Link to={`/admin/register-teams/${row.id}`}
+            <Link to={`/staff/register-teams/${row.id}`}
               className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f5f5f5] px-2.5 py-1.5 text-[13px] font-semibold text-[#424242] transition-colors hover:bg-[#e8e8e8]"
             >
               <Eye className="h-3.5 w-3.5" />View

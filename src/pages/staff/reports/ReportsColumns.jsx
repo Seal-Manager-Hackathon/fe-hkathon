@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Eye, FileText, User, Flag, Calendar, CheckCircle, XCircle } from 'lucide-react'
 import Badge from '../../../components/Badge'
-import NotificationTarget from '../../../components/NotificationTarget'
+import StaffNotificationTarget from '../../../components/StaffNotificationTarget'
 import { reportStatusBadge, reportTypeBadge } from '../../../constants/commonOptions'
 import { formatDateTime } from '../../../utils/format'
 
@@ -38,7 +38,7 @@ export function reportsColumns(userDetails = {}, callbacks = {}) {
       header: 'Reported By',
       headerIcon: User,
       render: (row) => (
-        <NotificationTarget
+        <StaffNotificationTarget
           targetType="Personal"
           userId={row.userId}
           details={userDetails}

@@ -6,7 +6,7 @@ import Badge from '../../../components/Badge'
 import RichTextViewer from '../../../components/RichTextViewer'
 import CardPanel from '../../../components/CardPanel'
 import InfoRow from '../../../components/InfoRow'
-import EventInfoCard from '../../../components/EventInfoCard'
+import LecturerEventInfoCard from '../../../components/LecturerEventInfoCard'
 import { formatDateTime } from '../../../utils/format'
 
 export default function LecturerAwardDetail() {
@@ -91,7 +91,7 @@ export default function LecturerAwardDetail() {
           </CardPanel>
         </div>
 
-        <EventInfoCard event={event} detailLinkPrefix="/lecture" />
+        <LecturerEventInfoCard event={event} />
       </div>
     </div>
   )

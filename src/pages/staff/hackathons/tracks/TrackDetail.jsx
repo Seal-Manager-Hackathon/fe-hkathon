@@ -6,7 +6,7 @@ import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
 import CardPanel from '../../../../components/CardPanel'
 import InfoRow from '../../../../components/InfoRow'
-import EventInfoCard from '../../../../components/EventInfoCard'
+import StaffEventInfoCard from '../../../../components/StaffEventInfoCard'
 import { formatDateTime } from '../../../../utils/format'
 
 const statusBadge = {
@@ -77,7 +77,7 @@ export default function TrackDetail() {
             </div>
           </CardPanel>
         </div>
-        <EventInfoCard event={event} />
+        <StaffEventInfoCard event={event} />
       </div>
     </div>
   )

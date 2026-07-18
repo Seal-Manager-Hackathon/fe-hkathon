@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import BaseTable from '../../../../components/BaseTable'
 import FilterBar from '../../../../components/FilterBar'
-import NextRoundModal from '../../../../components/NextRoundModal'
+import StaffNextRoundModal from '../../../../components/StaffNextRoundModal'
 import RoundLeaderboardModal from '../../../../components/RoundLeaderboardModal'
 import { getRounds, getTracks, getTopics, getEventRegisterTeams, getEventRegisterTeamsWithScores, assignRegisterTeamToNextRound, revertRegisterTeamToPreviousRound, getRoundLeaderboard } from '../../../../api/staff'
 import { roundColumns } from './RoundColumns'
@@ -83,14 +83,13 @@ export default function RoundsTab({ eventId }) {
         fetchLeaderboard={getRoundLeaderboard}
       />
 
-      <NextRoundModal
+      <StaffNextRoundModal
         open={!!nextRoundTarget}
         onClose={() => setNextRoundTarget(null)}
         eventId={eventId}
         roundId={nextRoundTarget?.id}
         roundName={nextRoundTarget?.name}
         roundNo={nextRoundTarget?.roundNo}
-        routePrefix="/staff"
         fetchTeams={getEventRegisterTeamsWithScores}
         fetchTracks={getTracks}
         fetchTopics={getTopics}

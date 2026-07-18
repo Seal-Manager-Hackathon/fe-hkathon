@@ -13,15 +13,15 @@ export const registerStatusBadge = {
  * Returns table column definitions for team registration history.
  * Receives route prefix via a function for reusability.
  */
-export function teamRegisterColumns(routePrefix = '/staff') {
+export function teamRegisterColumns() {
   return [
-    { key: 'eventName', header: 'Hackathon', headerIcon: Trophy, render: (row) => row.eventId ? <Link to={`${routePrefix}/hackathons/${row.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.eventName || '—'}</Link> : <span className="text-[14px] text-gray-400">—</span> },
-    { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => row.trackId ? <Link to={`${routePrefix}/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
-    { key: 'topicName', header: 'Topic', headerIcon: FileText, render: (row) => row.topicId ? <Link to={`${routePrefix}/tracks/${row.trackId}/topics/${row.topicId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.topicName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
+    { key: 'eventName', header: 'Hackathon', headerIcon: Trophy, render: (row) => row.eventId ? <Link to={`/staff/hackathons/${row.eventId}`} className="text-[14px] font-semibold text-[#064f5d] hover:underline">{row.eventName || '—'}</Link> : <span className="text-[14px] text-gray-400">—</span> },
+    { key: 'trackName', header: 'Track', headerIcon: FileText, render: (row) => row.trackId ? <Link to={`/staff/tracks/${row.trackId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.trackName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
+    { key: 'topicName', header: 'Topic', headerIcon: FileText, render: (row) => row.topicId ? <Link to={`/staff/tracks/${row.trackId}/topics/${row.topicId}`} className="text-[13px] font-medium text-[#064f5d] hover:underline">{row.topicName || '—'}</Link> : <span className="text-[13px] text-gray-400">—</span> },
     { key: 'status', header: 'Status', headerIcon: BadgeCheck, render: (row) => <Badge label={row.status} className={registerStatusBadge[row.status] || 'bg-gray-50 text-gray-600'} /> },
     { key: 'createdAt', header: 'Created', headerIcon: Clock4, render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p> },
     { key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
-      <Link to={`${routePrefix}/register-teams/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2 py-1.5 text-[12px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]"><Eye className="h-3.5 w-3.5" />View</Link>
+      <Link to={`/staff/register-teams/${row.id}`} className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2 py-1.5 text-[12px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]"><Eye className="h-3.5 w-3.5" />View</Link>
     ) },
   ]
 }

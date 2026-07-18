@@ -5,7 +5,7 @@ import { getNotificationDetail, getUserDetail, getTeamDetail } from '../../../ap
 import Badge from '../../../components/Badge'
 import CardPanel from '../../../components/CardPanel'
 import InfoRow from '../../../components/InfoRow'
-import NotificationTarget from '../../../components/NotificationTarget'
+import StaffNotificationTarget from '../../../components/StaffNotificationTarget'
 import { formatDateTime } from '../../../utils/format'
 
 const targetTypeBadge = {
@@ -128,7 +128,7 @@ export default function NotificationDetail() {
       <CardPanel title="Details">
         <div className="divide-y divide-[#f5f5f5]">
           <InfoRow label="Target" icon={Target}>
-            <NotificationTarget
+            <StaffNotificationTarget
               targetType={notification.targetType}
               userId={notification.userId}
               teamId={notification.teamId}

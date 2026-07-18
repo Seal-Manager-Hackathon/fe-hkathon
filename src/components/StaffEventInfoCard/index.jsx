@@ -21,7 +21,11 @@ function R({ icon, label, value, cls = '', mono = false }) {
   )
 }
 
-export default function EventInfoCard({ event }) {
+/**
+ * Event info sidebar card — Staff variant.
+ * Links always point to /staff/... routes.
+ */
+export default function StaffEventInfoCard({ event }) {
   if (!event) {
     return (
       <div className="rounded-xl border border-[#e8ecf0] bg-white shadow-sm self-start overflow-hidden">
@@ -46,7 +50,7 @@ export default function EventInfoCard({ event }) {
       </div>
       <div className="divide-y divide-[#f5f5f5]">
         <div className="px-5 py-3.5">
-          <Link to={`/admin/hackathons/${event.id}`} className="text-[14px] font-bold text-[#064f5d] leading-snug hover:underline">
+          <Link to={`/staff/hackathons/${event.id}`} className="text-[14px] font-bold text-[#064f5d] leading-snug hover:underline">
             {event.name}
           </Link>
           <div className="mt-1.5 flex items-center gap-2">

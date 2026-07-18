@@ -183,7 +183,6 @@ export default function RoundsTab({ eventId }) {
         roundId={nextRoundTarget?.id}
         roundName={nextRoundTarget?.name}
         roundNo={nextRoundTarget?.roundNo}
-        routePrefix="/admin"
         fetchTeams={getEventRegisterTeamsWithScores}
         fetchTracks={getTracks}
         onAdvance={assignRegisterTeamToNextRound}

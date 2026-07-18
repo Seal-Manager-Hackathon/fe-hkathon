@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { FileText, CircleCheck, Shield } from 'lucide-react'
 import FormField from '../../../../components/FormField'
 import EntityFormPage from '../../../../components/EntityFormPage'
-import EventInfoCard from '../../../../components/EventInfoCard'
+import StaffEventInfoCard from '../../../../components/StaffEventInfoCard'
 import { getRegisterTeamDetail, getEventDetail, updateRegisterTeam } from '../../../../api/staff'
 import { formatDateTime } from '../../../../utils/format'
 import { toast } from '../../../../utils/toast'
@@ -146,7 +146,7 @@ export default function RegisterTeamEdit() {
         {/* Right sidebar */}
         <div className="space-y-5">
           <RegistrationSummaryCard data={data} />
-          {event && <EventInfoCard event={event} />}
+          {event && <StaffEventInfoCard event={event} />}
         </div>
       </div>
     </EntityFormPage>

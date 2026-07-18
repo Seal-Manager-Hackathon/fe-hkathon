@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import Badge from '../../../components/Badge'
-import NotificationTarget from '../../../components/NotificationTarget'
+import StaffNotificationTarget from '../../../components/StaffNotificationTarget'
 import { formatDateTime } from '../../../utils/format'
 import { Eye, Bell, Target, Calendar, CircleCheck, MoreHorizontal } from 'lucide-react'
 
@@ -30,7 +30,7 @@ export function notificationsColumns(targetDetails = {}) {
       key: 'targetType',
       header: <span className="inline-flex items-center gap-1.5"><Target className="h-3.5 w-3.5" />Target</span>,
       render: (row) => (
-        <NotificationTarget
+        <StaffNotificationTarget
           targetType={row.targetType}
           userId={row.userId}
           teamId={row.teamId}
