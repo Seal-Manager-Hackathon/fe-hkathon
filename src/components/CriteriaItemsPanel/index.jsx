@@ -34,30 +34,10 @@ function ItemModal({ title, onClose, children }) {
 }
 
 /**
- * Criteria items panel — manages criteria items (create, edit, view, delete, restore).
- *
- * @param {{
- *   templateId: string,
- *   onCountsChange?: (counts: object) => void,
- *   fetchItemsFn?: (templateId: string, params: object) => Promise<{ items: Array, totalCount: number }>,
- *   createItemFn?: (templateId: string, payload: object) => Promise<any>,
- *   updateItemFn?: (itemId: string, payload: object) => Promise<any>,
- *   deleteItemFn?: (itemId: string) => Promise<any>,
- *   restoreItemFn?: (itemId: string) => Promise<any>,
- *   getDetailFn?: (itemId: string) => Promise<object>,
- * }} props
+ * Criteria items panel — Admin version.
+ * Full CRUD against admin API.
  */
-export default function CriteriaItemsPanel({
-  templateId,
-  onCountsChange,
-  readOnly = false,
-  fetchItemsFn = getCriteriaItems,
-  createItemFn = createCriteriaItem,
-  updateItemFn = updateCriteriaItem,
-  deleteItemFn = deleteCriteriaItem,
-  restoreItemFn = restoreCriteriaItem,
-  getDetailFn = getCriteriaItemDetail,
-}) {
+export default function CriteriaItemsPanel({ templateId, onCountsChange }) {
   const [items, setItems] = useState([])
   const [itemsTotal, setItemsTotal] = useState(0)
   const [itemsLoading, setItemsLoading] = useState(false)
@@ -81,21 +61,21 @@ export default function CriteriaItemsPanel({
       const params = { PageIndex: itemPage, PageSize: ITEMS_PER_PAGE }
       if (itemKeyword) params.Keyword = itemKeyword
       if (itemIsDisable !== '') params.IsDisable = itemIsDisable === 'true'
-      const result = await fetchItemsFn(templateId, params)
+      const result = await getCriteriaItems(templateId, params)
       setItems(result.items || [])
       setItemsTotal(result.totalCount || 0)
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to load items.')
     } finally { setItemsLoading(false) }
-  }, [templateId, itemPage, itemKeyword, itemIsDisable, fetchItemsFn])
+  }, [templateId, itemPage, itemKeyword, itemIsDisable])
 
   // Fetch both active & total counts (unfiltered) to report to parent
   const fetchCounts = useCallback(async () => {
     if (!templateId || !onCountsChange) return
     try {
       const [activeRes, totalRes] = await Promise.all([
-        fetchItemsFn(templateId, { PageIndex: 1, PageSize: 1, IsDisable: false }),
-        fetchItemsFn(templateId, { PageIndex: 1, PageSize: 1 }),
+        getCriteriaItems(templateId, { PageIndex: 1, PageSize: 1, IsDisable: false }),
+        getCriteriaItems(templateId, { PageIndex: 1, PageSize: 1 }),
       ])
       const totalCount = totalRes.totalCount || 0
       const activeCount = activeRes.totalCount || 0
@@ -104,7 +84,7 @@ export default function CriteriaItemsPanel({
       let maxScore = 0
       let activeScore = 0
       if (totalCount > 0) {
-        const allRes = await fetchItemsFn(templateId, { PageIndex: 1, PageSize: totalCount })
+        const allRes = await getCriteriaItems(templateId, { PageIndex: 1, PageSize: totalCount })
         const allItems = allRes.items || []
         for (const item of allItems) {
           const s = Number(item.score) || 0
@@ -114,7 +94,7 @@ export default function CriteriaItemsPanel({
       }
       onCountsChange({ active: activeCount, total: totalCount, maxScore, activeScore })
     } catch { /* ignore */ }
-  }, [templateId, onCountsChange, fetchItemsFn])
+  }, [templateId, onCountsChange])
 
   useEffect(() => { fetchItems() }, [fetchItems])
 
@@ -127,7 +107,7 @@ export default function CriteriaItemsPanel({
     if (!editingItem) return
     setItemSaving(true)
     try {
-      await updateItemFn(editingItem.id, {
+      await updateCriteriaItem(editingItem.id, {
         name: editingItem.name, description: editingItem.description,
         score: editingItem.score, isDisable: editingItem.isDisable,
       })
@@ -143,20 +123,20 @@ export default function CriteriaItemsPanel({
   async function handleDeleteItem(item) {
     const ok = await confirm('Delete Item', `Delete "${item.name}"?`)
     if (!ok) return
-    try { await deleteItemFn(item.id); toast.success('Deleted'); fetchItems(); fetchCounts() }
+    try { await deleteCriteriaItem(item.id); toast.success('Deleted'); fetchItems(); fetchCounts() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed.') }
   }
 
   async function handleRestoreItem(item) {
     const ok = await confirm('Restore Item', `Restore "${item.name}"?`)
     if (!ok) return
-    try { await restoreItemFn(item.id); toast.success('Restored'); fetchItems(); fetchCounts() }
+    try { await restoreCriteriaItem(item.id); toast.success('Restored'); fetchItems(); fetchCounts() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed.') }
   }
 
   async function handleViewItem(item) {
     setViewLoading(true)
-    try { const detail = await getDetailFn(item.id); setViewingItem(detail) }
+    try { const detail = await getCriteriaItemDetail(item.id); setViewingItem(detail) }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed to load.') }
     finally { setViewLoading(false) }
   }
@@ -165,7 +145,7 @@ export default function CriteriaItemsPanel({
     if (!newItem.name.trim()) return
     setItemCreating(true)
     try {
-      await createItemFn(templateId, { name: newItem.name.trim(), description: newItem.description || undefined, score: newItem.score })
+      await createCriteriaItem(templateId, { name: newItem.name.trim(), description: newItem.description || undefined, score: newItem.score })
       toast.success('Criteria item created!')
       setCreatingItem(false)
       setNewItem({ name: '', description: '', score: 20 })
@@ -204,7 +184,7 @@ export default function CriteriaItemsPanel({
     { key: 'createdAt', header: 'Created', headerIcon: Calendar, render: (row) => <p className="text-[13px] text-[#1f2f3a]">{formatDateTime(row.createdAt)}</p> },
   ]
 
-  const actionsColumn = readOnly ? [] : [{
+  const actionsColumn = [{
     key: 'actions', header: 'Actions', headerIcon: MoreHorizontal, headerClassName: 'text-right', className: 'text-right', render: (row) => (
       <div className="flex items-center justify-end gap-2">
         <button onClick={() => handleViewItem(row)} className={btnClass}><Eye className="h-3.5 w-3.5" />View</button>
@@ -223,9 +203,7 @@ export default function CriteriaItemsPanel({
     <>
       <div className="mb-4 flex items-center justify-between">
         <FilterBar filters={itemFilters} values={{ keyword: itemKeyword, isDisable: itemIsDisable }} onChange={handleFilterChange} onReset={handleFilterReset} hasActive={hasActive} />
-        {!readOnly && (
-          <button onClick={() => { setNewItem({ name: '', description: '', score: 20 }); setCreatingItem(true) }} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white shadow-sm hover:bg-[#05404a]"><Plus className="h-4 w-4" />Create Item</button>
-        )}
+        <button onClick={() => { setNewItem({ name: '', description: '', score: 20 }); setCreatingItem(true) }} className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-[#064f5d] px-4 py-2 text-[13px] font-semibold text-white shadow-sm hover:bg-[#05404a]"><Plus className="h-4 w-4" />Create Item</button>
       </div>
       <BaseTable columns={itemColumns} data={items} page={itemPage} pageSize={ITEMS_PER_PAGE} total={itemsTotal} onPageChange={setItemPage} loading={itemsLoading} emptyText="No criteria items found." keyExtractor={(row) => row.id} />
 

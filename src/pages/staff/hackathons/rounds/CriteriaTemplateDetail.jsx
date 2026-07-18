@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
 import { ArrowLeft, Eye, EyeOff, FileText, Calendar, Clock, Target } from 'lucide-react'
-import { getCriteriaTemplateDetail, getRoundDetail, getCriteriaItems } from '../../../../api/staff'
+import { getCriteriaTemplateDetail, getRoundDetail } from '../../../../api/staff'
 import Badge from '../../../../components/Badge'
 import RichTextViewer from '../../../../components/RichTextViewer'
-import CriteriaItemsPanel from '../../../../components/CriteriaItemsPanel'
+import StaffCriteriaItemsPanel from '../../../../components/StaffCriteriaItemsPanel'
 import { formatDate } from '../../../../utils/format'
 import { cn } from '../../../../utils/cn'
 
@@ -18,8 +18,6 @@ export default function CriteriaTemplateDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState(tabParam === 'items' ? 'items' : 'description')
-  const fetchItems = useCallback((tId, p) => getCriteriaItems(tId, p), [])
-
   useEffect(() => {
     if (tabParam === 'items' || tabParam === 'description') setActiveTab(tabParam)
   }, [tabParam])
@@ -108,7 +106,7 @@ export default function CriteriaTemplateDetail() {
           {activeTab === 'description' ? (
             <RichTextViewer content={template.description || 'No description provided.'} />
           ) : (
-            <CriteriaItemsPanel templateId={templateId} readOnly fetchItemsFn={fetchItems} />
+            <StaffCriteriaItemsPanel templateId={templateId} />
           )}
         </div>
       </div>

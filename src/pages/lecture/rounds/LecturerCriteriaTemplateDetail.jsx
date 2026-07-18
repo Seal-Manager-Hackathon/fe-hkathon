@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Eye, EyeOff, FileText, Calendar, Clock } from 'lucide-react'
-import { getLecturerCriteriaTemplateDetail, getLecturerCriteriaItems } from '../../../api/lecturer'
+import { getLecturerCriteriaTemplateDetail } from '../../../api/lecturer'
 import Badge from '../../../components/Badge'
 import RichTextViewer from '../../../components/RichTextViewer'
-import CriteriaItemsPanel from '../../../components/CriteriaItemsPanel'
+import LecturerCriteriaItemsPanel from '../../../components/LecturerCriteriaItemsPanel'
 import { formatDate } from '../../../utils/format'
 import { cn } from '../../../utils/cn'
 
@@ -14,8 +14,6 @@ export default function LecturerCriteriaTemplateDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState('description')
-
-  const fetchItems = useCallback((tId, p) => getLecturerCriteriaItems(tId, p), [])
 
   useEffect(() => {
     let cancelled = false
@@ -93,7 +91,7 @@ export default function LecturerCriteriaTemplateDetail() {
           {activeTab === 'description' ? (
             <RichTextViewer content={template.description || 'No description provided.'} />
           ) : (
-            <CriteriaItemsPanel templateId={templateId} readOnly fetchItemsFn={fetchItems} />
+            <LecturerCriteriaItemsPanel templateId={templateId} />
           )}
         </div>
       </div>
