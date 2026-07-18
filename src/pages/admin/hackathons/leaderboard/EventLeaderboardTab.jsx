@@ -9,17 +9,17 @@ import { getRankScoreColor } from '../../../../utils/rankScoreColor'
 const PAGE_SIZE = 5
 
 const rankBadge = {
-  1: { bg: 'bg-[#fef3c7]', border: 'border-[#d97706]/30' },
-  2: { bg: 'bg-[#f1f5f9]', border: 'border-[#64748b]/25' },
-  3: { bg: 'bg-[#ffedd5]', border: 'border-[#ea580c]/25' },
+  1: { bg: 'bg-[#e0f2fe]', border: 'border-[#0EA5E9]/30' },
+  2: { bg: 'bg-[#fef9c3]', border: 'border-[#EAB308]/30' },
+  3: { bg: 'bg-[#dcfce7]', border: 'border-[#22C55E]/30' },
 }
 
 const viewBtnClass = 'inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#f4f6f8] px-2.5 py-1.5 text-[13px] font-semibold text-[#064f5d] hover:bg-[#e0f2f1]'
 
 function RankIcon({ rank }) {
-  if (rank === 1) return <Trophy className="h-4 w-4 text-[#d97706]" fill="#d97706" />
-  if (rank === 2) return <Trophy className="h-4 w-4 text-[#64748b]" fill="#64748b" />
-  if (rank === 3) return <Medal className="h-4 w-4 text-[#ea580c]" />
+  if (rank === 1) return <Trophy className="h-4 w-4 text-[#0EA5E9]" fill="#0EA5E9" />
+  if (rank === 2) return <Trophy className="h-4 w-4 text-[#EAB308]" fill="#EAB308" />
+  if (rank === 3) return <Medal className="h-4 w-4 text-[#22C55E]" />
   return <span className="text-[13px] font-bold text-[#5a6a73] w-4 text-center">#{rank}</span>
 }
 

@@ -1,7 +1,7 @@
 const RANK_SCORE_COLORS = {
-  1: 'text-[#dc2626]',
-  2: 'text-[#ea580c]',
-  3: 'text-[#ca8a04]',
+  1: 'text-[#0EA5E9]',
+  2: 'text-[#EAB308]',
+  3: 'text-[#22C55E]',
 }
 
 export function getRankScoreColor(rank) {

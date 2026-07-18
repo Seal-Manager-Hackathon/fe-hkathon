@@ -4,31 +4,31 @@ import { getRankScoreColor } from '../../utils/rankScoreColor';
 
 const HIGHLIGHT_STYLES = {
   gold: {
-    card: 'border-[#d97706]/30 bg-gradient-to-r from-[#fefce8]/60 to-white',
-    rankWrapper: 'bg-[#fef3c7] text-[#b45309]',
+    card: 'border-[#0EA5E9]/30 bg-gradient-to-r from-[#e0f2fe]/60 to-white',
+    rankWrapper: 'bg-[#bae6fd] text-[#0369a1]',
     label: 'gold',
   },
   silver: {
-    card: 'border-[#64748b]/25 bg-gradient-to-r from-[#f8fafc]/60 to-white',
-    rankWrapper: 'bg-[#f1f5f9] text-[#475569]',
+    card: 'border-[#EAB308]/30 bg-gradient-to-r from-[#fef9c3]/60 to-white',
+    rankWrapper: 'bg-[#fde68a] text-[#b45309]',
     label: 'silver',
   },
   bronze: {
-    card: 'border-[#ea580c]/25 bg-gradient-to-r from-[#fff7ed]/60 to-white',
-    rankWrapper: 'bg-[#ffedd5] text-[#c2410c]',
+    card: 'border-[#22C55E]/30 bg-gradient-to-r from-[#dcfce7]/60 to-white',
+    rankWrapper: 'bg-[#bbf7d0] text-[#166534]',
     label: 'bronze',
   },
 };
 
 function RankBadge({ rank, highlight }) {
   if (highlight === 'gold') {
-    return <Trophy size={22} className="text-[#d97706]" fill="#d97706" />;
+    return <Trophy size={22} className="text-[#0EA5E9]" fill="#0EA5E9" />;
   }
   if (highlight === 'silver') {
-    return <Trophy size={22} className="text-[#64748b]" fill="#64748b" />;
+    return <Trophy size={22} className="text-[#EAB308]" fill="#EAB308" />;
   }
   if (highlight === 'bronze') {
-    return <Award size={22} className="text-[#ea580c]" />;
+    return <Award size={22} className="text-[#22C55E]" />;
   }
   return <span className="text-[15px] font-bold text-[#5a6a73] w-[22px] text-center">#{rank}</span>;
 }

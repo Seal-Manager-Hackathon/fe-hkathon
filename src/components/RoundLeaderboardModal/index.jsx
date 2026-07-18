@@ -8,9 +8,9 @@ import { getRankScoreColor } from '../../utils/rankScoreColor'
 const PAGE_SIZE = 5
 
 const rankBadge = {
-  1: { bg: 'bg-[#fef3c7]', border: 'border-[#d97706]/30' },
-  2: { bg: 'bg-[#f1f5f9]', border: 'border-[#64748b]/25' },
-  3: { bg: 'bg-[#ffedd5]', border: 'border-[#ea580c]/25' },
+  1: { bg: 'bg-[#e0f2fe]', border: 'border-[#0EA5E9]/30' },
+  2: { bg: 'bg-[#fef9c3]', border: 'border-[#EAB308]/30' },
+  3: { bg: 'bg-[#dcfce7]', border: 'border-[#22C55E]/30' },
 }
 
 /**

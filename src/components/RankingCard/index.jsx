@@ -20,9 +20,9 @@ function getColor(id) {
 }
 
 function SmallRankBadge({ rank }) {
-  if (rank === 1) return <Trophy size={18} className="text-[#d97706]" fill="#d97706" />
-  if (rank === 2) return <Trophy size={18} className="text-[#64748b]" fill="#64748b" />
-  if (rank === 3) return <Award size={18} className="text-[#ea580c]" />
+  if (rank === 1) return <Trophy size={18} className="text-[#0EA5E9]" fill="#0EA5E9" />
+  if (rank === 2) return <Trophy size={18} className="text-[#EAB308]" fill="#EAB308" />
+  if (rank === 3) return <Award size={18} className="text-[#22C55E]" />
   return <span className="text-[13px] font-bold text-[#5a6a73]">#{rank}</span>
 }
 
