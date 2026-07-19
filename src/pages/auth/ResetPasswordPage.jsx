@@ -96,6 +96,13 @@ export default function ResetPasswordPage() {
           <p className="mb-6 text-[14px] text-gray-500">
             Your password has been updated successfully. Redirecting to sign in...
           </p>
+          <Link
+            to="/login"
+            className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#ffca28] px-6 py-3 text-[15px] font-semibold text-[#064f5d] transition-colors hover:bg-[#f5bf1b]"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Sign In
+          </Link>
         </div>
       </div>
     )
@@ -111,7 +118,7 @@ export default function ResetPasswordPage() {
         <ArrowLeft className="h-4 w-4" />
         Back to Sign In
       </Link>
-      <div className="w-full max-[400px] rounded-2xl bg-white p-8 shadow-sm">
+      <div className="w-full max-w-[400px] rounded-2xl bg-white p-8 shadow-sm">
         <BrandLogo className="mb-8" />
 
         <h2 className="mb-1 text-center text-[24px] font-bold text-[#1f2f3a]">Set new password</h2>

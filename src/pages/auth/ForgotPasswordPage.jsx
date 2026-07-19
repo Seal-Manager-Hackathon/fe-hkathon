@@ -69,7 +69,8 @@ export default function ForgotPasswordPage() {
               to="/login"
               className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#ffca28] px-6 py-3 text-[15px] font-semibold text-[#064f5d] transition-colors hover:bg-[#f5bf1b]"
             >
-              ← Back to Sign In
+              <ArrowLeft className="h-4 w-4" />
+              Back to Sign In
             </Link>
           </>
         ) : (
