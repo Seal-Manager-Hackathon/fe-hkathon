@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Send, Search, Clock, CheckCircle, XCircle, AlertTriangle,
-  Check, X, Users, Inbox,
+  Check, X, Eye, Users, Inbox,
 } from 'lucide-react'
 import {
   getStudentReceivedInvitations,
@@ -14,6 +14,7 @@ import Avatar from '../../components/Avatar'
 import { formatDate } from '../../utils/format'
 import { cn } from '../../utils/cn'
 import { toast, confirm } from '../../utils/toast'
+import InvitationDetailModal from './InvitationDetailModal'
 
 const PAGE_SIZE = 10
 
@@ -41,6 +42,7 @@ export default function MyInvitationsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [actingId, setActingId] = useState(null)
+  const [viewingDetailId, setViewingDetailId] = useState(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
@@ -202,6 +204,14 @@ export default function MyInvitationsPage() {
                     <div className="flex shrink-0 gap-2">
                       <button
                         type="button"
+                        onClick={() => setViewingDetailId(inv.id)}
+                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[12px] font-semibold text-[#1f2f3a] transition-colors hover:bg-gray-50"
+                      >
+                        <Eye size={14} />
+                        View
+                      </button>
+                      <button
+                        type="button"
                         disabled={acting}
                         onClick={() => handleAccept(inv)}
                         className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#10b981] px-4 py-2 text-[12px] font-semibold text-white transition-colors hover:bg-[#059669] disabled:opacity-50"
@@ -220,6 +230,18 @@ export default function MyInvitationsPage() {
                       </button>
                     </div>
                   )}
+                  {!isPending && (
+                    <div className="flex shrink-0 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setViewingDetailId(inv.id)}
+                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-4 py-2 text-[12px] font-semibold text-[#1f2f3a] transition-colors hover:bg-gray-50"
+                      >
+                        <Eye size={14} />
+                        View
+                      </button>
+                    </div>
+                  )}
                 </div>
               )
             })}
@@ -230,6 +252,12 @@ export default function MyInvitationsPage() {
           <Pagination currentPage={pageIndex} totalPages={totalPages} onPageChange={setPageIndex} />
         )}
       </div>
+
+      <InvitationDetailModal
+        invitationId={viewingDetailId}
+        open={!!viewingDetailId}
+        onClose={() => setViewingDetailId(null)}
+      />
     </div>
   )
 }
