@@ -139,12 +139,6 @@ export default function TeamRegistrationsPage() {
                         </span>
                       </div>
                       <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] text-[#5a6a73]">
-                        {(reg.trackName || reg.topicName) && (
-                          <span className="inline-flex items-center gap-1">
-                            <Calendar size={12} className="text-[#8a9ba6]" />
-                            {[reg.trackName, reg.topicName].filter(Boolean).join(' · ')}
-                          </span>
-                        )}
                         {reg.roundName && (
                           <span className="inline-flex items-center gap-1">
                             <Clock size={12} className="text-[#8a9ba6]" />

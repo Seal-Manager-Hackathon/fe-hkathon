@@ -13,7 +13,7 @@ import Pagination from '../../components/Pagination'
 import Avatar from '../../components/Avatar'
 import { formatDate } from '../../utils/format'
 import { cn } from '../../utils/cn'
-import { toast } from '../../utils/toast'
+import { toast, confirm } from '../../utils/toast'
 
 const PAGE_SIZE = 10
 
@@ -70,6 +70,8 @@ export default function MyInvitationsPage() {
   const totalPages = Math.ceil(totalCount / PAGE_SIZE)
 
   async function handleAccept(invitation) {
+    const ok = await confirm('Accept Invitation', `Accept invitation to join "${invitation.teamName}"?`)
+    if (!ok) return
     setActingId(invitation.id)
     try {
       await acceptStudentInvitation(invitation.id)
@@ -89,6 +91,8 @@ export default function MyInvitationsPage() {
   }
 
   async function handleReject(invitation) {
+    const ok = await confirm('Reject Invitation', `Reject invitation to join "${invitation.teamName}"?`)
+    if (!ok) return
     setActingId(invitation.id)
     try {
       await rejectStudentInvitation(invitation.id)

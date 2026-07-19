@@ -118,6 +118,10 @@ export default function TeamDetailPage() {
 
   async function handleKick(memberId) {
     if (!detail) return
+    const memberName = detail.members?.find((m) => m.userId === memberId)
+    const nameStr = memberName ? `${memberName.firstName} ${memberName.lastName}` : 'this member'
+    const ok = await confirm('Kick Member', `Are you sure you want to kick ${nameStr} from "${detail.name}"?`)
+    if (!ok) return
     try {
       await kickStudentTeamMember(detail.id, memberId)
       toast.success('Member removed from team.')

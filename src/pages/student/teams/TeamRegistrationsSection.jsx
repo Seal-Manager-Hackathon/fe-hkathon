@@ -108,9 +108,6 @@ export default function TeamRegistrationsSection({ teamId }) {
                         </span>
                       </div>
                       <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-[#5a6a73]">
-                        {(reg.trackName || reg.topicName) && (
-                          <span>{[reg.trackName, reg.topicName].filter(Boolean).join(' · ')}</span>
-                        )}
                         {reg.roundName && (
                           <span>Round {reg.roundNo}: {reg.roundName}</span>
                         )}
