@@ -163,6 +163,8 @@ export default function CriteriaTemplatesManagement() {
   }
 
   async function handleActivate(template) {
+    const ok = await confirm('Activate Template', `Activate "${template.title}" as the active criteria template? Previously active templates will be deactivated.`)
+    if (!ok) return
     try {
       await activateCriteriaTemplate(template.id)
       toast.success('Template activated')

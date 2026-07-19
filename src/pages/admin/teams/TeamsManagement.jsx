@@ -71,11 +71,15 @@ export default function TeamsManagement() {
   }
 
   async function handleLock(team) {
+    const ok = await confirm('Lock Team', `Are you sure you want to lock "${team.name}"? Members will not be able to edit the team.`)
+    if (!ok) return
     try { await lockTeam(team.id); toast.success('Team locked'); refetch() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed to lock team.') }
   }
 
   async function handleUnlock(team) {
+    const ok = await confirm('Unlock Team', `Are you sure you want to unlock "${team.name}"? Members will be able to edit the team again.`)
+    if (!ok) return
     try { await unlockTeam(team.id); toast.success('Team unlocked'); refetch() }
     catch (err) { toast.error(err?.response?.data?.message || 'Failed to unlock team.') }
   }
