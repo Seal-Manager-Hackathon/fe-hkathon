@@ -290,6 +290,17 @@ export async function getStudentReceivedInvitations(params = {}) {
   return data.data
 }
 
+/**
+ * Get invitation detail.
+ * GET /api/v1/student/invitations/{invitationId}
+ * @param {string} invitationId
+ * @returns {Promise<object>}
+ */
+export async function getStudentInvitationDetail(invitationId) {
+  const { data } = await api.get(`/student/invitations/${invitationId}`)
+  return data.data
+}
+
 export async function acceptStudentInvitation(invitationId) {
   const { data } = await api.post(`/student/invitations/${invitationId}/accept`)
   return data.data
