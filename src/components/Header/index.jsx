@@ -58,23 +58,25 @@ export default function Header({
 
         {/* Right: bell + user */}
         <div className="flex items-center gap-2 sm:gap-4">
-          <div ref={ref} className="relative">
-            <NotificationBell
-              unreadCount={unreadCount}
-              onClick={() => setOpen(!open)}
-            />
-
-            {open && (
-              <NotificationDropdown
-                notifications={notifications}
+          {!isGuest && (
+            <div ref={ref} className="relative">
+              <NotificationBell
                 unreadCount={unreadCount}
-                viewAllTo={viewAllTo}
-                onSelect={setSelected}
-                onMarkRead={markAsRead}
-                onMarkAllRead={markAllRead}
+                onClick={() => setOpen(!open)}
               />
-            )}
-          </div>
+
+              {open && (
+                <NotificationDropdown
+                  notifications={notifications}
+                  unreadCount={unreadCount}
+                  viewAllTo={viewAllTo}
+                  onSelect={setSelected}
+                  onMarkRead={markAsRead}
+                  onMarkAllRead={markAllRead}
+                />
+              )}
+            </div>
+          )}
 
           {isGuest ? (
             <Link
