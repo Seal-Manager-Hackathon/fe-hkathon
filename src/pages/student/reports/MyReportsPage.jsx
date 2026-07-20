@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import {
-  Search, Calendar, Plus, Inbox, Flag,
+  Search, Calendar, Plus, Inbox, Flag, Eye,
+  Clock, CheckCircle, XCircle,
 } from 'lucide-react'
 import { getStudentReports } from '../../../api/student'
 import Pagination from '../../../components/Pagination'
@@ -14,8 +15,21 @@ import {
   reportTypeBadge,
 } from '../../../constants/commonOptions'
 import CreateReportModal from './CreateReportModal'
+import ReportDetailModal from './ReportDetailModal'
 
 const PAGE_SIZE = 10
+
+const STATUS_ICONS = {
+  Pending: Clock,
+  Resolved: CheckCircle,
+  Reject: XCircle,
+}
+
+const STATUS_LINE_COLORS = {
+  Pending: 'bg-[#e65100]',
+  Resolved: 'bg-[#2e7d32]',
+  Reject: 'bg-[#c62828]',
+}
 
 export default function MyReportsPage() {
   const [items, setItems] = useState([])
@@ -29,6 +43,7 @@ export default function MyReportsPage() {
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [viewingReport, setViewingReport] = useState(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
@@ -201,35 +216,52 @@ export default function MyReportsPage() {
               const stCls = reportStatusBadge[report.status] || reportStatusBadge.Pending
               const tpCls = reportTypeBadge[report.typeReport] || reportTypeBadge.Other
               const stLabel = report.status === 'Reject' ? 'Rejected' : report.status
+              const StatusIcon = STATUS_ICONS[report.status] || Clock
+              const lineColor = STATUS_LINE_COLORS[report.status] || 'bg-[#e65100]'
 
               return (
                 <div
                   key={report.id}
-                  className="flex flex-col gap-2 rounded-xl border border-[#d7e0e5] bg-white px-5 py-4"
+                  className="group relative flex items-stretch gap-0 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-[#d7e0e5] transition-all hover:shadow-md hover:ring-[#1565c0]/30"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <h4 className="truncate text-[15px] font-bold text-[#1f2f3a]">{report.title}</h4>
+                  {/* Left accent bar */}
+                  <div className={cn('w-[4px] shrink-0 self-stretch', lineColor)} />
+
+                  <div className="flex flex-1 items-center justify-between gap-4 px-5 py-4">
+                    {/* Left: icon + info */}
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#f0f4f8] group-hover:bg-[#e8edf1] transition-colors">
+                        <Flag size={18} className="text-[#064f5d]" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="truncate text-[15px] font-bold text-[#1f2f3a]">{report.title}</h4>
+                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                          {report.typeReport && (
+                            <span className={cn('inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold', tpCls)}>
+                              {report.typeReport}
+                            </span>
+                          )}
+                          <span className={cn('inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold', stCls)}>
+                            <StatusIcon size={10} />
+                            {stLabel}
+                          </span>
+                          <span className="flex items-center gap-1 text-[11px] text-[#8a9ba6]">
+                            <Clock size={11} />
+                            {formatDate(report.createdAt)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      {report.typeReport && (
-                        <span className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold', tpCls)}>
-                          {report.typeReport}
-                        </span>
-                      )}
-                      <span className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold', stCls)}>
-                        {stLabel}
-                      </span>
-                    </div>
-                  </div>
-                  {report.description && (
-                    <p className="line-clamp-2 text-[13px] text-[#5a6a73] leading-relaxed">
-                      {report.description.replace(/<[^>]*>/g, '')}
-                    </p>
-                  )}
-                  <div className="flex items-center gap-1 text-[11px] text-[#8a9ba6]">
-                    <Flag size={11} />
-                    <span>Created {formatDate(report.createdAt)}</span>
+
+                    {/* Right: View button */}
+                    <button
+                      type="button"
+                      onClick={() => setViewingReport(report)}
+                      className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-3.5 py-2 text-[12px] font-semibold text-[#064f5d] transition-all hover:border-[#064f5d]/40 hover:bg-[#f0f7f8] active:scale-[0.97]"
+                    >
+                      <Eye size={15} />
+                      View
+                    </button>
                   </div>
                 </div>
               )
@@ -249,6 +281,12 @@ export default function MyReportsPage() {
         open={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onCreated={handleCreated}
+      />
+
+      <ReportDetailModal
+        report={viewingReport}
+        open={!!viewingReport}
+        onClose={() => setViewingReport(null)}
       />
     </div>
   )
