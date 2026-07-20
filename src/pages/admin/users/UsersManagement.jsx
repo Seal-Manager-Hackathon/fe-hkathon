@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { UserPlus } from 'lucide-react'
-import { getUsers, deleteUser, restoreUser, banUser, unbanUser } from '../../../api/admin'
+import { getUsers, banUser, unbanUser } from '../../../api/admin'
 import BaseTable from '../../../components/BaseTable'
 import FilterBar from '../../../components/FilterBar'
 import { usersColumns } from './UsersColumns'
@@ -56,20 +56,6 @@ export default function UsersManagement() {
   const [banTarget, setBanTarget] = useState(null)
   const [banning, setBanning] = useState(false)
 
-  async function handleDelete(user) {
-    const ok = await confirm('Delete User', `Are you sure you want to delete "${user.firstName} ${user.lastName}"?`)
-    if (!ok) return
-    try { await deleteUser(user.id); toast.success('User deleted'); refetch() }
-    catch (err) { toast.error(err?.response?.data?.message || 'Failed to delete user.') }
-  }
-
-  async function handleRestore(user) {
-    const ok = await confirm('Restore User', `Are you sure you want to restore "${user.firstName} ${user.lastName}"?`)
-    if (!ok) return
-    try { await restoreUser(user.id); toast.success('User restored'); refetch() }
-    catch (err) { toast.error(err?.response?.data?.message || 'Failed to restore user.') }
-  }
-
   function handleBan(user) {
     setBanTarget(user)
   }
@@ -99,7 +85,7 @@ export default function UsersManagement() {
       </div>
       <FilterBar filters={usersFilters} values={filters} onChange={handleFilterChange} onReset={handleReset} hasActive={hasActive} />
       {error && <div className="mb-4 rounded-lg border border-[#fce4ec] bg-[#fff5f5] px-4 py-3 text-[14px] text-[#c62828]">{error}</div>}
-      <BaseTable columns={usersColumns(handleDelete, handleRestore, handleBan, handleUnban)} data={users} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No users match the current filters.' : 'No users in the system yet.'} keyExtractor={(row) => row.id} minWidth="900px" />
+      <BaseTable columns={usersColumns(handleBan, handleUnban)} data={users} page={pageIndex} pageSize={PAGE_SIZE} total={totalCount} onPageChange={setPageIndex} loading={loading} serverSide emptyText={hasActive ? 'No users match the current filters.' : 'No users in the system yet.'} keyExtractor={(row) => row.id} minWidth="900px" />
 
       <PromptReason
         open={!!banTarget}
