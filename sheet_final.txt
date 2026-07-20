@@ -1,0 +1,139 @@
+admin:
+- hackathon -> round -> criteria -> track -> topic -> assign staff/lecture
+student:
+- update profile -> create team -> invite member -> member acceppt (tài khoản khác) -> register team
+
+admin:
+- accept register team -> assign track+topic
+
+student:
+- xem track+topic -> vào round nộp bài
+
+judge:
+- xem danh sách bài nộp của round -> xem tiêu chí chấm điểm -> chấm điểm
+
+student:
+- xem điểm bài thi
+
+admin:
+- end round -> coi điểm các team -> chọn team qua vòng tiếp theo
+
+Bước 1: Admin tạo Hackathon
+- Nhập thông tin:
+	- Hackathon Name: SEAL Hackathon 2027 – Spring Innovation
+	- Season: Spring
+	- Max Teams: 15
+	- Min Members per Team: 2
+	- Max Members per Team: 5
+	- Description: SEAL Hackathon 2027 – Spring Innovation is a three-day technology competition where teams develop creative solutions for real-world problems. Participants will receive mentoring, attend technical workshops, and present their final products to a panel of judges. Awards will be given for innovation, technical quality, user experience, and overall impact.
+	- Start Time: Nhập 1 ngày quá khứ xa
+	- Registration Deadline: Now + 10 phút
+	- End Time: Nhập 1 ngày tương lai xa
+
+Bước 2: Admin tạo Round (Hackathon -> Round -> Criteria):
+- Nhập thông tin Round #1:
+	- Round Name: Qualification Round – Idea Submission
+	- Start Time: Nhập ngày hôm qua
+	- End Time: Nhập ngày mai
+	- Submission Start: Nhập ngày hôm qua
+	- Submission End: Nhập ngày mai
+	- Max Teams: 15
+
+- Nhập thông tin Round #2:
+	- Round Name: Prototype Development & Demo
+	- Start Time: Nhập ngày hôm nay + 4 phút
+	- End Time: Nhập ngày mai
+	- Submission Start: Nhập ngày hôm nay + 4 phút
+	- Submission End: Nhập ngày mai
+	- Max Teams: 15
+
+Bước 3: Admin tạo Criteria (Hackathon -> Round -> Criteria):
+- Nhập thông tin Criteria Round #1:
+	- Template Title: Idea Evaluation Template
+	- Description: This template is used to evaluate submitted ideas in the Qualification Round. Judges should assess each team based on the originality of the idea and its practical value. Scores should be supported by clear and objective comments.
+
+	- Criteria Item #1:
+		- Name: Creativity and Innovation
+		- Description: Evaluate how original and innovative the proposed idea is. Consider whether the solution introduces a new approach, improves an existing method, or applies technology in a creative way.
+		- Score: 20
+
+	- Criteria Item #2:
+		- Name: Feasibility and Impact
+		- Description: Evaluate whether the idea can realistically be developed within the hackathon timeline. Consider its technical feasibility, usefulness, scalability, and potential impact on target users.
+		- Score: 20
+- Active nó lên
+
+- Nhập thông tin Criteria Round #2:
+	- Template Title: Prototype Development & Demo
+	- Description: This template is used to evaluate prototypes and product demonstrations in the second round. Judges should assess each submission based on its technical implementation, usability, completeness, and presentation quality. Scores must be supported by specific and objective comments.
+
+	- Criteria Item #1:
+		- Name: Creativity and Innovation
+		- Description: Evaluate how original and innovative the proposed idea is. Consider whether the solution introduces a new approach, improves an existing method, or applies technology in a creative way.
+		- Score: 20
+
+	- Criteria Item #2:
+		- Name: Technical Implementation
+		- Description: Evaluate the quality and completeness of the technical solution. Consider system architecture, functionality, code quality, technology selection, reliability, and how effectively the prototype solves the proposed problem.
+		- Score: 20
+- Active nó lên
+
+Bước 4: Admin tạo Tracks (Hackathon -> Tracks):
+- Nhập thông tin:
+	- Track Title: AI for Sustainable Development
+	- Max Teams: 15
+	- Description: This track focuses on innovative AI-powered solutions that address real-world sustainability challenges. Teams may develop products related to environmental protection, energy efficiency, smart cities, sustainable agriculture, waste management, or climate resilience. Solutions will be evaluated based on innovation, feasibility, technical quality, and potential social impact.
+
+Bước 5: Admin tạo Topics (Hackathon -> Tracks -> Topics):
+- Nhập thông tin:
+	- Topic Title: Smart Waste Management
+	- Description: Develop an AI-powered solution that helps improve waste collection, sorting, recycling, or disposal. The solution may use technologies such as computer vision, data analytics, sensors, or predictive models to reduce waste, optimize resources, and encourage sustainable behavior.
+
+Bước 6: Admin tạo Awards (Hackathon -> Awards):
+- Nhập thông tin:
+	- Award Name: Grand Prize – Best Overall Solution
+	- Prize (USD): 3000
+	- Number of Awards: 1
+	- Description: Awarded to the team with the strongest overall solution based on innovation, technical implementation, feasibility, user experience, and potential impact.
+
+	- Award Name: Best Sustainability Impact
+	- Prize (USD): 1500
+	- Number of Awards: 1
+	- Description: Awarded to teams that develop practical and scalable solutions with significant environmental or social benefits, such as reducing waste, saving energy, or supporting sustainable communities.
+
+Bước 7: Admin phân công Staff (Hackathon -> Assignments):
+- Nhập thông tin:
+	- Email: staff@gmail.com
+
+Bước 8: Admin phân công Lecture vào làm Judge (Hackathon -> Assignments):
+- Nhập thông tin:
+	- Email: lecture@gmail.com
+- Chọn Track cho Judge
+
+Bước 9: Admin phân công Lecture vào làm Judge (Hackathon -> Assignments):
+- Nhập thông tin:
+	- Email: lecture1@gmail.com
+- Chọn Track cho Mentor
+
+Bước 10: Admin công bố sự kiện (Hackathon -> Edit)
+- Nhập thông tin:
+	- Status: Published
+	- Visibility: Enable (visible)
+
+Bước 11: Student tạo team -> mời thành viên khác -> thành viên khác chấp nhận vào team -> Leader đăng ký thi -> Admin duyệt team -> Admin phân track & topic cho team -> Leader nộp bài -> Judge chấm -> Student xem điểm
+
+Bước 12: End round -> Admin chọn team qua vòng tiếp theo
+
+Student:
+student1@gmail.com
+student2@gmail.com
+
+Team: SealForce
+https://github.com/pirumu/kacrab
+
+Staff:
+staff@gmail.com
+
+Lecture:
+lecture@gmail.com (Judge)
+lecture1@gmail.com (Mentor)
