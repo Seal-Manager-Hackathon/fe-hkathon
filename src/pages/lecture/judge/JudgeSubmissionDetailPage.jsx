@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, FileText, Calendar, Clock, Users, User, CircleCheck, Send, ExternalLink, FolderKanban, Layers, Star, Eye, Info, Lock, Trophy } from 'lucide-react'
 import { getJudgeSubmissionDetail, getLecturerCriteriaTemplates, getLecturerCriteriaItems } from '../../../api/lecturer'
 import GradeSubmissionModal from '../../../components/GradeSubmissionModal'
@@ -22,6 +22,7 @@ const statusBadge = {
 
 export default function JudgeSubmissionDetailPage() {
   const { submissionId } = useParams()
+  const navigate = useNavigate()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -84,7 +85,15 @@ export default function JudgeSubmissionDetailPage() {
   return (
     <div className="px-4 py-6 md:px-6 lg:px-8 lg:py-8">
       <div className="mb-5">
-        <button onClick={() => window.history.back()} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] transition-colors hover:text-[#05404a] hover:underline">
+        <button onClick={() => {
+          if (window.history.length > 2) {
+            navigate(-1)
+          } else if (data?.roundId) {
+            navigate(`/lecture/rounds/${data.roundId}/submissions`)
+          } else {
+            navigate('/lecture/submissions')
+          }
+        }} className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#064f5d] transition-colors hover:text-[#05404a] hover:underline">
           <ArrowLeft className="h-4 w-4" /> Back to Submissions
         </button>
       </div>
