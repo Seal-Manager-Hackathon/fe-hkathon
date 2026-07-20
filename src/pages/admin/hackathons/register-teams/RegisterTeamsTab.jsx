@@ -154,9 +154,9 @@ export default function RegisterTeamsTab({ eventId }) {
 
   function handleTopicModalClose() {
     setAssignTopicModalOpen(false)
-    if (assignTarget) {
-      doAssign(selectedTrackIdRef.current, undefined)
-    }
+    // Cancel the entire operation — do not assign track-only
+    setAssignTarget(null)
+    selectedTrackIdRef.current = null
   }
 
   function doAssign(trackId, topicId) {
