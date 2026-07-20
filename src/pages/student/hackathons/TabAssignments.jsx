@@ -22,11 +22,6 @@ function PersonCard({ person }) {
           {person.firstName} {person.lastName}
         </p>
         <p className="truncate text-[12px] text-[#8a9ba6]">{person.email}</p>
-        {person.assignTracks && person.assignTracks.length > 0 && (
-          <p className="mt-0.5 truncate text-[11px] text-[#1565c0]">
-            {person.assignTracks.filter((t) => !t.isDisable).map((t) => t.title).join(', ')}
-          </p>
-        )}
       </div>
     </div>
   )
