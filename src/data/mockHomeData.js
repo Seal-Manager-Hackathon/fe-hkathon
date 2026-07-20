@@ -4,6 +4,7 @@ export const mockNavItems = [
   { key: 'teams', label: 'Teams', icon: 'Users', to: '/teams' },
   { key: 'invitations', label: 'My Invitations', icon: 'Send', to: '/invitations' },
   { key: 'leaderboard', label: 'Leaderboard', icon: 'Medal', to: '/leaderboard' },
+  { key: 'reports', label: 'Reports', icon: 'Flag', to: '/reports' },
 ]
 
 export const mockHackathons = [

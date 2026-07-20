@@ -10,7 +10,7 @@ export default function StudentLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const navItems = useMemo(() => {
-    if (!user) return mockNavItems.filter((item) => item.key !== 'teams' && item.key !== 'invitations')
+    if (!user) return mockNavItems.filter((item) => item.key !== 'teams' && item.key !== 'invitations' && item.key !== 'reports')
     return mockNavItems
   }, [user])
 

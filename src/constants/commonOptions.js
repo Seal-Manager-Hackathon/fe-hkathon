@@ -93,10 +93,27 @@ export const reportStatusBadge = {
 
 export const reportTypeBadge = {
   Other: 'bg-[#e3f2fd] text-[#1565c0]',
+  Spam: 'bg-[#fce4ec] text-[#c62828]',
+  Cheating: 'bg-[#fff3e0] text-[#e65100]',
+  Bug: 'bg-[#fce4ec] text-[#b71c1c]',
+  Feature: 'bg-[#e8f5e9] text-[#2e7d32]',
+  Abuse: 'bg-[#f3e5f5] text-[#7b1fa2]',
+  Technical: 'bg-[#e0f2f1] text-[#00695c]',
 }
 
 export const REPORT_TYPE_OPTIONS = [
+  { value: 'Spam', label: 'Spam' },
+  { value: 'Cheating', label: 'Cheating' },
+  { value: 'Bug', label: 'Bug Report' },
+  { value: 'Feature', label: 'Feature Request' },
+  { value: 'Abuse', label: 'Abuse / Harassment' },
+  { value: 'Technical', label: 'Technical Issue' },
   { value: 'Other', label: 'Other' },
+]
+
+export const REPORT_TYPE_OPTIONS_ALL = [
+  { value: '', label: 'All Types' },
+  ...REPORT_TYPE_OPTIONS,
 ]
 
 /* ─── Notification TargetType ─── */

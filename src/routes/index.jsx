@@ -17,6 +17,7 @@ const TeamRegistrationsPage = lazy(() => import('../pages/student/teams/TeamRegi
 const RegisterTeamDetailPage = lazy(() => import('../pages/student/teams/RegisterTeamDetailPage'))
 const MyInvitationsPage = lazy(() => import('../pages/student/MyInvitationsPage'))
 const MyNotificationsPage = lazy(() => import('../pages/student/notifications/MyNotifications'))
+const MyReportsPage = lazy(() => import('../pages/student/reports/MyReportsPage'))
 const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'))
 const VerifyEmailPage = lazy(() => import('../pages/auth/VerifyEmailPage'))
 const ProfilePage = lazy(() => import('../pages/auth/ProfilePage'))
@@ -158,7 +159,11 @@ export const routes = [
       {
         path: 'my-notifications', element: <ProtectedRoute roles={['Student']}><Suspense fallback={<RouteFallback />}><MyNotificationsPage /></Suspense></ProtectedRoute>
       },
-      { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><YearLeaderboardPage /></Suspense> }
+      { path: 'leaderboard', element: <Suspense fallback={<RouteFallback />}><YearLeaderboardPage /></Suspense> },
+      {
+        path: 'reports',
+        element: <ProtectedRoute roles={['Student']}><Suspense fallback={<RouteFallback />}><MyReportsPage /></Suspense></ProtectedRoute>
+      },
     ]
   },
   {

@@ -11,6 +11,7 @@ const URL_TO_ACTIVE_KEY = [
   { match: (p) => p === '/teams' || p.startsWith('/teams/'), key: 'teams' },
   { match: (p) => p.startsWith('/invitations'), key: 'invitations' },
   { match: (p) => p.startsWith('/leaderboard'), key: 'leaderboard' },
+  { match: (p) => p.startsWith('/reports'), key: 'reports' },
   // Admin routes
   { match: (p) => p.startsWith('/admin/hackathons') || p.startsWith('/admin/rounds') || p.startsWith('/admin/tracks') || p.startsWith('/admin/awards'), key: 'hackathons' },
   { match: (p) => p.startsWith('/admin/leaderboard'), key: 'leaderboard' },
