@@ -23,7 +23,6 @@ import {
   markAdminMyNotificationRead,
   markAdminAllMyNotificationsRead,
 } from '../api/admin'
-import { MOCK_NOTIFICATIONS } from '../data/notifications'
 import { formatDate } from '../utils/format'
 
 const ROLE_API = {
@@ -68,8 +67,8 @@ function transform(apiNotif) {
 
 /**
  * Hook to fetch and manage notifications based on user role.
- * - Student / Lecturer / Staff: calls the corresponding API.
- * - Other roles / no user: falls back to MOCK_NOTIFICATIONS (legacy).
+ * - Student / Lecturer / Staff / Admin: calls the corresponding API.
+ * - Guest / no user: returns empty array (no notifications for unauthenticated users).
  */
 export default function useNotifications(user) {
   const [notifications, setNotifications] = useState([])
@@ -83,8 +82,8 @@ export default function useNotifications(user) {
   // Initial fetch + poll every 60 seconds
   useEffect(() => {
     if (!api) {
-      setNotifications(MOCK_NOTIFICATIONS)
-      setUnreadCount(MOCK_NOTIFICATIONS.filter((n) => !n.read).length)
+      setNotifications([])
+      setUnreadCount(0)
       return
     }
 
