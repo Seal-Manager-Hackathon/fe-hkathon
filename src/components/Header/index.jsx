@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { Menu } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Menu, LogIn } from 'lucide-react'
 import useNotifications from '../../hooks/useNotifications'
 import NotificationModal from '../NotificationModal'
 import UserMenu from '../UserMenu'
@@ -27,7 +28,7 @@ export default function Header({
         : user?.role === 'Lecturer'
           ? '/lecture/my-notifications'
           : '/my-notifications'
-  const resolvedUser = user || { name: 'Guest visitor' }
+  const isGuest = !user
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -57,29 +58,41 @@ export default function Header({
 
         {/* Right: bell + user */}
         <div className="flex items-center gap-2 sm:gap-4">
-          <div ref={ref} className="relative">
-            <NotificationBell
-              unreadCount={unreadCount}
-              onClick={() => setOpen(!open)}
-            />
-
-            {open && (
-              <NotificationDropdown
-                notifications={notifications}
+          {!isGuest && (
+            <div ref={ref} className="relative">
+              <NotificationBell
                 unreadCount={unreadCount}
-                viewAllTo={viewAllTo}
-                onSelect={setSelected}
-                onMarkRead={markAsRead}
-                onMarkAllRead={markAllRead}
+                onClick={() => setOpen(!open)}
               />
-            )}
-          </div>
 
-          <UserMenu
-            user={resolvedUser}
-            menuItems={menuItems}
-            onLogout={onLogout}
-          />
+              {open && (
+                <NotificationDropdown
+                  notifications={notifications}
+                  unreadCount={unreadCount}
+                  viewAllTo={viewAllTo}
+                  onSelect={setSelected}
+                  onMarkRead={markAsRead}
+                  onMarkAllRead={markAllRead}
+                />
+              )}
+            </div>
+          )}
+
+          {isGuest ? (
+            <Link
+              to="/login"
+              className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#1565c0] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[#1250a0]"
+            >
+              <LogIn className="h-4 w-4" />
+              Sign in
+            </Link>
+          ) : (
+            <UserMenu
+              user={user}
+              menuItems={menuItems}
+              onLogout={onLogout}
+            />
+          )}
         </div>
       </header>
 

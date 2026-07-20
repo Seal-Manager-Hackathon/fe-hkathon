@@ -452,3 +452,29 @@ export async function getStudentMentorNotificationDetail(mentorNotificationId) {
   const { data } = await api.get(`/student/mentor-notifications/${mentorNotificationId}`)
   return data.data
 }
+
+/* ------------------------------------------------------------------ */
+/*  Student Reports                                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Get paginated student reports.
+ * GET /api/v1/student/reports
+ * @param {Object} [params] - { keyword?, status?, fromDate?, toDate?, pageIndex?, pageSize? }
+ * @returns {Promise<{ items: Array, totalCount: number, pageIndex: number, pageSize: number }>}
+ */
+export async function getStudentReports(params = {}) {
+  const { data } = await api.get('/student/reports', { params })
+  return data.data
+}
+
+/**
+ * Create a new report.
+ * POST /api/v1/student/reports
+ * @param {{ title: string, description?: string, typeReport?: string }} body
+ * @returns {Promise<{ id: string, title: string, status: string, createdAt: string }>}
+ */
+export async function createStudentReport(body) {
+  const { data } = await api.post('/student/reports', body)
+  return data.data
+}
