@@ -1,29 +1,28 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
-import { Calendar, Clock, Users, Flag, FileText } from 'lucide-react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { FileText, Users } from 'lucide-react'
 import FormField from '../../../../components/FormField'
 import EntityFormPage from '../../../../components/EntityFormPage'
 import RichTextEditor from '../../../../components/RichTextEditor'
 import { getTrackDetail, getEventDetail, updateTrack } from '../../../../api/admin'
 import { toast } from '../../../../utils/toast'
 import EventInfoCard from '../../../../components/EventInfoCard'
-import { formatDateTime } from '../../../../utils/format'
-import Badge from '../../../../components/Badge'
 
 
 export default function TrackEdit() {
-  const { eventId, trackId } = useParams()
+  const { trackId } = useParams()
   const navigate = useNavigate()
   const [form, setForm] = useState({ title: '', description: '', maxTeam: '' })
   const [saving, setSaving] = useState(false)
   const [event, setEvent] = useState(null)
+  const [trackEventId, setTrackEventId] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let cancelled = false
     async function fetch() {
       try {
-        const track = await getTrackDetail(eventId, trackId)
+        const track = await getTrackDetail(trackId)
         if (!cancelled) {
           setForm({
             title: track.title || '',
@@ -31,6 +30,7 @@ export default function TrackEdit() {
             maxTeam: track.maxTeam != null ? String(track.maxTeam) : '',
           })
           if (track.eventId) {
+            setTrackEventId(track.eventId)
             try { const ev = await getEventDetail(track.eventId); if (!cancelled) setEvent(ev) } catch {}
           }
         }
@@ -42,7 +42,7 @@ export default function TrackEdit() {
     }
     fetch()
     return () => { cancelled = true }
-  }, [eventId, trackId])
+  }, [trackId])
 
   function updateField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -56,9 +56,9 @@ export default function TrackEdit() {
       if (form.description !== undefined) payload.description = form.description.trim() || null
       if (form.maxTeam !== '') payload.maxTeam = Number(form.maxTeam)
 
-      await updateTrack(event.id, trackId, payload)
+      await updateTrack(trackId, payload)
       toast.success('Track updated successfully')
-      navigate(`/admin/hackathons/${event?.id || ''}?tab=Tracks`)
+      navigate(`/admin/hackathons/${trackEventId || ''}?tab=Tracks`)
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to update track.')
     } finally {
@@ -72,7 +72,7 @@ export default function TrackEdit() {
 
   return (
     <EntityFormPage
-      backUrl={`/admin/hackathons/${event?.id || ''}?tab=Tracks`}
+      backUrl={`/admin/hackathons/${trackEventId || ''}?tab=Tracks`}
       backLabel="Back to Event"
       title="Edit Track"
       description=""

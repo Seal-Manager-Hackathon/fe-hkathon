@@ -514,8 +514,8 @@ export async function createTrack(eventId, payload) {
   return data
 }
 
-export async function updateTrack(eventId, trackId, payload) {
-  const { data } = await api.patch(`/admin/events/${eventId}/tracks/${trackId}`, payload)
+export async function updateTrack(trackId, payload) {
+  const { data } = await api.patch(`/admin/tracks/${trackId}`, payload)
   return data
 }
 
