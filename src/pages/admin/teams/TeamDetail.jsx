@@ -38,7 +38,7 @@ export default function TeamDetail() {
       const params = { pageIndex: regPage, pageSize: REG_PAGE_SIZE }
       if (regStatus) params.status = regStatus
       const result = await getTeamRegisterHistory(id, params)
-      setRegisters(result.items || [])
+      setRegisters(result.registerTeams || result.items || [])
       setRegTotal(result.totalCount || 0)
     } catch {}
     finally { setRegLoading(false) }
