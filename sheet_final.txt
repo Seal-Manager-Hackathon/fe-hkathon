@@ -103,16 +103,16 @@ Bước 6: Admin tạo Awards (Hackathon -> Awards):
 
 Bước 7: Admin phân công Staff (Hackathon -> Assignments):
 - Nhập thông tin:
-	- Email: staff@gmail.com
+	- Email: staff1@gmail.com
 
 Bước 8: Admin phân công Lecture vào làm Judge (Hackathon -> Assignments):
 - Nhập thông tin:
-	- Email: lecture@gmail.com
+	- Email: judge1@gmail.com
 - Chọn Track cho Judge
 
 Bước 9: Admin phân công Lecture vào làm Judge (Hackathon -> Assignments):
 - Nhập thông tin:
-	- Email: lecture1@gmail.com
+	- Email: mentor1@gmail.com
 - Chọn Track cho Mentor
 
 Bước 10: Admin công bố sự kiện (Hackathon -> Edit)
