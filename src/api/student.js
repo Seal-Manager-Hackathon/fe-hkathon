@@ -469,6 +469,17 @@ export async function getStudentReports(params = {}) {
 }
 
 /**
+ * Get student report detail by ID.
+ * GET /api/v1/student/reports/{reportId}
+ * @param {string} reportId
+ * @returns {Promise<{ id: string, userId: string, title: string, description: string, status: string, reason: string|null, typeReport: string, createdAt: string, updatedAt: string }>}
+ */
+export async function getStudentReportDetail(reportId) {
+  const { data } = await api.get(`/student/reports/${reportId}`)
+  return data.data
+}
+
+/**
  * Create a new report.
  * POST /api/v1/student/reports
  * @param {{ title: string, description?: string, typeReport?: string }} body
