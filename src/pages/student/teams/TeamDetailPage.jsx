@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Users, Calendar, Edit3, LogOut,
-  UserCog, Check, X, FileText, Send,
+  UserCog, Check, X, FileText, Send, Pencil, Lock,
 } from 'lucide-react'
 import {
   getStudentTeamDetail,
@@ -237,6 +237,10 @@ export default function TeamDetailPage() {
                 </div>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-5 gap-y-1 text-[13px] text-[#80deea]">
                   <span className="inline-flex items-center gap-1.5"><Users size={14} />{detail?.members?.length || 0} member{(detail?.members?.length || 0) !== 1 ? 's' : ''}</span>
+                  <span className={detail?.canEdit ? 'inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-semibold text-white' : 'inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-semibold text-[#ef9a9a]'}>
+                    {detail?.canEdit ? <Pencil size={11} /> : <Lock size={11} />}
+                    {detail?.canEdit ? 'Can Edit' : "Can't Edit"}
+                  </span>
                 </div>
               </div>
 
