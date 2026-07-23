@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  Users, Search, Plus, X, UserCheck, Crown,
+  Users, Search, Plus, X, UserCheck, Crown, Pencil, Lock,
 } from 'lucide-react'
 import {
   getStudentMyTeams,
@@ -126,6 +126,12 @@ export default function StudentTeamsPage() {
                       <span className="inline-flex items-center gap-1 rounded-full bg-[#fff3e0] px-2 py-0.5 text-[10px] font-semibold text-[#e65100] ring-1 ring-orange-200/60">
                         <Crown size={10} />
                         Leader
+                      </span>
+                    )}
+                    {team.canEdit !== undefined && (
+                      <span className={team.canEdit ? 'inline-flex items-center gap-1 rounded-full bg-[#e8f5e9] px-2 py-0.5 text-[10px] font-semibold text-[#2e7d32] ring-1 ring-green-200/60' : 'inline-flex items-center gap-1 rounded-full bg-[#fce4ec] px-2 py-0.5 text-[10px] font-semibold text-[#c62828] ring-1 ring-red-200/60'}>
+                        {team.canEdit ? <Pencil size={10} /> : <Lock size={10} />}
+                        {team.canEdit ? 'Can Edit' : "Can't Edit"}
                       </span>
                     )}
                   </div>
