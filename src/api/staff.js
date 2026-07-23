@@ -1122,7 +1122,7 @@ export async function getScoreItemDetail(scoreItemId) {
  */
 export async function getRoundLeaderboard(roundId, params = {}) {
   const { data } = await api.get(`/staff/rounds/${roundId}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 /**
@@ -1132,7 +1132,7 @@ export async function getRoundLeaderboard(roundId, params = {}) {
  */
 export async function getEventLeaderboard(eventId, params = {}) {
   const { data } = await api.get(`/staff/events/${eventId}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 /**
@@ -1142,7 +1142,7 @@ export async function getEventLeaderboard(eventId, params = {}) {
  */
 export async function getChapterLeaderboard(year, params = {}) {
   const { data } = await api.get(`/staff/events/chapter/${year}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 /* ------------------------------------------------------------------ */

@@ -317,12 +317,12 @@ export async function rejectStudentInvitation(invitationId) {
 
 export async function getStudentLeaderboard(year, params = {}) {
   const { data } = await api.get(`/student/events/chapter/${year}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 export async function getStudentEventLeaderboard(eventId, params = {}) {
   const { data } = await api.get(`/student/events/${eventId}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 /* ------------------------------------------------------------------ */
@@ -465,6 +465,17 @@ export async function getStudentMentorNotificationDetail(mentorNotificationId) {
  */
 export async function getStudentReports(params = {}) {
   const { data } = await api.get('/student/reports', { params })
+  return data.data
+}
+
+/**
+ * Get student report detail by ID.
+ * GET /api/v1/student/reports/{reportId}
+ * @param {string} reportId
+ * @returns {Promise<{ id: string, userId: string, title: string, description: string, status: string, reason: string|null, typeReport: string, createdAt: string, updatedAt: string }>}
+ */
+export async function getStudentReportDetail(reportId) {
+  const { data } = await api.get(`/student/reports/${reportId}`)
   return data.data
 }
 

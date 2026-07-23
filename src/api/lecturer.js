@@ -356,7 +356,7 @@ export async function getLecturerAwardDetail(awardId) {
  */
 export async function getLecturerChapterLeaderboard(year, params = {}) {
   const { data } = await api.get(`/lecturer/events/chapter/${year}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 /**
@@ -369,7 +369,7 @@ export async function getLecturerChapterLeaderboard(year, params = {}) {
  */
 export async function getLecturerEventLeaderboard(eventId, params = {}) {
   const { data } = await api.get(`/lecturer/events/${eventId}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 // ============================ ASSIGN ============================
@@ -399,7 +399,7 @@ export async function getLecturerEventAssign(eventId, params = {}) {
  */
 export async function getLecturerRoundLeaderboard(roundId, params = {}) {
   const { data } = await api.get(`/lecturer/rounds/${roundId}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 /**

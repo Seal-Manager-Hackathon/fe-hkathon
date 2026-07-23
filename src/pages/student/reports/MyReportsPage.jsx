@@ -43,7 +43,7 @@ export default function MyReportsPage() {
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const [viewingReport, setViewingReport] = useState(null)
+  const [viewingReportId, setViewingReportId] = useState(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
@@ -256,7 +256,7 @@ export default function MyReportsPage() {
                     {/* Right: View button */}
                     <button
                       type="button"
-                      onClick={() => setViewingReport(report)}
+                      onClick={() => setViewingReportId(report.id)}
                       className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#d7e0e5] bg-white px-3.5 py-2 text-[12px] font-semibold text-[#064f5d] transition-all hover:border-[#064f5d]/40 hover:bg-[#f0f7f8] active:scale-[0.97]"
                     >
                       <Eye size={15} />
@@ -284,9 +284,9 @@ export default function MyReportsPage() {
       />
 
       <ReportDetailModal
-        report={viewingReport}
-        open={!!viewingReport}
-        onClose={() => setViewingReport(null)}
+        reportId={viewingReportId}
+        open={!!viewingReportId}
+        onClose={() => setViewingReportId(null)}
       />
     </div>
   )
