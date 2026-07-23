@@ -982,7 +982,7 @@ export async function getRegisterTeamSubmissions(registerTeamId, params = {}) {
  */
 export async function getRoundLeaderboard(roundId, params = {}) {
   const { data } = await api.get(`/admin/rounds/${roundId}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 // ========== Event Leaderboard ==========
@@ -997,7 +997,7 @@ export async function getRoundLeaderboard(roundId, params = {}) {
  */
 export async function getEventLeaderboard(eventId, params = {}) {
   const { data } = await api.get(`/admin/events/${eventId}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 // ========== Chapter Leaderboard ==========
@@ -1012,7 +1012,7 @@ export async function getEventLeaderboard(eventId, params = {}) {
  */
 export async function getChapterLeaderboard(year, params = {}) {
   const { data } = await api.get(`/admin/events/chapter/${year}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 /* ------------------------------------------------------------------ */

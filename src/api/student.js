@@ -317,12 +317,12 @@ export async function rejectStudentInvitation(invitationId) {
 
 export async function getStudentLeaderboard(year, params = {}) {
   const { data } = await api.get(`/student/events/chapter/${year}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 export async function getStudentEventLeaderboard(eventId, params = {}) {
   const { data } = await api.get(`/student/events/${eventId}/leaderboard`, { params })
-  return data.data
+  return data.data || {}
 }
 
 /* ------------------------------------------------------------------ */
